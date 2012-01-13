@@ -41,8 +41,8 @@ public class AppConfig {
   </section>
 
   <section id="beans-java-instantiating-container">
-    <title>Instantiating the Spring container using
-      <literal>AnnotationConfigApplicationContext</literal></title>
+    <title><literal>AnnotationConfigApplicationContext</literal>를 사용하는 스프링 
+      컨테이너 예제 살펴보기</title>
 
     <para>The sections below document Spring's
       <literal>AnnotationConfigApplicationContext</literal>, new in Spring 3.0.
