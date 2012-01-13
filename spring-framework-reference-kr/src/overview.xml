@@ -2,96 +2,85 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="overview">
-  <title>Introduction to Spring Framework</title>
+  <title>스프링 프레임워크 소개</title>
 
-  <para>Spring Framework is a Java platform that provides comprehensive
-  infrastructure support for developing Java applications. Spring handles the
-  infrastructure so you can focus on your application.<!--First text mention should be *Spring Framework* not just *Spring*. I revised next sentence because *plumbing* is idiomatic and --><!--*the domain problem* is an unclear reference. Isn't the point that Spring takes care of *under the covers* so you can focus on app? TR: OK.--></para>
+  <para>스프링 프레임워크는 자바 애플리케이션 개발을 위한 포괄적인 인프라스트럭쳐를 제공하는
+  자바 플랫폼이다. 스프링은 당신이 애플리케이션에 집중할 수 있도록 인프라스트럭쳐를 다룬다.
+  <!--First text mention should be *Spring Framework* not just *Spring*. I revised next sentence because *plumbing* is idiomatic and --><!--*the domain problem* is an unclear reference. Isn't the point that Spring takes care of *under the covers* so you can focus on app? TR: OK.--></para>
 
-  <para>Spring enables you to build applications from “plain old Java objects”
-  (POJOs) and to apply enterprise services non-invasively to POJOs. This
-  capability applies to the Java SE programming model and to full and partial
-  Java EE.</para>
+  <para>스프링을 사용하면 "plain old Java objects"(POJOs)로 어플리케이션을 만들고
+  엔터프라이즈 서비스를 비침투적으로 POJO에 적용할 수 있다. 이 능력은 Java SE 프로그래밍에
+  적용되고 전제 혹은 부분적으로 Java EE에 적용된다.</para>
 
-  <para>Examples of how you, as an application developer, can use the Spring
-  platform advantage:<!--In each of the examples, clarify what you mean by *the implementer* (identify it, or is it a person?). ALSO in each sentence replace--><!--*dealing with* APIs with what you mean: what does not have to be done in regard to APIs? IMPORTANT, because this discusses advantage--><!--of product. TR: REVISED, PLS REVIEW. I changed *implementer* to *application developer* and put it upfront rather than repeat it.--></para>
+  <para>어플리케이션 개발자인 당신이 어떻게 스프링 플랫폿의 이점을 사용할 수 있는가에 대한 예제가 있다: 
+  <!--In each of the examples, clarify what you mean by *the implementer* (identify it, or is it a person?). ALSO in each sentence replace--><!--*dealing with* APIs with what you mean: what does not have to be done in regard to APIs? IMPORTANT, because this discusses advantage--><!--of product. TR: REVISED, PLS REVIEW. I changed *implementer* to *application developer* and put it upfront rather than repeat it.--></para>
 
   <itemizedlist>
     <listitem>
-      <para>Make a Java method execute in a database transaction without
-      having to deal with transaction APIs.</para>
+      <para>트랜잭션 API를 사용하지 않고도 데이터베이스 트랜잭션에서 자바메서드를 실행하도록
+      만든다.</para>
     </listitem>
 
     <listitem>
-      <para>Make a local Java method a remote procedure without having to deal
-      with remote APIs.</para>
+      <para>원격 API를 사용하지 않고도 로컬 자바메서드를 원격 프로시저로 만든다.</para>
     </listitem>
 
     <listitem>
-      <para>Make a local Java method a management operation without having to
-      deal with JMX APIs.</para>
+      <para>JMX API를 사용하지 않고도 로컬 자바메서드를 관리작업으로 만든다.</para>
     </listitem>
 
     <listitem>
-      <para>Make a local Java method a message handler without having to deal
-      with JMS APIs.</para>
+      <para>JMS API를 사용하지 않고도 로컬 자바메서드를 메시지 핸들러로 만든다.</para>
     </listitem>
   </itemizedlist>
 
   <section id="overview-dependency-injection">
-    <title>Dependency Injection and Inversion of Control</title>
+    <title>의존성 주입(Dependency Injection)과 제어의 역전(Inversion of Control)</title>
 
     <sidebar id="background-ioc">
-      <title>Background</title>
+      <title>배경</title>
 
-      <para><quote><emphasis>The question is, what aspect of control are
-      [they] inverting?</emphasis></quote> Martin Fowler posed this question
-      about Inversion of Control (IoC) on his site in 2004. Fowler suggested
-      renaming the principle to make it more self-explanatory and came up with
-      <firstterm>Dependency Injection</firstterm>.</para>
+      <para><quote><emphasis>제어의 어떤 관점이 역전되었는가?</emphasis></quote>
+      마틴 파울러(Martin Fowler)는 2004년 자신의 사이트에서 제어의 역전(IoC)에 대한 의견을
+      말했다. 파울러는 원리가 더 명확하게 드러나도록 이름을 <firstterm>의존성 주입(Dependency 
+      Injection)</firstterm>으로 바꾸어야 한다고 제한했다.</para>
 
-      <para>For insight into IoC and DI, refer to Fowler's article at <ulink
-      url="http://martinfowler.com/articles/injection.html">http://martinfowler.com/articles/injection.html</ulink>.</para>
+      <para>IoC와 DI를 더 알고 싶다면 <ulink 
+      url="http://martinfowler.com/articles/injection.html">http://martinfowler.com/articles/injection.html</ulink>에 올라온 파울러의 글을
+      참고해라.</para>
     </sidebar>
 
-    <para>Java applications -- a loose term that runs the gamut from
-    constrained applets to n-tier server-side enterprise applications --
-    typically consist of objects that collaborate to form the application
-    proper. Thus the objects in an application have
-    <emphasis>dependencies</emphasis> on each other.</para>
+    <para>자바 어플리케이션은 -- 제한적인 에플릿부터 n티어 서버사이드 엔터프라이즈 어플리케이션까지
+    포함하는 의미다 -- 보통 어플리케이션에 적합한 형식으로 협력하는 객체로 이루어져 있다.
+    그래서 어플리케이션의 객체는 서로 <emphasis>의존성</emphasis>이 있다.
+    </para>
 
-    <para>Although the Java platform provides a wealth of application
-    development functionality, it lacks the means to organize the basic
-    building blocks into a coherent whole, leaving that task to architects and
-    developers. True, you can use design patterns such as
-    <firstterm>Factory</firstterm>, <firstterm>Abstract Factory</firstterm>,
-    <firstterm>Builder</firstterm>, <firstterm>Decorator</firstterm>, and
-    <firstterm>Service Locator</firstterm> to compose the various classes and
-    object instances that make up an application. However, these patterns are
-    simply that: best practices given a name, with a description of what the
-    pattern does, where to apply it, the problems it addresses, and so forth.
-    Patterns are formalized best practices that <emphasis>you must implement
-    yourself</emphasis> in your application.</para>
+    <para>자바 플랫폼이 어플리케이션 개발에 관련된 풍부한 기능을 제공하더라도 기본적으로
+    구축된 블락들을 서로 밀착된 하나의 큰 구조로 만드는 기능은 부족하다. 아키텍처와 개발자가 
+    이 작업을 해야 한다. 사실, 애플리케이션을 만드는 여러 가지 클래스와 오브젝트 인스턴스를 
+    구성하가 위해 <firstterm>팩토리</firstterm>, <firstterm>추상 팩토리</firstterm>,
+    <firstterm>빌더</firstterm>, <firstterm>데코레이터</firstterm>, 
+    <firstterm>서비스 로케이터</firstterm>같은 디자인 패턴을 사용할 수 있다. 하지만 이러한
+    디자인 패턴은 단순히 베스트 프티스에 이름을 주어 패턴이 무슨 일을 하고 어디에 적용할 수 있고
+    어떤 문제에 대한 것인지 등을 설명한 것뿐이다. 패턴은 어플리케이션에서 <emphasis>스스로 
+    구현해야 하는</emphasis> 베스트 프렉티스를 형식화한 것이다.</para>
 
-    <para>The Spring Framework <emphasis>Inversion of Control</emphasis> (IoC)
-    component addresses this concern by providing a formalized means of
-    composing disparate components into a fully working application ready for
-    use. <!--Preceding sentence sounds like a description of what patterns do (and Spring uses patterns). Distinguish from patterns.-->The
-    Spring Framework codifies formalized design patterns as first-class
-    objects that you can integrate into your own application(s). <!--Preceding sentence suggests that you already have the application and *then* you integrate design patterns into it. Again, I--><!--don't see a major distinction here from use of patterns (as described in earlier paragraph) and use of IoC component to build apps.
+    <para>스프링 프레임워크 <emphasis>제어의 역전</emphasis> (IoC) 컴포넌트는 이러한 관심사에
+    접근한다. 즉, 서로 다른 컴포넌트들을 사용할 준비가 된 완전히 동작하는 애플리케이션을 구성하는
+    형식적인 의미를 제공한다.<!--Preceding sentence sounds like a description of what patterns do (and Spring uses patterns). Distinguish from patterns.-->스프링 프레임워크는 자신의 어플리케이션으로
+    통합할 수 있는 퍼스트 클래스 객체를 형식화된 디자인 패턴으로 만들었다.<!--Preceding sentence suggests that you already have the application and *then* you integrate design patterns into it. Again, I--><!--don't see a major distinction here from use of patterns (as described in earlier paragraph) and use of IoC component to build apps.
 
-TR: This section doesn't read well and I think we should try to rewrite it.-->Numerous
-    organizations and institutions use the Spring Framework in this manner to
-    engineer robust, <emphasis>maintainable</emphasis> applications.</para>
+TR: This section doesn't read well and I think we should try to rewrite it.-->수많은 조직과
+    협회는 신뢰할 수 있고 <emphasis>유지보수 가능한</emphasis> 어플리케이션을 만들려고 이 방법으로
+    스프링 프레임워크를 사용한다.</para>
   </section>
 
   <section id="overview-modules">
-    <title>Modules</title>
+    <title>모듈</title>
 
-    <para>The Spring Framework consists of features organized into about 20
-    modules. These modules are grouped into Core Container, Data
-    Access/Integration, Web, AOP (Aspect Oriented Programming),
-    Instrumentation, and Test, as shown in the following diagram.</para>
+    <para>스프링 프레임워크는 약 20개의 모듈로 구조화된 특징으로 이루어져 있다. 이러한
+    모듈들은 다음 다이어그램에 보이듯 코어 컨테이너, 데이터 접근/통합, 웹, 
+    AOP(관점지향 프로그래밍), 인스트루멘테이션(Instrumentation), 테스트로 그룹을 나눌 수 있다.</para>
 
     <para><mediaobject>
         <imageobject role="fo">
@@ -104,156 +93,132 @@ TR: This section doesn't read well and I think we should try to rewrite it.-->Nu
                      format="PNG" />
         </imageobject>
 
-        <caption><para>Overview of the Spring Framework</para></caption>
+        <caption><para>스프링 프로그램의 개요</para></caption>
       </mediaobject></para>
 
     <section>
-      <title>Core Container</title>
+      <title>코어 컨테이너</title>
 
-      <para>The <link linkend="beans-introduction"><emphasis>Core
-      Container</emphasis></link> consists of the Core, Beans, Context, and
-      Expression Language modules.</para>
+      <para><link linkend="beans-introduction"><emphasis>코어 컨테이너</emphasis>
+      </link>는 코어(Core), 빈즈(Beans), 컨텍스트(Context), 표현언어
+      (Expression Language) 모듈로 이루어졌다.</para>
 
-      <para>The <link linkend="beans-introduction"><emphasis>Core and
-      Beans</emphasis></link> modules provide the fundamental parts of the
-      framework, including the IoC and Dependency Injection features. The
-      <classname>BeanFactory</classname> is a sophisticated implementation of
-      the factory pattern. It removes the need for programmatic singletons and
-      allows you to decouple the configuration and specification of
-      dependencies from your actual program logic.</para>
+      <para><link linkend="beans-introduction"><emphasis>코어와 빈즈</emphasis>
+      </link>모듈은 IoC와 의존성 주입을 포함하는 프레임워크의 기본이 되는 부분을 제공한다.
+      <classname>BeanFactory</classname>는 팩토리 패턴을 세련되게 구현했다. 
+      <classname>BeanFactory</classname>을 사용하면 프로그래밍 적으로 싱글톤을 구현할 
+      필요가 없고 실제 프로그램 로직에서 의존성에 대한 설정과 명세를 분리할 수 있다.</para>
 
-      <para>The <link
-      linkend="context-introduction"><emphasis>Context</emphasis></link>
-      module builds on the solid base provided by the <link
-      linkend="beans-introduction"><emphasis>Core and Beans</emphasis></link>
-      modules: it is a means to access objects in a framework-style manner
-      that is similar to a JNDI registry. The Context module inherits its
-      features from the Beans module and adds support for internationalization
-      (using, for example, resource bundles), event-propagation,
-      resource-loading, and the transparent creation of contexts by, for
-      example, a servlet container. The Context module also supports Java EE
-      features such as EJB, JMX ,and basic remoting. The
-      <classname>ApplicationContext</classname> interface is the focal point
-      of the Context module.</para>
+      <para><link linkend="context-introduction"><emphasis>컨텍스트</emphasis></link>
+      모듈은 <link linkend="beans-introduction"><emphasis>코어와 빈즈</emphasis></link>
+      모듈에서 제공하는 단단한 기반위에 구성되었다. 이는 JNDI 등록과 유사한 프레임워크 스타일로
+      객체에 접근한다는 의미다. 컨텐스트 모듈은 빈즈 모듈의 특징을 상속받고 국제화, 이벤트 전파,
+      리소스-로딩, 서블릿 컨테이너 컨텍스트의 투명한 생성에 대한 지원을 추가한다. 또한 컨텍스트 
+      모듈은 EJB, JMX, 기본적인 원격 같은 Java EE의 기능을 지원한다. <classname>
+      ApplicationContext</classname> 인터페이스는 컨텍스트 모듈에서 중요하다.</para>
 
-      <para>The <link linkend="expressions"><emphasis>Expression
-      Language</emphasis></link> module <!--Provide link as you do with others TR: FIXED.-->provides
-      a powerful expression language for querying and manipulating an object
-      graph at runtime. It is an extension of the unified expression language
-      (unified EL) as specified in the JSP 2.1 specification. The language
-      supports setting and getting property values, property assignment,
-      method invocation, accessing the context of arrays, collections and
-      indexers, logical and arithmetic operators, named variables, and
-      retrieval of objects by name from Spring's IoC container. It also
-      supports list projection and selection as well as common list
-      aggregations.</para>
+      <para><link linkend="expressions"><emphasis>표현언어</emphasis></link>
+      모듈<!--Provide link as you do with others TR: FIXED.-->은 런타임에서
+      객체 그래프를 조회하고 조작하는 강령한 표현언어이다. 표현언어 모듈은 JSP 2.1 명세에 
+      명시된 것처럼 통합된 표현언어(unified EL)의 확장이다. 언어는 속성값을 설정하고 가져오는
+      기능과 속성 할당, 메서드 호출, 배열과 컬렉션과 인덱서의 컨텍스트 접근, 논리적/산술적
+      오퍼레이터, 이름있는 변수, 스프링의 IoC 컨테이너에서 이름으로 객체를 획득하는 기능을
+      지원한다. 일반적인 리스트 집합뿐 아니라 리스트의 투영과 선택도 지원한다.</para>
     </section>
 
     <section>
-      <title>Data Access/Integration</title>
+      <title>데이터 접근/통합</title>
 
-      <para>The <emphasis>Data Access/Integration</emphasis> layer consists of
-      the JDBC, ORM, OXM, JMS and Transaction modules.</para>
+      <para><emphasis>데이터 접근/통합</emphasis> 계층은 JDBC, ORM, OXM, JMC, 
+      트랜잭션 모듈로 이루어졌다.</para>
 
-      <para>The <link linkend="jdbc-introduction">JDBC</link> module provides
-      a JDBC-abstraction layer that removes the need to do tedious JDBC coding
-      and parsing of database-vendor specific error codes.</para>
+      <para><link linkend="jdbc-introduction">JDBC</link>모듈은 JDBC 추상화계층을
+      제공한다. 그래서 지루한 JDBC 코딩과 데이터베이스 벤더에 따라 다른 오류코드를 파싱할 
+      필요가 없다.</para>
 
-      <para>The <link
-      linkend="orm-introduction"><emphasis>ORM</emphasis></link> module
-      provides integration layers for popular object-relational mapping APIs,
-      including <link linkend="orm-jpa">JPA</link>, <link
-      linkend="orm-jdo">JDO</link>, <link
-      linkend="orm-hibernate">Hibernate</link>, and <link
-      linkend="orm-ibatis">iBatis</link>. Using the ORM package you can use
-      all of these O/R-mapping frameworks in combination with all of the other
-      features Spring offers, such as the simple declarative transaction
-      management feature mentioned previously.</para>
+      <para><link
+      linkend="orm-introduction"><emphasis>ORM</emphasis></link> 모듈은
+      <link linkend="orm-jpa">JPA</link>, <link linkend="orm-jdo">JDO</link>
+      , <link linkend="orm-hibernate">Hibernate</link>, <link
+      linkend="orm-ibatis">iBatis</link>를 포함하는 인기 있는 객체-관계 매핑 API에 
+      대한 통합계층을 제공한다. ORM 패키지를 사용하면 이러한 O/R매핑 프레임워크들을 앞에서
+      언급했던 선언적 트랜젝션 관리 같은 스프링의 다른 기능들과 함께 사용할 수 있다.</para>
 
-      <para>The <link linkend="oxm">OXM</link> module provides an abstraction
-      layer that supports Object/XML mapping implementations for JAXB, Castor,
-      XMLBeans, JiBX and XStream.</para>
+      <para><link linkend="oxm">OXM</link> 모듈은 JAXB, Castor, XMLBeans, JiBX, 
+      XStream에 대한 객체/XML매핑 구현을 지원하는 계층이다.</para>
 
-      <para>The Java Messaging Service (<link linkend="jms">JMS</link>) module
-      contains features for producing and consuming messages.</para>
+      <para>자바 메시징 서비스 (<link linkend="jms">JMS</link>) 모듈은 메시지를
+      생산하고 소비하는 기능을 포함한다.</para>
 
-      <para>The <link linkend="transaction">Transaction</link> module supports
-      programmatic and declarative transaction management for classes that
-      implement special interfaces and for <emphasis>all your POJOs (plain old
-      Java objects)</emphasis>.</para>
+      <para><link linkend="transaction">트랜잭션</link> 모듈은 특별한 인터페이스와
+      <emphasis>모든 POJO (plain old Java objects)</emphasis>의 클래스에 대한
+      트랜잭션 관리를 지원한다. 트랜잭션 관리는 프로그래밍 적으로 하거나 선언적으로 할 수 
+      있다.</para>
     </section>
 
     <section>
-      <title>Web</title>
+      <title>웹</title>
 
-      <para>The <emphasis>Web</emphasis> layer consists of the Web,
-      Web-Servlet, Web-Struts, and Web-Portlet modules.</para>
+      <para><emphasis>웹</emphasis> 계층은 웹, 웹-서블릿, 웹-스트러츠, 
+      웹-포틀릿 모듈로 이루어졌다.</para>
 
-      <para>Spring's <emphasis>Web</emphasis> module provides basic
-      web-oriented integration features such as multipart file-upload
-      functionality and the initialization of the IoC container using servlet
-      listeners and a web-oriented application context. It also contains the
-      web-related parts of Spring's remoting support.</para>
+      <para>스프링의 <emphasis>웹</emphasis> 모듈은 기본적인 웹-지향적인 통합기능을
+      제공한다. 웹-지향적인 통합기능은 멀티파트 파일 업로드 기능, 서블릿 리스너와 웹 지향적인 
+      애플리케이션 컨텍스트를 사용한 IoC 컨테이너의 초기화를 말한다. 또한, 스프링의 
+      원격기능에서 웹과 관련된 부분을 포함한다.</para>
 
-      <para>The <emphasis>Web-Servlet</emphasis> module contains Spring's
-      model-view-controller (<link
-      linkend="mvc-introduction"><emphasis>MVC</emphasis></link>)
-      implementation for web applications. Spring's MVC framework provides a
-      clean separation between domain model code and web forms, and integrates
-      with all the other features of the Spring Framework.<!--MVC allows you to use *all other features*? (Or just all other features in Web layer?) How do you mean? Does this need elaboration? 
+      <para><emphasis>웹-서블릿</emphasis> 모듈은 웹 어플리케이션을 위한 스프링의 
+      모델-뷰-컨트롤러 (<link linkend="mvc-introduction"><emphasis>MVC
+      </emphasis></link>) 구현을 포함한다. 스프링의 MVC 프레임워크는 도메인 모델코드와
+      웹 폼을 깔끔하게 분리할 수 있도록 하고 스프링 프레임워크의 다른 모든 기능과 통합할 수 
+      있게 한다.<!--MVC allows you to use *all other features*? (Or just all other features in Web layer?) How do you mean? Does this need elaboration? 
 It sounds important.--><!--TR: REVISED, PLS REVIEW.--></para>
 
-      <para>The <emphasis>Web-Struts</emphasis> module contains the support
-      classes for integrating a classic Struts web tier within a Spring
-      application. Note that this support is now deprecated as of Spring 3.0.
-      Consider migrating your application to Struts 2.0 and its Spring
-      integration or to a Spring MVC solution.</para>
+      <para><emphasis>웹-스트러츠(Web-Struts)</emphasis> 모듈은 스프링 어플리케이션에서
+      전통적인 스트러츠 웹티어를 통합을 지원하는 클래스를 포함한다. 이 지원은
+      스프링 3.0에서는 폐기되었다. 어플리케이션을 스트러츠 2.0이나 스트링 통합으로 
+      마이그레이션 하던가 스프링 MVC를 사용하는 것을 고려해라.</para>
 
-      <para>The <emphasis>Web-Portlet</emphasis> module provides the MVC
-      implementation to be used in a portlet environment and mirrors the
-      functionality of Web-Servlet module.<!--mirrors it in what way?--><!--TR: REVISED, PLS REVIEW. The functionality is mirrored - one for Servlets and the other for Portlets--></para>
+      <para><emphasis>웹-포틀릿(Web-Portlet)</emphasis> 모듈은 포틀릿 환경에서 사용되는
+      MVC 구현과 웹-서블릿 모듈 기능의 미러 기능을 제공한다.<!--mirrors it in what way?--><!--TR: REVISED, PLS REVIEW. The functionality is mirrored - one for Servlets and the other for Portlets--></para>
     </section>
 
     <section>
-      <title>AOP and Instrumentation</title>
+      <title>AOP와 인스트루멘테이션(Instrumentation)</title>
 
-      <para>Spring's <link
-      linkend="aop-introduction"><emphasis>AOP</emphasis></link> module
-      provides an <emphasis>AOP Alliance</emphasis>-compliant aspect-oriented
-      programming implementation allowing you to define, for example,
-      method-interceptors and pointcuts to cleanly decouple code that
-      implements functionality that should be separated. Using source-level
-      metadata functionality, you can also incorporate behavioral information
-      into your code, in a manner similar to that of .NET attributes.</para>
+      <para>스프링의 <link
+      linkend="aop-introduction"><emphasis>AOP</emphasis></link> 모듈은 
+      <emphasis>AOP Alliance</emphasis>를 따르는 관점지향 프로그래밍의 구현체다.
+      예를 들어 기능적으로 분리되어야 하는 코드를 깔끔하게 분리하는 메서드-인터셉터와 
+      포인트컷을 정의할 수 있다. 소스레벨의 메타데이터 기능을 사용하면 .NET 어트리뷰트와 
+      유사한 방법으로 행동에 관한 정보를 코드로 구현할 수 있다.</para>
 
-      <para>The separate <emphasis>Aspects</emphasis> module provides
-      integration with AspectJ.<!--Aspects module not shown in diagram, add it to that. Also, why is this line under AOP and Instrumentation if it's separate?
+      <para>분리된 <emphasis>관점(Aspects)</emphasis> 모듈은
+      AspectJ와의 통합을 제공한다.<!--Aspects module not shown in diagram, add it to that. Also, why is this line under AOP and Instrumentation if it's separate?
 
 TR: OK. Added to diagram.--></para>
 
-      <para>The <emphasis>Instrumentation</emphasis> module provides class
-      instrumentation support and classloader implementations to be used in
-      certain application servers.</para>
+      <para><emphasis>인스트루멘테이션(Instrumentation)</emphasis> 모듈은
+      인스트루멘테이션을 지원하는 클래스와 특정 어플리케이션 서버에서 사용되는
+      클래스로더 구현체를 제공한다.</para>
     </section>
 
     <section>
-      <title>Test</title>
+      <title>테스트</title>
 
-      <para>The <emphasis>Test</emphasis> module supports the testing of
-      Spring components with JUnit or TestNG. It provides consistent loading
-      of Spring ApplicationContexts and caching of those contexts. It also
-      provides mock objects that you can use to test your code in
-      isolation.</para>
+      <para><emphasis>테스트</emphasis> 모듈은 JUnit이나 TestNG로 스프링 컴포넌트의
+      테스트를 지원한다. 테스트 모듈은 스프링 어플리케이션 컨텍스트의 안정된 로딩과 이러한 
+      컨텍스트의 캐싱을 제공한다. 또한, 코드를 격리된 상태로 테스트하기 위해 사용할 수 있는
+      모의 객체를 제공한다.</para>
     </section>
   </section>
 
   <section id="overview-usagescenarios">
-    <title>Usage scenarios</title>
+    <title>사용 시나리오</title>
 
-    <para>The building blocks described previously make Spring a logical
-    choice in many scenarios, from applets to full-fledged enterprise
-    applications that use Spring's transaction management functionality and
-    web framework integration.</para>
+    <para>앞에서 설정한 블락을 만드는 것은 많은 시나리오에서 스프링이 논리적인 선택을 하도록 
+    한다. 여기서 많은 시나리오는 애플릿부터 스프링의 트랜잭션 관리 기능과 웹 프레임워크 통합을 
+    사용하는 완전한 엔터프라이즈 어플리케이션까지를 포함한다.</para>
 
     <para><mediaobject>
         <imageobject role="fo">
@@ -266,24 +231,20 @@ TR: OK. Added to diagram.--></para>
                      format="PNG" />
         </imageobject>
 
-        <caption><para>Typical full-fledged Spring web
-        application</para></caption>
+        <caption><para>대표적인 완전한 형태의 스프링 웹 어플리케이션</para></caption>
       </mediaobject></para>
 
-    <para>Spring's <link linkend="transaction-declarative">declarative
-    transaction management features</link> make the web application fully
-    transactional, just as it would be if you used EJB container-managed
-    transactions. All your custom business logic can be implemented with
-    simple POJOs and managed by Spring's IoC container. Additional services
-    include support for sending email and validation that is independent of
-    the web layer, which lets you choose where to execute validation rules.
-    Spring's ORM support is integrated with JPA, Hibernate, JDO and iBatis;
-    for example, when using Hibernate, you can continue to use your existing
-    mapping files and standard Hibernate
-    <interfacename>SessionFactory</interfacename> configuration. Form
-    controllers seamlessly integrate the web-layer with the domain model,
-    removing the need for <classname>ActionForms</classname> or other classes
-    that transform HTTP parameters to values for your domain model.</para>
+    <para>스프링의 <link linkend="transaction-declarative">선언적 트랜잭션 
+    관리 기능</link>은 웹 어플리케이션이 EJB 컨테이너가 관리하는 트랜잭션처럼 완전한 
+    트랙잭션 기능을 가지게 한다. 모든 커스텀 비즈니스 로직은 간단한 POJO로 구현할 수 있고
+    스프링의 IoC 컨테이너로 관리할 수 있다. 추가적인 서비스는 이메일을 보내는 기능을 
+    지원하고 어디서 유효성 확인 규칙을 실행할 것인지 선택하는 웹 계층과는 독립적인 유효성 
+    확인에 대한 지원을 포함한다. 스프링의 ORM 지원은 JPA, Hibernate, JDO, iBatis와 
+    통합되었다. 예를 들면 하이버네이트를 사용할 때 이미 존재하는 매핑 파일과 표준 하이버네이트
+    <interfacename>SessionFactory</interfacename> 설정을 계속 사용할 수 있다.
+    폼(Form) 컨트롤러는 도메인 모델에 대한 값으로 HTTP 파라미터를 전달하는 
+    <classname>ActionForms</classname>나 다른 클래스에 대한 필요성을 제거함으로써 
+    도메인 모델과 웹 계층을 자연스럽게 통합한다.</para>
 
     <para><mediaobject>
         <imageobject role="fo">
@@ -296,20 +257,17 @@ TR: OK. Added to diagram.--></para>
                      fileref="images/overview-thirdparty-web.png" format="PNG" />
         </imageobject>
 
-        <caption><para>Spring middle-tier using a third-party web
-        framework</para></caption>
+        <caption><para>서드파티 웹 프레임워크를 사용하는 스프링 미들-티어</para></caption>
       </mediaobject></para>
 
-    <para>Sometimes circumstances do not allow you to completely switch to a
-    different framework. The Spring Framework does <emphasis>not</emphasis>
-    force you to use everything within it; it is not an
-    <emphasis>all-or-nothing</emphasis> solution. Existing front-ends built
-    with WebWork, Struts, Tapestry, or other UI frameworks can be integrated
-    with a Spring-based middle-tier, which allows you to use Spring
-    transaction features. You simply need to wire up your business logic using
-    an <classname>ApplicationContext</classname> and use a
-    <classname>WebApplicationContext </classname>to integrate your web
-    layer.</para>
+    <para>종종 다른 프레임워크로 완전히 전환하는 것이 어려울 수 있다. 스프링 프레임워크는
+    스프링 프레임워크안에서만 모든 일을 하도록 강제하지 <emphasis>않다.</emphasis>
+    스프링 프레임워크는 <emphasis>스프링 프레임워크만 쓰던가 아예 쓰지 않던가</emphasis> 
+    해야 하는 솔루션이 아니다. 이미 만들어진 프레임워크가 WebWork, Struts, Tapestry나 다른
+    UI 프레임워크로 만들어졌더라도 스프링의 트랜잭션 기능을 사용하는 스프링 기반의 미들-티어와 
+    통합할 수 있다. 간단하게 <classname>ApplicationContext</classname>를 사용하는 
+    비즈니스 로직을 연결하고 웹 계층과 통합하기 위해 <classname>WebApplicationContext
+    </classname>를 사용하면 된다.</para>
 
     <para><mediaobject>
         <imageobject role="fo">
@@ -322,14 +280,14 @@ TR: OK. Added to diagram.--></para>
                      format="PNG" />
         </imageobject>
 
-        <caption><para>Remoting usage scenario</para></caption>
+        <caption><para>원격 사용 시나리오</para></caption>
       </mediaobject></para>
 
-    <para>When you need to access existing code through web services, you can
-    use Spring's <literal>Hessian-</literal>, <literal>Burlap-</literal>,
-    <literal>Rmi-</literal> or <classname>JaxRpcProxyFactory</classname>
-    classes. Enabling remote access to existing applications is not
-    difficult.</para>
+    <para>이미 존재하는 코드에 웹서비스로 접근할 필요가 있으면 스프링의 
+    <literal>Hessian-</literal>, <literal>Burlap-</literal>,
+    <literal>Rmi-</literal>나 <classname>JaxRpcProxyFactory</classname>
+    클래스를 사용할 수 있다. 존재하는 어플리케이션으로의 원격접근을 허용하는 것은
+    어렵지 않다.</para>
 
     <para><mediaobject>
         <imageobject role="fo">
@@ -342,114 +300,91 @@ TR: OK. Added to diagram.--></para>
                      format="PNG" />
         </imageobject>
 
-        <caption><para>EJBs - Wrapping existing POJOs</para></caption>
+        <caption><para>EJB - 존재하는 POJO의 랩핑(Wrapping)</para></caption>
       </mediaobject></para>
 
-    <para>The Spring Framework also provides an <link linkend="ejb">access and
-    abstraction layer</link> for Enterprise JavaBeans, enabling you to reuse
-    your existing POJOs and wrap them in stateless session beans for use in
-    scalable, fail-safe web applications that might need declarative
-    security.</para>
+    <para>또한, 스프링 프레임워크는 엔터프라이즈 자바빈, 존재하는 POJO의 재사용 허용,
+    선언적인 보안이 필요한 확장성 있고 안전한(fail-safe) 웹 어플리케이션에서 사용하는 무상태 
+    세션빈을 감싸기 위해 <link linkend="ejb">접근과 추상화 계층</link>을 제공한다.</para>
 
     <section id="dependency-management">
-      <title>Dependency Management and Naming Conventions</title>
+      <title>의존성 관리와 작명 관례</title>
 
-      <para>Dependency management and dependency injection are different
-      things. To get those nice features of Spring into your application (like
-      dependency injection) you need to assemble all the libraries needed (jar
-      files) and get them onto your classpath at runtime, and possibly at
-      compile time. These dependencies are not virtual components that are
-      injected, but physical resources in a file system (typically). The
-      process of dependency management involves locating those resources,
-      storing them and adding them to classpaths. Dependencies can be direct
-      (e.g. my application depends on Spring at runtime), or indirect (e.g. my
-      application depends on <code>commons-dbcp</code> which depends on
-      <code>commons-pool</code>). The indirect dependencies are also known as
-      "transitive" and it is those dependencies that are hardest to identify
-      and manage.</para>
+      <para>의존성 관리과 의존성 주입은 다르다. 스프링의 좋은 기능(의존성 주입 같은)을 
+      어플리케이션에서 사용하려면 필요한 모든 라이브러리(jar 파일)를 조립하고 런타임시에, 
+      혹은 가능하다면 컴파일할  클래스패스에 둘 필요가 있다. 이러한 의존성은 주입되는
+      가상 컴포넌트가 아니라 (전통적으로) 파일시스템에 존재하는 물리적 리소스이다. 의존성 
+      관리의 프로세스는 이러한 리소스를 필요한 위치에 두고 저장하고 클래스 패스에 추가하는
+      작업이 포함한다. 의존성은 직접적일 수도(예를 들어 런타임시에 스프링에 의존하는 
+      어플리케이션) 간적접일 수도(예를 들어 <code>commons-pool</code>기반의 
+      <code>commons-dbcp</code>에 의존하는 어플리케이션) 있다. 간적인 의존성은 보통 
+      과도기적이라고 부르기도 하는데 이러한 의존성은 구별하고 관리하기가 몹 어렵다.</para>
 
-      <para>If you are going to use Spring you need to get a copy of the jar
-      libraries that comprise the pieces of Spring that you need. To make this
-      easier Spring is packaged as a set of modules that separate the
-      dependencies as much as possible, so for example if you don't want to
-      write a web application you don't need the spring-web modules. To refer
-      to Spring library modules in this guide we use a shorthand naming
-      convention <code>spring-*</code> or <code>spring-*.jar,</code> where "*"
-      represents the short name for the module (e.g. <code>spring-core</code>,
-      <code>spring-webmvc</code>, <code>spring-jms</code>, etc.). The actual
-      jar file name that you use may be in this form (see below) or it may
-      not, and normally it also has a version number in the file name (e.g.
-      <code>spring-core-3.0.0.RELEASE.jar</code>).</para>
+      <para>스프링을 사용할 계획이라면 필요한 스프링 일부를 포함하는 jar 라이브러리의 
+      복사본이 필요하다. 스프링은 의존성이 최대한 분리되도록 모듈이 패키징되어 있으므로 
+      이 작업을 쉽게 할 수 있다. 그래서 예를 들어 웹 어플리케이션을 작성할 것이 아니라면 
+      스프링-웹 모듈은 필요 없다. 이 가이드의 스프링 라이브러리 모듈을 참조하기 위해 
+      <code>spring-*</code>나 <code>spring-*.jar</code>같은 짧은 작명 컨벤션을 
+      사용한다. *은 모듈의 약칭을 의미한다. (예를 들어 <code>spring-core</code>,
+      <code>spring-webmvc</code>, <code>spring-jms</code>등이다.) 실제 jar 
+      파일명은 이 형식일 수도 있고(아래에서 볼 것이다) 아닐 수도 있으며 보통 파일명에 
+      버전번호가 포함되어 있다.(예를 들면 <code>spring-core-3.0.0.RELEASE.jar
+      </code>와 같은 방식이다.)</para>
 
-      <para>In general, Spring publishes its artifacts to four different
-      places:<itemizedlist>
+      <para>보통 스프링은 결과물(Artifact)을 다음 네 곳에 배포한다:<itemizedlist>
           <listitem>
-            <para>On the community download site <ulink
+            <para>커뮤니티 다운로드 사이트 <ulink
             url="http://www.springsource.org/downloads/community">http://www.springsource.org/downloads/community</ulink>.
-            Here you find all the Spring jars bundled together into a zip file
-            for easy download. The names of the jars here since version 3.0
-            are in the form
-            <code>org.springframework.*-&lt;version&gt;.jar</code>.</para>
+            다운로드받기 쉽도록 zip 파일로 묶인 모든 스프링 jar파일이 있다. 3.0 버전부터
+            이곳의 jar파일명은 <code>org.springframework.*-&lt;version&gt;.jar
+            </code>의 형식을 따른다.</para>
           </listitem>
 
           <listitem>
-            <para>Maven Central, which is the default repository that Maven
-            queries, and does not require any special configuration to use.
-            Many of the common libraries that Spring depends on also are
-            available from Maven Central and a large section of the Spring
-            community uses Maven for dependency management, so this is
-            convenient for them. The names of the jars here are in the form
-            <code>spring-*-&lt;version&gt;.jar</code> and the Maven groupId is
-            <code>org.springframework</code>.</para>
+            <para>메이븐 센트럴(Maven Central). 메이븐 센트럴은 메이븐의 기본 
+            저장소이므로 사용하기 위해서 특별한 설정을 할 필요는 없다. 스프링이 의존하는 
+            공통 라이브러리 중 다수는 메이슨 센트럴에서 이용할 수 있고 스프링 커뮤니티의 
+            많은 부분은 의존성 관리에 메이븐을 사용하므로 편리하다. 메이븐 센트럴의 jar 
+            파일명은 <code>spring-*-&lt;version&gt;.jar</code>의 형식을 따르고 
+            메이븐 groupId는 <code>org.springframework</code>이다.</para>
           </listitem>
 
           <listitem>
-            <para>The Enterprise Bundle Repository (EBR), which is run by
-            SpringSource and also hosts all the libraries that integrate with
-            Spring. Both Maven and Ivy repositories are available here for all
-            Spring jars and their dependencies, plus a large number of other
-            common libraries that people use in applications with Spring. Both
-            full releases and also milestones and development snapshots are
-            deployed here. The names of the jar files are in the same form as
-            the community download
-            (<code>org.springframework.*-&lt;version&gt;.jar</code>), and the
-            dependencies are also in this "long" form, with external libraries
-            (not from SpringSource) having the prefix
-            <code>com.springsource</code>. See the <ulink security=""
-            url="http://www.springsource.com/repository/app/faq">FAQ</ulink>
-            for more information.</para>
+            <para>SpringSource에서 운영하는 Enterprise Bundle Repository (EBR). 
+            EBR는 스프링에 통합하는 모든 라이브러리를 제공한다. 모든 스프링 jar와 의존성 
+            라이브러리를 포함해서 그 외 스프링으로 어플리케이션을 개발할 때 사용하는 공통 
+            라이브러리에 대한 메이븐 저장소와 아이비(Iby) 저장소를 모두 이용할 수 있다. 
+            릴리즈 버전과 마일스톤을 포함해서 개발 스냅샷까지 이곳에 배포된다. jar 파일명은 
+            커뮤니티 다운로드와 같은 형식(<code>org.springframework.*-&lt;version&gt;.jar
+            </code>)을 사용하고 외부 라이브러리(스프링소스가 만들지 않은)는 
+            <code>com.springsource</code> 접두사가 있는 긴 형식이다. 더 자세한 정보는 
+            <ulink security="" url="http://www.springsource.com/repository/app/faq">
+            FAQ</ulink>를 참고해라.</para>
           </listitem>
 
           <listitem>
-            <para>In a public Maven repository hosted on Amazon S3 for
-            development snapshots and milestone releases (a copy of the final
-            releases is also held here). The jar file names are in the same
-            form as Maven Central, so this is a useful place to get
-            development versions of Spring to use with other libraries depoyed
-            in Maven Central.</para>
+            <para>개발 스냅샵과 마일스톤 릴리즈를 위해 아마존 S2에서 운영되는 공개 메이븐 
+            저장소를 사용한다.(최종 릴리즈의 복사본도 배포된다.) jar 파일명은 메이븐 센트럴과 
+            같은 형식이므로 메이븐 센트럴에 배포된 다른 라이브러리와 함께 스프링의 개발 버전을 
+            사용할 때 유용하다.</para>
           </listitem>
         </itemizedlist></para>
 
-      <para>So the first thing you need to decide is how to manage your
-      dependencies: most people use an automated system like Maven or Ivy, but
-      you can also do it manually by downloading all the jars yourself. When
-      obtaining Spring with Maven or Ivy you have then to decide which place
-      you'll get it from. In general, if you care about OSGi, use the EBR,
-      since it houses OSGi compatible artifacts for all of Spring's
-      dependencies, such as Hibernate and Freemarker. If OSGi does not matter
-      to you, either place works, though there are some pros and cons between
-      them. In general, pick one place or the other for your project; do not
-      mix them. This is particularly important since EBR artifacts necessarily
-      use a different naming convention than Maven Central artifacts.</para>
+      <para>그래서 어떻게 의존성을 관리할 것인지를 먼저 결정해야 한다. 대부분은 메이븐이나 
+      아이비같은 자동화된 시스템을 사용한다. 하지만 수동으로 모든 jar를 다운받아서 관리할 
+      수도 있다. 메이븐이나 아이비로 스프링을 다운받으려면 어디서 다운받을 지를 결정해야 
+      한다. 보통 OSGi를 고려한다면 Hibernate나 Freemarker같은 스프링 의존성의 OSGi 
+      호환 결과물이 제공되는 EBR을 사용한다. OSGi를 쓸 계획이 없다면 저장소마다 장단점이 
+      있지만, 어느 곳을 사용하던 큰 문제는 없다. 대신 섞어서 사용하지는 마라. EBR은 메이븐
+      센트럴과는 작명 관례를 사용하므로 특히 주의해야 한다.</para>
 
       <para><table>
-          <title>Comparison of Maven Central and SpringSource EBR
-          Repositories</title>
+          <title>메이븐 센트럴과 스프링소스 EBR 저장소의 비교</title>
 
           <tgroup cols="3">
             <thead>
               <row>
-                <entry>Feature</entry>
+                <entry>기능</entry>
 
                 <entry>Maven Central</entry>
 
@@ -459,143 +394,132 @@ TR: OK. Added to diagram.--></para>
 
             <tbody>
               <row>
-                <entry>OSGi Compatible</entry>
+                <entry>OSGi 호환</entry>
 
-                <entry>Not explicit</entry>
+                <entry>명확하지 않음</entry>
 
-                <entry>Yes</entry>
+                <entry>호환</entry>
               </row>
 
               <row>
-                <entry>Number of Artifacts</entry>
+                <entry>Artifact의 수</entry>
 
-                <entry>Tens of thousands; all kinds</entry>
+                <entry>모든 종류로 수천 가지</entry>
 
-                <entry>Hundreds; those that Spring integrates with</entry>
+                <entry>스프링 통합과 관련된 것들로 수백 가지</entry>
               </row>
 
               <row>
-                <entry>Consistent Naming Conventions</entry>
+                <entry>작명 관례의 일관성</entry>
 
-                <entry>No</entry>
+                <entry>일관성 없음</entry>
 
-                <entry>Yes</entry>
+                <entry>일관성 있음</entry>
               </row>
 
               <row>
-                <entry>Naming Convention: GroupId</entry>
+                <entry>GroupId의 작명 관례</entry>
 
-                <entry>Varies. Newer artifacts often use domain name, e.g.
-                org.slf4j. Older ones often just use the artifact name, e.g.
-                log4j.</entry>
+                <entry>다양함. 새로운 artifact는 종종 도메인 명을 사용한다. 예를 들면
+                org.slf4j. 오래된 것들은 그냥 artifact명을 사용한다. 예를 들면 log4j</entry>
 
-                <entry>Domain name of origin or main package root, e.g.
+                <entry>출처나 메인 패키지 루트의 도메인명. 예를 들어
                 org.springframework</entry>
               </row>
 
               <row>
-                <entry>Naming Convention: ArtifactId</entry>
+                <entry>ArtifactId의 작명 관례</entry>
 
-                <entry>Varies. Generally the project or module name, using a
-                hyphen "-" separator, e.g. spring-core, logj4.</entry>
+                <entry>다양함. 보통 프로젝트나 모듈명으로 구분자로 하이픈("-")을 
+                사용한다. 예를 들면 spring-core, logj4</entry>
 
-                <entry>Bundle Symbolic Name, derived from the main package
-                root, e.g. org.springframework.beans. If the jar had to be
-                patched to ensure OSGi compliance then com.springsource is
-                appended, e.g. com.springsource.org.apache.log4j</entry>
+                <entry>메인 패키지 루트에서 유래된 번들 심볼릭명. 예를 들면 
+                org.springframework.beans. jar가 OSGi 호환성 패치가 되었다면 
+                com.springsource가 추가된다. 예를 들면 
+                com.springsource.org.apache.log4j</entry>
               </row>
 
               <row>
-                <entry>Naming Convention: Version</entry>
+                <entry>버전의 작명관례</entry>
 
-                <entry>Varies. Many new artifacts use m.m.m or m.m.m.X (with
-                m=digit, X=text). Older ones use m.m. Some neither. Ordering
-                is defined but not often relied on, so not strictly
-                reliable.</entry>
+                <entry>다양함. 새로운 artifact는 m.m.m이나 m.m.m.X를 사용한다. 
+                (m은 숫자고 X는 문자다.) 오래된 artifact는 m.m을 사용하거나 아예 
+                다른 방식을 사용한다. 순서는 정의되어 있지만, 종종 따르지 않는 경우도 
+                있으므로 너무 신뢰하지 않는 것이 좋다.</entry>
 
-                <entry>OSGi version number m.m.m.X, e.g. 3.0.0.RC3. The text
-                qualifier imposes alphabetic ordering on versions with the
-                same numeric values.</entry>
+                <entry>OSGi 버전번호인 m.m.m.X를 사용한다. 예를 들면 3.0.0.RC3.
+                텍스트는 숫처럼 버전의 순서가 지켜지는 알파벳만 사용할 수 있다.</entry>
               </row>
 
               <row>
-                <entry>Publishing</entry>
+                <entry>배포</entry>
 
-                <entry>Usually automatic via rsync or source control updates.
-                Project authors can upload individual jars to JIRA.</entry>
+                <entry>보통 rsync나 소스제어 업데이트를 통해 자동으로 이루어진다.
+                프로젝트 저자는 JIRA로 각 jar를 업로드 할 수 있다.</entry>
 
-                <entry>Manual (JIRA processed by SpringSource)</entry>
+                <entry>수동 (스프링소스가 처리하는 JIRA)</entry>
               </row>
 
               <row>
-                <entry>Quality Assurance</entry>
+                <entry>품질 보증</entry>
 
-                <entry>By policy. Accuracy is responsibility of
-                authors.</entry>
+                <entry>정책에 의해서 이루어짐. 정확도에 대한 책임은 프로젝트 
+                저자한테 있다.</entry>
 
-                <entry>Extensive for OSGi manifest, Maven POM and Ivy
-                metadata. QA performed by Spring team.</entry>
+                <entry>상세한 OSGi manifest, 메이븐 POM, 아이비 metadata를 따름.
+                QA는 스프링 팀이 진행한다.</entry>
               </row>
 
               <row>
-                <entry>Hosting</entry>
+                <entry>호스팅</entry>
 
-                <entry>Contegix. Funded by Sonatype with several
-                mirrors.</entry>
+                <entry>Contegix. Sonatyle이 여러 미러사이트를 함께 펀딩함.</entry>
 
-                <entry>S3 funded by SpringSource.</entry>
+                <entry>스프링 소스가 펀딩하는 S3.</entry>
               </row>
 
               <row>
-                <entry>Search Utilities</entry>
+                <entry>검색 유틸리티</entry>
 
-                <entry>Various</entry>
+                <entry>다양함</entry>
 
                 <entry><ulink
                 url="http://www.springsource.com/repository">http://www.springsource.com/repository</ulink></entry>
               </row>
 
               <row>
-                <entry>Integration with SpringSource Tools</entry>
+                <entry>스프링소스 도구의 통합</entry>
 
-                <entry>Integration through STS with Maven dependency
-                management</entry>
+                <entry>메이븐 의존성 관리로 STS에 통합됨</entry>
 
-                <entry>Extensive integration through STS with Maven, Roo,
-                CloudFoundry</entry>
+                <entry>메이븐, Roo, 클라우드 파운드리와 함께 STS로 광범위하게 
+                통합됨</entry>
               </row>
             </tbody>
           </tgroup>
         </table></para>
 
       <section>
-        <title>Spring Dependencies and Depending on Spring</title>
+        <title>스프링 의존성과 스프링에 기반하는 의존성</title>
 
-        <para>Although Spring provides integration and support for a huge
-        range of enterprise and other external tools, it intentionally keeps
-        its mandatory dependencies to an absolute minimum: you shouldn't have
-        to locate and download (even automatically) a large number of jar
-        libraries in order to use Spring for simple use cases. For basic
-        dependency injection there is only one mandatory external dependency,
-        and that is for logging (see below for a more detailed description of
-        logging options).</para>
+        <para>스프링이 엔터프라이즈와 다른 외부 도구들에 대한 광범위한 통합과 지원을 
+        제공하더라도 의도적으로 의존성을 최소한으로 유지해야 한다. 간단한 사용을 
+        위해서라면 많은 jar 라이브러리를 다운받아 설치하지 말아야 한다.(자동으로 한다고 
+        하더라도) 기본적인 의존성 주입을 사용하려면 오직 하나의 외부 의존성만 필요하고 
+        이는 로깅을 위한 것이다.(로깅 옵션에 대한 더 자세한 내용을 아래를 봐라.)</para>
 
-        <para>Next we outline the basic steps needed to configure an
-        application that depends on Spring, first with Maven and then with
-        Ivy. In all cases, if anything is unclear, refer to the documentation
-        of your dependency management system, or look at some sample code -
-        Spring itself uses Ivy to manage dependencies when it is building, and
-        our samples mostly use Maven.</para>
+        <para>다음은 스프링에 의존하는 애플리케이션 설정하는 필요한 기본적인 과정을 
+        설명할 차례다. 먼저 메이븐과 아이비를 사용한다. 모든 경우에서 명확한 것이 없다면 
+        의존성 관리 시스템의 문서를 참고하거나 예제코드를 봐라. - 스프링은 개발과정에는 
+        의존성 관리를 위해 아이비를 사용하고 예제는 대부분 메이븐을 사용한다.</para>
       </section>
 
       <section>
-        <title>Maven Dependency Management</title>
+        <title>메이븐 의존성 관리</title>
 
-        <para>If you are using Maven for dependency management you don't even
-        need to supply the logging dependency explicitly. For example, to
-        create an application context and use dependency injection to
-        configure an application, your Maven dependencies will look like
-        this:</para>
+        <para>메이븐으로 의존성을 관리한다면 로깅 의존성을 명시할 필요도 없다. 예를 들어 
+        어플리케이션 컨텍스트을 생성하고 어플리케이션 설정에 의존성 주입을 사용하려면 
+        메이븐 의존성은 다음과 같을 것이다.</para>
 
         <para><programlisting>&lt;dependencies&gt;
    &lt;dependency&gt;
@@ -606,15 +530,13 @@ TR: OK. Added to diagram.--></para>
    &lt;/dependency&gt;
 &lt;/dependencies&gt; </programlisting></para>
 
-        <para>That's it. Note the scope can be declared as runtime if you
-        don't need to compile against Spring APIs, which is typically the case
-        for basic dependency injection use cases.</para>
+        <para>이것이 전부다. 스프링 API를 거슬러서 컴파일할 필요가 없다면 scope를
+        런타임으로 선언할 수 있다. 이는 기본적인 의존성 주입의 유즈케이스다.</para>
 
-        <para>We used the Maven Central naming conventions in the example
-        above, so that works with Maven Central or the SpringSource S3 Maven
-        repository. To use the S3 Maven repository (e.g. for milestones or
-        developer snaphots), you need to specify the repository location in
-        your Maven configuration. For full releases:</para>
+        <para>위의 예제에서 메이븐 센트럴의 작명 관례를 사용했으므로 메이븐 센트럴이나 
+        스프링소스의 S3 메이븐 저장소에서 동작한다. S3 메이븐 저장소를 사용하려면(예를 
+        들어 마일스톤이나 개발 스냅샷을 사용하기 위해) 메이븐 설정에 저장소의 위치를 
+        명시해야 한다. 전체 릴리즈를 사용하려면 다음과 같이 작성한다.</para>
 
         <programlisting>&lt;repositories&gt;
    &lt;repository&gt;
@@ -624,7 +546,7 @@ TR: OK. Added to diagram.--></para>
    &lt;/repository&gt;
 &lt;/repositories&gt;</programlisting>
 
-        <para>For milestones:</para>
+        <para>마일스톤을 사용하려면 다음과 같이 작성한다.</para>
 
         <programlisting>&lt;repositories&gt;
    &lt;repository&gt;
@@ -634,7 +556,7 @@ TR: OK. Added to diagram.--></para>
    &lt;/repository&gt;
 &lt;/repositories&gt;</programlisting>
 
-        <para>And for snapshots:</para>
+        <para>개발 스냅샷을 사용하려면 다음과 같이 작성한다.</para>
 
         <programlisting>&lt;repositories&gt;
    &lt;repository&gt;
@@ -644,9 +566,8 @@ TR: OK. Added to diagram.--></para>
    &lt;/repository&gt;
 &lt;/repositories&gt;</programlisting>
 
-        <para>To use the SpringSource EBR you would need to use a different
-        naming convention for the dependencies. The names are usually easy to
-        guess, e.g. in this case it is:</para>
+        <para>스프링소스의 EBR을 사용하려면 의존성에 대해서 앞에서와는 다른 작명 관례를 
+          사용해야 한다. 이름은 예하기 쉽다. 예를 들면 다음과 같다.</para>
 
         <programlisting>&lt;dependencies&gt;
    &lt;dependency&gt;
@@ -657,8 +578,7 @@ TR: OK. Added to diagram.--></para>
    &lt;/dependency&gt;
 &lt;/dependencies&gt;</programlisting>
 
-        <para>You also need to declare the location of the repository
-        explicitly (only the URL is important):</para>
+        <para>저장소의 위치도 명시적으로 선언해야 한다.(URL부분만 중요하다).</para>
 
         <programlisting>&lt;repositories&gt;
    &lt;repository&gt;
@@ -667,25 +587,21 @@ TR: OK. Added to diagram.--></para>
    &lt;/repository&gt;
 &lt;/repositories&gt;</programlisting>
 
-        <para>If you are managing your dependencies by hand, the URL in the
-        repository declaration above is not browseable, but there is a user
-        interface at <ulink
+        <para>직접 의존성을 관리한다면 위에서 선언한 저장소 URL은 검색하기에 좋지 않다. 
+        하지만 <ulink
         url="http://www.springsource.com/repository">http://www.springsource.com/repository</ulink>
-        that can be used to search for and download dependencies. It also has
-        handy snippets of Maven and Ivy configuration that you can copy and
-        paste if you are using those tools.</para>
+        에서 의존성을 검색하고 다운로드 받을 수 있는 화면을 제공한다. 메이븐이나 아이비를 
+        사용한다면 쉽게 복사해서 붙일 수 있도록 메이븐과 아이비 설정 스니펫을 제공한다.</para>
       </section>
 
       <section>
-        <title>Ivy Dependency Management</title>
+        <title>아이비(Ivy) 의존성 관리</title>
 
-        <para>If you prefer to use <ulink
-        url="http://ant.apache.org/ivy">Ivy</ulink> to manage dependencies
-        then there are similar names and configuration options. </para>
+        <para>의존성 관리를 <ulink url="http://ant.apache.org/ivy">Ivy</ulink>로 
+        하길 좋아하더라도 라이브러리 이름과 설정옵션은 비슷하다.</para>
 
-        <para>To configure Ivy to point to the SpringSource EBR add the
-        following resolvers to your
-        <filename>ivysettings.xml</filename>:</para>
+        <para>아이비를 설정하려면 <filename>ivysettings.xml</filename>에 
+        스프링소스 EBR을 나타내는 다음 resolver를 추가한다.</para>
 
         <programlisting>&lt;resolvers&gt;
   
@@ -709,15 +625,12 @@ TR: OK. Added to diagram.--></para>
 
 &lt;/resolvers&gt;</programlisting>
 
-        <para>The XML above is not valid because the lines are too long - if
-        you copy-paste then remove the extra line endings in the middle of the
-        url patterns.</para>
+        <para>위의 XML은 라인이 너무 길어서 유효한 XML이 아니다. - 복사해서 붙다면
+        URL 가운데 줄 바꿈을 삭제해라</para>
 
-        <para>Once Ivy is configured to look in the EBR adding a dependency is
-        easy. Simply pull up the details page for the bundle in question in
-        the repository browser and you'll find an Ivy snippet ready for you to
-        include in your dependencies section. For example (in
-        <filename>ivy.xml</filename>): </para>
+        <para>아이비가 EBR로 설정되면 의존성 추가는 쉽다. 저장소 검색페이지에서 원하는 
+        라이브러리의 상세페이지에 들어가서 의존성 부분에 추가할 아이비 스니펫을 찾을 수 있다.
+        예를 들어 <filename>ivy.xml</filename>에 다음과 같이 추가한다.</para>
 
         <programlisting>&lt;dependency org="org.springframework" 
       name="org.springframework.core" rev="3.0.0.RELEASE" conf="compile-&gt;runtime"/&gt;</programlisting>
@@ -725,58 +638,44 @@ TR: OK. Added to diagram.--></para>
     </section>
 
     <section>
-      <title>Logging</title>
+      <title>로깅</title>
 
-      <para>Logging is a very important dependency for Spring because a) it is
-      the only mandatory external dependency, b) everyone likes to see some
-      output from the tools they are using, and c) Spring integrates with lots
-      of other tools all of which have also made a choice of logging
-      dependency. One of the goals of an application developer is often to
-      have unified logging configured in a central place for the whole
-      application, including all external components. This is more difficult
-      than it might have been since there are so many choices of logging
-      framework.</para>
+      <para>스프링에서 로깅은 아주 중요한 의존성이다. 그 이유는 a) 로깅은 유일하게 강제적인 
+      외부 의존성이고, b) 모든 개발자는 사용하는 도구에서 어떤 출력을 보기 원하고 c) 스프링은 
+      로깅 의존성의 선택이 있는 다른 많은 툴과 통합되기 때문이다. 어플리케이션 개발자의 목표 
+      중 하나는 외부 컴포넌트를 포함한 전체 어플리케이션의 중심에서 통일된 로깅을 설정하는 
+      것이다. 이는 로깅 프레임워크가 많이 존재하기 때문에 쉽지 않다.</para>
 
-      <para>The mandatory logging dependency in Spring is the Jakarta Commons
-      Logging API (JCL). We compile against JCL and we also make JCL
-      <classname>Log</classname> objects visible for classes that extend the
-      Spring Framework. It's important to users that all versions of Spring
-      use the same logging library: migration is easy because backwards
-      compatibility is preserved even with applications that extend Spring.
-      The way we do this is to make one of the modules in Spring depend
-      explicitly on <code>commons-logging</code> (the canonical implementation
-      of JCL), and then make all the other modules depend on that at compile
-      time. If you are using Maven for example, and wondering where you picked
-      up the dependency on <code>commons-logging</code>, then it is from
-      Spring and specifically from the central module called
-      <code>spring-core</code>.</para>
+      <para>스프링의 강제적인 로깅 의존성은 Jakarta Commons Logging API (JCL)이다. 
+      JCL을 컴파일하고 스프링 프레임워크를 상속받은 클래스에서 사용할 수 있는
+      <classname>Log</classname>객체로 만든다. 이는 같은 로깅 라이브러리를 사용하는 
+      모든 버전의 스프링 사용자에게 중요하다. 스프링은 스프링을 상속받은 어플리케이션에서조차 
+      하위호환성이 유지되므로 마이그레이션이 쉽다. 마이그레이션을 하는 방법은 스프링의 모듈 중 
+      하나를 명시적으로 <code>commons-logging</code>(JCL의 정식 구현체)에 의존하게 
+      하고 다른 모듈은 컴파일 시에 의존하게 하는 것이다. 예를 들어 메이븐을 사용하는데 
+      <code>commons-logging</code>의 의존성이 어디에 있는지 모른다면 스프링의 
+      핵심모듈인 <code>spring-core</code>에 있다.</para>
 
-      <para>The nice thing about <code>commons-logging</code> is that you
-      don't need anything else to make your application work. It has a runtime
-      discovery algorithm that looks for other logging frameworks in well
-      known places on the classpath and uses one that it thinks is appropriate
-      (or you can tell it which one if you need to). If nothing else is
-      available you get pretty nice looking logs just from the JDK
-      (java.util.logging or JUL for short). You should find that your Spring
-      application works and logs happily to the console out of the box in most
-      situations, and that's important.</para>
+      <para><code>commons-logging</code>의 좋은 점은 당신이 어플리케이션을 동작하게 
+      하는 것에만 신경 쓰면 된다는 것이다. <code>commons-logging</code>에는 잘 알려진 
+      클래스패스나 적절한 위치(필요하다면 지적할 수 있다.)에서 다른 로깅 프레임워크를 찾는 
+      런타임 디스커버리 알고리즘이 있다. 이용할 수 있는 로깅 프레임워크가 없다면 JDK(정확히는 
+      java.util.logging이나 JUL이다.)로 꽤 괜찮은 로그를 남긴다. 대부분 상황에서 로그가 
+      잘 나오는 것을 확인해서 스프링이 잘 동작한다는 것을 알 수 있다. 이는 중요하다.</para>
 
       <section>
-        <title>Not Using Commons Logging</title>
+        <title>Commons Logging 사용하지 않기</title>
 
-        <para>Unfortunately, the runtime discovery algorithm in
-        <code>commons-logging</code>, while convenient for the end-user, is
-        problematic. If we could turn back the clock and start Spring now
-        as a new project it would use a different logging dependency. The
-        first choice would probably be the Simple Logging Facade for Java (<ulink
-        url="http://www.slf4j.org">SLF4J</ulink>), which is also used by a lot
-        of other tools that people use with Spring inside their
-        applications.</para>
+        <para>안타깝게도 <code>commons-logging</code>의 런타임 디스커버리 알고리즘은 
+        엔드유저에게는 편리하지만, 문제의 소지가 있다. 시간을 거꾸로 돌릴 수 있거나 스프링을 
+        새로운 프로젝트로 다시 시작한다면 런타임 디스커버리 알고리즘은 다른 로깅 의존성을 
+        사용할 것이다. 첫 번째 선택은 아마 Simple Logging Facade for Java (<ulink
+        url="http://www.slf4j.org">SLF4J</ulink>)일 것이다. 어플리케이션에서 스프링과 
+        함께 사용하는 많은 툴은 SLF4J를 사용한다.</para>
 
-        <para>Switching off <code>commons-logging</code> is easy: just make
-        sure it isn't on the classpath at runtime. In Maven terms you exclude
-        the dependency, and because of the way that the Spring dependencies
-        are declared, you only have to do that once.</para>
+        <para><code>commons-logging</code>는 쉽게 사용하지 않게 할 수 있다. 그냥 
+        런타임시에 클래스패스에 존재하지 않으면 된다. 스프링 의존성이 선언되어 있으므로 
+        메이븐에서 의존성을 제외 처리하면 된다.</para>
 
         <programlisting>&lt;dependencies&gt;
    &lt;dependency&gt;
@@ -793,39 +692,35 @@ TR: OK. Added to diagram.--></para>
    &lt;/dependency&gt;
 &lt;/dependencies&gt; </programlisting>
 
-        <para>Now this application is probably broken because there is no
-        implementation of the JCL API on the classpath, so to fix it a new one
-        has to be provided. In the next section we show you how to provide an
-        alternative implementation of JCL using SLF4J as an example.</para>
+        <para>위 코드를 추가하면 어플리케이션의 빌드가 깨질 것이다. 클래스패스에 JCL API의 
+        구현체가 없기 때문이다. 새로운 구현체를 추가하면 이 문제를 해결할 수 있다. 다음 
+        섹션에서 예제를 통해 SLF4J를 사용하는 JCL 구현체를 새로 추가하는 방법을 살펴볼 
+        것이다.</para>
       </section>
 
       <section>
-        <title>Using SLF4J</title>
+        <title>SLF4J의 사용</title>
       </section>
 
-      <para>SLF4J is a cleaner dependency and more efficient at runtime than
-      <code>commons-logging</code> because it uses compile-time bindings
-      instead of runtime discovery of the other logging frameworks it
-      integrates. This also means that you have to be more explicit about what
-      you want to happen at runtime, and declare it or configure it
-      accordingly. SLF4J provides bindings to many common logging frameworks,
-      so you can usually choose one that you already use, and bind to that for
-      configuration and management.</para>
+      <para>SLF4J는 의존성이 깔끔하고 <code>commons-logging</code>보다 런타임에서 
+      더 효율적이다. 다른 로깅 프레임워크의 런타임 디스커버리 대신 컴파일할 때 바인딩하기 
+      때문이다. 이는 런타임에서 벌어질 일을 더 명시적으로 지정해야 한다는 의미이다. 따라서 
+      의존성을 선언하고 적절하게 설정해야 한다. SLF4J는 대부분의 로깅 프레임워크에 대한 
+      바인딩을 지원하므로 기존에 사용하던 로깅 프레임워크를 계속 사용할 수 있다. 사용하는 
+      로깅 프레임워크를 설정과 관리에 바인딩하면 된다.</para>
 
-      <para>SLF4J provides bindings to many common logging frameworks,
-      including JCL, and it also does the reverse: bridges between other
-      logging frameworks and itself. So to use SLF4J with Spring you need to
-      replace the <code>commons-logging</code> dependency with the SLF4J-JCL
-      bridge. Once you have done that then logging calls from within Spring
-      will be translated into logging calls to the SLF4J API, so if other
-      libraries in your application use that API, then you have a single place
-      to configure and manage logging.</para>
+      <para>SLF4J는 JCL을 포함한 많은 로깅 프레임워크에 대한 바인딩을 지원한다. 반대로 
+      다른 로깅 프레임워크가 SLF4J로 바인딩할 수도 있다. 즉 다른 로깅프레임워크와 
+      SLF4J사이에 브릿지로 사용할 수도 있다. 그래서 스프링과 SLF4J를 함께 사용하려면 
+      <code>commons-logging</code>의존성을 SLF4J-JCL 브릿지로 바꿔야 한다. 설정을 
+      바꾸었으면 스프링에서 호출된 로깅은 SLF4J API를 호출하는 로깅으로 전환된다. 그래서 
+      어플리케이션의 다른 라이브러리가 같은 API의 로깅을 사용한다면 한 곳에서 로깅을 
+      설정하고 관리할 수 있다.</para>
 
-      <para>A common choice might be to bridge Spring to SLF4J, and then
-      provide explicit binding from SLF4J to Log4J. You need to supply 4
-      dependencies (and exclude the existing <code>commons-logging</code>):
-      the bridge, the SLF4J API, the binding to Log4J, and the Log4J
-      implementation itself. In Maven you would do that like this</para>
+      <para>스프링을 SLF4J로 브릿지하고 명시적으로 SLF4J를 Log4J로 바인딩하는 것이 
+      가장 일반적이다. 브릿지, SLF4J API, Log4J로의 바인딩, Log4J구현체의 4가지 
+      의존성을 추가해야 한다.(<code>commons-logging</code>는 제외 처리해야 한다.)
+      메이븐이라면 다음과 같이 추가한다.</para>
 
       <programlisting>&lt;dependencies&gt;
    &lt;dependency&gt;
@@ -866,39 +761,35 @@ TR: OK. Added to diagram.--></para>
    &lt;/dependency&gt;
 &lt;/dependencies&gt; </programlisting>
 
-      <para>That might seem like a lot of dependencies just to get some
-      logging. Well it is, but it <emphasis>is</emphasis> optional, and it
-      should behave better than the vanilla <code>commons-logging</code> with
-      respect to classloader issues, notably if you are in a strict container
-      like an OSGi platform. Allegedly there is also a performance benefit
-      because the bindings are at compile-time not runtime.</para>
+      <para>단순히 로깅을 사용하기 위해 너무 많은 의존성을 추가한 것처럼 보일 수 있다. 
+      하지만 <emphasis>이는</emphasis> 선택사항이고 평범한 
+      <code>commons-logging</code>보다 나은 동작을 한다. 특히 
+      <code>commons-logging</code>는 OSGi 플랫폼 같은 엄격한 컨테이너를 사용한다면 
+      클래스로더 이슈도 고려해야 한다. 또한, 바인딩이 런타임이 아닌 컴파일타임에 이뤄지기 
+      때문에 성능적인 이점도 있다고 알려졌다.</para>
 
-      <para>A more common choice amongst SLF4J users, which uses fewer steps
-      and generates fewer dependencies, is to bind directly to <ulink type=""
-      url="http://logback.qos.ch">Logback</ulink>. This removes the extra
-      binding step because Logback implements SLF4J directly, so you only need
-      to depend on two libaries not four (<code>jcl-over-slf4j</code> and
-      <code>logback</code>). If you do that you might also need to exlude the
-      slf4j-api dependency from other external dependencies (not Spring),
-      because you only want one version of that API on the classpath.</para>
+      <para>더 적은 과정과 의존성을 사용하는 SLF4J 사용자들은 보통 
+      <ulink type="" url="http://logback.qos.ch">Logback</ulink>로 직접 
+      바인딩한다. Logback은 SLF4J를 직접 구현했기 때문에 추가적인 바인딩 과정을 줄여준다.
+      그래서 4개가 아닌 2개의 라이브러리에만 의존할 수 있다.(<code>jcl-over-slf4j</code>와 
+      <code>logback</code>) Logback으로 직접 바인딩하는 방법을 사용했다면 (스프링이 아닌)
+      다른 외부 의존성에서 slf4j-api에 대한 의존성을 제외처리 해야 한다. 이는 클래스패스에 
+      오직 한가지 버전의 API만 존재하기를 바라기 때문이다.</para>
 
       <section>
-        <title>Using Log4J</title>
+        <title>Log4J의 사용</title>
 
-        <para>Many people use <ulink
-        url="http://logging.apache.org/log4j">Log4j</ulink> as a logging
-        framework for configuration and management purposes. It's efficient
-        and well-established, and in fact it's what we use at runtime when we
-        build and test Spring. Spring also provides some utilities for
-        configuring and initializing Log4j, so it has an optional compile-time
-        dependency on Log4j in some modules.</para>
+        <para>많은 사람들이 설정과 관리 때문에 로깅 프레임워크로 <ulink
+        url="http://logging.apache.org/log4j">Log4j</ulink>를 사용한다. Log4j는 
+        사용하기 편하고 잘 구성되어 있다. 사실 스프링을 만들고 테스트할 때 런타임에서 
+        Log4j를 사용했다. 스프링은 Log4j의 설정과 초기화를 위한 몇 가지 유틸리티도 제공한다.
+        그래서 스프링의 몇몇 모듈에는 Log4j에 대한 의존성이 컴파일타임에 선택적으로 
+        의존성이 존재한다.</para>
 
-        <para>To make Log4j work with the default JCL dependency
-        (<code>commons-logging</code>) all you need to do is put Log4j on the
-        classpath, and provide it with a configuration file
-        (<code>log4j.properties</code> or <code>log4j.xml</code> in the root
-        of the classpath). So for Maven users this is your dependency
-        declaration:</para>
+        <para>기본 JCL 의존성(<code>commons-logging</code>)과 함께 Log4j가 동작하게 
+        하려면 클래스패스에 Log4j를 두고 클래스패스의 루트에 설정파일
+        (<code>log4j.properties</code>나 <code>log4j.xml</code>)을 두면 된다. 
+        메이븐 사용자라면 의존성 선언에 추가한다.</para>
 
         <programlisting>&lt;dependencies&gt;
    &lt;dependency&gt;
@@ -915,8 +806,7 @@ TR: OK. Added to diagram.--></para>
    &lt;/dependency&gt;
 &lt;/dependencies&gt; </programlisting>
 
-        <para>And here's a sample log4j.properties for logging to the
-        console:</para>
+        <para>다음은 콘솔에 로그를 출력하는 log4j.properties의 예제이다.</para>
 
         <programlisting>log4j.rootCategory=INFO, stdout
 
@@ -927,34 +817,29 @@ log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p %t %c{2}:%L - %m
 log4j.category.org.springframework.beans.factory=DEBUG</programlisting>
 
         <section>
-          <title>Runtime Containers with Native JCL</title>
+          <title>네이티브 JCL를 사용하는 런타임 컨테이너</title>
 
-          <para>Many people run their Spring applications in a container that
-          itself provides an implementation of JCL. IBM Websphere Application
-          Server (WAS) is the archetype. This often causes problems, and
-          unfortunately there is no silver bullet solution; simply excluding
-          <code>commons-logging</code> from your application is not enough in
-          most situations.</para>
+          <para>많은 사람들이 JCL의 구현체를 제공하는 컨테이너에서 스프링 어플리케이션을 
+          구동한다. IBM 웹스피어(Websphere) 어플리케이션 서버(WAS)가 대표적이다. 
+          웹스피어는 종종 문제를 일으키는데 불행히도 거기에는 완벽한 해결책이 없다. 대부분의 
+          상황에서 단순히 어플리케이션에서 <code>commons-logging</code>를 제외 처리하는 
+          것으로는 해결되지 않는다.</para>
 
-          <para>To be clear about this: the problems reported are usually not
-          with JCL per se, or even with <code>commons-logging</code>: rather
-          they are to do with binding <code>commons-logging</code> to another
-          framework (often Log4J). This can fail because
-          <code>commons-logging</code> changed the way they do the runtime
-          discovery in between the older versions (1.0) found in some
-          containers and the modern versions that most people use now (1.1).
-          Spring does not use any unusual parts of the JCL API, so nothing
-          breaks there, but as soon as Spring or your application tries to do
-          any logging you can find that the bindings to Log4J are not
-          working.</para>
+          <para>이 문제를 좀 더 명확히 보자. 알려진 문제점은 JCL이나
+          <code>commons-logging</code>자체의 문제는 아니다. 더 정확히 말하면 
+          <code>commons-logging</code>를 다른 프레임워크(대개 Log4J)로 바인딩해서 
+          발생한 문제다. 바인딩이 실패하는 이유는 몇몇 컨테이너가 사용하는 
+          <code>commons-logging</code>의 과거 버전(1.0)과 대부분이 사용하는 최신 
+          버전(1.1)사이에서 런타임 디스커버리 방법이 달라졌기 때문이다. 스프링은 
+          JCL API에서 특이한 API는 전혀 사용하지 않으므로 문제가 발생하지 않는다. 
+          하지만 스프링이나 어플리케이션이 로깅을 시도하자마자 Log4J로의 바인딩이 
+          동작하지 않는 것을 발견할 수 있을 것이다.</para>
 
-          <para>In such cases with WAS the easiest thing to do is to invert
-          the class loader hierarchy (IBM calls it "parent last") so that the
-          application controls the JCL dependency, not the container. That
-          option isn't always open, but there are plenty of other suggestions
-          in the public domain for alternative approaches, and your mileage
-          may vary depending on the exact version and feature set of the
-          container.</para>
+          <para>WAS에서 이러한 상황을 겪을  가장 쉬운 해결책은 컨테이너 대신 
+          어플리케이션이 JCL 의존성을 제어하도록 클래스 로더의 계층을 거꾸로 하는 
+          것이다.(IBM은 이를 "parent last"라고 부른다.) 이 옵션은 항상 열려 있는 것은 
+          아니지만, 대안적인 방법을 위한 공개된 영역에서 다수의 다른 제안이 존재한다. 
+          아마 컨테이너의 정확한 버전과 기능에 의존하도록 바꿀 것이다.</para>
         </section>
       </section>
     </section>

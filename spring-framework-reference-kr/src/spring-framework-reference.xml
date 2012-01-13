@@ -192,10 +192,9 @@
     </copyright>
 
     <legalnotice>
-      <para>Copies of this document may be made for your own use and for
-      distribution to others, provided that you do not charge any fee for such
-      copies and further provided that each copy contains this Copyright
-      Notice, whether distributed in print or electronically.</para>
+      <para>이 문서는 개인적인 목적이나 배포하기 위해서 복사할 수 있다.
+      출력물이든 디지털 문서든 각 복사본에 어떤 비용도 청구할 수 없고 
+      모든 복사본에는 이 카피라이트 문구가 있어야 한다.</para>
     </legalnotice>
   </bookinfo>
 
@@ -204,34 +203,27 @@
   <toc></toc>
 
   <part id="spring-introduction">
-    <title>Overview of Spring Framework</title>
+    <title>Spring Framework 개요</title>
 
     <partintro id="spring-core-intro">
-      <para>The Spring Framework is a lightweight solution and a potential
-      one-stop-shop for building your enterprise-ready applications. However,
-      Spring is modular, allowing you to use only those parts that you need,
-      without having to bring in the rest. You can use the IoC container, with
-      Struts on top, but you can also use only the <link
-      linkend="orm-hibernate">Hibernate integration code</link> or the <link
-      linkend="jdbc-introduction">JDBC abstraction layer</link>. The Spring
-      Framework supports declarative transaction management, remote access to
-      your logic through RMI or web services, and various options for
-      persisting your data. It offers a full-featured <link
-      linkend="mvc-introduction">MVC framework</link>, and enables you to
-      integrate <link linkend="aop-introduction">AOP</link> transparently into
-      your software.</para>
+      <para>스프링 프레임워크는 엔터프라이즈급 애플리케이션을 만들기 위한 경량솔루션이며 
+      많은 기능을 제공하고 있다. 하지만 스프링은 필요한 부분만 가져다 사용할 수 있도록 
+      모듈화되어 있다. Struts를 IoC 컨테이너와 함께 사용할 수 있고 <link 
+      linkend="orm-hibernate">하이버이트 통합 코드</link>나 <link 
+      linkend="jdbc-introduction">JDBC 추상화 계층</link>만 사용할 수도 있다. 스프링
+      프레임워크는 RMI나 웹서비스로 로직에 원격접근하는 선언적 트랜잭션 관리와 데이터를 
+      유지하는 다양한 옵션을 지원한다. 모든 기능을 갖춘 <link
+      linkend="mvc-introduction">MVC 프레임워크</link>를 제공하고 소프트웨어에
+      투명하게 <link linkend="aop-introduction">AOP</link>를 합할 수 있다.</para>
 
-      <para>Spring is designed to be non-intrusive, meaning that your domain
-      logic code generally has no dependencies on the framework itself. In
-      your integration layer (such as the data access layer), some
-      dependencies on the data access technology and the Spring libraries will
-      exist. However, it should be easy to isolate these dependencies from the
-      rest of your code base.</para>
+      <para>스프링은 비침투적이다. 이 말은 도메인 직 코드가 일반적으로 프레임워크에 
+      의존적이지 않다는 의미이다. (데이터 접근 계층 같은)로 통합 계층에서 데이터 접근 기술과
+      스프링 라이브러리에 대한 의존성이 존재한다. 하지만 당신의 다른 코드들로부터 이러한
+      의존성을 쉽게 제거할 수 있을 것이다.</para>
 
-      <para>This document is a reference guide to Spring Framework features.
-      If you have any requests, comments, or questions on this document,
-      please post them on the user mailing list or on the support forums at
-      <ulink url="http://forum.springsource.org/"></ulink>.<!--Missing link above. PDF shows it as http://forum.springsource.org/--></para>
+      <para>이 문서는 스프링 프레임워크에 대한 레퍼런스 가이드이다. 이 문서에 대한 
+      어떤 요청이나 의견, 질문이 있다면 사용자 메일링 리스트나 <ulink url="http://forum.springsource.org/"></ulink>.<!--Missing link above. PDF shows it as http://forum.springsource.org/-->
+      의 지원 포럼에 글을 올리면 된다.</para>
     </partintro>
 
     <xi:include href="overview.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
