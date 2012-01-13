@@ -2,90 +2,79 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="new-in-3.0">
-  <title>New Features and Enhancements in Spring 3.0</title>
+  <title>Spring 3.0의 새로운 기능과 개선된 점</title>
 
-  <para>If you have been using the Spring Framework for some time, you will be
-  aware that Spring has undergone two major revisions: Spring 2.0, released in
-  October 2006, and Spring 2.5, released in November 2007. It is now time for
-  a third overhaul resulting in Spring 3.0.</para>
+  <para>스프링 프레임워크를 사용해 본 적이 있다면 스프링이 2개의 메이저 리비전을 지나왔다는 
+  것을 알고 있을 것이다. 스프링 2.0은 2006년 10월에 릴리즈했고 스프링 2.5는 2007년 
+  11월에 릴리즈했다. 이제 스프링 3.0으로 세 번째 개선을 하였다.</para>
 
   <sidebar id="new-in-3.0-intro-java">
-    <title>Java SE and Java EE Support</title>
+    <title>Java SE와 Java EE 지원</title>
 
-    <para>The Spring Framework is now based on Java 5, and Java 6 is fully
-    supported.</para>
+    <para>스프링 프레임워크는 이제 Java 5 기반이고 Java 6 완전히 지원한다.</para>
 
-    <para>Furthermore, Spring is compatible with J2EE 1.4 and Java EE 5, while
-    at the same time introducing some early support for Java EE 6.</para>
+    <para>게다가 스프링은 J2EE 1.4와 Java EE 5와 호환성이 있으며 동시에 Java EE 6를 
+    일찍부터 지원한다.</para>
   </sidebar>
 
   <section id="new-in-3.0-intro">
     <title>Java 5</title>
 
-    <para>The entire framework code has been revised to take advantage of Java
-    5 features like generics, varargs and other language improvements. We have
-    done our best to still keep the code backwards compatible. We now have
-    consistent use of generic Collections and Maps, consistent use of generic
-    FactoryBeans, and also consistent resolution of bridge methods in the
-    Spring AOP API. Generic ApplicationListeners automatically receive
-    specific event types only. All callback interfaces such as
-    TransactionCallback and HibernateCallback declare a generic result value
-    now. Overall, the Spring core codebase is now freshly revised and
-    optimized for Java 5.</para>
+    <para>제너릭(generic)이나 가변인자(varargs), 그 외 언어적 개선사항 같은 Java 5 기능의 
+    이점을 취하도록 전체 프레임워크 코드를 수정했다. 코드의 하위호환성을 계속 유지하도록 최선을 
+    다했다. 제너릭 컬렉션과 맵의 일관된 사용, 제너릭 팩토리빈(FactoryBean)의 일관된 사용, 
+    스프링 AOP API에서 브릿지 메서드의 일관된 해결책을 제공한다. 제너릭 어플리케이션리스너
+    (ApplicationListener)는 자동으로 특정이벤트의 타입만 받는다. TransactionCallback과 
+    HibernateCallback같은 모든 콜백 인터페이스는 이제 제너릭 결과값을 선언한다. 전반적으로 
+    스프링 핵심코드를 Java 5를 기반으로 새로 작성되고 최적화했다.</para>
 
-    <para>Spring's TaskExecutor abstraction has been updated for close
-    integration with Java 5's java.util.concurrent facilities. We provide
-    first-class support for Callables and Futures now, as well as
-    ExecutorService adapters, ThreadFactory integration, etc. This has been
-    aligned with JSR-236 (Concurrency Utilities for Java EE 6) as far as
-    possible. Furthermore, we provide support for asynchronous method
-    invocations through the use of the new @Async annotation (or EJB 3.1's
-    @Asynchronous annotation).</para>
+    <para>Java 5의 java.util.concurrent와의 닫힌 통합(close integration)을 위해 
+    스프링의 TaskExecutor 추상화를 수정했다. ExecutorService 어댑터, ThreadFactory 
+    통합 뿐 아니라 이제 Callable과 Future를 지원하는 퍼스트 클래스를 제공한다. 이는 가능한 한 
+    JSR-236(Java EE 6을 위한 동시성 유틸리티)과 맞추었다. 게다가 새로운 @Async 
+    어노테이션(또는 EJB 3.1의 @Asynchronous 어노테이션)으로 비동기 메서드 호출을 
+    지원한다.</para>
   </section>
 
   <section id="new-in-3.0-improved-docs">
-    <title>Improved documentation</title>
+    <title>개선된 문서</title>
 
-    <para>The Spring reference documentation has also substantially been
-    updated to reflect all of the changes and new features for Spring 3.0.
-    While every effort has been made to ensure that there are no errors in
-    this documentation, some errors may nevertheless have crept in. If you do
-    spot any typos or even more serious errors, and you can spare a few cycles
-    during lunch, please do bring the error to the attention of the Spring
-    team by <ulink url="http://jira.springframework.org/">raising an
-    issue</ulink>.</para>
+    <para>스프링 레퍼런스 문서도 스프링 3.0의 수정사항과 새로운 기능을 반영해서 상당히 
+    수정되었다. 이 문서에 오류가 없도록 노력하였음에도 약간의 에러가 있을 수 있다. 오타나 
+    심각한 오류를 발견한다면 약간의 시간을 할애해서 <ulink 
+    url="http://jira.springframework.org/">이슈를 올려</ulink> 스프링 팀에게 
+    알려주기를 부탁한다.</para>
   </section>
 
   <section id="new-in-3.0-new-tutorial">
-    <title>New articles and tutorials</title>
+    <title>새로운 글과 튜토리얼</title>
 
-    <para>
-		There are many excellent articles and tutorials that show how to get started with Spring 3 features.
-		Read them at the <ulink url="http://www.springsource.org/documentation">Spring Documentation</ulink> page.
-	  </para>
-	  <para id="new-in-3.0-samples">
-	  The samples have been improved and updated to take advantage of the new features in Spring 3.
-	  Additionally, the samples have been moved out of the source tree into a dedicated SVN 
-	  <ulink url="https://anonsvn.springframework.org/svn/spring-samples/">repository</ulink> available at:</para>
+    <para>스프링 3의 기능에 대한 좋은 글과 튜토리얼을 
+    <ulink url="http://www.springsource.org/documentation">스프링 문서</ulink>에서 볼 수 있다.
+    </para>
+    <para id="new-in-3.0-samples">
+    예제들은 스프링 3의 새로운 기능들에 맞춰서 개선되고 수정되었다. 추가로 예제 소스는 전용 SVN 
+    <ulink url="https://anonsvn.springframework.org/svn/spring-samples/">저장소</ulink>로 
+    이동했다. 다음 링크에서 소스를 볼 수 있다.</para>
 	  
     <para>
 	  <literal>https://anonsvn.springframework.org/svn/spring-samples/</literal>
 	  </para>
-	  
-	  <para>As such, the samples are no longer distributed alongside Spring 3 and need to be downloaded separately from the repository mentioned above. However, this documentation
-	  will continue to refer to some samples (in particular Petclinic) to illustrate various features.</para>
-	  
-	  <note>For more information on Subversion (or in short SVN), see the project homepage at:
+
+    <para>그래서 예제들은 더는 스프링 3과 함께 배포지 않는다. 위의 저장소에서 따로 다운받아야 한다.
+    하지만 이 문서는 다양한 기능을 설명하기 위해 몇몇 예제들(특히 Petclinic)을 참조할 것이다.</para>
+
+    <note>서브버전(SVN)에 대한 더 자세한 정보는 프로젝트 홈페이지를 참고해라. 
       <literal>http://subversion.apache.org/</literal>
-	  </note>
+    </note>
 
   </section>
 
   <section id="new-in-3.0-modules-build">
-    <title>New module organization and build system</title>
+    <title>새로운 모듈 구조와 빌드 시스템</title>
 
-    <para>The framework modules have been revised and are now managed
-    separately with one source-tree per module jar:</para>
+    <para>프레임워크 모듈을 수정했고 이제부터는 모듈 jar마다 하나의 소스트리로 
+    분리해서 관리한다.</para>
 
     <itemizedlist>
       <listitem>
@@ -156,83 +145,81 @@
     <sidebar id="new-in-3.0-intro-spring-jar">
       <title>Note:</title>
 
-      <para>The spring.jar artifact that contained almost the entire framework
-      is no longer provided.</para>
+      <para>전체 프레임워크를 대부분 포함하고 있는 spring.jar artifact는 더는  
+      제공하지 않는다.</para>
     </sidebar>
 
-    <para>We are now using a new Spring build system as known from Spring Web
-    Flow 2.0. This gives us:</para>
+    <para>스프링 웹 플로우(Web Flow) 2.0을 새로운 빌드시스템으로 사용한다. 웹 플로우는 
+    다음과 같은 특징이 있다.</para>
 
     <itemizedlist>
       <listitem>
-        <para>Ivy-based "Spring Build" system</para>
+        <para>Ivy기반의 "Spring Build" 시스템</para>
       </listitem>
 
       <listitem>
-        <para>consistent deployment procedure</para>
+        <para>일관된 배포과정</para>
       </listitem>
 
       <listitem>
-        <para>consistent dependency management</para>
+        <para>일관된 의존성 관리</para>
       </listitem>
 
       <listitem>
-        <para>consistent generation of OSGi manifests</para>
+        <para>일관된 OSGi manifest 생성</para>
       </listitem>
     </itemizedlist>
   </section>
 
   <section id="new-in-3.0-features-overview">
-    <title>Overview of new features</title>
+    <title>새로운 기능</title>
 
-    <para>This is a list of new features for Spring 3.0. We will cover these
-    features in more detail later in this section.</para>
+    <para>다음은 스프링 3.0의 새로운 기능들이다. 이번 장 후반부에서 각 기능의 세부사항을 
+    살펴볼 것이다.</para>
 
     <itemizedlist>
       <listitem>
-        <para>Spring Expression Language</para>
+        <para>스프링 표현언어(Expression Language)</para>
       </listitem>
 
       <listitem>
-        <para>IoC enhancements/Java based bean metadata</para>
+        <para>IoC 개선/자바 기반의 빈(bean) 메타데이터</para>
       </listitem>
 
       <listitem>
-        <para>General-purpose type conversion system and field formatting
-        system</para>
+        <para>범용적인 타입 컨버전 시스템과 필드 포매팅 시스템</para>
       </listitem>
 
       <listitem>
-        <para>Object to XML mapping functionality (OXM) moved from Spring Web
-        Services project</para>
+        <para>스프링 웹 서비스 프로젝트의 객체와 XML을 매핑하는 기능(OXM) 추가</para>
       </listitem>
 
       <listitem>
-        <para>Comprehensive REST support</para>
+        <para>광범위한 REST 지원</para>
       </listitem>
 
       <listitem>
-        <para>@MVC additions</para>
+        <para>@MVC 추가</para>
       </listitem>
 
       <listitem>
-        <para>Declarative model validation</para>
+        <para>선언적인 모델 유효성 확인</para>
       </listitem>
 
       <listitem>
-        <para>Early support for Java EE 6</para>
+        <para>Java EE 6에 대한 조기 지원</para>
       </listitem>
 
       <listitem>
-        <para>Embedded database support</para>
+        <para>데이터베이스 지원 내장</para>
       </listitem>
     </itemizedlist>
 
     <section id="new-feature-java5">
-      <title>Core APIs updated for Java 5</title>
+      <title>자바 5로 코어 API 개선</title>
 
-      <para>BeanFactory interface returns typed bean instances as far as
-      possible: <itemizedlist>
+      <para>BeanFactory 인터페이스는 가능한 한 타입있는 빈(bean) 인스턴스를 돌려준다. 
+        <itemizedlist>
           <listitem>
             <para>T getBean(Class&lt;T&gt; requiredType)</para>
           </listitem>
@@ -247,58 +234,53 @@
           </listitem>
         </itemizedlist></para>
 
-      <para>Spring's TaskExecutor interface now extends
-      <classname>java.util.concurrent.Executor</classname>: <itemizedlist>
+      <para>Spring의 TaskExecutor 인터페이스는 이제
+      <classname>java.util.concurrent.Executor</classname>를 상속받는다. <itemizedlist>
           <listitem>
-            <para>extended AsyncTaskExecutor supports standard Callables with
-            Futures</para>
+            <para>상속받은 AsyncTaskExecutor는 표준 Callable와 Future를 지원한다.</para>
           </listitem>
         </itemizedlist></para>
 
-      <para>New Java 5 based converter API and SPI: <itemizedlist>
+      <para>자바 5기반의 새로운 변환 API와 SPI<itemizedlist>
           <listitem>
-            <para>stateless ConversionService and Converters</para>
+            <para>무상태 ConversionService와 Converters</para>
           </listitem>
 
           <listitem>
-            <para>superseding standard JDK PropertyEditors</para>
+            <para>표준 JDK 프로퍼티 에디터는 필요 없어졌다.</para>
           </listitem>
         </itemizedlist></para>
 
-      <para>Typed ApplicationListener&lt;E&gt;</para>
+      <para>타입이 있는 ApplicationListener&lt;E&gt;</para>
     </section>
 
     <section id="new-feature-el">
-      <title>Spring Expression Language</title>
+      <title>스프링 표현 언어(Expression Language)</title>
 
-      <para>Spring introduces an expression language which is similar to
-      Unified EL in its syntax but offers significantly more features. The
-      expression language can be used when defining XML and Annotation based
-      bean definitions and also serves as the foundation for expression
-      language support across the Spring portfolio. Details of this new
-      functionality can be found in the chapter <link
-      linkend="expressions">Spring Expression Language (SpEL).</link></para>
+      <para>스프링은 표현언어를 도입했다. 스프링의 표현언어는 일반적인 EL과 문법상으로는 
+      유사하지만 훨 더 많은 기능을 제공한다. 표현언어는 XML이나 빈설정에 기반을 둔 
+      어노테이션을 정의할 때 사용할 수 있다. 또한, 스프링 표현언어는 스프링의 모든 제품에 
+      걸 표현언어 지원의 근간이 된다. 새로운 기능의 세부사항은 <link
+      linkend="expressions">스프링 표현언어 (SpEL).</link> 챕터에서 
+      설명한다.</para>
 
-      <para>The Spring Expression Language was created to provide the Spring
-      community a single, well supported expression language that can be used
-      across all the products in the Spring portfolio. Its language features
-      are driven by the requirements of the projects in the Spring portfolio,
-      including tooling requirements for code completion support within the
-      Eclipse based <ulink url="http://www.springsource.com/products/sts">SpringSource
-      Tool Suite</ulink>.</para>
+      <para>스프링 커뮤니티에 단독으로 제공하기 위해 스프링 표현언어를 만들었고 스프링의 
+      모든 제품군에서 사용할 수 있는 표현언어를 지원하려는 목적이었다. 스프링 제품군의 
+      프로젝트에서 나온 요구사항으로 기반으로 기능을 만들었다. <ulink url="http://www.springsource.com/products/sts">SpringSource Tool Suite</ulink>
+      에 기반을 둔 이클립스에서 코드 자동완성에 대한 요구사항도 포함한다.</para>
 
-      <para>The following is an example of how the Expression Language can be
-      used to configure some properties of a database setup <programlisting
+      <para>다음은 데이터베이스 설정의 프로퍼티 설정에서 표현언어를 어떻게 사용하는지를 
+      보여주는 예제이다. <programlisting
       language="xml">&lt;bean class="mycompany.RewardsTestDatabase"&gt;
     &lt;property name="databaseName"
         value="#{systemProperties.databaseName}"/&gt;
     &lt;property name="keyGenerator"
         value="#{strategyBean.databaseKeyGenerator}"/&gt;
 &lt;/bean&gt;
-</programlisting></para>
+</programlisting></para>      
 
-      <para>This functionality is also available if you prefer to configure
-      your components using annotations: <programlisting language="java">@Repository 
+      <para>이 기능은 어노테이션으로 컴포넌트를 설정할 때도 사용할 수 있다. 
+       <programlisting language="java">@Repository 
 public class RewardsTestDatabase {
 
     @Value("#{systemProperties.databaseName}")
@@ -311,15 +293,14 @@ public class RewardsTestDatabase {
     </section>
 
     <section id="new-feature-java-config">
-      <title>The Inversion of Control (IoC) container</title>
+      <title>제어의 역전 (IoC) 컨테이너</title>
 
       <section id="new-java-configuration">
-        <title>Java based bean metadata</title>
+        <title>자바기반의 빈(bean) 메타데이터</title>
 
-        <para>Some core features from the <ulink
-        url="http://www.springsource.org/javaconfig">JavaConfig</ulink>
-        project have been added to the Spring Framework now. This means that
-        the following annotations are now directly supported: <itemizedlist>
+        <para><ulink url="http://www.springsource.org/javaconfig">JavaConfig</ulink> 
+        프로젝트의 몇몇 핵심 기능을 스프링 프레임워크에 추가했다. 이 말은 다음 어노테이션을 
+        이제 직접 지원한다는 의미이다. <itemizedlist>
             <listitem>
               <para>@Configuration</para>
             </listitem>
@@ -353,8 +334,8 @@ public class RewardsTestDatabase {
             </listitem>
           </itemizedlist></para>
 
-        <para>Here is an example of a Java class providing basic configuration
-        using the new JavaConfig features: <programlisting language="java">package org.example.config;
+        <para>다음은 새로운 JavaConfig 기능을 사용해서 기본적인 설정을 제공하는 자바 
+        클래스의 예제다. <programlisting language="java">package org.example.config;
 
 @Configuration
 public class AppConfig {
@@ -374,11 +355,11 @@ public class AppConfig {
 
     @Bean
     public SessionFactory sessionFactory() {
-        // wire up a session factory
+        // session factory 연결
         AnnotationSessionFactoryBean asFactoryBean = 
             new AnnotationSessionFactoryBean();
         asFactoryBean.setDataSource(dataSource());
-        // additional config
+        // 추가적인 설정
         return asFactoryBean.getObject();
     }
 
@@ -387,128 +368,113 @@ public class AppConfig {
         return new DriverManagerDataSource(jdbcUrl, username, password);
     }
 }
-</programlisting> To get this to work you need to add the following component
-        scanning entry in your minimal application context XML file.
+</programlisting> 이 설정이 동작하게 하려면 어플리케이션 컨텍스트 XML 파일에
+        다음 컴포넌트 스캔을 추가해야 한다.
         <programlisting language="xml">&lt;context:component-scan base-package="org.example.config"/&gt;
 &lt;util:properties id="jdbcProperties" location="classpath:org/example/config/jdbc.properties"/&gt;
         </programlisting>
-        Or you can bootstrap a <literal>@Configuration</literal> class directly using
-        <literal>AnnotationConfigApplicationContext</literal>:
+        또는 <literal>AnnotationConfigApplicationContext</literal>를 직접 사용하는 
+        <literal>@Configuration</literal> 클래스를 사용할 수 있다.
         <programlisting language="java">public static void main(String[] args) {
     ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
     FooService fooService = ctx.getBean(FooService.class);
     fooService.doStuff();
 }</programlisting>
-        See <xref linkend="beans-java-instantiating-container"/> for full information on
-        <literal>AnnotationConfigApplicationContext</literal>.</para>
+        <literal>AnnotationConfigApplicationContext</literal>에 대한 전체 정보는 
+        <xref linkend="beans-java-instantiating-container"/>를 봐라.</para>
       </section>
 
       <section>
-        <title>Defining bean metadata within components</title>
+        <title>컴포넌트안에서 빈(bean) 메타데이터 정의하기</title>
 
-        <para><literal>@Bean</literal> annotated methods are also supported
-        inside Spring components. They contribute a factory bean definition to
-        the container. See <link
-        linkend="beans-factorybeans-annotations">Defining bean metadata within
-        components</link> for more information</para>
+        <para><literal>@Bean</literal> 어노테이션을 사용한 메서드는 스프링 컴포넌트안에서도 
+        사용할 수 있다. 이 메서드들은 컨터이너에 팩토리빈을 정의하는데 기여한다. 더 자세한 정보는 
+        <link linkend="beans-factorybeans-annotations">컴포넌트안에서 빈(bean) 메타데이터 
+        정의하기</link>를 참고해라.</para>
       </section>
     </section>
 
     <section id="new-feature-convert-and-format">
-      <title>General purpose type conversion system and field formatting
-      system</title>
+      <title>범용적인 타입 컨버전 시스템과 필드 포매팅 시스템</title>
 
-      <para>A general purpose <link linkend="core-convert">type conversion
-      system</link> has been introduced. The system is currently used by SpEL
-      for type conversion, and may also be used by a Spring Container and DataBinder when
-      binding bean property values.</para>
+      <para>범용적인 <link linkend="core-convert">타입 컨버전 시스템</link>을 도입했다. 
+      타입 컨버전을 위해 SpEL로 타입 컨버전 시스템을 사용한다. 빈 프로퍼티 값에 바인딩할 때도 스프링 
+      컨테이너와 DataBinder로 타입 컨버전 시스템을 사용할 수 있다.</para>
 
-      <para>In addition, a <link linkend="format">formatter</link> SPI
-      has been introduced for formatting field values. This SPI provides
-      a simpler and more robust alternative to JavaBean PropertyEditors for use in client
-      environments such as Spring MVC.</para>
+      <para>추가로 필드값을 포매팅하기 위해 <link linkend="format">포매터</link> 
+      SPI를 도입하였다. 포매터 SPI는 스프링 MVC 같은 클라이언트 환경에서 사용하는 JavaBean 
+      PropertyEditor를 더 간단하고 튼튼하게 대체한다.</para>
     </section>
 
     <section id="new-feature-oxm">
-      <title>The Data Tier</title>
+      <title>데이터 티어</title>
 
-      <para>Object to XML mapping functionality (OXM) from the Spring Web
-      Services project has been moved to the core Spring Framework now. The
-      functionality is found in the <literal>org.springframework.oxm</literal>
-      package. More information on the use of the <literal>OXM</literal>
-      module can be found in the <link linkend="oxm">Marshalling XML using O/X
-      Mappers</link> chapter.</para>
+      <para>스프링 웹 서비스 프로젝트의 객체와 XML을 매핑하는 기능 (OXM)은 스링 
+      프레임워크의 코어로 이동했다. OXM기능은 <literal>org.springframework.oxm</literal>
+      패키지에 있다. <literal>OXM</literal> 모듈의 사용방법에 대한 더 자세한 내용은 
+      <link linkend="oxm">O/X 매를 사용하는 XML 마샬링</link> 챕터에서 설명한다.</para>
     </section>
 
     <section id="new-feature-rest">
-      <title>The Web Tier</title>
+      <title>웹 티어</title>
 
-      <para>The most exciting new feature for the Web Tier is the support for
-      building RESTful web services and web applications. There are also some
-      new annotations that can be used in any web application.</para>
+      <para>웹 티어에서 가장 흥미로운 새 기능은 REST스러운 웹 서비스와 웹 어플리케이션 
+      구축에 대한 지원이다. 어떤 웹 어플리케이션에서도 사용할 수 있는 새로운 어노테이션도 
+      추가했다.</para>
 
       <section>
-        <title>Comprehensive REST support</title>
+        <title>광범위한 REST 지원</title>
 
-        <para>Server-side support for building RESTful applications has been
-        provided as an extension of the existing annotation driven MVC web
-        framework. Client-side support is provided by the
-        <classname>RestTemplate</classname> class in the spirit of other
-        template classes such as <classname>JdbcTemplate</classname> and
-        <classname>JmsTemplate</classname>. Both server and client side REST
-        functionality make use of
-        <interfacename>HttpConverter</interfacename>s to facilitate the
-        conversion between objects and their representation in HTTP requests
-        and responses.</para>
+        <para>기존에 존재하는 MVC 웹 프레임워크의 어노테이션을 확장해서 REST스러운 
+        어플리케이션 구축에 대한 서버 측 지원을 추가했다. 클라이언트 측 지원은 
+        <classname>JdbcTemplate</classname>나 <classname>JmsTemplate</classname>
+        같은 템플릿 클래스처럼 <classname>RestTemplate</classname> 클래스로 제공한다. 
+        서버 측과 클라이언트 측 모두 REST기능은 HTTP 요청과 응답을 나타내는 객체의 변환을 
+        위해 <interfacename>HttpConverter</interfacename>를 사용한다.</para>
 
-        <para>The <classname>MarshallingHttpMessageConverter</classname> uses
-        the <emphasis>Object to XML mapping</emphasis> functionality mentioned
-        earlier.</para>
+        <para><classname>MarshallingHttpMessageConverter</classname>는 앞에서 
+        이야기했던 <emphasis>개체를 XML로 매하는</emphasis>기능을 사용한다.</para>
 
-        <para>Refer to the sections on <link linkend="mvc">MVC</link> and <link
-        linkend="rest-resttemplate">the RestTemplate</link> for more
-        information.</para>
+        <para>더 자세한 내용은 <link linkend="mvc">MVC</link>와 <link
+        linkend="rest-resttemplate">RestTemplate</link>을 참고해라.</para>
       </section>
 
       <section>
-        <title>@MVC additions</title>
+        <title>@MVC 추가</title>
 
-        <para>A <literal>mvc</literal> namespace has been introduced that greatly simplifies Spring MVC configuration.</para>
+        <para>스프링 MVC 설정을 엄청나게 간단하게 하는 <literal>mvc</literal> 
+        네임스페이스를 도입했다.</para>
 
-        <para>Additional annotations such as
-        <classname>@CookieValue</classname> and
-        <classname>@RequestHeaders</classname> have been added. See <link
-        linkend="mvc-ann-cookievalue">Mapping cookie values with the
-        @CookieValue annotation</link> and <link
-        linkend="mvc-ann-requestheader">Mapping request header attributes with
-        the @RequestHeader annotation</link> for more information.</para>
+        <para><classname>@CookieValue</classname>와 
+        <classname>@RequestHeaders</classname>같은 어노테이션을 추가했다. 더 자세한 
+        내용은 <link linkend="mvc-ann-cookievalue">@CookieValue 어노테이션으로 
+        쿠키값 매핑하기</link>과 <link linkend="mvc-ann-requestheader">@RequestHeader 
+        어노테이션으로 요청 헤더 속성 매핑하기</link>를 봐라.</para>
       </section>
     </section>
 
     <section id="new-feature-validation">
-      <title>Declarative model validation</title>
+      <title>선언적인 모델 유효성 확인</title>
 
-      <para>Several <link linkend="validation-beanvalidation">validation enhancements</link>,
-      including JSR 303 support that uses Hibernate Validator as the default provider.</para>
+      <para>JSR 303을 포함해서 여러 가지 <link linkend="validation-beanvalidation">유효성 
+      확인 지원</link>이 개선되었고 기본 프로바이더로 Hibernate Validator를 사용한다.</para>
     </section>
 
     <section id="new-feature-jee-6">
-      <title>Early support for Java EE 6</title>
+      <title>Java EE 6에 대한 조기 지원</title>
 
-      <para>We provide support for asynchronous method invocations through the
-      use of the new @Async annotation (or EJB 3.1's @Asynchronous
-      annotation).</para>
+      <para>새로운 @Async 어노테이션(또는 EJB 3.1의 @Asynchronous 어노테이션)을 사용해서 
+      비동기 메서드 호출을 지원한다.</para>
 
-      <para>JSR 303, JSF 2.0, JPA 2.0, etc</para>
+      <para>JSR 303, JSF 2.0, JPA 2.0 등등</para>
 
     </section>
 
     <section id="new-feature-embedded-databases">
-      <title>Support for embedded databases</title>
+      <title>데이터베이스 지원 내장</title>
 
-      <para>Convenient support for <link
-      linkend="jdbc-embedded-database-support">embedded Java database
-      engines</link>, including HSQL, H2, and Derby, is now provided.</para>
+      <para>HSQL, H2, Derby 같은 <link linkend="jdbc-embedded-database-support">
+      내장 자바 데이터베이스 엔진</link>을 편리하게 지원한다.</para>
     </section>
   </section>
 </chapter>
