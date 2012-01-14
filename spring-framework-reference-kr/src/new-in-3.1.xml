@@ -2,21 +2,20 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="new-in-3.1">
-  <title>New Features and Enhancements in Spring 3.1</title>
+  <title>Spring 3.1의 새로운 기능과 개선된 점</title>
 
-  <para>Building on the support introduced in Spring 3.0, Spring 3.1 is
-  currently under development, and at the time of this writing Spring 3.1 RC1
-  is being prepared for release.</para>
+  <para>스프링 3.0에서 도입된 기능 위에서 스프링 3.1은 현재 개발중에 있다. 이 글을 
+  쓰는 시점에 스프링 3.1 RC1를 릴리즈할 준비를 하고 있다.</para>
 
   <section id="new-in-3.1-features-overview">
-    <title>Overview of new features</title>
+    <title>새로운 기능</title>
 
-    <para>This is a list of new features for Spring 3.1. Most features do not
-    yet have dedicated reference documentation but do have Javadoc. In such
-    cases, fully-qualified class names are given.</para>
+    <para>다음은 스프링 3.1의 새로운 기능들이다. 대부분의 기능은 아직 레퍼런스 문서에 
+    적용되지 않았지만 Javadoc에는 적용되었다. Javadoc에는 완전히 검증된 클래스명이 
+    나와있다.</para>
 
     <section>
-      <title>Cache Abstraction</title>
+      <title>캐시(Cache) 추상화</title>
 
       <itemizedlist>
         <listitem>
@@ -26,171 +25,164 @@
         <listitem>
           <para><ulink
           url="http://blog.springsource.com/2011/02/23/spring-3-1-m1-caching/">
-          Cache Abstraction</ulink> (SpringSource team blog)</para>
+          캐시 추상화</ulink> (스프링소스 팀 블로그)</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>Bean Definition Profiles</title>
+      <title>빈(Bean) 선언 프로파일</title>
 
       <itemizedlist>
         <listitem>
           <para><ulink
           url="http://blog.springsource.com/2011/02/11/spring-framework-3-1-m1-released/">
-          XML profiles</ulink> (SpringSource Team Blog)</para>
+          XML 프로파일</ulink> (스프링소스 팀 블로그)</para>
         </listitem>
 
         <listitem>
           <para><ulink
           url="http://blog.springsource.com/2011/02/14/spring-3-1-m1-introducing-profile/">
-          Introducing @Profile</ulink> (SpringSource Team Blog)</para>
+          @Profile 소개</ulink> (스프링소스 팀 블로그)</para>
         </listitem>
 
         <listitem>
-          <para>See org.springframework.context.annotation.Configuration
-          Javadoc</para>
+          <para>org.springframework.context.annotation.Configuration의 JavaDoc 참고
+          </para>
         </listitem>
 
         <listitem>
-          <para>See org.springframework.context.annotation.Profile
-          Javadoc</para>
+          <para>org.springframework.context.annotation.Profile의 JavaDoc 참고</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>Environment Abstraction</title>
+      <title>환경(Environment) 추상화</title>
 
       <itemizedlist>
         <listitem>
           <para><ulink
           url="http://blog.springsource.com/2011/02/11/spring-framework-3-1-m1-released/">
-          Environment Abstraction</ulink> (SpringSource Team Blog)</para>
+          환경 추상화</ulink> (스프링소스 팀 블로그)</para>
         </listitem>
 
         <listitem>
-          <para>See org.springframework.core.env.Environment Javadoc</para>
+          <para>org.springframework.core.env.Environment Javadoc의 JavaDoc 참고</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>PropertySource Abstraction</title>
+      <title>PropertySource 추상화</title>
 
       <itemizedlist>
         <listitem>
           <para><ulink
           url="http://blog.springsource.com/2011/02/15/spring-3-1-m1-unified-property-management/">
-          Unified Property Management</ulink> (SpringSource Team Blog)</para>
+          통인된 Property 관리</ulink> (스프링소스 팀 블로그)</para>
         </listitem>
 
         <listitem>
-          <para>See org.springframework.core.env.Environment Javadoc</para>
+          <para>org.springframework.core.env.Environment Javadoc의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See org.springframework.core.env.PropertySource Javadoc</para>
+          <para>org.springframework.core.env.PropertySource Javadoc의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See org.springframework.context.annotation.PropertySource
-          Javadoc</para>
+          <para>org.springframework.context.annotation.PropertySource의 JavaDoc 참고</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>Code equivalents for Spring's XML namespaces</title>
+      <title>스프링의 XML 네임스페이스와 동일한 코드</title>
 
-      <para>Code-based equivalents to popular Spring XML namespace elements
-      &lt;context:component-scan/&gt;, &lt;tx:annotation-driven/&gt;
-      and &lt;mvc:annotation-driven&gt; have been developed, most in the
-      form of <interfacename>@Enable</interfacename> annotations. These are
-      designed for use in conjunction with Spring's
-      <interfacename>@Configuration</interfacename> classes, which were
-      introduced in Spring 3.0.</para>
+      <para>자주 사용하는 &lt;context:component-scan/&gt;, 
+      &lt;tx:annotation-driven/&gt;, &lt;mvc:annotation-driven&gt;의 스프링 
+      XML 네임스페이스 엘리먼트와 동일한 기능을 대부분 
+      <interfacename>@Enable</interfacename> 어노테이션의 형식으로 사용할 수 있다. 
+      이 기능은 스프링 3.0에서 도입된 <interfacename>@Configuration</interfacename>
+      클래스와 결합해서 사용하도록 설계했다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>See org.springframework.context.annotation.Configuration
-          Javadoc</para>
+          <para>org.springframework.context.annotation.Configuration
+          의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See org.springframework.context.annotation.ComponentScan
-          Javadoc</para>
+          <para>org.springframework.context.annotation.ComponentScan
+          의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See
+          <para>
           org.springframework.transaction.annotation.EnableTransactionManagement
-          Javadoc</para>
+          의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See
-          org.springframework.cache.annotation.EnableCaching Javadoc</para>
+          <para>
+          org.springframework.cache.annotation.EnableCaching의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See org.springframework.web.servlet.config.annotation.EnableWebMvc
-          Javadoc</para>
+          <para>org.springframework.web.servlet.config.annotation.EnableWebMvc
+          의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See org.springframework.scheduling.annotation.EnableScheduling
-          Javadoc</para>
+          <para>org.springframework.scheduling.annotation.EnableScheduling
+          의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See org.springframework.scheduling.annotation.EnableAsync
-          Javadoc</para>
+          <para>org.springframework.scheduling.annotation.EnableAsync
+          의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
           <para>See
           org.springframework.context.annotation.EnableAspectJAutoProxy
-          Javadoc</para>
+          의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See
-          org.springframework.context.annotation.EnableLoadTimeWeaving
-          Javadoc</para>
+          <para>org.springframework.context.annotation.EnableLoadTimeWeaving
+          의 JavaDoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See
-          org.springframework.beans.factory.aspectj.EnableSpringConfigured
-          Javadoc</para>
+          <para>org.springframework.beans.factory.aspectj.EnableSpringConfigured
+          의 JavaDoc 참고</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>Support for Hibernate 4.x</title>
+      <title>Hibernate 4.x 지원</title>
 
       <itemizedlist>
         <listitem>
-          <para>See Javadoc for classes within the new
-          org.springframework.orm.hibernate4 package</para>
+          <para>새로 추가된 org.springframework.orm.hibernate4 패키지의 
+          클래스에 대한 Javadoc을 참고해라</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>TestContext framework support for @Configuration classes and bean
-      definition profiles</title>
+      <title>@Configuration 클래스와 빈 선언 프로파일을 지원하는 TestContext 
+      프레임워크</title>
 
-      <para>The <interfacename>@ContextConfiguration</interfacename>
-      annotation now supports supplying
-      <interfacename>@Configuration</interfacename> classes for configuring
-      the Spring <classname>TestContext</classname>. In addition, a new
-      <interfacename>@ActiveProfiles</interfacename> annotation has been
-      introduced to support declarative configuration of active bean
-      definition profiles in <interfacename>ApplicationContext</interfacename>
-      integration tests.</para>
+      <para><interfacename>@ContextConfiguration</interfacename> 어노테이션은 
+      이제 스프링 <classname>TestContext</classname>를 설정하는 
+      <interfacename>@Configuration</interfacename> 클래스를 제공한다. 새로 추가된 
+      <interfacename>@ActiveProfiles</interfacename> 어노테이션은 
+      <interfacename>ApplicationContext</interfacename> 통합테스트에서 엑티브 빈 선언 
+      프로파일을 선언적으로 설정을 지원한다.</para>
 
       <itemizedlist>
         <listitem>
@@ -198,47 +190,50 @@
           url="http://blog.springsource.com/2011/06/21/spring-3-1-m2-testing-with-configuration-classes-and-profiles/">Spring
           3.1 M2: Testing with @Configuration Classes and Profiles</ulink>
           (SpringSource Team Blog)</para>
+          <para><ulink
+          url="http://blog.springsource.com/2011/06/21/spring-3-1-m2-testing-with-configuration-classes-and-profiles/">Spring
+          3.1 M2: @Configuration 클래스와 Profile을 이용한 테스트</ulink>
+          (스프링 소스 팀 블로그)</para>
         </listitem>
 
         <listitem>
-          <para>See <xref linkend="testcontext-framework" /></para>
+          <para><xref linkend="testcontext-framework" /> 참고</para>
         </listitem>
 
         <listitem>
-          <para>See <xref linkend="testcontext-ctx-management-javaconfig" />
-          and
+          <para><xref linkend="testcontext-ctx-management-javaconfig" />와 
           <interfacename>org.springframework.test.context.ContextConfiguration</interfacename>
-          Javadoc</para>
+          의 Javadoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See
+          <para>
           <interfacename>org.springframework.test.context.ActiveProfiles</interfacename>
-          Javadoc</para>
+          의 Javadoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See
+          <para>
           <interfacename>org.springframework.test.context.SmartContextLoader</interfacename>
-          Javadoc</para>
+          의 Javadoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See
+          <para>
           <interfacename>org.springframework.test.context.support.DelegatingSmartContextLoader</interfacename>
-          Javadoc</para>
+          의 Javadoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See
+          <para>
           <interfacename>org.springframework.test.context.support.AnnotationConfigContextLoader</interfacename>
-          Javadoc</para>
+          의 Javadoc 참고</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>c: namespace for more concise constructor injection</title>
+      <title>c: 더 간단한 생성자 주입을 위한 네임스페이스</title>
 
       <itemizedlist>
         <listitem>
@@ -248,83 +243,74 @@
     </section>
 
     <section>
-      <title>Support for injection against non-standard JavaBeans
-      setters</title>
+      <title>비표준 JavaBean의 setter에 대한 주입 지원</title>
 
-      <para>Prior to Spring 3.1, in order to inject against a property method
-      it had to conform strictly to JavaBeans property signature rules, namely
-      that any 'setter' method must be void-returning. It is now possible in
-      Spring XML to specify setter methods that return any object type. This
-      is useful when considering designing APIs for method-chaining, where
-      setter methods return a reference to 'this'.</para>
+      <para>Spring 3.1이전에는 프로퍼티 메서드에 주입을 하기 위해 JavaBean 프로퍼티 
+      시그니쳐 규칙을 엄격하게 따라야 했다. 즉, 모든 'setter'는 반드시 리턴값이 없어야 
+      한다.(void) 이제 스프링 XML에서 setter가 어떤 객체타입을 리턴하도록 명시하는 것이 
+      가능하다. 이는 메서드 체이닝(method-chaining)으로 API를 디자인할 때 setter 메서드가
+      'this'에 대한 참조를 리턴하도록 하는데 유용하다.</para>
     </section>
 
     <section>
-      <title>Support for Servlet 3 code-based configuration of Servlet
-      Container</title>
+      <title>서블릿 컨테이너의 서블릿 3 코드기반 설정 지원</title>
 
-      <para>The new <interfacename>WebApplicationInitializer</interfacename>
-      builds atop Servlet 3.0's
-      <interfacename>ServletContainerInitializer</interfacename> support to
-      provide a programmatic alternative to the traditional web.xml.</para>
+      <para>전통적인 web.xml을 프로그래밍적으로 대체하는 서블릿 3.0의 
+      <interfacename>ServletContainerInitializer</interfacename>에 기반을 둔 
+      <interfacename>WebApplicationInitializer</interfacename>를 새로 추가했다.
+      </para>
 
       <itemizedlist>
         <listitem>
-          <para>See org.springframework.web.WebApplicationInitializer
-          Javadoc</para>
+          <para>org.springframework.web.WebApplicationInitializer
+          의 Javadoc 참고</para>
         </listitem>
 
         <listitem>
           <para><ulink url="http://bit.ly/lrDHja">Diff from Spring's
-          Greenhouse reference application</ulink> demonstrating migration
-          from web.xml to
-          <interfacename>WebApplicationInitializer</interfacename></para>
+          Greenhouse reference application</ulink> 는 web.xml에서 
+          <interfacename>WebApplicationInitializer</interfacename>로 
+          마이그레이션하는 것을 보여준다.</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>Support for Servlet 3 MultipartResolver</title>
+      <title>Servlet 3 MultipartResolver에 대한 지원</title>
 
       <itemizedlist>
         <listitem>
-          <para>See
+          <para>
           org.springframework.web.multipart.support.StandardServletMultipartResolver
-          Javadoc</para>
+          의 Javadoc 참고</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>JPA EntityManagerFactory bootstrapping without
-      persistence.xml</title>
+      <title>persistence.xml 없이 JPA EntityManagerFactory 부트스트랩하기</title>
 
-      <para>In standard JPA, persistence units get defined through
-      <literal>META-INF/persistence.xml</literal> files in specific jar files
-      which will in turn get searched for <literal>@Entity</literal> classes.
-      In many cases, persistence.xml does not contain more than a unit name
-      and relies on defaults and/or external setup for all other concerns
-      (such as the DataSource to use, etc). For that reason, Spring 3.1
-      provides an alternative:
-      <classname>LocalContainerEntityManagerFactoryBean</classname> accepts a
-      'packagesToScan' property, specifying base packages to scan for
-      <literal>@Entity</literal> classes. This is analogous to
-      <classname>AnnotationSessionFactoryBean</classname>'s property of the
-      same name for native Hibernate setup, and also to Spring's
-      component-scan feature for regular Spring beans. Effectively, this
-      allows for XML-free JPA setup at the mere expense of specifying a base
-      package for entity scanning: a particularly fine match for Spring
-      applications which rely on component scanning for Spring beans as well,
-      possibly even bootstrapped using a code-based Servlet 3.0
-      initializer.</para>
+      <para>표준 JPA에서 퍼시스턴트 유닛은 지정된 jar파일의 
+      <literal>META-INF/persistence.xml</literal>파일에 정의되고 
+      <literal>@Entity</literal> 클래스를 찾는다. 많은 경우에 persistence.xml은 
+      유닛의 이름과 의존하는 기본설정이나 필요한 외부설정(사용하려는 DataSource같은) 
+      이외의 정보는 담고 있지 않다.그래서 스프링 3.1은 대안을 제공한다. 
+      <classname>LocalContainerEntityManagerFactoryBean</classname>는 
+      <literal>@Entity</literal>클래스를 찾을 패키지를 지정하는 'packagesToScan' 
+      속성을 지원한다. 이는 네이티브 Hibernate 설정에서 
+      <classname>AnnotationSessionFactoryBean</classname>의 같은 이름의 속성이나 
+      스프링의 정규 스프링 빈을 찾는 컴포넌트 스캔 기능과 유사하다. 사실 엔티티 스캔을 
+      하는 패키지명시하는 JPA설정은 XML없이도 가능하다. 특히 스프링 빈의 컴포넌트 스캔에 
+      기반한 어플리케이션과 잘 매치되고 코드기반의 서블릿 3.0 초기화를 사용해서 
+      부트스트랩하는 것도 가능하다.</para>
     </section>
 
     <section>
-      <title>New HandlerMethod-based Support Classes For Annotated Controller
-      Processing</title>
+      <title>어노테이션이 붙은 컨트롤러의 처리를 위해 새롭게 추가된 HandlerMethod 기반의
+      지원 클래스</title>
 
-      <para>Spring 3.1 introduces a new set of support classes for processing
-      requests with annotated controllers:</para>
+      <para>Spring 3.1은 어노테이션이 붙은 컨트트롤러가 요청을 처리하도록 지원하는 
+      클래스의 새로운 셋을 추가했다.</para>
 
       <itemizedlist>
         <listitem>
@@ -340,7 +326,7 @@
         </listitem>
       </itemizedlist>
 
-      <para>These classes are a replacement for the existing:</para>
+      <para>이러한 클래스들은 이미 존재하는 클래스들은 대체한다.</para>
 
       <itemizedlist>
         <listitem>
@@ -363,143 +349,140 @@
       can customize the processing for any supported method argument or return
       value type.</para>
 
+      <para>어노테이션이 붙은 컨트롤러의 지원 클래스들이 더 커스터마이징할 수 있고 
+      쉽게 확장할 수 있도록 해야 한다는 많은 요청을 수용해서 새로운 클래스들을 개발했다. 
+      전에는 커스텀 어노테이션이 붙은 컨트롤러 메서드의 아규먼트 리졸버를 설정할 수 있었지만 
+      새로운 지원 클래스를 사용하면 모든 지원메서드의 아규먼트와 리턴값의 타입에 대한 처리를 
+      커스터마이징할 수 있다.</para>
+
       <itemizedlist>
         <listitem>
-          <para>See
+          <para>
           org.springframework.web.method.support.HandlerMethodArgumentResolver
-          Javadoc</para>
+          의 Javadoc 참고</para>
         </listitem>
 
         <listitem>
-          <para>See
+          <para>
           org.springframework.web.method.support.HandlerMethodReturnValueHandler
-          Javadoc</para>
+          의 Javadoc 참고</para>
         </listitem>
       </itemizedlist>
 
-      <para>A second notable difference is the introduction of a
-      <classname>HandlerMethod</classname> abstraction to represent an
-      <interface>@RequestMapping</interface> method. This abstraction is used
-      throughout by the new support classes as the <literal>handler</literal>
-      instance. For example a <classname>HandlerInterceptor</classname> can
-      cast the <literal>handler</literal> from <classname>Object</classname>
-      to <classname>HandlerMethod</classname> and get access to the target
-      controller method, its annotations, etc.</para>
+      <para>다음으로 주목할 만한 차이점은 <interface>@RequestMapping</interface> 
+      메서드를 나타내는 <classname>HandlerMethod</classname> 추상화의 도입이다. 
+      <classname>HandlerMethod</classname> 추상화는 <literal>handler</literal> 
+      인스턴스로 새로 추가된 클래스에 의해 언제든지 사용된다. 예를 들어 
+      <classname>HandlerInterceptor</classname>는 <literal>handler</literal>를 
+      <classname>Object</classname>에서 <classname>HandlerMethod</classname>로 
+      캐스팅 할 수 있고 타겟 컨트롤러 메서드나 타겟 컨트롤러 메서드의 어노테이션 등에 
+      접근할 수 있다.</para>
 
-      <para>The new classes are enabled by default by the MVC namespace and by
-      Java-based configuration via <interface>@EnableWebMvc</interface>. The
-      existing classes will continue to be available but use of the new
-      classes is recommended going forward.</para>
+      <para>MVC 네임스페이스의 기본설정이나 <interface>@EnableWebMvc</interface>를 
+      사용한 자바기반의 설정으로 새로운 클래스를 사용하도록 할 수 있다. 기존의 클래스들은 
+      계속해서 사용할 수 있지만 새로운 클래스를 사용하기를 더욱 권장한다.</para>
     </section>
 
     <section>
-      <title>"consumes" and "produces" conditions in
-      <interface>@RequestMapping</interface></title>
+      <title><interface>@RequestMapping</interface>의 
+      "consume"과 "produce" 상태</title>
 
-      <para>Improved support for specifying media types consumed by a method
-      through the <literal>'Content-Type'</literal> header as well as for
-      producible types specified through the <literal>'Accept'</literal>
-      header. See <xref linkend="mvc-ann-requestmapping-consumes" /> and <xref
-      linkend="mvc-ann-requestmapping-produces" /></para>
+      <para><literal>'Accept'</literal>헤더로 지정된 타입을 만드는 것(produce)과 
+      마찬가지로 <literal>'Content-Type'</literal>헤더로 지정된 미디어타입을 메서드로 
+      소비(consume)하는 것에 대한 지원이 개선되었다. 
+      <xref linkend="mvc-ann-requestmapping-consumes" />와 <xref
+      linkend="mvc-ann-requestmapping-produces" />를 참고해라.</para>
     </section>
 
     <section>
-      <title>Flash Attributes and
+      <title>Flash 속성과
       <interfacename>RedirectAttributes</interfacename></title>
 
-      <para>Flash attributes can now be stored in a
-      <classname>FlashMap</classname> and saved in the HTTP session to survive
-      a redirect. For an overview of the general support for flash attributes
-      in Spring MVC see <xref linkend="mvc-flash-attributes" />.</para>
+      <para>flash 속성은 이제 <classname>FlashMap</classname>에 저장할 수 있고 
+      리다이렉트했을 때도 유지되도록 HTTP 세션에 저장할 수 있다. 스프링 MVC에서 flash 속성에 
+      대한 일반적인 지원을 살펴보려면 <xref linkend="mvc-flash-attributes" />를 
+      참고해라.</para>
 
-      <para>In annotated controllers, an
-      <interfacename>@RequestMapping</interfacename> method can add flash
-      attributes by declaring a method argument of type
-      <interfacename>RedirectAttributes</interfacename>. This method argument
-      can now also be used to get precise control over the attributes used in
-      a redirect scenario. See <xref linkend="mvc-ann-redirect-attributes" />
-      for more details.</para>
+      <para>어노테이션이 붙은 컨트롤러에서 
+      <interfacename>@RequestMapping</interfacename> 메서드는 
+      <interfacename>RedirectAttributes</interfacename>타입의 메서드 아규먼트를 
+      선언함으로써 flash 속성을 추가할 수 있다. 
+      <interfacename>RedirectAttributes</interfacename>타입의 메서드 아규먼트는 
+      리다이렉트 시나리오에서 사용된 속성을 정확하게 가져오기 위해 사용할 수도 있다. 더 
+      자세한 내용은 <xref linkend="mvc-ann-redirect-attributes" />를 봐라.</para>
     </section>
 
     <section>
-      <title>URI Template Variable Enhancements</title>
+      <title>향상된 URI 템플릿 변수</title>
 
-      <para>URI template variables from the current request are used in more
-      places: <itemizedlist>
+      <para>현재 요청의 URI 템플릿 변수를 더 다양한 곳에서 사용한다.<itemizedlist>
           <listitem>
-            <para>URI template variables are used in addition to request
-            parameters when binding a request to
-            <interfacename>@ModelAttribute</interfacename> method
-            arguments.</para>
+            <para>요청을 <interfacename>@ModelAttribute</interfacename> 
+            메서드 아규먼트에 바인딩할 때 요청 파리미터에 추가로 URI 템플릿 변수를 
+            사용한다.</para>
           </listitem>
 
           <listitem>
-            <para>@PathVariable method argument values are merged into the
-            model before rendering, except in views that generate content in
-            an automated fashion such as JSON serialization or XML
-            marshalling.</para>
+            <para>@PathVariable 메서드 아규먼트의 값은 렌더링하기 전에 모델에 합쳐진다. 
+            단 JSON 직렬화나 XML 마샬랑처럼 자동화된 방법으로 생성하는 컨텐츠의 뷰는 
+            제외다.</para>
           </listitem>
 
           <listitem>
-            <para>A redirect string can contain placeholders for URI variables
-            (e.g. <literal>"redirect:/blog/{year}/{month}"</literal>). When
-            expanding the placeholders, URI template variables from the
-            current request are automatically considered.</para>
+            <para>리다이렉트 문자열은 URI 변수를 위한 플레이스홀더를 포함할 수 있다.
+            (예를 들어 <literal>"redirect:/blog/{year}/{month}"</literal>) 
+            플레이스홀더를 확장했을 때 현재 요청의 URI 템플릿 변수를 자동으로 
+            고려한다.</para>
           </listitem>
 
           <listitem>
-            <para>An <interfacename>@ModelAttribute</interfacename> method
-            argument can be instantiated from a URI template variable provided
-            there is a registered Converter or PropertyEditor to convert from
-            a String to the target object type.</para>
+            <para><interfacename>@ModelAttribute</interfacename> 메서드 아규먼트는 
+            문자열에서 타겟 객체타임으로 변환하기 위해서 등록한 Converter나 
+            PropertyEditor에서 제공받은 URI 템플릿 변수로 초기화 될 수 있다.</para>
           </listitem>
         </itemizedlist></para>
     </section>
 
     <section>
-      <title><interfacename>@Valid</interfacename> On
-      <interface>@RequestBody</interface> Controller Method Arguments</title>
+      <title><interface>@RequestBody</interface> 컨트롤러 메서드 아규먼트상의 
+        <interfacename>@Valid</interfacename></title>
 
-      <para>An <interface>@RequestBody</interface> method argument can be
-      annotated with <interface>@Valid</interface> to invoke automatic
-      validation similar to the support for
-      <interface>@ModelAttribute</interface> method arguments. A resulting
-      <classname>MethodArgumentNotValidException</classname> is handled in the
-      <classname>DefaultHandlerExceptionResolver</classname> and results in a
-      <literal>400</literal> response code.</para>
+      <para><interface>@RequestBody</interface> 메서드 아규먼트는 
+      <interface>@ModelAttribute</interface> 메서드 아규먼트와 유사하게 자동화된 
+      유효성 확인은 호출하는 <interface>@Valid</interface> 어노테이션을 붙일 수 있다. 
+      <classname>MethodArgumentNotValidException</classname>가 발생하면 
+      <classname>DefaultHandlerExceptionResolver</classname>가 처리하고 
+      <literal>400</literal> 응답코드를 돌려준다.</para>
     </section>
 
     <section>
-      <title><interfacename>@RequestPart</interfacename> Annotation On
-      Controller Method Arguments</title>
+      <title>컨트롤러 메서드 아규먼트 상의 
+      <interfacename>@RequestPart</interfacename> 어노테이션</title>
 
-      <para>This new annotation provides access to the content of a
-      "multipart/form-data" request part. See <xref
-      linkend="mvc-multipart-forms-non-browsers" /> and <xref
-      linkend="mvc-multipart" />.</para>
+      <para>이 새로운 어노테이션은 "multipart/form-data" 요청의 컨텐츠에 대한 
+      접근을 제공한다. <xref linkend="mvc-multipart-forms-non-browsers" />
+      와 <xref linkend="mvc-multipart" />를 참고해라.</para>
     </section>
 
     <section>
-      <title><classname>UriComponentsBuilder</classname> and <classname>UriComponents</classname></title>
+      <title><classname>UriComponentsBuilder</classname>와 <classname>UriComponents</classname></title>
 
-      <para>A new <classname>UriComponents</classname> class has been added, 
-      which is an immutable container of URI components providing 
-      access to all contained URI components.
-      A nenw <classname>UriComponentsBuilder</classname> class is also 
-      provided to help create <classname>UriComponents</classname> instances.
-      Together the two classes give fine-grained control over all
-      aspects of preparing a URI including construction, expansion
-      from URI template variables, and encoding.</para>
-      
-      <para>In most cases the new classes can be used as a more flexible 
-      alternative to the existing <classname>UriTemplate</classname> 
-      especially since <classname>UriTemplate</classname> relies on those
-      same classes internally.
+      <para><classname>UriComponents</classname> 클래스를 새로 추가했다. 
+      <classname>UriComponents</classname> 클래스는 모든 URI 컴포넌트에 대한 접근을 
+      제공하는 URI 컴포넌트의 불변(immutable) 컨테이너다. 
+      <classname>UriComponentsBuilder</classname> 클래스는 
+      <classname>UriComponents</classname> 인스턴스의 생성을 돕는다. 
+      이 두 클래스를 함께 사용하면 URI 템플릿 변수의 생성과 확장을 포함해서 
+      URI를 준비하는 관점과 인코딩에 걸친 전 과정을 제대로 제어할 수 있다.</para>
+
+      <para>대부분의 경우에 새롭게 추가된 클래스들은 기존의 
+      <classname>UriTemplate</classname>를 훨씬 유연하게 대체할 수 있다. 내부적으로 
+      <classname>UriTemplate</classname>는 같은 클래스에 기반을 두고 있다.
       </para>
       
-      <para>A <classname>ServletUriComponentsBuilder</classname> sub-class
-      provides static factory methods to copy information from 
-      a Servlet request. See <xref linkend="mvc-construct-encode-uri"/>.
+      <para><classname>ServletUriComponentsBuilder</classname>의 서브클래스는 
+      서블릿 요청에서 정보를 복사하는 정적 팩토리 메서드를 제공한다. 
+      <xref linkend="mvc-construct-encode-uri"/>를 참고해라.
       </para>
       
     </section>
