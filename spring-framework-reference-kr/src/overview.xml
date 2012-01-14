@@ -12,7 +12,7 @@
   엔터프라이즈 서비스를 비침투적으로 POJO에 적용할 수 있다. 이 능력은 Java SE 프로그래밍에
   적용되고 전제 혹은 부분적으로 Java EE에 적용된다.</para>
 
-  <para>어플리케이션 개발자인 당신이 어떻게 스프링 플랫폿의 이점을 사용할 수 있는가에 대한 예제가 있다: 
+  <para>어플리케이션 개발자인 당신이 어떻게 스프링 플랫폿의 이점을 사용할 수 있는가에 대한 예제가 있다. 
   <!--In each of the examples, clarify what you mean by *the implementer* (identify it, or is it a person?). ALSO in each sentence replace--><!--*dealing with* APIs with what you mean: what does not have to be done in regard to APIs? IMPORTANT, because this discusses advantage--><!--of product. TR: REVISED, PLS REVIEW. I changed *implementer* to *application developer* and put it upfront rather than repeat it.--></para>
 
   <itemizedlist>
@@ -331,10 +331,10 @@ TR: OK. Added to diagram.--></para>
       버전번호가 포함되어 있다.(예를 들면 <code>spring-core-3.0.0.RELEASE.jar
       </code>와 같은 방식이다.)</para>
 
-      <para>보통 스프링은 결과물(Artifact)을 다음 네 곳에 배포한다:<itemizedlist>
+      <para>보통 스프링은 결과물(Artifact)을 다음 네 곳에 배포한다.<itemizedlist>
           <listitem>
             <para>커뮤니티 다운로드 사이트 <ulink
-            url="http://www.springsource.org/downloads/community">http://www.springsource.org/downloads/community</ulink>.
+            url="http://www.springsource.org/downloads/community">http://www.springsource.org/downloads/community</ulink>
             다운로드받기 쉽도록 zip 파일로 묶인 모든 스프링 jar파일이 있다. 3.0 버전부터
             이곳의 jar파일명은 <code>org.springframework.*-&lt;version&gt;.jar
             </code>의 형식을 따른다.</para>
