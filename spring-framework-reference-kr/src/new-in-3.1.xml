@@ -145,7 +145,7 @@
         </listitem>
 
         <listitem>
-          <para>See
+          <para>
           org.springframework.context.annotation.EnableAspectJAutoProxy
           의 JavaDoc 참고</para>
         </listitem>
@@ -341,13 +341,6 @@
           <para><classname>AnnotationMethodHandlerExceptionResolver</classname></para>
         </listitem>
       </itemizedlist>
-
-      <para>The new classes were developed in response to many requests to
-      make annotation controller support classes more customizable and open
-      for extension. Whereas previously you could configure a custom annotated
-      controller method argument resolver, with the new support classes you
-      can customize the processing for any supported method argument or return
-      value type.</para>
 
       <para>어노테이션이 붙은 컨트롤러의 지원 클래스들이 더 커스터마이징할 수 있고 
       쉽게 확장할 수 있도록 해야 한다는 많은 요청을 수용해서 새로운 클래스들을 개발했다. 

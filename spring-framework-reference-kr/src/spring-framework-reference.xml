@@ -237,35 +237,27 @@
   </part>
 
   <part id="spring-core">
-    <title>Core Technologies</title>
+    <title>코어 테크놀로지</title>
 
     <partintro id="spring-core-intro">
-      <para>This part of the reference documentation covers all of those
-      technologies that are absolutely integral to the Spring
-      Framework.</para>
+      <para>레퍼런스 문서에서 이번 Part는 스프링에서 절대적으로 중요한 기술들을 모두 
+      다룬다.</para>
 
-      <para>Foremost amongst these is the Spring Framework's Inversion of
-      Control (IoC) container. A thorough treatment of the Spring Framework's
-      IoC container is closely followed by comprehensive coverage of Spring's
-      Aspect-Oriented Programming (AOP) technologies. The Spring Framework has
-      its own AOP framework, which is conceptually easy to understand, and
-      which successfully addresses the 80% sweet spot of AOP requirements in
-      Java enterprise programming.</para>
+      <para>코어 테크놀로지 중에서 가장 중요한 것은 스프링 프레임워크의 제어의 역전(IoC) 
+      컨테이너다. 스프링 프레임워크의 IoC 컨테이너의 철저한 처리는 스프링의 관점 지향 
+      프로그래밍(AOP) 기술이 가진 광범위한 커버리지로 밀접하게 이어진다. 스프링 프레임워크의 
+      자체 AOP 프레임워크는 개념적으로 이해하기 쉽고 자바 엔터프라이즈 프로그래밍에서 필요한 
+      AOP 요구사항의 80% 정도를 성공적으로 다룬다.</para>
 
-      <para>Coverage of Spring's integration with AspectJ (currently the
-      richest - in terms of features - and certainly most mature AOP
-      implementation in the Java enterprise space) is also provided.</para>
+      <para>스프링은 AspectJ (현재 기능 면에서 가장 강력하고 자바 엔터프라이즈 영역에서 
+      확실히 가장 발전한 AOP 구현체이다.) 와 통합도 제공한다.</para>
 
-      <para>Finally, the adoption of the test-driven-development (TDD)
-      approach to software development is certainly advocated by the Spring
-      team, and so coverage of Spring's support for integration testing is
-      covered (alongside best practices for unit testing). The Spring team has
-      found that the correct use of IoC certainly does make both unit and
-      integration testing easier (in that the presence of setter methods and
-      appropriate constructors on classes makes them easier to wire together
-      in a test without having to set up service locator registries and
-      suchlike)... the chapter dedicated solely to testing will hopefully
-      convince you of this as well.</para>
+      <para>마지막으로 스프링 팀은 소프트웨어 개발에 테스트 주도 개발 (TDD) 도입을 
+      확고하게 지지한다. 그래서 스프링은 통합테스트도 지원한다. (유닛테스트에 대한 베스트 
+      프렉티스도 제공한다.) 스프링 팀은 IoC를 제대로 사용하면 유닛 테스트와 통합 테스트를 
+      더 쉽게 할 수 있다는 점을 깨달았다. (setter 메서드와 클래스의 적절한 생성자가 있으면 
+      service locator registry 등을 설정하지 않아도 테스트와 쉽게 연결할 수있다.) 테스팅을 
+      다룬 챕터에서 이 부분을 알 수 있을 것이다.</para>
 
       <itemizedlist>
         <listitem>

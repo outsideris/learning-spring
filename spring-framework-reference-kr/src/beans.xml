@@ -2,108 +2,88 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="beans">
-  <title>The IoC container</title>
+  <title>IoC 컨테이너</title>
 
   <section id="beans-introduction">
-    <title>Introduction to the Spring IoC container and beans</title>
+    <title>Spring IoC 컨테이너와 빈즈(beans)의 도입</title>
 
-    <para>This chapter covers the Spring Framework implementation of the
-      Inversion of Control (IoC) <footnote>
-      <para>See <xref linkend="background-ioc"/></para>
-      </footnote>principle. IoC is also known as <emphasis>dependency
-      injection</emphasis> (DI). It is a process whereby objects define their
-      dependencies, that is, the other objects they work with, only through
-      constructor arguments, arguments to a factory method, or properties that
-      are set on the object instance after it is constructed or returned from a
-      factory method. The container then <emphasis>injects</emphasis> those
-      dependencies when it creates the bean. This process is fundamentally the
-      inverse, hence the name <emphasis>Inversion of Control</emphasis> (IoC),
-      of the bean itself controlling the instantiation or location of its
-      dependencies by using direct construction of classes, or a mechanism such
-      as the <emphasis>Service Locator</emphasis> pattern.</para>
+    <para>이번 챕터는 제어의 역전 (IoC) <footnote><para>
+      <xref linkend="background-ioc"/> 참고.</para></footnote> 원리에 대한 스프링 
+      프레임워크의 구현체에 대해 설명한다. IoC는 <emphasis>의존성 주입</emphasis> (DI)
+      으로도 알려다. 이는 객체가 함께 동작해야 하는 의존성을 정의하는 처리 과정이다. IoC는 
+      생성자 아규먼트나 팩토리 메서드의 아규먼트 또는 객체 인스턴스 후에 설정된 프로퍼티나 팩토리 
+      메서드에서 리턴받은 값으로 정의한다. 그다음 컨테이너는 빈이 생성될 때 의존성을 
+      <emphasis>주입</emphasis>한다. 이 처리 과정은 빈 스스로 인스턴스화 하는 과정을 
+      제어하거나 직접 클래스의 생성자를 사용해서 의존성을 정의하거나 또는 
+      <emphasis>서비스 로케이터</emphasis> 패턴 같은 메니즘과 근본적으로 정반대이므로 
+      <emphasis>제어의 역전</emphasis> (IoC)이라고 이름 붙였다.</para>
 
     <!--I copied and pasted preceding from "Injecting Dependencies" to give background on IoC, since that's what chapter is about.
 The footnote should x-ref to first section in that chapter but I can't find the file. The current xref doesn't work.-->
 
-    <para>The <literal>org.springframework.beans</literal> and
-      <literal>org.springframework.context</literal> packages are the basis for
-      Spring Framework's IoC container. The <interfacename><ulink
+    <para><literal>org.springframework.beans</literal>와 
+      <literal>org.springframework.context</literal> 패키지는 스프링 프레임워크 IoC 
+      컨테이너의 기반이다. <interfacename><ulink
       url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/BeanFactory.html"
-      >BeanFactory</ulink></interfacename> interface provides an advanced
-      configuration mechanism capable of managing any type of object.
-      <literal><ulink
+      >BeanFactory</ulink></interfacename> 인터페이스는 어떤 타입의 객체도 다룰 수 있는 
+      향상된 설정 메카니즘을 제공한다. <literal><ulink
       url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/context/ApplicationContext.html"
-      >ApplicationContext</ulink></literal> is a sub-interface of
-      <interfacename>BeanFactory.</interfacename> It adds easier integration
-      with Spring's AOP features; message resource handling (for use in
-      internationalization), event publication; and application-layer specific
-      contexts such as the <interfacename>WebApplicationContext</interfacename>
-      for use in web applications.</para>
+      >Applicatio커nContext</ulink></literal>는 <interfacename>BeanFactory</interfacename>의 
+      서브 인터페이스다. ApplicationContext는 스프링의 AOP기능, 메시지 리소스 핸들링
+      (국제화(i18n)를 사용하려고), 이벤트 발생, 웹 어플리케이션의 <interfacename>
+      WebApplicationContext</interfacename>같은 어플리케이션 계층에서 지정한 컨텍스트와 
+      더 쉽게 통합할 수 있게 한다.</para>
 
-    <para>In short, the <interfacename>BeanFactory</interfacename> provides the
-      configuration framework and basic functionality, and the
-      <interfacename>ApplicationContext</interfacename> adds more
-      enterprise-specific functionality. The
-      <interfacename>ApplicationContext</interfacename> is a complete superset
-      of the <interfacename>BeanFactory</interfacename>, and is used exclusively
-      in this chapter in descriptions of Spring's IoC container.
-      <!--API spec says ApplicationContext is a subinterface of BeanFactory, so is it right to call it a superset?-->For
-      more information on using the <classname>BeanFactory</classname> instead
-      of the <classname>ApplicationContext,</classname> refer to <xref
-      linkend="beans-beanfactory"/>.</para>
+    <para>간단히 말하면 <interfacename>BeanFactory</interfacename>는 설정 프레임워크와 
+      기본적인 기능을 제공하고 <interfacename>ApplicationContext</interfacename>는 
+      에 엔터프라이즈급에 가까운 기능을 추가한다. <interfacename>ApplicationContext
+      </interfacename>는 <interfacename>BeanFactory</interfacename>의 슈퍼셋이고 
+      이 챕터에서는 전적으로 스프링 IoC 컨테이너를 설명하는 데만 사용한다.
+      <!--API spec says ApplicationContext is a subinterface of BeanFactory, so is it right to call it a superset?--><classname>ApplicationContext</classname> 대신 
+      <classname>BeanFactory</classname>를 사용하는 방법에 대해 더 자세한 내용을 알고 
+      싶다면 <xref linkend="beans-beanfactory"/>를 참고해라.</para>
 
-    <para>In Spring, the objects that form the backbone of your application and
-      that are managed by the Spring IoC <firstterm>container</firstterm> are
-      called <firstterm>beans</firstterm>. A bean is an object that is
-      instantiated, assembled, and otherwise managed by a Spring IoC container.
-      Otherwise, a bean is simply one of many objects in your application.
-      Beans, and the <firstterm>dependencies</firstterm> among them, are
-      reflected in the <firstterm>configuration metadata</firstterm> used by a
-      container.</para>
+    <para>스프링에서 어플리케이션의 중추가 되고 스프링 IoC <firstterm>컨테이너</firstterm>가
+      관리하는 객체를 <firstterm>빈(bean)</firstterm>이라고 부른다. 빈은 인스턴스화 되고 
+      결집한 객체로 스프링 IoC 컨테이너가 관리한다. 빈은 어플리케이션에서 수많은 객체 중 
+      하나일 뿐이다. 컨테이너가 사용한 <firstterm>설정 메타데이터</firstterm>는 빈과 
+      빈 사이의 <firstterm>의존성</firstterm>에 반영된다.</para>
   </section>
 
   <section id="beans-basics">
-    <title>Container overview</title>
-
-    <para>The interface
-      <classname>org.springframework.context.ApplicationContext</classname>
-      represents the Spring IoC container and is responsible for instantiating,
-      configuring, and assembling the aforementioned beans. The container gets
-      its instructions on what objects to instantiate, configure, and assemble
-      by reading configuration metadata. The configuration metadata is
-      represented in XML, Java annotations, or Java code. It allows you to
-      express the objects that compose your application and the rich
-      interdependencies between such objects.</para>
-
-    <para>Several implementations of the
-      <classname>ApplicationContext</classname> interface are supplied
-      out-of-the-box with Spring. In standalone applications it is common to
-      create an instance of <ulink
+    <title>컨테이너 개요</title>
+    
+    <para><classname>org.springframework.context.ApplicationContext</classname>
+      인터페이스는 스프링 IoC 컨테이너를 나타내며 앞에서 언급한 빈을 인스턴스화하고 설정하고 
+      조합하는 데 책임이 있다. 컨테이너는 어떤 객체를 인스턴스로 만들고 설정하고 조합해야 하는지를 
+      설정 메타데이터에서 알아낸다. 설정 메타데이터는 XML이나 자바 어노테이션, 자바 코드로 
+      나타낸다. 설정 메타데이터는 어플리케이션을 구성하는 객체들을 나타내고 그러한 객체들 사이의 
+      풍부한 상호 의존성을 나타낸다.</para>
+    
+    <para><classname>ApplicationContext</classname> 인터페이스의 다양한 구현체는 
+      스프링 밖에서 제공된다. 단독 어플리케이션에서는 일반적으로 <ulink
       url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/context/support/ClassPathXmlApplicationContext.html"
-      ><classname>ClassPathXmlApplicationContext</classname></ulink> or <ulink
+      ><classname>ClassPathXmlApplicationContext</classname></ulink>나 <ulink
       url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/context/support/FileSystemXmlApplicationContext.html"
-      ><classname>FileSystemXmlApplicationContext</classname></ulink>.
-      <!-- MLP: Beverly to review --> While XML has been the traditional format
-      for defining configuration metadata you can instruct the container to use
-      Java annotations or code as the metadata format by providng a small amount
-      of XML configuration to declaratively enable support for these additional
-      metadata formats.</para>
-
-    <para>In most application scenarios, explicit user code is not required to
-      instantiate one or more instances of a Spring IoC container. For example,
-      in a web application scenario, a simple eight (or so) lines of boilerplate
-      J2EE web descriptor XML in the <literal>web.xml</literal> file of the
-      application will typically suffice (see <xref linkend="context-create"/>).
-      If you are using the <ulink url="http://www.springsource.com/produts/sts"
-      >SpringSource Tool Suite</ulink> Eclipse-powered development environment
-      or <ulink url="http://www.springsource.org/roo">Spring Roo</ulink> this
-      boilerplate configuration can be easily created with few mouse clicks or
-      keystrokes.</para>
-
-    <para>The following diagram is a high-level view of how Spring works. Your
-      application classes are combined with configuration metadata so that after
-      the <classname>ApplicationContext</classname> is created and initialized,
-      you have a fully configured and executable system or application.</para>
+      ><classname>FileSystemXmlApplicationContext</classname></ulink>의 인스턴스를 
+      생성한다.
+      <!-- MLP: Beverly to review --> XML이 설정 메타데이터를 정의하는 보편적인 포맷이 
+      되었지만, 자바 어노테이션이나 메타데이터 형식의 코드로 컨테이너에 설정을 알려줄 수 있다. 
+      이러한 추가적인 메타데이터 포맷을 선언적으로 지원하도록 하는 소량의 XML 설정만 제공하면 
+      된다.</para>
+    
+    <para>대부분의 어플리케이션 시나리오에서 스프링 IoC 컨테이너의 인스턴스를 만드는 명시적인 
+      사용자 코드는 필요하지 않다. 예를 들어 웹 어플리케이션 시나리오에서 어플리케이션의 
+      <literal>web.xml</literal>에서 8줄 정도의 J2EE 웹 디스크립터 XML만으로도 보통 
+      충분할 것이다.(<xref linkend="context-create"/> 참고) 이클립스 기반의 개발환경인 
+      <ulink url="http://www.springsource.com/produts/sts">SpringSource Tool 
+      Suite</ulink>나 <ulink url="http://www.springsource.org/roo">Spring Roo</ulink>를 
+      사용한다면 이러한 설정은 몇 번의 마우스 클릭이나 키보드 입력만으로도 생성할 수 있다.</para>
+    
+    <para>다음 다이어그은 스프링이 어떻게 어떻게 동작하는지 보여준다. 어플리케이션의 
+      클래스들은 설정 메타 데이터와 결합한다. 그래서 <classname>ApplicationContext
+      </classname>이 생성되고 인스턴스화 되면 완전히 설정이 완료되고 실행가능한 시스템이나 
+      어플리케이션이 준비된다.</para>
 
     <para><mediaobject>
       <imageobject>
@@ -111,73 +91,65 @@ The footnote should x-ref to first section in that chapter but I can't find the 
           format="PNG"/>
       </imageobject>
 
-      <caption><para>The Spring IoC container</para></caption>
+      <caption><para>Spring IoC 컨테이너</para></caption>
       </mediaobject></para>
 
     <section id="beans-factory-metadata">
-      <title>Configuration metadata</title>
+      <title>설정 메타데이터(Configuration metadata)</title>
 
-      <para>As the preceding diagram shows, the Spring IoC container consumes a
-        form of <emphasis>configuration metadata</emphasis>; this configuration
-        metadata represents how you as an application developer tell the Spring
-        container to instantiate, configure, and assemble the objects in your
-        application.</para>
+      <para>앞의 다이어그램에서 봤듯이 스프링 IoC 컨테이너는 <emphasis>설정 메타데이터
+        </emphasis> 형식을 받아들인다. 이 설정 메타데이터를 통해 어플리케이션 개발자는 
+        스프링 컨테이너가 어플리케이션의 객체를 어떻게 인스턴스화하고 설정하고 조합해야 
+        하는지 지시할 수 있다.</para>
 
-      <para>Configuration metadata is traditionally supplied in a simple and
-        intuitive XML format, which is what most of this chapter uses to convey
-        key concepts and features of the Spring IoC container.</para>
+      <para>설정 메타데이터는 전통적으로 간단하고 직관적인 XML 포맷을 사용한다. 이 
+        챕터에서도 스프링 IoC 컨테이너의 핵심 개념과 기능을 설명하기 위해서 XML을 사용한다.</para>
 
       <note>
-        <para>XML-based metadata is <emphasis>not</emphasis> the only allowed
-          form of configuration metadata. The Spring IoC container itself is
-          <emphasis>totally</emphasis> decoupled from the format in which this
-          configuration metadata is actually written.</para>
+        <para>XML기반의 메타데이터는 설정 메타데이터를 위한 유일한 형식이 <emphasis>아니다.
+          </emphasis> 스프링 IoC 컨테이너 자체도 실제 작성된 설정 메타데이터의 형식과 
+          <emphasis>완전히</emphasis> 분리되어 있다.</para>
       </note>
 
-      <para>For information about using other forms of metadata with the Spring
-        container, see:</para>
+      <para>스프링 컨테이너에 다른 형식의 메타데이터를 사용하는 방법에 대해서는 다음을 
+        참고해라.</para>
 
       <itemizedlist>
         <listitem>
           <para><link linkend="beans-annotation-config">Annotation-based
-            configuration</link>: Spring 2.5 introduced support for
-            annotation-based configuration metadata.</para>
+            configuration</link>: 스프링 2.5에서 도입된 어노테이션 기반의 설정 
+            메타데이터 지원.</para>
         </listitem>
 
         <listitem>
           <para><link linkend="beans-java">Java-based configuration</link>:
-            Starting with Spring 3.0, many features provided by the <ulink
-            url="http://www.springsource.org/javaconfig">Spring JavaConfig
-            project</ulink> became part of the core Spring Framework. Thus you
-            can define beans external to your application classes by using Java
-            rather than XML files. To use these new features, see the
-            <interfacename>@Configuration</interfacename>, <interfacename>@Bean,
-            @Import</interfacename> and
-            <interfacename>@DependsOn</interfacename> annotations.</para>
+            스프링 3.0을 시작하면서 <ulink url="http://www.springsource.org/javaconfig">
+            Spring JavaConfig 프로젝트</ulink>의 많은 기능이 스프링 프레임워크의 
+            핵심부분이 되었다. 그러므로 XML파일 대신에 자바로 어플리케이션 클래스에 대한 
+            빈을 외부에서 정의할 수 있다. 이 기능을 사용하려면 <interfacename>
+            @Configuration</interfacename>, <interfacename>@Bean</interfacename>, 
+            <interfacename>@Import</interfacename>, <interfacename>@DependsOn
+            </interfacename> 봐라.</para>
         </listitem>
       </itemizedlist>
 
-      <para>Spring configuration consists of at least one and typically more
-        than one bean definition that the container must manage. XML-based
-        configuration metadata shows these beans configured as
-        <literal>&lt;bean/&gt;</literal> elements inside a top-level
-        <literal>&lt;beans/&gt;</literal> element.</para>
+      <para>스프링의 설정은 컨테이너가 반드시 관리해야 하는 최소한 하나 이상의 빈 정의로 
+        이루어진다. XML기반의 설정 메타데이터는 최상위 <literal>&lt;beans/&gt;</literal> 
+        엘리먼트 안에 <literal>&lt;bean/&gt;</literal> 엘리먼트로 이러한 빈을 
+        설정한다.</para>
 
-      <para>These bean definitions correspond to the actual objects that make up
-        your application. Typically you define service layer objects, data
-        access objects (DAOs), presentation objects such as Struts
-        <interfacename>Action</interfacename> instances, infrastructure objects
-        such as Hibernate <interfacename>SessionFactories</interfacename>, JMS
-        <interfacename>Queues</interfacename>, and so forth. Typically one does
-        not configure fine-grained domain objects in the container, because it
-        is usually the responsibility of DAOs and business logic to create and
-        load domain objects. However, you can use Spring's integration with
-        AspectJ to configure objects that have been created outside the control
-        of an IoC container. See <link linkend="aop-atconfigurable">Using
-        AspectJ to dependency-inject domain objects with Spring</link>.</para>
+      <para>이러한 빈 정의들은 어플리케이션을 구성하는 실제 객체들과 대응된다. 일반적으로 
+        서비스계층 객체, 데이터 접근 객체(DAO), Struts <interfacename>Action
+        </interfacename> 인스턴스같은 프리젠테이션 객체, Hibernate <interfacename>
+        SessionFactories</interfacename>같은 인프라스트럭처 객체, JMS 
+        <interfacename>Queues</interfacename>등을 정의한다. 보통 이는 보통 도메인 
+        객체를 생성하고 로드하는 DAO와 비즈니스 로직에 대한 책임이 있기 때문에 컨테이너에서 
+        세분화된 도메인 객체를 설정하지 않는다. 하지만 IoC 컨테이너의 제어범위 밖에서 생성된 
+        객체를 설정하기 위해 AspectJ를 스프링과 통합할 수 있다.
+        <link linkend="aop-atconfigurable">Using AspectJ to dependency-inject 
+        domain objects with Spring</link>를 참고해라.</para>
 
-      <para>The following example shows the basic structure of XML-based
-        configuration metadata:</para>
+      <para>다음 예제는 XML기반의 설정데이터의 기본구조를 보여준다.</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -197,41 +169,35 @@ The footnote should x-ref to first section in that chapter but I can't find the 
 
 &lt;/beans&gt;</programlisting>
 
-      <para>The <literal>id</literal> attribute is a string that you use to
-        identify the individual bean definition. The <literal>class</literal>
-        attribute defines the type of the bean and uses the fully qualified
-        classname. The value of the id attribute refers to collaborating
-        objects. The XML for referring to collaborating objects is not shown in
-        this example; see <link linkend="beans-dependencies">Dependencies</link>
-        for more information.</para>
+      <para><literal>id</literal> 속성은 개별 빈 정의를 구분하기 위해 사용하는 문자열이다. 
+        <literal>class</literal> 속성은 빈의 타입을 정의하고 정규화된(fully qualified) 
+        클래스 명을 사용한다. id 속성의 값은 협력 객체를 참조한다. 협력 객체를 참조하는 
+        XML은 이 예제에 없다. 더 자세한 정보는 <link 
+        linkend="beans-dependencies">Dependencies</link>를 참고해라.</para>
     </section>
 
     <section id="beans-factory-instantiation">
-      <title>Instantiating a container</title>
+      <title>컨테이너의 인스턴스화</title>
 
-      <para>Instantiating a Spring IoC container is straightforward. The
-        location path or paths supplied to an
-        <interfacename>ApplicationContext</interfacename> constructor are
-        actually resource strings that allow the container to load configuration
-        metadata from a variety of external resources such as the local file
-        system, from the Java <literal>CLASSPATH</literal>, and so on.</para>
+      <para>스프링 IoC 컨테이너의 인스턴스화는 이해하기 쉽다. 
+        <interfacename>ApplicationContext</interfacename> 생성자에 제공한 위치 경로는 
+        사실 리소스에 대한 문자열이다. 컨테이너는 이 경로로 로컬파일 시스템 같은 다양한 
+        외부리소스나 자바 <literal>CLASSPATH</literal> 등에서 설정 메타데이터를 로드한다.</para>
 
       <programlisting language="java">ApplicationContext context =
     new ClassPathXmlApplicationContext(new String[] {"services.xml", "daos.xml"});</programlisting>
 
       <note>
-        <para>After you learn about Spring's IoC container, you may want to know
-          more about Spring's <interfacename>Resource</interfacename>
-          abstraction, as described in <xref linkend="resources"/>, which
-          provides a convenient mechanism for reading an InputSream from
-          locations defined in a URI syntax. In particular,
-          <classname>Resource</classname> paths are used to construct
-          applications contexts as described in <xref
-          linkend="resources-app-ctx"/>.</para>
+        <para>스프링의 IoC 컨테이너를 공부하고 나면 <xref linkend="resources"/>에서 
+          설명하는 스프링의 <interfacename>Resource</interfacename>에 대해서 
+          궁금해질 것이다. <interfacename>Resource</interfacename>는 URI 문법으로 
+          정의된 위치에서 입스트림을 읽는 편리한 메니즘을 제공한다. 특히, 
+          <classname>Resource</classname> 경로는 <xref linkend="resources-app-ctx"/>에서 
+          설명하는 어플리케이션 컨텐스트를 구성하는 데 사용한다.</para>
       </note>
 
-      <para>The following example shows the service layer objects
-        <literal>(services.xml)</literal> configuration file:</para>
+      <para>다음 예제는 서비스 계층 객체 <literal>(services.xml)</literal>의 
+        설정파일이다.</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -239,22 +205,21 @@ The footnote should x-ref to first section in that chapter but I can't find the 
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"&gt;
 
-  &lt;!-- services --&gt;
+  &lt;!-- 서비 --&gt;
 
   &lt;bean id="petStore"
         class="org.springframework.samples.jpetstore.services.PetStoreServiceImpl"&gt;
     &lt;property name="accountDao" ref="accountDao"/&gt;
     &lt;property name="itemDao" ref="itemDao"/&gt;
-    &lt;!-- additional collaborators and configuration for this bean go here --&gt;
+    &lt;!-- 이 빈에 대한 추가적인 협력 객체나 설정은 여기에 작성한다 --&gt;
   &lt;/bean&gt;
 
-  &lt;!-- more bean definitions for services go here --&gt;
+  &lt;!-- 서비스에 대한 추가적인 빈 정의는 여기에 작성한다 --&gt;
 
 &lt;/beans&gt;
 </programlisting>
 
-      <para>The following example shows the data access objects
-        <literal>daos.xml</literal> file:</para>
+      <para>다음 예제는 데이터 접근 객체인 <literal>daos.xml</literal> 파일이다.</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -264,42 +229,37 @@ The footnote should x-ref to first section in that chapter but I can't find the 
 
   &lt;bean id="accountDao"
       class="org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao"&gt;
-    &lt;!-- additional collaborators and configuration for this bean go here --&gt;
+    &lt;!-- 이 빈에 대한 추가적인 협력 객체나 설정은 여기에 작성한다 --&gt;
   &lt;/bean&gt;
 
   &lt;bean id="itemDao" class="org.springframework.samples.jpetstore.dao.ibatis.SqlMapItemDao"&gt;
-    &lt;!-- additional collaborators and configuration for this bean go here --&gt;
+    &lt;!-- 이 빈에 대한 추가적인 협력 객체나 설정은 여기에 작성한다 --&gt;
   &lt;/bean&gt;
 
-  &lt;!-- more bean definitions for data access objects go here --&gt;
+  &lt;!-- 데이터 접근 객체에 대한 추가적인 빈 정의는 여기에 작성한다 --&gt;
 
 &lt;/beans&gt;</programlisting>
-
-      <para>In the preceding example, the service layer consists of the class
-        <classname>PetStoreServiceImpl</classname>, and two data access objects
-        of the type <classname>SqlMapAccountDao</classname> and SqlMapItemDao
-        are based on the <ulink url="http://ibatis.apache.org/">iBatis</ulink>
-        Object/Relational mapping framework. The <literal>property
-        name</literal> element refers to the name of the JavaBean property, and
-        the <literal>ref</literal> element refers to the name of another bean
-        definition. This linkage between id and ref elements expresses the
-        dependency between collaborating objects. For details of configuring an
-        object's dependencies, see <link linkend="beans-dependencies"
-        >Dependencies</link>.</para>
+      
+      <para>앞의 예제에서 서비스계층은 <classname>PetStoreServiceImpl</classname> 
+        클래스로 이루어져 있고 <classname>SqlMapAccountDao</classname>와 SqlMapItemDao 
+        타입의 두 데이터 접근 객체들은 <ulink url="http://ibatis.apache.org/">iBatis</ulink> 
+        객체/관계 매핑(Object/Relational mapping) 프레임워크에 기반을 둔다. <literal>property
+        name</literal> 요소는 JavaBean 프로퍼티의 이름을 참조한다. <literal>ref</literal> 
+        요소는 또 다른 빈 정의의 이름을 참조한다. id와 ref 요소의 결합은 협력 객체들 
+        사이의 의존성을 나타낸다. 객체의 의존성을 설정하는 방법에 대한 자세한 내용은 
+        <link linkend="beans-dependencies">Dependencies</link>를 참고해라.</para>
 
       <section id="beans-factory-xml-import">
-        <title>Composing XML-based configuration metadata</title>
+        <title>XML기반의 설정 메타데이터 구성</title>
 
-        <para>It can be useful to have bean definitions span multiple XML files.
-          Often each individual XML configuration file represents a logical
-          layer or module in your architecture.</para>
+        <para>빈 정의를 여러 XML 파일에 하는 것은 유용할 수 있다. 때때로 개별 XML 설정파일은 
+          아키텍처상의 논리적인 계층이나 모듈을 나타낸다.</para>
 
-        <para>You can use the application context constructor to load bean
-          definitions from all these XML fragments. This constructor takes
-          multiple <interfacename>Resource</interfacename> locations, as was
-          shown in the previous section. Alternatively, use one or more
-          occurrences of the <literal>&lt;import/&gt;</literal> element to load
-          bean definitions from another file or files. For example:</para>
+        <para>어플리케이션 컨텍스트 생성자를 이러한 XML 파일들로부터 빈 정의를 
+          로드하는데 사용할 수 있다. 이 생성자는 이전 섹션에서 보여준 것처럼 여러 
+          <interfacename>Resource</interfacename>의 위치를 받을 수 있다. 아니면 
+          하나 이상의 <literal>&lt;import/&gt;</literal> 요소를 사용해서 다른 파일의 
+          빈 정의를 로드할 수 있다. 예를 들면 다음과 같다.</para>
 
         <programlisting language="xml">&lt;beans&gt;
 
@@ -312,121 +272,105 @@ The footnote should x-ref to first section in that chapter but I can't find the 
 
 &lt;/beans&gt;</programlisting>
 
-        <para>In the preceding example, external bean definitions are loaded
-          from three files, <literal>services.xml</literal>,
-          <literal>messageSource.xml</literal>, and
-          <literal>themeSource.xml</literal>. All location paths are relative to
-          the definition file doing the importing, so
-          <literal>services.xml</literal> must be in the same directory or
-          classpath location as the file doing the importing, while
-          <literal>messageSource.xml</literal> and
-          <literal>themeSource.xml</literal> must be in a
-          <literal>resources</literal> location below the location of the
-          importing file. As you can see, a leading slash is ignored, but given
-          that these paths are relative, it is better form not to use the slash
-          at all. The contents of the files being imported, including the top
-          level <literal>&lt;beans/&gt;</literal> element, must be valid XML
-          bean definitions according to the Spring Schema or DTD.</para>
+        <para>앞의 예제에서는 <literal>services.xml</literal>,
+          <literal>messageSource.xml</literal>, <literal>themeSource.xml</literal>
+          의 3개 파일에서 외부 빈 정의를 로드했다. 모든 위치 경로는 임포트하는 파일의 
+          상대경로이므로 <literal>services.xml</literal>는 반드시 같은 디렉터리에 
+          있거나 같은 클래스패스 경로에 있어야 한다. 그리고 <literal>messageSource.xml
+          </literal>와 <literal>themeSource.xml</literal>는 임포트하는 파일 하위에 
+          <literal>resources</literal> 위치에 있어야 한다. 이 예제에서 보듯이 맨 앞의 
+          슬래시(/)는 무시되고 경로는 상대경로가 되므로 맨 앞에 슬래시를 사용하지 않는 것이 
+          더 좋은 형식이다. 임포트된 파일의 내용은 최상위에 <literal>&lt;beans/&gt;</literal>가 
+          있는 스프링 스키마나 DTD를 따르는 유효한 XML 빈 정의여야 한다.</para>
 
         <note>
-          <para>It is possible, but not recommended, to reference files in
-            parent directories using a relative "../" path. Doing so creates a
-            dependency on a file that is outside the current application. In
-            particular, this reference is not recommended for "classpath:" URLs
-            (for example, "classpath:../services.xml"), where the runtime
-            resolution process chooses the "nearest" classpath root and then
-            looks into its parent directory. Classpath configuration changes may
-            lead to the choice of a different, incorrect directory.</para>
+          <para>"../"를 사용해서 부모 디렉터리의 파일을 참조하는 것도 가능하지만 
+            별로 권하지 않는다. 부모 디렉터리를 참조하면 현재 어플리케이션 밖에 있는 파일에 
+            대한 의존성을 만든다. 특히 이러한 참조는 "가장 가까운" 클래스패스 루트를 선택하고 
+            루트의 부모 디렉터리를 검색하는 런타임 처리인 "classpath:" URL(예를 들면 
+            "classpath:../services.xml")에서는 
+            사용하지 말아야 한다. 클래스패스 설정을 변경하면 다른 디렉리나 잘못된 
+            디렉터리를 선택할 수 있다.</para>
 
-          <para>You can always use fully qualified resource locations instead of
-            relative paths: for example, "file:C:/config/services.xml" or
-            "classpath:/config/services.xml". However, be aware that you are
-            coupling your application's configuration to specific absolute
-            locations. It is generally preferable to keep an indirection for
-            such absolute locations, for example, through "${...}" placeholders
-            that are resolved against JVM system properties at runtime.</para>
+          <para>항상 상대경로 대신 정규화된(fully qualified) 리소스 경로를 사용할 수 있다. 
+            예를 들면 "file:C:/config/services.xml"나 "classpath:/config/services.xml"와 
+            같은 형식이다. 하지만 절대경로를 사용하면 어플리케이션 설정이 특정 절대경로에 
+            대한 깊은 결합도가 생긴다는 것을 알아야 한다. 보통 이러한 절대 경로를 우회하는 
+            방법을 더 선호한다. 예를 들면 "${...}" 플레이스홀더를 사용해서 런타임시에 
+            JVM 시스템 프로퍼티로 교체한다.</para>
         </note>
       </section>
     </section>
 
     <section id="beans-factory-client">
-      <title>Using the container</title>
+      <title>컨테이너의 사용</title>
 
-      <para>The <interfacename>ApplicationContext</interfacename> is the
-        interface for an advanced factory capable of maintaining a registry of
-        different beans and their dependencies. Using the method <methodname>T
-        getBean(Stringname, Class&lt;T&gt; requiredType)</methodname> you can
-        retrieve instances of your beans.</para>
+      <para><interfacename>ApplicationContext</interfacename>는 여러 빈의 등록과 
+        빈의 의존성을 유지하는 향상된 팩토리 기능을 제공하는 인터페이스다. <methodname>T
+        getBean(Stringname, Class&lt;T&gt; requiredType)</methodname> 메서드를 
+        사용하면 빈의 인스턴스를 얻을 수 있다.</para>
 
-      <para>The <interfacename>ApplicationContext</interfacename> enables you to
-        read bean definitions and access them as follows:</para>
+      <para><interfacename>ApplicationContext</interfacename>는 다음과 같이 빈 정의를 
+        읽고 빈에 접근할 수 있게 한다.</para>
 
-      <programlisting language="java">// create and configure beans
+      <programlisting language="java">// 생성과 설정 빈
 ApplicationContext context =
     new ClassPathXmlApplicationContext(new String[] {"services.xml", "daos.xml"});
 
-// retrieve configured instance
+// 설정된 인스턴스 획득
 PetStoreServiceImpl service = context.getBean("petStore", PetStoreServiceImpl.class);
 
-// use configured instance
+// 설정된 인스턴스 사용
 List userList service.getUsernameList();
 </programlisting>
 
-      <para>You use <methodname>getBean()</methodname> to retrieve instances of
-        your beans. The <interfacename>ApplicationContext</interfacename>
-        interface has a few other methods for retrieving beans, but ideally your
-        application code should never use them. Indeed, your application code
-        should have no calls to the <methodname>getBean()</methodname> method at
-        all, and thus no dependency on Spring APIs at all. For example, Spring's
-        integration with web frameworks provides for dependency injection for
-        various web framework classes such as controllers and JSF-managed
-        beans.</para>
+      <para><methodname>getBean()</methodname>를 사용해서 빈의 인스턴스를 얻는다. 
+        <interfacename>ApplicationContext</interfacename> 인터페이스에는 빈을 
+        얻어오는 몇 가지 메서드가 더 있지만, 이상적으로는 어플리케이션 코드는 이러한 메서드를 
+        사용하지 말아야 한다. 사실 어플리케이션 코드는 <methodname>getBean()</methodname> 
+        메서드를 전혀 호출하지 말아야 한다. 그래서 스프링 API에 대한 의존성을 전혀 갖지 
+        말아야 한다. 예를 들어 웹 프레임워크에 대한 스프링의 통합은 컨트롤러와 JSF로 관리되는 
+        빈처럼 여러 가지 웹 프레임워크 클래스에 대한 의존성 주입을 제공한다.</para>
     </section>
   </section>
 
   <section id="beans-definition">
-    <title>Bean overview</title>
+    <title>빈(Bean) 개요</title>
+    
+    <para>스프링 IoC 컨테이너는 하나 이상의 <emphasis>beans</emphasis>을 관리한다. 
+      이러한 빈은 XML <literal>&lt;bean/&gt;</literal> 정의 같은 컨테이너에 제공한 
+      설정 메타데이터로 생성된다.</para>
 
-    <para>A Spring IoC container manages one or more <emphasis>beans</emphasis>.
-      These beans are created with the configuration metadata that you supply to
-      the container, for example, in the form of XML
-      <literal>&lt;bean/&gt;</literal> definitions.</para>
-
-    <para>Within the container itself, these bean definitions are represented as
-      <interfacename>BeanDefinition</interfacename> objects, which contain
-      (among other information) the following metadata:</para>
+    <para>컨테이너 내부에서 이러한 빈 정의는 <interfacename>BeanDefinition</interfacename> 
+      객체로 나타나고 이 객체는 (다른 정보들과 함께) 다음의 메타데이터를 포함하고 있다.</para>
 
     <itemizedlist>
       <listitem>
-        <para><emphasis>A package-qualified class name:</emphasis> typically the
-          actual implementation class of the bean being defined.</para>
+        <para><emphasis>패키지에 최적화된(package-qualified) 클래스 명:</emphasis> 보통 정의된 빈의 
+          실제 구현클래스이다.</para>
       </listitem>
 
       <listitem>
-        <para>Bean behavioral configuration elements, which state how the bean
-          should behave in the container (scope, lifecycle callbacks, and so
-          forth).</para>
+        <para>빈의 행동에 대한 설정 요소들. 컨테이너에서 빈이 어떻게 동작해야 하는가에 대한 
+          상태.(범위, 라이프사이클 콜백 등등)</para>
       </listitem>
 
       <listitem>
-        <para>References to other beans that are needed for the bean to do its
-          work; these references are also called
-          <emphasis>collaborators</emphasis> or
-          <emphasis>dependencies</emphasis>.</para>
+        <para>빈이 동작하는 데 필요한 다른 빈들에 대한 참조. 이러한 참조들을 
+          <emphasis>협력객체(collaborators)</emphasis>나 
+          <emphasis>의존성(dependencies)</emphasis>이라고 부른다.</para>
       </listitem>
 
       <listitem>
-        <para>Other configuration settings to set in the newly created object,
-          for example, the number of connections to use in a bean that manages a
-          connection pool, or the size limit of the pool.</para>
+        <para>새로 생성된 객체에 설정해야 하는 그 외 설정값. 예를 들면 커넥션 풀을 관리하는 
+          빈에서 사용해야 하는 커넥션의 수나 풀의 용량제한 등이다.</para>
       </listitem>
     </itemizedlist>
 
-    <para>This metadata translates to a set of properties that make up each bean
-      definition.</para>
+    <para>이 메타데이터는 각 빈 정의를 구성하는 프로퍼티 세트로 변환된다.</para>
 
     <table id="beans-factory-bean-definition-tbl">
-      <title>The bean definition</title>
+      <title>빈 정의</title>
 
       <tgroup cols="2">
         <colspec colname="c1" colwidth="2*"/>
@@ -435,9 +379,9 @@ List userList service.getUsernameList();
 
         <thead>
           <row>
-            <entry>Property</entry>
+            <entry>프로프티</entry>
 
-            <entry>Explained in...</entry>
+            <entry>설명한 곳</entry>
           </row>
         </thead>
 
@@ -506,227 +450,187 @@ List userList service.getUsernameList();
       </tgroup>
     </table>
 
-    <para>In addition to bean definitions that contain information on how to
-      create a specific bean, the
-      <interfacename>ApplicationContext</interfacename> implementations also
-      permit the registration of existing objects that are created outside the
-      container, by users. This is done by accessing the ApplicationContext's
-      BeanFactory via the method <methodname>getBeanFactory()</methodname> which
-      returns the BeanFactory implementation
-      <classname>DefaultListableBeanFactory</classname>.
-      <classname>DefaultListableBeanFactory</classname> supports this
-      registration through the methods
-      <methodname>registerSingleton(..)</methodname> and
-      <methodname>registerBeanDefinition(..)</methodname>. However, typical
-      applications work solely with beans defined through metadata bean
-      definitions.</para>
+    <para>어떻게 특정 빈을 생성하는가에 대한 정보를 담고 있는 빈 정의에 대해 추가로 
+      <interfacename>ApplicationContext</interfacename> 구현체도 사용자가 컨테이너 
+      밖에서 생성해서 이미 존재하는 객체들을 등록할 수 있다. <methodname>getBeanFactory()
+      </methodname> 메서드로 어플리케이션 컨텍스트의 BeanFactory에 접근해서 이러한 객체들을 
+      등록한다. <methodname>getBeanFactory()</methodname> 메서드는 BeanFactory를 구현한 
+      <classname>DefaultListableBeanFactory</classname>를 리턴한다. 
+      <classname>DefaultListableBeanFactory</classname>는 
+      <methodname>registerSingleton(..)</methodname>와
+      <methodname>registerBeanDefinition(..)</methodname> 메서드로 이러한 등록을 지원한다. 
+      하지만 일반적인 어플리케이션은 메타데이터 빈 정의에서 정의된 빈으로만 동작한다.</para>
 
     <section id="beans-beanname">
-      <title>Naming beans</title>
+      <title>빈 이름짓기</title>
 
-      <para>Every bean has one or more identifiers. These identifiers must be
-        unique within the container that hosts the bean. A bean usually has only
-        one identifier, but if it requires more than one, the extra ones can be
-        considered aliases.</para>
+      <para>모든 빈에는 하나 이상의 식별자가 있다. 이러한 식별자는 빈을 제공하는 컨테이너 
+        내에서 반드시 유일해야 한다. 보통 빈에는 단 하나의 식별자가 있지만 하나 이상이 필요하다면 
+        추가적인 식별자로 별칭(alias)을 생각해 볼 수 있다.</para>
 
-      <para>In XML-based configuration metadata, you use the
-        <literal>id</literal> and/or <literal>name</literal> attributes to
-        specify the bean identifier(s). The <literal>id</literal> attribute
-        allows you to specify exactly one id.  Conventionally these names are
-        alphanumeric ('myBean', 'fooService', etc), but may special characters
-        as well.  If you want to introduce other aliases to the bean, you can
-        also specify them in the <literal>name</literal> attribute, separated by
-        a comma (<literal>,</literal>), semicolon (<literal>;</literal>), or
-        white space.  As a historical note, in versions prior to Spring 3.1, the
-        <literal>id</literal> attribute was typed as an
-        <literal>xsd:ID</literal>, which constrained possible characters.  As of
-        3.1, it is now <literal>xsd:string</literal>.  Note that bean id
-        uniqueness is still enforced by the container, though no longer by XML
-        parsers.</para>
+      <para>XML기반의 설정 메타데이터에서 <literal>id</literal>나 <literal>name</literal> 
+        속성으로 빈의 식별자를 명시한다. <literal>id</literal> 속성으로 정확하게 하나의 id를 
+        지정할 수 있다. 관례적으로 이 이름은 문자와 숫자로 작성하지만 ('myBean', 'fooService' 등등) 
+        특수문자도 사용할 수 있다. 빈에 별도의 별칭을 사용하고 싶다면 <literal>name</literal> 
+        속성으로 지정하면 되고 여러 개를 입력할 때는 콤마(<literal>,</literal>)나 세미콜론
+        (<literal>;</literal>)이나 공백으로 구분한다. 변경사항 문서를 보면 스프링 3.1 이전의 
+        버전에서는 <literal>id</literal> 속성을 사용할 수 있는 문자를 제한하기 위해 
+        <literal>xsd:ID</literal>로 사용했다. 스프링 3.1에서는 <literal>xsd:string
+        </literal>을 사용한다. XML 파서를 사용하지 않더라도 여전히 컨테이너가 빈 아이디가 유일해야 
+        한다는 조건을 강제한다.</para>
 
-      <para>You are not required to supply a name or id for a bean. If no name
-        or id is supplied explicitly, the container generates a unique name for
-        that bean. However, if you want to refer to that bean by name, through
-        the use of the <literal>ref</literal> element or <link lang=""
-        linkend="beans-servicelocator">Service Locator</link> style lookup,
-        you must provide a name. Motivations for not supplying a name are
-        related to using <link linkend="beans-inner-beans">inner beans</link>
-        and <link linkend="beans-factory-autowire">autowiring
-        collaborators</link>.</para>
+      <para>빈에 id나 name을 반드시 제공해야 하는 것은 아니다. id나 name을 명시하지 않는다면 
+        컨테이너는 빈에 유일한 이름을 부여한다. 하지만 <literal>ref</literal> 요소나 
+        <link lang="" linkend="beans-servicelocator">Service Locator</link> 스타일의 
+        검색을 사용해서 빈을 이름으로 참조하고 싶다면 이름을 반드시 지정해야 한다. name을 
+        지정하지 않는 이유는 <link linkend="beans-inner-beans">내부 빈</link>
+        과 <link linkend="beans-factory-autowire">협력객체 오토와이어링</link>를 
+        사용하는 것과 연관이 있다.</para>
 
       <sidebar>
-        <title>Bean naming conventions</title>
+        <title>빈 작명 관례</title>
+        
+        <para>빈에 이름을 지을 때는 인스턴스의 필드 이름에 대한 표준 자바 관례를 사용한다. 
+          즉, 빈 이름은 소문자로 시작하고 카멜케이스를 사용한다. 예를 들어 
+          <literal>'accountManager'</literal>, <literal>'accountService'</literal>, 
+          <literal>'userDao'</literal>, <literal>'loginController'</literal>
+          등이 된다.(홑따옴표는 생략한다)</para>
 
-        <para>The convention is to use the standard Java convention for instance
-          field names when naming beans. That is, bean names start with a
-          lowercase letter, and are camel-cased from then on. Examples of such
-          names would be (without quotes) <literal>'accountManager'</literal>,
-          <literal>'accountService'</literal>, <literal>'userDao'</literal>,
-          <literal>'loginController'</literal>, and so forth.</para>
-
-        <para>Naming beans consistently makes your configuration easier to read
-          and understand, and if you are using Spring AOP it helps a lot when
-          applying advice to a set of beans related by name.</para>
+        <para>빈의 이름을 일관성 있게 지으면 설정을 읽기 쉽고 이해하기 쉽다. 스프링 AOP를 
+          사용한다면 이름과 관련된 빈의 세트에 어드바이스(advice)를 적용할 때 큰 도움이 
+          된다.</para>
       </sidebar>
 
       <section id="beans-beanname-alias">
-        <title>Aliasing a bean outside the bean definition</title>
+        <title>외부에서 정의된 빈의 별칭짓기</title>
 
-        <para>In a bean definition itself, you can supply more than one name for
-          the bean, by using a combination of up to one name specified by the
-          <literal>id</literal> attribute, and any number of other names in the
-          <literal>name</literal> attribute. These names can be equivalent
-          aliases to the same bean, and are useful for some situations, such as
-          allowing each component in an application to refer to a common
-          dependency by using a bean name that is specific to that component
-          itself.</para>
-
-        <para>Specifying all aliases where the bean is actually defined is not
-          always adequate, however. It is sometimes desirable to introduce an
-          alias for a bean that is defined elsewhere. This is commonly the case
-          in large systems where configuration is split amongst each subsystem,
-          each subsystem having its own set of object definitions. In XML-based
-          configuration metadata, you can use the
-          <literal>&lt;alias/&gt;</literal> element to accomplish this.</para>
+        <para>빈 정의에서 <literal>id</literal> 속성에서 명시한 이름과 조합하거나 
+          <literal>name</literal> 속성에 여러 이름을 작성해서 빈에 하나 이상의 이름을 
+          작성할 수 있다. 이러한 이름들은 같은 빈에 대한 별칭이다. 별칭은 
+          컴포넌트 자체에 명시한 빈 이름을 사용해서 공통 의존성을 참조하는 각각의 컴포넌트를 
+          어플리케이션에서 사용하는 상황 등에서 유용하다.</para>
+        
+        <para>빈이 실제로 정의된 곳에 모든 별칭을 명시하는 것이 항상 적절한 것은 아니다. 
+          때로는 다른 곳에서 정의된 빈에 대해서 별칭을 지정하는 것이 적절한 때도 있다. 이는 
+          설정이 자신만의 객체 정의의 세트가 있는 여러 서브시스템에 분리된 대형 
+          시스템에서 일반적이다. XML 기반의 설정 메타데이터에서 외부에서 정의된 빈에 
+          별칭을 부여하기 위해 <literal>&lt;alias/&gt;</literal>를 사용할 수 있다.</para>
 
         <programlisting language="xml">&lt;alias name="fromName" alias="toName"/&gt;</programlisting>
-
-        <para>In this case, a bean in the same container which is named
-          <literal>fromName</literal>, may also after the use of this alias
-          definition, be referred to as <literal>toName</literal>.</para>
+        
+        <para>이 예제의 설정을 사용하면 같은 컨테이너에서 <literal>fromName</literal>라는 
+          이름의 빈을 <literal>toName</literal>로도 참조할 수 있다.</para>
 
         <!-- MLP: Beverly to review -->
 
-        <para>For example, the configuration metadata for subsystem A may refer
-          to a DataSource via the name 'subsystemA-dataSource. The configuration
-          metadata for subsystem B may refer to a DataSource via the name
-          'subsystemB-dataSource'. When composing the main application that uses
-          both these subsystems the main application refers to the DataSource
-          via the name 'myApp-dataSource'. To have all three names refer to the
-          same object you add to the MyApp configuration metadata the following
-          aliases definitions:</para>
+        <para>예를 들어 서브시스템 A의 설정 메타데이터는 'subsystemA-dataSource'라는 이름으로 
+          DataSource를 참조한다. 서브시스템 B의 설정 메타데이터는 'subsystemB-dataSource'
+          라는 이름으로 DataSource를 참조한다. 이 두 서브시스템을 사용해서 메인 어플리케이션을 
+          구성했을 때 메인 어플리케이션은 'myApp-dataSource'라는 이름으로 DataSource를 
+          참조한다. 이 3가지 이름이 같은 객체를 참조하게 하려면 MyAPP 설정 메타데이터에 다음의 
+          별칭 정의를 추가해야 한다.</para>
 
         <programlisting language="xml">&lt;alias name="subsystemA-dataSource" alias="subsystemB-dataSource"/&gt;
 &lt;alias name="subsystemA-dataSource" alias="myApp-dataSource" /&gt;</programlisting>
-
-        <para>Now each component and the main application can refer to the
-          dataSource through a name that is unique and guaranteed not to clash
-          with any other definition (effectively creating a namespace), yet they
-          refer to the same bean.</para>
+        
+        <para>이제 각 컴포넌트와 메인 어플리케이션은 유일하면서 다른 어떤 정의와도 
+          충돌하지 않는다는 보장을 받은 이름을 통해 데이터소스를 참조할 수 있다. 
+          물론 같은 빈을 참조한다.</para>
       </section>
     </section>
 
     <section id="beans-factory-class">
-      <title>Instantiating beans</title>
-
-      <para>A bean definition essentially is a recipe for creating one or more
-        objects. The container looks at the recipe for a named bean when asked,
-        and uses the configuration metadata encapsulated by that bean definition
-        to create (or acquire) an actual object.</para>
-
-      <para>If you use XML-based configuration metadata, you specify the type
-        (or class) of object that is to be instantiated in the
-        <literal>class</literal> attribute of the
-        <literal>&lt;bean/&gt;</literal> element. This <literal>class</literal>
-        attribute, which internally is a <classname>Class</classname> property
-        on a <interfacename>BeanDefinition</interfacename> instance, is usually
-        mandatory. (For exceptions, see <xref
-        linkend="beans-factory-class-instance-factory-method"/> and <xref
-        linkend="beans-child-bean-definitions"/>.) You use the
-        <classname>Class</classname> property in one of two ways: <itemizedlist>
+      <title>빈의 인스턴스화</title>
+      
+      <para>본질적으로 빈 정의는 하나 이상의 객체를 생성하는 방법이다. 컨테이너는 요청이 
+        발생했을 때 이름있는 빈에 대한 방법을 검색하고 실제 객체를 생성하는(또는 획득하는)
+        빈 정의로 은닉화된 설정 메타데이터를 사용한다.</para>
+      
+      <para>XML기반의 설정 메타데이터를 사용하면 <literal>&lt;bean/&gt;</literal> 요소의 
+        <literal>class</literal> 속성에서 인스턴스화 된 객체의 타입(또는 클래스)를 명시한다. 
+        이 <literal>class</literal> 속성은 내부적으로는 <interfacename>BeanDefinition
+        </interfacename> 인스턴스의 <classname>Class</classname> 프로퍼티다. 
+        <literal>class</literal> 속성은 강제적이다. (예외적인 상황은 <xref
+        linkend="beans-factory-class-instance-factory-method"/>와 <xref
+        linkend="beans-child-bean-definitions"/>를 참고해라.) 두 가지 방법의 하나로 
+        <classname>Class</classname> 프로퍼티를 사용한다. <itemizedlist>
         <listitem>
-          <para>Typically, to specify the bean class to be constructed in the
-            case where the container itself directly creates the bean by calling
-            its constructor reflectively, somewhat equivalent to Java code using
-            the <code>new</code> operator.</para>
+          <para>보통은 컨테이너 스스로 빈의 생성자를 리플렉트하게 호출함으로써 직접 빈을 
+            생성하는 경우에 생성되는 빈의 클래스를 명시한다. 약간은 <code>new</code> 
+            오퍼레이터를 사용하는 자바 코드와 비슷하다.</para>
         </listitem>
         </itemizedlist></para>
 
       <itemizedlist>
         <listitem>
-          <para>To specify the actual class containing the
-            <literal>static</literal> factory method that will be invoked to
-            create the object, in the less common case where the container
-            invokes a <literal>static</literal>, <emphasis>factory</emphasis>
-            method on a class to create the bean. The object type returned from
-            the invocation of the <literal>static</literal> factory method may
-            be the same class or another class entirely.</para>
+          <para>객체를 생성하기 위해 호출될 <literal>static</literal> 팩토리 메서드가 
+            있는 실제 클래스를 명시한다. 컨테이너가 빈을 생성하려고 클래스에서 
+            <literal>static</literal>, <emphasis>factory</emphasis> 메서드를 
+            호출하는 경우는 일반적이지는 않다. <literal>static</literal> 팩토리 메서드의 
+            호출에서 리턴받은 객체의 타입은 같은 클래스나 다른 클래스와 완전히 같을 것이다.</para>
         </listitem>
       </itemizedlist>
 
       <sidebar>
-        <title>Inner class names</title>
+        <title>내부 클래스명</title>
 
-        <para>If you want to configure a bean definition for a
-          <literal>static</literal> nested class, you have to use the
-          <emphasis>binary</emphasis> name of the inner class.</para>
+        <para><literal>static</literal> 중첩클래스에 대한 빈 정의를 설정하고 싶다면 
+          내부 클래스의 <emphasis>binary</emphasis> 이름을 사용해야 한다.</para>
 
-        <para>For example, if you have a class called <classname>Foo</classname>
-          in the <literal>com.example</literal> package, and this
-          <classname>Foo</classname> class has a <literal>static</literal> inner
-          class called <classname>Bar</classname>, the value of the
-          <literal>'class'</literal> attribute on a bean definition would
-          be...</para>
+        <para>예를 들어 <literal>com.example</literal> 패키지에 
+          <classname>Foo</classname>라는 클래스가 있고 이 <literal>com.example</literal> 
+          클래스에는 <classname>Bar</classname>라는 <literal>static</literal> 내부 
+          클래스가 있다면 빈 정의의 <literal>'class'</literal> 속성의 값은 다음과 같을 
+          것이다.</para>
 
         <para><classname>com.example.Foo$Bar</classname></para>
 
-        <para>Notice the use of the <literal>$</literal> character in the name
-          to separate the inner class name from the outer class name.</para>
+        <para>이름에서 <literal>$</literal> 문자는 바깥쪽 클래스 이름과 내부 클래스 이름을 
+          구분하기 위해 사용한다.</para>
       </sidebar>
 
       <section id="beans-factory-class-ctor">
-        <title>Instantiation with a constructor</title>
+        <title>생성자를 이용한 인스턴스화</title>
 
-        <para>When you create a bean by the constructor approach, all normal
-          classes are usable by and compatible with Spring. That is, the class
-          being developed does not need to implement any specific interfaces or
-          to be coded in a specific fashion. Simply specifying the bean class
-          should suffice. However, depending on what type of IoC you use for
-          that specific bean, you may need a default (empty) constructor.</para>
+        <para>생성자로 빈을 생성하면 일반적인 모든 클래스는 스프링과 함께 사용할 수 있다. 
+          어떤 특정한 인터페이스를 구현하거나 특정한 스타일로 코딩할 필요가 없다. 그냥 빈 
+          클래스를 명시하는 것만으로도 충분하다. 하지만 빈을 명시하려고 사용하는 IoC의 종류에 
+          따라 기본 생성자(비어있는 생성자)가 필요할 수도 있다.</para>
 
-        <para>The Spring IoC container can manage virtually
-          <emphasis>any</emphasis> class you want it to manage; it is not
-          limited to managing true JavaBeans. Most Spring users prefer actual
-          JavaBeans with only a default (no-argument) constructor and
-          appropriate setters and getters modeled after the properties in the
-          container. You can also have more exotic non-bean-style classes in
-          your container. If, for example, you need to use a legacy connection
-          pool that absolutely does not adhere to the JavaBean specification,
-          Spring can manage it as well.</para>
+        <para>스프링 IoC 컨테이너는 관리하고자 하는 거의 <emphasis>모든</emphasis> 
+          클래스를 관리할 수 있다. 진짜 JavaBean만 관리할 수 있다는 제약 같은 건 없다. 
+          많은 스프링 사용자들은 기본 생성자(아규먼트가 없는)만 있는 실제 JavaBean에 
+          프로퍼티에 대한 적절한 setter와 getter를 사용하는 방법을 선호한다. 물론 
+          컨테이너에서 예외적으로 빈 스타일이 아닌 클래스도 사용할 수 있다. 예를 들어 
+          JavaBean 스펙을 전혀 따르지 않는 레거시 커넥션풀을 사용하더라도 스프링이 
+          잘 관리할 수 있다.</para>
 
-        <para>With XML-based configuration metadata you can specify your bean
-          class as follows:</para>
+        <para>XML기반의 설정 메타데이터를 사용하면 다음과 같이 빈 클래스를 명시할 수 
+          있다.</para>
 
         <programlisting language="xml">&lt;bean id="exampleBean" class="examples.ExampleBean"/&gt;
 
 &lt;bean name="anotherExample" class="examples.ExampleBeanTwo"/&gt;</programlisting>
 
-        <para>For details about the mechanism for supplying arguments to the
-          constructor (if required) and setting object instance properties after
-          the object is constructed, see <link
-          linkend="beans-factory-collaborators">Injecting
-          Dependencies</link>.</para>
+        <para>생성자에 아규먼트를 전달하거나(필요하다면) 객체가 생성된 후에 인스턴스에 프로퍼티를 
+          설정하는 방법에 대해 자세히 알고 싶다면 <link
+          linkend="beans-factory-collaborators">의존성 주입</link>을 참고해라.</para>
       </section>
 
       <section id="beans-factory-class-static-factory-method">
-        <title>Instantiation with a static factory method</title>
+        <title>정적 팩토리 메서드를 이용한 인스턴스화</title>
 
-        <para>When defining a bean that you create with a static factory method,
-          you use the <literal>class</literal> attribute to specify the class
-          containing the <literal>static</literal> factory method and an
-          attribute named <literal>factory-method</literal> to specify the name
-          of the factory method itself. You should be able to call this method
-          (with optional arguments as described later) and return a live object,
-          which subsequently is treated as if it had been created through a
-          constructor. One use for such a bean definition is to call
-          <literal>static</literal> factories in legacy code.</para>
+        <para>정적 팩토리 메서드로 생성하는 빈을 정의할 때 <literal>static</literal> 팩토리 
+          메서드가 있는 클래스를 지정하는 <literal>class</literal> 속성과 팩토리 
+          메서드의 이름을 지정하는 <literal>factory-method</literal> 속성을 사용한다. 
+          이 팩토리 메서드를 호출하면(뒤에서 설명할 선택적인 아규먼트로) 생성자로 생성한 
+          빈과 동일하게 취급하는 살아 있는 객체를 리턴받는다. 레거시 코드에서 <literal>static
+          </literal> 팩토리를 호출하는 것이 이러한 빈 정의의 한가지 사용법이다.</para>
 
-        <para>The following bean definition specifies that the bean will be
-          created by calling a factory-method. The definition does not specify
-          the type (class) of the returned object, only the class containing the
-          factory method. In this example, the
-          <methodname>createInstance()</methodname> method must be a
-          <emphasis>static</emphasis> method.</para>
+        <para>다음 빈 정의는 팩토리 메서드를 호출해서 빈이 생성될 것이라는 지정한다. 
+          이 빈 정의는 리턴되는 객체의 타입(클래스)은 지정하지 않고 클래스의 팩토리 메서드만 
+          지정했다. 이 예제에서 <methodname>createInstance()</methodname> 메서드는 
+          반드시 <emphasis>정적</emphasis> 메서드여야 한다.</para>
 
         <programlisting language="xml">&lt;bean id="clientService"
       class="examples.ClientService"
@@ -741,33 +645,30 @@ List userList service.getUsernameList();
   }
 }</programlisting>
 
-        <para>For details about the mechanism for supplying (optional) arguments
-          to the factory method and setting object instance properties after the
-          object is returned from the factory, see <link
-          linkend="beans-factory-properties-detailed">Dependencies and
-          configuration in detail</link>.</para>
+        <para>팩토리 메서드에 (선택적인) 아규먼트를 전달하고 팩토리에서 리턴된 객체의 
+          인스턴스에 프로퍼티를 설정하는 메커니즘에 대한 자세한 내용은 <link
+          linkend="beans-factory-properties-detailed">의존성과 세부 설정
+          </link>을 참고해라.</para>
       </section>
 
       <section id="beans-factory-class-instance-factory-method">
-        <title>Instantiation using an instance factory method</title>
+        <title>인스턴스 팩토리 메서드를 이용한 인스턴스화</title>
+        
+        <para><link linkend="beans-factory-class-static-factory-method">정적 팩토리 
+          메서드</link>를 통한 인스턴스화와 비슷한 인스턴스 팩토리 메서드를 이용한 인스턴스화는 
+          새로운 빈을 생성하기 위해 컨테이너에 존재하는 빈의 정적이 아닌 메서드를 호출한다. 
+          이 메커니즘을 사용하려면 <literal>class</literal> 속성을 비워두고 <literal>
+          factory-bean</literal> 속성에 현재 (또는 부모나 조상) 컨테이너에서 객체를 생성하기 
+          위해 호출하는 인스턴스 메서드를 가지고 있는 빈의 이름을 지정한다. <literal>
+          factory-method</literal> 속성에 팩토리 메서드의 이름을 설정한다.</para>
 
-        <para>Similar to instantiation through a <link
-          linkend="beans-factory-class-static-factory-method">static factory
-          method</link>, instantiation with an instance factory method invokes a
-          non-static method of an existing bean from the container to create a
-          new bean. To use this mechanism, leave the <literal>class
-          </literal>attribute empty, and in the <literal>factory-bean</literal>
-          attribute, specify the name of a bean in the current (or
-          parent/ancestor) container that contains the instance method that is
-          to be invoked to create the object. Set the name of the factory method
-          itself with the <literal>factory-method</literal> attribute.</para>
-
-        <programlisting language="xml"><lineannotation>&lt;!-- the factory bean, which contains a method called <methodname>createInstance()</methodname> --&gt;</lineannotation>
+        <programlisting language="xml"><lineannotation>&lt;!-- <methodname>createInstance()
+        </methodname>를 호출하는 메서드를 담고 있는 팩토리 빈 --&gt;</lineannotation>
 &lt;bean id="serviceLocator" class="examples.DefaultServiceLocator"&gt;
-  <lineannotation>&lt;!-- inject any dependencies required by this locator bean --&gt;</lineannotation>
+  <lineannotation>&lt;!-- 이 로케이터 빈으로 필요한 의존성을 주입한다 --&gt;</lineannotation>
 &lt;/bean&gt;
 
-<lineannotation>&lt;!-- the bean to be created via the factory bean --&gt;</lineannotation>
+<lineannotation>&lt;!-- 팩토리 빈을 통해 생성될 빈 --&gt;</lineannotation>
 &lt;bean id="clientService"
       factory-bean="serviceLocator"
       factory-method="createClientServiceInstance"/&gt;</programlisting>
@@ -781,12 +682,12 @@ List userList service.getUsernameList();
   }
 }</programlisting>
 
-        <para>One factory class can also hold more than one factory method as
-          shown here:</para>
+        <para>하나의 팩토리 클래스는 다음과 같이 하나 이상의 팩토리 메서드를 가질 수도 
+          있다.</para>
 
         <programlisting language="xml">
 &lt;bean id="serviceLocator" class="examples.DefaultServiceLocator"&gt;
-  <lineannotation>&lt;!-- inject any dependencies required by this locator bean --&gt;</lineannotation>
+  <lineannotation>&lt;!-- 이 로케이터 빈으로 필요한 의존성을 주입한다 --&gt;</lineannotation>
 &lt;/bean&gt;
 &lt;bean id="clientService"
       factory-bean="serviceLocator"
@@ -811,24 +712,22 @@ List userList service.getUsernameList();
   }
 }</programlisting>
 
-        <para>This approach shows that the factory bean itself can be managed
-          and configured through dependency injection (DI). See <link
+        <para>이 접근은 팩토리 빈 스스로 의존성 주입 (DI)를 통해 관리되고 설정될 수 
+          있다는 것을 보여준다. <link
           linkend="beans-factory-properties-detailed"><link
-          linkend="beans-factory-properties-detailed">Dependencies and
-          configuration in detail</link>.</link></para>
+          linkend="beans-factory-properties-detailed">의존성과 세부 설정</link>
+          </link>을 참고해라.</para>
 
         <note>
-          <para>In Spring documentation,<emphasis> factory bean</emphasis>
-            refers to a bean that is configured in the Spring container that
-            will create objects through an <link
+          <para>스프링 문서에서 <emphasis>팩토리 빈</emphasis>은 스프링 컨테이너에 
+            설정된 빈을 참조한다. 이 빈은 <link
             linkend="beans-factory-class-instance-factory-method"
-            >instance</link> or <link
-            linkend="beans-factory-class-static-factory-method">static</link>
-            factory method. By contrast,
-            <interfacename>FactoryBean</interfacename> (notice the
-            capitalization) refers to a Spring-specific <link
-            linkend="beans-factory-extension-factorybean">
-            <interfacename>FactoryBean</interfacename> </link>.</para>
+            >인스턴스</link>나 <link
+            linkend="beans-factory-class-static-factory-method">정적</link> 
+            팩토리 메서드를 통해 객체를 생성하는 빈이다. 반면에 <interfacename>
+            FactoryBean</interfacename> (대문자에 주의해라)은 스프링 고유의 
+            <link linkend="beans-factory-extension-factorybean">
+            <interfacename>FactoryBean</interfacename> </link>을 참조한다.</para>
         </note>
       </section>
     </section>
