@@ -28,7 +28,7 @@ The footnote should x-ref to first section in that chapter but I can't find the 
       >BeanFactory</ulink></interfacename> 인터페이스는 어떤 타입의 객체도 다룰 수 있는 
       향상된 설정 메카니즘을 제공한다. <literal><ulink
       url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/context/ApplicationContext.html"
-      >Applicatio커nContext</ulink></literal>는 <interfacename>BeanFactory</interfacename>의 
+      >ApplicationContext</ulink></literal>는 <interfacename>BeanFactory</interfacename>의 
       서브 인터페이스다. ApplicationContext는 스프링의 AOP기능, 메시지 리소스 핸들링
       (국제화(i18n)를 사용하려고), 이벤트 발생, 웹 어플리케이션의 <interfacename>
       WebApplicationContext</interfacename>같은 어플리케이션 계층에서 지정한 컨텍스트와 
@@ -158,14 +158,14 @@ The footnote should x-ref to first section in that chapter but I can't find the 
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"&gt;
 
   &lt;bean id="..." class="..."&gt;
-    &lt;!-- collaborators and configuration for this bean go here --&gt;
+    &lt;!-- 이 빈에 대한 추가적인 협력 객체나 설정은 여기에 작성한다 --&gt;
   &lt;/bean&gt;
 
   &lt;bean id="..." class="..."&gt;
-    &lt;!-- collaborators and configuration for this bean go here --&gt;
+    &lt;!-- 이 빈에 대한 추가적인 협력 객체나 설정은 여기에 작성한다 --&gt;
   &lt;/bean&gt;
 
-  &lt;!-- more bean definitions go here --&gt;
+  &lt;!-- 추가적인 빈 정의는 여기에 작성한다 --&gt;
 
 &lt;/beans&gt;</programlisting>
 
@@ -205,7 +205,7 @@ The footnote should x-ref to first section in that chapter but I can't find the 
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"&gt;
 
-  &lt;!-- 서비 --&gt;
+  &lt;!-- 서비스 --&gt;
 
   &lt;bean id="petStore"
         class="org.springframework.samples.jpetstore.services.PetStoreServiceImpl"&gt;
