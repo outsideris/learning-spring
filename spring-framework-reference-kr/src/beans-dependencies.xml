@@ -16,7 +16,7 @@
 
     <para><emphasis>의존성 주입</emphasis> (DI)은 객체들이 같이 동작할 객체들의 의존성을 
       생성자 아규먼트와 팩토리 메서드의 아규먼트와 생성되거나 팩토리 메서드에서 리턴된 객체 
-      인스턴스에 설정된 프로퍼티만으로 정의하는 과정이다. 그 다음 컨테이너는 빈을 생성할 때 
+      인스턴스에 설정된 프로퍼티만으로 정의하는 과정이다. 그다음 컨테이너는 빈을 생성할 때 
       빈들의 의존성을 <emphasis>주입</emphasis>한다. 이 과정은 기본적으로 빈 스스로 
       인스턴스화를 제어하거나 자신의 의존성을 클래스의 생성자를 직접 사용해서 결정하는 것과는 
       거꾸로 된 것(그래서 <emphasis>제어의 역전</emphasis> (IoC)라고 부른다.)이다. 
@@ -40,7 +40,7 @@
         <literal>static</literal> 팩토리 메서드를 호출하는 것과 거의 비슷하다. 이 말은 
         생성자에 대한 아규먼트와 <literal>static</literal> 팩토리 메서드에 대한 메서드를 
         비슷하게 다룬다는 의미다. 다음 예제는 생성자 주입으로만 의존성 주입이 될 수 있는 
-        클래스를 보여준다. 클래시는 <emphasis>특별한</emphasis> 클래스가 아니고 컨테이너에서 
+        클래스를 보여준다. 클래스는 <emphasis>특별한</emphasis> 클래스가 아니고 컨테이너에서 
         특정한 인터페이스나 기반 클래스, 어노테이션에 의존성이 없는 POJO다.</para>
 
       <programlisting language="java">public class SimpleMovieLister {
@@ -88,7 +88,7 @@ public class Foo {
 
 &lt;/beans&gt;</programlisting>
 
-        <para>또 다른 빈이 참조되되었을 때 타입을 알고 있으면 매치할 수 있다.(앞의 예제와 같이) 
+        <para>또 다른 빈이 참조되었을 때 타입을 알고 있으면 매치할 수 있다.(앞의 예제와 같이) 
           <literal>&lt;value&gt;true&lt;value&gt;</literal>처럼 간단한 
           타입이 사용되면 스프링은 value의 타입을 결정할 수 없다. 그래서 다른 정보가 없으면 
           타입을 매치할 수 없다. 다음 클래스를 보자.</para>
@@ -148,7 +148,7 @@ public class ExampleBean {
 &lt;constructor-arg name="ultimateanswer" value="42"/&gt;
 &lt;/bean&gt;</programlisting>
 
-          <para>이 코드가 동작하려면 스프링이 생성자에서 파라미터명을 검색할 수 있도록 debug 플래그를 사용 가능 하도록 해놓고 컨파일 해야 한다. debug 플래그를 사용 가능으로 해도 컴파일할 수 없다면(또는 debug 플래그를 사용하고 싶지 않다면) 생성자 아규먼트의 이름을 명시적으로 짓는 <interfacename><ulink
+          <para>이 코드가 동작하려면 스프링이 생성자에서 파라미터명을 검색할 수 있도록 debug 플래그를 사용 가능 하도록 해놓고 컴파일 해야 한다. debug 플래그를 사용 가능으로 해도 컴파일할 수 없다면(또는 debug 플래그를 사용하고 싶지 않다면) 생성자 아규먼트의 이름을 명시적으로 짓는 <interfacename><ulink
           url="http://download.oracle.com/javase/6/docs/api/java/beans/ConstructorProperties.html">@ConstructorProperties</ulink></interfacename> JDK 어노테이션을 사용할 수 있다. 예제 클래스는 다음과 같다.</para>
 
           <programlisting language="java">package examples;
@@ -176,7 +176,7 @@ public class ExampleBean {
 
       <para>다음 예제는 순수한 setter 주입을 사용해서만 의존성 주입이 되는 클래스를 보여준다. 
         이 클래스는 평범한 자바 클래스다. 컨테이너에 특정 인터페이스나 기반 클래스, 
-        어노테이이션에 의존성이 없는 POJO이다.</para>
+        어노테이션에 의존성이 없는 POJO이다.</para>
 
       <programlisting language="java">public class SimpleMovieLister {
 
@@ -219,7 +219,7 @@ public class ExampleBean {
           의미한다. 이 방법은 단점은 객체가 재구성이나 재주입하기가 쉽지 않아진다는 것이다.</para>
 
         <para>개별 클래스에 적절한 DI를 사용해라. 때때로 소스코드가 없는 서드파티 클래스를 
-          다룰 때는 어떤 DI를 사용할 지 직접 선택해야 한다. 레거시 클래스는 어떤 setter 
+          다룰 때는 어떤 DI를 사용할지 직접 선택해야 한다. 레거시 클래스는 어떤 setter 
           메서드도 제공하지 않을 수 있으므로 생성자 주입이 이용 가능한 유일한 DI일 것이다.</para>
       </sidebar>
     </section>
@@ -285,17 +285,17 @@ public class ExampleBean {
 
         <para>(순환 의존성이 없는) <emphasis>전형적인</emphasis> 경우와는 다르게 빈 A와 
           빈 B 사이의 순환 의존성은 스스로 완전히 초기화될 수 있도록 하나의 빈이 다른 빈에 
-          우선적으로 주입되게 강제한다.(고전적인 닭이 먼저냐 달걀이 먼저냐 이야기이다.)</para>
+          먼저 주입되게 강제한다.(고전적인 닭이 먼저냐 달걀이 먼저냐 이야기이다.)</para>
       </sidebar>
 
       <para>보통 스프링이 일을 제대로 하고 있다고 신뢰할 수 있다. 스프링은 컨테이너는 
-        존재하지 않는 빈에 대한 참조나 순환 의존성같은 설정 문제를 로딩하면서 찾아낸다. 
-        스프링은 빈이 실제로 사용되는 순간까지 가능한한 늦게 프로퍼티들을 설정하고 의존성을 
+        존재하지 않는 빈에 대한 참조나 순환 의존성 같은 설정 문제를 로딩하면서 찾아낸다. 
+        스프링은 빈이 실제로 사용되는 순간까지 가능한 한 늦게 프로퍼티들을 설정하고 의존성을 
         해결한다. 이 말은 객체나 객체의 의존성을 생성하는 데 문제가 있다면 제대로 로딩된 스프링 
         컨테이너가 객체가 요청되었을 때 예외를 생성할 수 있다는 의미이다. 예를 들어 빈은 
         누락되거나 유효하지 않은 프로퍼티같은 예외를 던진다. <interfacename>
         ApplicationContext</interfacename>가 기본적으로 미리 초기화된 싱글톤 빈으로 
-        구현된 이유는 몇몇 설정 이슈를 나중에 발견할 수 있는 가능성이 있기 때문이다. 이러한 
+        구현된 이유는 몇몇 설정이슈를 나중에 발견할 가능성이 있기 때문이다. 이러한 
         빈이 실제로 필요하기 전에 생성하기 위한 시간과 메모리에 대한 비용을 들이면 설정이슈를 
         나중에 발견하는 대신에 <interfacename>ApplicationContext</interfacename>를 
         생성할 때 발견할 수 있다. 싱글톤 빈이 미리 초기화되는 대신에 지연된 초기화를 사용하도록 
@@ -422,7 +422,7 @@ public class ExampleBean {
         사용되는 것과 완전히 같다. 이 예제에서는 같은 타입이었지만 팩토리 메서드가 리턴하는 
         클래스의 타입은 <literal>static</literal> 팩토리 메서드가 담고 있는 클래스와 같은 
         타입이어야 할 필요는 없다. 인스턴스 (static이 아닌) 팩토리 메서드는 본질적으로 
-        동일하므로(<literal>class</literal> 속성 대신에 <literal>factory-bean</literal> 
+        같으므로(<literal>class</literal> 속성 대신에 <literal>factory-bean</literal> 
         속성을 사용하는 것은 제외하고) 자세한 내용을 여기서 이야기하지 않을 것이다.</para>
     </section>
   </section>
@@ -433,7 +433,7 @@ public class ExampleBean {
     <para>이전 섹션에서 얘기했듯이 빈 프로퍼티와 생성자 아규먼트를 다른 곳에서 관리되는 
       빈(협력 객체)에 대한 참조나 인라인으로 정의된 값으로써 정의할 수 있다. 스프링의 XML기반의 
       설정 메타데이터는 이를 위해 <literal>&lt;property/&gt;</literal>와 
-      <literal>&lt;constructor-arg/&gt;</literal> 요소내에서 서브 엘리먼트 타입을 
+      <literal>&lt;constructor-arg/&gt;</literal> 요소 내에서 서브 엘리먼트 타입을 
       지원한다.</para>
 
     <section id="beans-value-element">
@@ -500,7 +500,7 @@ public class ExampleBean {
         JavaBeans <interfacename>PropertyEditor</interfacename>의 메카니즘을 이용해서 
         <classname>java.util.Properties</classname> 인스턴스로 변환한다. 이는 괜찮은 
         단축키이고 스프링 팀이 <literal>value</literal> 속성 스타일보다 중첩된 
-        <literal>&lt;value/&gt;</literal> 요소를 사용하기를 좋아하는 몇 안되는 곳 
+        <literal>&lt;value/&gt;</literal> 요소를 사용하기를 좋아하는 몇 안 되는 곳 
         중 하나이다.</para>
 
       <section id="beans-idref-element">
@@ -537,8 +537,8 @@ public class ExampleBean {
           <link linkend="beans-factory-scopes">prototype</link> 빈이라면 컨테이너를 
           배포하고 한참이 지난 후에야 오타를 발견하고 예외가 발생한다.</para>
 
-        <para>추가적으로 참조된 빈이 같은 XML에 있고 빈의 이름이 빈 <emphasis>id</emphasis> 
-          이라면 <literal> XML 파서 스스로 XML 문서가 파싱될 때 빈의 id의 유효성을 먼저 
+        <para>추가로 참조된 빈이 같은 XML에 있고 빈의 이름이 빈 <emphasis>id</emphasis> 
+          라면 <literal> XML 파서 스스로 XML 문서를 파싱할 때 빈의 id의 유효성을 먼저 
           검사하도록 local</literal> 속성을 사용할 수 있다.</para>
 
         <programlisting language="xml">&lt;property name="targetName"&gt;
@@ -558,33 +558,33 @@ public class ExampleBean {
       <title>다른 빈에 대한 참조 (협력 객체)</title>
 
       <para><literal>ref</literal> 요소는 <literal>&lt;constructor-arg/&gt;</literal> 나
-        <literal>&lt;property/&gt;</literal> 정의 요소안의 마지막 요소이다. 이 요소에 
+        <literal>&lt;property/&gt;</literal> 정의 요소 안의 마지막 요소이다. 이 요소에 
         컨테이너가 관리하는 다른 빈(협력 객체)을 참조하는 빈에 지정된 프로퍼티의 값을 설정한다. 
         참조된 빈은 프로퍼티의 빈의 의존성이고 프로퍼티가 설정되기 전에 필요에 따라 초기화된다. 
         (협력객체가 싱글톤 빈이라면 컨테이너가 이미 초기화했을 것이다.) 모든 참조는 결국 다른 
-        객체에 대한 참조가 된다. 범위(scope)와 유효성검사는 <literal>bean,<literal>local,
+        객체에 대한 참조가 된다. 범위(scope)와 유효성 검사는 <literal>bean,<literal>local,
         </literal></literal>, <literal>parent</literal> 속성으로 다른 빈의 id/name을 
         명시한 여부에 달려있다.</para>
 
       <para><literal>&lt;ref/&gt;</literal> 태그의 <literal>bean</literal> 속성으로 
-        타겟 빈을 명시하는 것이 가장 일반적이고 이는 같은 XML 파일안에 존재하는지 여부에 
-        관계 없이 같은 컨테이너나 부모 컨테이너의 어떤 빈에 대한 참조도 생성할 수 있다. 
+        타겟 빈을 명시하는 것이 가장 일반적이고 이는 같은 XML 파일안에 존재하는지에 
+        관계없이 같은 컨테이너나 부모 컨테이너의 어떤 빈에 대한 참조도 생성할 수 있다. 
         <literal>bean</literal> 속성의 값은 타겟 빈의 <literal>id</literal> 속성이나 
         타겟 빈의 <literal>name</literal> 속성의 값 중 하나와 같을 것이다.</para>
 
       <programlisting language="xml">&lt;ref bean="someBean"/&gt;</programlisting>
 
-      <para><literal>local</literal> 속성으로 타겟빈을 명시하면 XML parser 기능을 사용해서 
-        같은 파일안의 XML id 참조의 유효성을 검사한다. <literal>local</literal> 속성의 값은 
+      <para><literal>local</literal> 속성으로 타겟 빈을 명시하면 XML parser 기능을 사용해서 
+        같은 파일 안의 XML id 참조의 유효성을 검사한다. <literal>local</literal> 속성의 값은 
         타겟 빈의 <literal>id</literal> 속성과 반드시 일치해야 한다. 같은 파일에서 일치하는 
-        요소를 찾지 못한다면 XML 파서는 오류가 난다. 이처럼 타겟 빈이 같은 XML 파일안에 있다면 
-        local을 사용하는 것이 가장 좋은 선택이다.(가능한한 빨리 오류를 발견할 수 있도록)</para>
+        요소를 찾지 못한다면 XML 파서는 오류가 난다. 이처럼 타겟 빈이 같은 XML 파일 안에 있다면 
+        local을 사용하는 것이 가장 좋은 선택이다.(가능한 한 빨리 오류를 발견할 수 있도록)</para>
 
       <programlisting language="xml">&lt;ref local="someBean"/&gt;</programlisting>
 
       <para><literal>parent</literal> 속성으로 타겟 빈을 지정하면 현재 컨테이너의 부모 
         컨테이너에 있는 빈에 대한 참조를 만든다. <literal>parent</literal>의 값은 타겟 
-        빈의 <literal>id</literal> 속성이나 <literal>name</literal> 속성의 값들 중 
+        빈의 <literal>id</literal> 속성이나 <literal>name</literal> 속성의 값 중 
         하나와 같아야 할 것이다. 그리고 타겟 빈은 반드시 현재 컨테이너의 부모 컨테이너에 
         존재해야 한다. 이러한 형태의 빈 참조는 컨테이너가 계층형으로 되어 있을 때나 부모 
         빈과 같은 이름의 프록시를 가지는 부모 컨테이너에 존재하는 빈을 감싸고 싶을 때 
@@ -653,7 +653,7 @@ public class ExampleBean {
 <lineannotation>&lt;!-- setSomeList(<interfacename>java.util.List</interfacename>) 호출의 결과 --&gt;</lineannotation>
 &lt;property name="someList"&gt;
   &lt;list&gt;
-      &lt;value&gt;a list element followed by a reference&lt;/value&gt;
+      &lt;value&gt;참조가 뒤따라 오는 리스트 요소&lt;/value&gt;
       &lt;ref bean="myDataSource" /&gt;
   &lt;/list&gt;
 &lt;/property&gt;
@@ -667,7 +667,7 @@ public class ExampleBean {
 <lineannotation>&lt;!-- setSomeSet(java.util.Set) 호출의 결과 --&gt;</lineannotation>
 &lt;property name="someSet"&gt;
   &lt;set&gt;
-      &lt;value&gt;just some string&lt;/value&gt;
+      &lt;value&gt;그냥 문자열이다&lt;/value&gt;
       &lt;ref bean="myDataSource" /&gt;
   &lt;/set&gt;
 &lt;/property&gt;
@@ -682,10 +682,10 @@ public class ExampleBean {
         <title>컬렉션 병합(merging)</title>
 
         <para>스프링 2.0처럼 컨테이너는 컬렉션의 <emphasis>병합</emphasis>을 지원한다. 
-          애플리케이션 개발자는 부모형식의 <literal>&lt;list/&gt;</literal>, 
+          애플리케이션 개발자는 부모 형식의 <literal>&lt;list/&gt;</literal>, 
           <literal>&lt;map/&gt;</literal>, <literal>&lt;set/&gt;</literal>, 
           <literal>&lt;props/&gt;</literal> 요소를 정의할 수 있고 부모 컬렉션을 
-          상속받고 값을 오버라이드한 자식형식의 <literal>&lt;list/&gt;</literal>, 
+          상속받고 값을 오버라이드한 자식 형식의 <literal>&lt;list/&gt;</literal>, 
           <literal>&lt;map/&gt;</literal>, <literal>&lt;set/&gt;</literal>, 
           <literal>&lt;props/&gt;</literal> 요소가 있을 수 있다. 자식 컬렉션의 
           값들은 부모와 자식 컬렉션의 요소를 합친 결과이고 자식의 컬렉션 요소는 부모 
@@ -740,7 +740,7 @@ support=support@example.co.uk</programlisting>
           <literal>&lt;set/&gt;</literal> 컬렉션타입에도 비슷하게 적용된다. 
           <literal>&lt;list/&gt;</literal> 요소의 경우에서 <classname>List</classname> 
           컬렉션 타입과 결합한 의미는 유지된다. 이는 값의 <literal>ordered</literal> 컬렉션의 
-          개념을 말한다. 부모의 값은 자식 리스트의 모든 값들보다 우선시된다. 
+          개념을 말한다. 부모의 값은 자식 리스트의 모든 값보다 우선시된다. 
           <interfacename>Map</interfacename>, <interfacename>Set</interfacename>, 
           <interfacename>Properties</interfacename> 컬렉션 타입에서는 순서가 존재하지 않는다. 
           따라서 순서가 없다는 개념은 컨테이너가 내부적으로 사용하는 연관된 
@@ -765,7 +765,7 @@ support=support@example.co.uk</programlisting>
         <title>강타입(Strongly-typed)의 컬렉션(Java 5+에서만 사용 가능)</title>
  
         <para>자바 5 이상에서 강타입(strongly typed)의 컬렉션을 사용할 수 있다.(제너릭 
-          타입을 사용해서) 예를 들면 <classname>String</classname> 엘리먼트만 이루어진 
+          타입을 사용해서) 예를 들면 <classname>String</classname> 엘리먼트로 이루어진 
           <interfacename>Collection</interfacename> 타입을 선언할 수 있다. 스프링으로 
           빈에 강타입의 <interfacename>Collection</interfacename>을 의존성-주입한다면 
           스프링의 타입변환 지원의 이점을 얻을 수 있다. 스프링의 타입변환은 강타입의 
@@ -836,8 +836,8 @@ support=support@example.co.uk</programlisting>
         요소의 속성을 사용 가능케 한다.</para>
 
       <para>스프링 2.0부터는 XML 스키마 정의에 기반해서 <link linkend="xsd-config">
-        네임스페이스를 사용하는</link> 확장가능한 설정형식을 지원한다. 이번 챕터에서 얘기할 
-        <literal>beans</literal> 설정 형식은 XML 스키나 문서에 정의한다. 하지만 
+        네임스페이스를 사용하는</link> 확장만 가능한 설정형식을 지원한다. 이번 챕터에서 얘기할 
+        <literal>beans</literal> 설정형식은 XML 스키나 문서에 정의한다. 하지만 
         p-namespace는 XSD 파일에 정의하지 않고 스프링 코어에만 존재한다.</para>
 
       <para>다음 예제는 같은 결과를 처리하는 두 가지 XML 코드를 보여준다. 첫 번째는 표준 
@@ -895,9 +895,9 @@ support=support@example.co.uk</programlisting>
 
       <note>
         <para>p-namespace는 표준 XML 형식처럼 유연하지는 않다. 예를 들어 프로퍼티 참조를 
-          선언하는 형식은 <literal>Ref</literal>로 끝나는 프로퍼티와 충돌이 나지만 표준 
-          XML은 충돌나지 않는다. 동시에 세가지 방법을 사용하는 XML 문서가 생기는 문제를 피하기 
-          위해 어떤 방법을 사용할지 신중하게 선택하고 이에 대해서 팀 멤버들과 협의하기를 
+          선언하는 형식은 <literal>Ref</literal>로 끝나는 프로퍼티와 충돌나지만 표준 
+          XML은 충돌 나지 않는다. 동시에 세 가지 방법을 사용하는 XML 문서가 생기는 문제를 피하려고 
+          어떤 방법을 사용할지 신중하게 선택하고 이에 대해서 팀멤버들과 협의하기를 
           추천한다.<!--Clarify ref to all three approaches.I see two, XML and namespace.--></para>
       </note>
     </section>
@@ -943,7 +943,7 @@ support=support@example.co.uk</programlisting>
       <programlisting language="java">&lt;-- 'c-namespace' 인덱스 선언 --&gt;
 &lt;bean id="foo" class="x.y.Foo" c:_0-ref="bar" c:_1-ref="baz"&gt;</programlisting>
 
-      <note>XML 문법때문에 인덱스 노테이션은 <emphasis>_</emphasis>로 시작해야 한다. XML 속성의 이름은 숫자로 시작할 수 없다.(IDE가 이를 허락한다고 하더라도)</note>
+      <note>XML 문법 때문에 인덱스 노테이션은 <emphasis>_</emphasis>로 시작해야 한다. XML 속성의 이름은 숫자로 시작할 수 없다.(IDE가 이를 허락한다고 하더라도)</note>
       
     <para>실제로 생성자 결정 <link linkend="beans-factory-ctor-arguments-resolution">메카니즘</link>은 실제로 필요한 것 없이도 적합한 아규먼트를 꽤 잘 찾아내기 때문에 설정 전체에 이름 노테이션을 사용하기를 추천한다.</para>
     </section>
@@ -1031,7 +1031,7 @@ support=support@example.co.uk</programlisting>
       않는다. 반면에 <literal>not.lazy</literal>빈은 미리 인스턴스화된다.</para>
 
     <para>하지만 지연 초기화되는 빈이 지연 초기화되지 <emphasis>않는</emphasis> 
-      싱글톤 빈의 의존성이라면 싱글톤 빈의 의존성을 반드시 만족시켜야 하기 때문에 
+      싱글톤 빈의 의존성이라면 싱글톤 빈의 의존성을 반드시 만족시켜야 하므로 
       <interfacename>ApplicationContext</interfacename>는 지연 초기화되는 빈을 
       시작하면서 생성한다. 지연 초기화되는 빈은 지연 초기화되지 않는 다른 싱글톤 
       빈에 주입된다.</para>
@@ -1058,13 +1058,13 @@ support=support@example.co.uk</programlisting>
       <listitem>
         <para>자동연결(Autowiring)은 프로퍼티나 생성자 아규먼트를 지정하는 일을 현저하게 
           줄일 수 있다. (이 점에 관해서 <link linkend="beans-child-bean-definitions">
-          이 챕터의 다른 부분에서 얘기 할</link> 빈 템플릿(bean template)같은 다른 
+          이 챕터의 다른 부분에서 얘기할</link> 빈 템플릿(bean template)같은 다른 
           메카니즘도 역시 유용하다.)</para>
       </listitem>
 
       <listitem>
         <para>자동연결(Autowiring)은 객체의 발전처럼 설정을 수정할 수 있다. 예를 들어 
-          클래스에 의존성을 추가해야 한다면 의존성은 설정을 수정할 필요없이 자동으로 만족될 
+          클래스에 의존성을 추가해야 한다면 의존성은 설정을 수정할 필요없이 자동으로 만족할 
           수 있다. 그러므로 자동연결은 개발할 때 특히 유용하다. 코드베이스가 더 안정적이 
           되었을 때 명시적으로 연결하기 위해 옵션을 변경할 필요가 없다.</para>
       </listitem>
@@ -1072,7 +1072,7 @@ support=support@example.co.uk</programlisting>
       <para><xref linkend="beans-factory-collaborators"/>를 참고해라.</para>
       </footnote>, <literal>&lt;bean/&gt;</literal> 요소의 <literal>autowire</literal> 
       속성으로 빈 정의에 대한 autowire 모드를 지정한다. 자동연결(autowiring) 기능에는 
-      5 가지 모드가 있다. 빈 <emphasis>마다</emphasis> 자동연결을 지정하기 때문에 
+      5가지 모드가 있다. 빈<emphasis>마다</emphasis> 자동연결을 지정하기 때문에 
       자동연결할 빈을 선택할 수 있다.</para>
 
     <table id="beans-factory-autowiring-modes-tbl">
@@ -1105,7 +1105,7 @@ support=support@example.co.uk</programlisting>
           <row>
             <entry>byName</entry>
 
-            <entry><para>프로퍼티 이름에 의한 자동연결(Autowiring). 스프링은 자동 연결이 
+            <entry><para>프로퍼티 이름에 의한 자동연결(Autowiring). 스프링은 자동연결이 
               필요한 프로퍼티와 같은 이름의 빈을 찾는다. 예를 들어 빈 정의가 이름에 의한 
               자동연결로 설정되어있고 <emphasis>master</emphasis> 프로퍼티가 있다면
               (<emphasis>setMaster(..)</emphasis> 메서드가 있다는 의미이다.) 스프링은 
@@ -1126,7 +1126,7 @@ support=support@example.co.uk</programlisting>
           <row>
             <entry>constructor</entry>
 
-            <entry><para><emphasis>byType</emphasis>과 유사하지만 생성자 아규먼트에 
+            <entry><para><emphasis>byType</emphasis>과 유사하지만, 생성자 아규먼트에 
               적용된다. 컨테이너 내에서 생성자 아규먼트의 타입과 정확히 일치하는 빈이 없다면 
               fatal 오류가 발생한다.</para></entry>
           </row>
@@ -1136,13 +1136,13 @@ support=support@example.co.uk</programlisting>
     </table>
 
     <para><emphasis>byType</emphasis> 자동연결 모드나 <emphasis>constructor</emphasis> 
-      자동연결 모드를 사용해서 배열이나 타입이 있는 컬렉션을 연결할 수 있다. 이러한 경우에 컨테이너 
+      자동연결 모드를 사용해서 배열이나 타입이 있는 컬렉션을 연결할 수 있다. 이럴  컨테이너 
       내에서 타입이 일치할 것으로 기대되는 <emphasis>모든</emphasis> 자동연결 후보들은 의존성을 
       만족하기 위해 제공된다. 기대하는 키 타입이 <classname>String</classname>이라면 강타입의 
       맵과 자동연결할 수 있다. 자동연결된 맵의 값들은 일치하기를 기대하는 타입의 모든 빈 인스턴스로 
       이루어질 것이고 맵의 키들에는 대응되는 빈의 이름이 담겨있다.</para>
 
-    <para>자동 연결이 수행된 후에 자동연결과 의존성 확인을 합칠 수 있다.</para>
+    <para>자동연결이 수행된 후에 자동연결과 의존성 확인을 합칠 수 있다.</para>
 
     <section id="beans-autowired-exceptions">
       <title>자동연결의 한계와 단점들</title>
@@ -1166,8 +1166,8 @@ support=support@example.co.uk</programlisting>
       <itemizedlist>
         <listitem>
           <para>자동연결은 명시적인 연결보다는 정확하지 않다. 앞에서 본 표처럼 스프링은 
-            기대하지 않을 결과가 일어날 수도 있는 애매모호한 경우에 추측하는 것을 피하기 
-            위해 조심하지만 스프링이 관리하는 객체사이의 관계는 더이상 명백하게 문서화되지 
+            기대하지 않을 결과가 일어날 수도 있는 애매모호한 경우에 추측하는 것을 피하려고  
+            조심하지만, 스프링이 관리하는 객체 사이의 관계는 더는 명백하게 문서화되지 
             않는다.</para>
         </listitem>
 
@@ -1232,7 +1232,7 @@ support=support@example.co.uk</programlisting>
         속성을 <literal>true</literal>나 <literal>false</literal>로 명시적으로 지정하면 
         항상 우선시되고 패턴패칭 규칙이 적용되지 않는다.</para>
 
-      <para>이러한 기법들은 자동연결로 다른 빈에 주입하면 안되는 빈에 유용한다. 이는 
+      <para>이러한 기법들은 자동연결로 다른 빈에 주입하면 안 되는 빈에 유용한다. 이는 
         제외된 빈이 스스로 자동연결을 사용해서 설정할 수 없다는 것을 의미하지는 않는다. 
         더 적절히 말하면 빈 자신은 다른 빈에 자동연결하기 위한 후보가 아니다.</para>
 
@@ -1243,19 +1243,19 @@ support=support@example.co.uk</programlisting>
   <section id="beans-factory-method-injection">
     <title>메서드 주입</title>
 
-    <para>대부분의 어플리케이션 시나리오에서 컨테이너 내의 대부분의 빈은 <link
+    <para>대부분의 어플리케이션 시나리오에서 컨테이너 내의 대부분 빈은 <link
       linkend="beans-factory-scopes-singleton">싱글톤</link>이다. 싱글톤 빈이 다른 
       싱글톤 빈과 협력해야 하거나 싱글톤이 아닌 빈이 싱글톤이 아닌 다른 빈과 협력해야 할 때 
       보통 빈은 다른 빈의 프로퍼티로 정의해서 의존성을 다룬다. 빈의 라이프 사이클이 다를 때 
       한가지 문제점이 생긴다. 싱글톤 빈 A가 싱글톤이 아닌(프로토타입) 빈 B를 사용해야 한다고 
-      가정해 보자. 아마 각 메서듣 호출은 A에서 발생한다. 컨테이너는 싱글톤 빈 A를 딱 한번만 
-      생성하므로 프로퍼티를 설정할 기회도 딱 한번만 있다. 컨테이너는 빈 B가 필요할 때마다 빈 
+      가정해 보자. 아마 각 메서듣 호출은 A에서 발생한다. 컨테이너는 싱글톤 빈 A를 딱 한 번만 
+      생성하므로 프로퍼티를 설정할 기회도 딱 한 번만 있다. 컨테이너는 빈 B가 필요할 때마다 빈 
       B의 새로운 인스턴스를 가진 빈 A를 제공할 수 없다.</para>
 
     <para>해결책은 제어의 역전(inversion of control)보다 선행하는 것이다. 
       <interfacename>ApplicationContextAware</interfacename> 인터페이스를 구현하거나 
       빈 A가 빈 B를 필요로 할 때마다 컨테이너가 빈 B의 인스턴스(보통은 new)를 요청하도록 
-      <link linkend="beans-factory-client">getBean("B")을 호출하게 만듦으로써</link> 
+      <link linkend="beans-factory-client">getBean("B")을 호출하게 함으로써</link> 
       <link linkend="beans-factory-aware">빈 A가 컨테이너를 인지하도록</link> 할 수 
       있다. 다음은 이러한 방법의 예이다.</para>
 
@@ -1306,7 +1306,7 @@ public class CommandManager implements ApplicationContextAware {
       <!--Deleted a box here that doesn't seem to have much info; I moved the blog entry link above. -->
 
       <para>메서드 주입 검색은 컨테이너에서 또 다른 이름있는 빈에 대해 검색 결과를 리턴하도록 
-        컨테이너가 <emphasis>컨테이너가 관리하는 빈의</emphasis>메서드를 오버라이드한다. 
+        <emphasis>컨테이너가 관리하는 빈의</emphasis> 메서드를 오버라이드한다. 
         이전 섹션에서 설명한 시나리오처럼 검색은 보통 프로토타입 빈과 관계된다. 스프링 프레임워크는 
         메서드를 오버라이드 하는 서브클래스를 동적으로 생성하기 위해 CGLIB 라이브러리에서 
         바이트코드 생성을 사용해서 이 메서드 주입을 
@@ -1316,7 +1316,7 @@ public class CommandManager implements ApplicationContextAware {
         <para>이 동적으로 서브클래스를 만드는 작업을 하려면 클래스패스에 CGLIB jar파일을 
           두어야 한다. 스프링 프레임워크가 서브클래스를 생성하는 클래스는 
           <literal>final</literal>이 될 수 없고 오버라이드 되는 메서드도 
-          <literal>final</literal>이 될 수 없다. 또한 <literal>abstract</literal> 
+          <literal>final</literal>이 될 수 없다. 또한, <literal>abstract</literal> 
           메서드가 있는 클래스를 테스트하려면 개발자가 직접 클래스의 서브클래스를 만들고 
           <literal>abstract</literal> 메서드의 스텁(stub) 구현을 제공해야 한다. 마지막으로 
           메서드 주입의 타겟이 되는 객체들은 직렬화 될 수 없다.</para>
@@ -1346,7 +1346,7 @@ public abstract class CommandManager {
  protected abstract Command createCommand();
 }</programlisting>
 
-      <para>주입되는 메서드가 있는는 클라이언트 클래스에서(이 경우에는 
+      <para>주입되는 메서드가 있는 클라이언트 클래스에서(이 경우에는 
         <classname>CommandManager</classname>) 주입되는 메서드는 다음과 같은 형식의 
         시그니처여야 한다.</para>
 
@@ -1371,11 +1371,11 @@ public abstract class CommandManager {
         <emphasis>commandManager</emphasis>이다. <literal>command</literal> 빈이 
         실제로 필요하다면 프로토타입으로 배포해야 한다. <literal>command</literal> 빈이 
         <link linkend="beans-factory-scopes-singleton">싱글톤</link>으로 배포된다면 
-        <literal>command</literal> 빈은 항상 같은 인스턴스가 리턴될 것이다.</para>
+        <literal>command</literal> 빈은 항상 같은 인스턴스를 리턴할 것이다.</para>
 
       <tip>
         <para>호기심 많은 독자라면 <classname>ServiceLocatorFactoryBean</classname> 
-          (<literal>org.springframework.beans.factory.config</literal> 패키지에 있다)가 
+          (<literal>org.springframework.beans.factory.config</literal> 패키지에 있다.)가 
           사용된다는 것을 찾아낼 것이다. ServiceLocatorFactoryBean에서 사용한 접근은 다른 
           유틸리티 클래스인 <classname>ObjectFactoryCreatingFactoryBean</classname>에서 
           사용한 접근과 유사하다. 하지만 ServiceLocatorFactoryBean는 스프링에 특화된 검색 
@@ -1441,15 +1441,15 @@ public class ReplacementComputeValue implements MethodReplacer {
         <literal>&lt;replaced-method/&gt;</literal> 요소내에서 다수의 
         <literal>&lt;arg-type/&gt;</literal> 요소를 사용할 수 있다. 아규먼트에 대한 
         시그니처는 메서드가 오버라이드 되고 클래스에 다수의 변수수가 존재할 때만 필요하다. 
-        간편하게 아규먼트에 대한 스트링 타입은 완전히 정규화된 타입이름의 일부만 적어도 된다. 
+        간편하게 아규먼트에 대한 스트링 타입은 완전히 정규화된 타입이름 일부만 적어도 된다. 
         예를 들어 다음은 모든 <classname>java.lang.String</classname>과 매치된다.</para>
 
       <programlisting language="java">    java.lang.String
   String
   Str</programlisting>
 
-      <para>대게 아규먼트의 수는 선택가능한 범위내에서 구별하기에 충분하기 때문에 이 
-        단축키는 아규먼트의 타입과 매치되는 가장 짧은 문자열만 입력함으로써 타이핑의 양을 
+      <para>대게 아규먼트의 수는 선택 가능한 범위에서 구별하기에 충분하므로 이 
+        단축키는 아규먼트의 타입과 매치되는 가장 짧은 문자열만 입력함으로써 타이핑 양을 
         줄일 수 있다.</para>
     </section>
   </section>
