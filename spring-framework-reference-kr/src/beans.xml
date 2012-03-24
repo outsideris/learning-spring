@@ -742,25 +742,20 @@ List userList service.getUsernameList();
     xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <section id="beans-child-bean-definitions">
-    <title>Bean definition inheritance</title>
+    <title>빈 정의 상속</title>
 
-    <para>A bean definition can contain a lot of configuration information,
-      including constructor arguments, property values, and container-specific
-      information such as initialization method, static factory method name, and
-      so on. A child bean definition inherits configuration data from a parent
-      definition. The child definition can override some values, or add others,
-      as needed. Using parent and child bean definitions can save a lot of
-      typing. Effectively, this is a form of templating.</para>
+    <para>빈 정의는 초기화 메서드, 정적 팩토리 메서드명 등과 같은 컨테이너 특유의 정보, 
+      생성자 아규먼트, 프로퍼티 값을 포함해서 많은 설정정보를 담고 있다. 자식 빈 정의는 
+      부모 정의에서 설정 데이터를 상속받는다. 자식 빈은 값을 오버라이드할 수 있고 필요하다면 
+      추가할 수도 있다. 부모 빈 정의와 자식 빈 정의를 사용하면 타이핑 양을 많이 줄일 수 있다. 
+      사실상 이는 템플릿 형식이다.</para>
 
-    <para>If you work with an <interfacename>ApplicationContext</interfacename>
-      interface programmatically, child bean definitions are represented by the
-      <classname>ChildBeanDefinition</classname> class. Most users do not work
-      with them on this level, instead configuring bean definitions
-      declaratively in something like the
-      <classname>ClassPathXmlApplicationContext</classname>. When you use
-      XML-based configuration metadata, you indicate a child bean definition by
-      using the <literal>parent</literal> attribute, specifying the parent bean
-      as the value of this attribute.</para>
+    <para><interfacename>ApplicationContext</interfacename> 인터페이스를 프로그래밍적으로 
+      작업한다면 자식 빈 정의는 <classname>ChildBeanDefinition</classname> 클래스로 나타난다. 
+      대부분의 사용자는 이러한 레벨로 작업하지 않고 대신에 
+      <classname>ClassPathXmlApplicationContext</classname>같은 어떤 선언적인 빈정의로 설정한다. 
+      XML 기반의 설정 메타데이터를 사용한다면 <literal>parent</literal> 속성의 값으로 부모 빈을 
+      지정해서 자식 빈 정의를 나타낸다.</para>
 
     <programlisting language="xml">&lt;bean id="inheritedTestBean" abstract="true"
     class="org.springframework.beans.TestBean"&gt;
@@ -773,31 +768,27 @@ List userList service.getUsernameList();
       <emphasis role="bold">parent="inheritedTestBean"</emphasis> init-method="initialize"&gt;
 
   &lt;property name="name" value="override"/&gt;
-  <lineannotation>&lt;!-- the age property value of 1 will be inherited from  parent --&gt;</lineannotation>
+  <lineannotation>&lt;!-- age 프로퍼티 값 1은 부모로부터 상속될 것이다. --&gt;</lineannotation>
 
 &lt;/bean&gt;</programlisting>
 
-    <para>A child bean definition uses the bean class from the parent definition
-      if none is specified, but can also override it. In the latter case, the
-      child bean class must be compatible with the parent, that is, it must
-      accept the parent's property values.</para>
+    <para>지정한 것이 아무것도 없다면 자식 빈 정의는 부모 정의에서 빈 클래스를 사용하고 자식 
+      빈 정의는 이를 오버라이드할 수 있다. 오버라이드할 경우 자식 빈 클래스는 부모와 반드시 
+      호환성이 있어야 한다. 즉 자식 빈 클래스는 부모의 프로퍼티 값을 받아야 한다.</para>
 
-    <para>A child bean definition inherits constructor argument values, property
-      values, and method overrides from the parent, with the option to add new
-      values. Any initialization method, destroy method, and/or
-      <literal>static</literal> factory method settings that you specify will
-      override the corresponding parent settings.</para>
+    <para>자식 빈 정의는 부모로부터 생성자 아규먼트 값, 프로퍼티 값, 메서드 오버라이드를 상속받고 
+      새로운 값을 추가할 수도 있다. 지정한 어떤 초기화 메서드나 파괴 메서드 
+      <literal>static</literal> 팩토리 메서드 설정도 대응되는 부모의 설정을 오버라이드 
+      할 것이다.</para>
 
-    <para>The remaining settings are <emphasis>always</emphasis> taken from the
-      child definition: <emphasis>depends on</emphasis>, <emphasis>autowire
-      mode</emphasis>, <emphasis>dependency check</emphasis>,
-      <emphasis>singleton</emphasis>, <emphasis>scope</emphasis>, <emphasis>lazy
-      init</emphasis>.</para>
+    <para>남은 설정은 <emphasis>항상</emphasis> 자식 정의에서 가져온다: 
+      <emphasis>의존성</emphasis>, <emphasis>자동연결 모드</emphasis>, 
+      <emphasis>의존성 확인</emphasis>, <emphasis>싱글톤</emphasis>, 
+      <emphasis>범위</emphasis>, <emphasis>지연 초기화</emphasis>.</para>
 
-    <para>The preceding example explicitly marks the parent bean definition as
-      abstract by using the <literal>abstract</literal> attribute. If the parent
-      definition does not specify a class, explicitly marking the parent bean
-      definition as <literal>abstract</literal> is required, as follows:</para>
+    <para>앞의 예제는 <literal>abstract</literal> 송석을 사용해서 명시적으로 부모 빈 
+      정의를 추상으로 표시했다. 부모 정의가 클래스를 지정하지 않았다면 다음과 같이 명시적으로 
+      부모 빈 정의를 <literal>abstract</literal>로 표시해야한다.</para>
 
     <programlisting language="xml">&lt;bean id="inheritedTestBeanWithoutClass" abstract="true"&gt;
     &lt;property name="name" value="parent"/&gt;
@@ -807,30 +798,24 @@ List userList service.getUsernameList();
 &lt;bean id="inheritsWithClass" class="org.springframework.beans.DerivedTestBean"
     parent="inheritedTestBeanWithoutClass" init-method="initialize"&gt;
   &lt;property name="name" value="override"/&gt;
-  <lineannotation>&lt;!-- age will inherit the value of <literal>1</literal> from the parent bean definition--&gt;</lineannotation>
+  <lineannotation>&lt;!-- age는 부모 빈 정의에서 <literal>1</literal>의 값을 상속받을 것이다--&gt;</lineannotation>
 &lt;/bean&gt;</programlisting>
 
-    <para>The parent bean cannot be instantiated on its own because it is
-      incomplete, and it is also explicitly marked as
-      <literal>abstract</literal>. When a definition is
-      <literal>abstract</literal> like this, it is usable only as a pure
-      template bean definition that serves as a parent definition for child
-      definitions. Trying to use such an <literal>abstract</literal> parent bean
-      on its own, by referring to it as a ref property of another bean or doing
-      an explicit <methodname>getBean()</methodname> call with the parent bean
-      id, returns an error. Similarly, the container's internal
-      <methodname>preInstantiateSingletons()</methodname> method ignores bean
-      definitions that are defined as abstract.</para>
+    <para>부모 빈은 미완성이기 때문에 그 자체로는 초기화 될 수 없고 <literal>abstract</literal>로 
+      명시되어 있다. 이처럼 정의가 <literal>abstract</literal>이면 자식정의를 위해서 부모정의가 
+      제공하는 빈 정의 템플릿으로서만 사용할 수 있다. 다른 빈의 ref 프로퍼티로 참조하거나 명시적으로 
+      부모 빈의 id로 <methodname>getBean()</methodname>호출해서 <literal>abstract</literal>인 
+      부모 빈 자체를 사용하려고 하면 오류가 발생한다. 유사하게 컨테이너 내부의 
+      <methodname>preInstantiateSingletons()</methodname> 메서드는 추상으로 정의된 
+      빈 정의를 무시한다.</para>
 
     <note>
-      <para><literal>ApplicationContext</literal> pre-instantiates all
-        singletons by default. Therefore, it is important (at least for
-        singleton beans) that if you have a (parent) bean definition which you
-        intend to use only as a template, and this definition specifies a class,
-        you must make sure to set the <emphasis>abstract</emphasis> attribute to
-        <emphasis>true</emphasis>, otherwise the application context will
-        actually (attempt to) pre-instantiate the <literal>abstract</literal>
-        bean.</para>
+      <para><literal>ApplicationContext</literal>는 기본적으로 모든 싱글톤을 미리 
+        인스턴스화한다. 그래서 템플릿으로만 사용하려는 (부모)빈 정의가 있고 이 빈 정의가 클래스를 
+        지정하고 있다면 모든 싱글톤이 미리 인스턴스화된다는 사실은 중요하다.(최소한 싱글톤 빈에 
+        대해서는) 반드시 <emphasis>abstract</emphasis> 속성을 <emphasis>true</emphasis>로 
+        설정했는지 확인해야 한다. 그렇지 않으면 어플리케이션 컨텍스트는 실제로 
+        <literal>abstract</literal> 빈을 미리 인스턴스화하려고 시도할 것이다.</para>
     </note>
   </section>
 
