@@ -545,7 +545,7 @@ beanFactory.registerScope("<emphasis role="bold">thread</emphasis>", threadScope
       <para>커스텀 <interfacename>Scope</interfacename> 구현체를 사용할 때 범위를 
         프로그래밍적으로 등록하는데 제한은 없다. 또한 <classname>CustomScopeConfigurer</classname> 
         클래스를 사용해서 선언적으로 <interfacename>Scope</interfacename>를 등록할 
-        수도 있다.</classname></para>
+        수도 있다.</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
