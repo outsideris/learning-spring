@@ -2,153 +2,127 @@
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <section id="beans-factory-extension">
-  <title>Container Extension Points</title>
+  <title>컨테이너 확장점(Extension Points)</title>
 
-  <para>Typically, an application developer does not need to subclass
-    <interfacename>ApplicationContext</interfacename> implementation classes.
-    Instead, the Spring IoC container can be extended by plugging in
-    implementations of special integration interfaces. The next few sections
-    describe these integration interfaces.</para>
+  <para>보통 어플리케이션 개발자는 <interfacename>ApplicationContext</interfacename> 
+    구현 클래스들의 서브클래스를 만들 필요가 없다. 대신 특수한 통합 인터페이스의 구현을 
+    연결해서 스프링 IoC 컨테이너를 확장할 수 있다.</para>
 
   <section id="beans-factory-extension-bpp">
-    <title>Customizing beans using a
-      <interfacename>BeanPostProcessor</interfacename></title>
+    <title><interfacename>BeanPostProcessor</interfacename>를 
+      사용한 빈 커스터마이징</title>
 
-    <para>The <interfacename>BeanPostProcessor</interfacename> interface defines
-      <firstterm>callback methods</firstterm> that you can implement to provide
-      your own (or override the container's default) instantiation logic,
-      dependency-resolution logic, and so forth. If you want to implement some
-      custom logic after the Spring container finishes instantiating,
-      configuring, and initializing a bean, you can plug in one or
-      more <interfacename>BeanPostProcessor</interfacename>
-      implementations.</para>
+    <para><interfacename>BeanPostProcessor</interfacename> 인터페이스는 개발자가 
+      원하는(또는 컨테이너의 기본로직을 오버라이드하는) 인스턴스화 로직, 의존성 처리로직 등을 
+      구현할 수 있는 <firstterm>callback methods</firstterm>를 정의한다. 스프링 컨테이너가 
+      인스턴스화, 설정, 빈 초기화 작업을 끝낸 뒤 어떤 커스텀 로직을 구현하려면 하나 이상의 
+      <interfacename>BeanPostProcessor</interfacename> 구현체를 연결할 수 있다.</para>
 
-    <para>You can configure multiple <literal>BeanPostProcessor</literal>
-      instances, and you can control the order in which these
-      <literal>BeanPostProcessor</literal>s execute by setting the
-      <literal>order</literal> property. You can set this property only if the
-      <interfacename>BeanPostProcessor</interfacename> implements the
-      <interfacename>Ordered</interfacename> interface; if you write your own
-      <interfacename>BeanPostProcessor</interfacename> you should consider
-      implementing the <interfacename>Ordered</interfacename> interface too. For
-      further details, consult the Javadoc for the
-      <interfacename>BeanPostProcessor</interfacename> and
-      <interfacename>Ordered</interfacename> interfaces. See also the note below on
+    <para>여러 개의 <literal>BeanPostProcessor</literal> 인스턴스를 설정할 수 있고 
+      <literal>order</literal> 프로퍼티를 통해 이러한 <literal>BeanPostProcessor</literal>의 
+      실행순서를 제어할 수 있다. 이 order 프로퍼티는 <interfacename>BeanPostProcessor</interfacename>가 
+      <interfacename>Ordered</interfacename> 인터페이스를 구현했을 때만 설정할 수 있다. 직접 
+      <interfacename>BeanPostProcessor</interfacename>를 작성한다면 
+      <interfacename>Ordered</interfacename> 인터페이스도 같이 구현해야 한다. 더 자세한 
+      정도는 <interfacename>BeanPostProcessor</interfacename> 인터페이스와 
+      <interfacename>Ordered</interfacename> 인터페이스의 JAVADOC을 참고해라. 또한 
       <link linkend="beans-factory-programmatically-registering-beanpostprocessors">
-      programmatic registration of <interfacename>BeanPostProcessors</interfacename>
-      </link></para>
+      <interfacename>BeanPostProcessors</interfacename>의 프로그래밍적인 등록</link>을 
+      참고해라.</para>
 
     <note>
-      <para><literal>BeanPostProcessor</literal>s operate on bean (or object)
-        <emphasis>instances</emphasis>; that is to say, the Spring IoC container
-        instantiates a bean instance and <emphasis>then</emphasis>
-        <literal>BeanPostProcessor</literal>s do their work.</para>
+      <para><literal>BeanPostProcessor</literal>는 빈(또는 객체) 
+        <emphasis>인스턴스</emphasis>상에서 동작한다. 즉, 스프링 IoC 컨테이너는 빈 인스턴스를 
+        인스턴스화한 <emphasis>다음에</emphasis> <literal>BeanPostProcessor</literal>가 
+        자신의 일을 수행한다.</para>
 
-      <para><literal>BeanPostProcessor</literal>s are scoped
-        <emphasis>per-container</emphasis>. This is only relevant if you are
-        using container hierarchies. If you define a
-        <interfacename>BeanPostProcessor</interfacename> in one container, it
-        will <emphasis>only</emphasis> post-process the beans in that
-        container. In other words, beans that are defined in one container are not
-        post-processed by a <literal>BeanPostProcessor</literal> defined in another
-        container, even if both containers are part of the same hierarchy.</para>
+      <para><literal>BeanPostProcessor</literal>는 <emphasis>컨테이너에 한정된
+        (per-container)</emphasis> 범위를 갖는데 이는 컨테이너 계층(hierarchies)을 사용할 
+        때만 적절한 표현이다. 하나의 컨테이너에서 <interfacename>BeanPostProcessor</interfacename>를 
+        정의한다면 BeanPostProcessor는 해당 컨테이너의 빈들에 대한 후처리(post-process)
+        <emphasis>만</emphasis> 할 것이다. 다시 말하면 한 컨테이너에서 정의된 빈들은 다른 빈에서 
+        정의된 <literal>BeanPostProcessor</literal>가 후처리를 하지 않고 두 컨테이너가 같은 
+        계층에 속해있더라도 마찬가지이다.</para>
 
-      <para>To change the actual bean definition (i.e., the
-        <emphasis>blueprint</emphasis> that defines the bean), you instead need to use a
-        <interfacename>BeanFactoryPostProcessor</interfacename> as described
-        in <xref linkend="beans-factory-extension-factory-postprocessors"
-        />.</para>
+      <para>실제 빈 정의를 바꾸려면(예를 들어 빈을 정의하는 <emphasis>청사진(blueprint)</emphasis>) 
+        <xref linkend="beans-factory-extension-factory-postprocessors"/>에서 설명했듯이 
+        <interfacename>BeanFactoryPostProcessor</interfacename>를 사용해야 한다.</para>
     </note>
 
-    <para>The
-      <interfacename>org.springframework.beans.factory.config.BeanPostProcessor</interfacename>
-      interface consists of exactly two callback methods. When such a class is
-      registered as a post-processor with the container, for each bean instance
-      that is created by the container, the post-processor gets a callback from
-      the container both <emphasis>before</emphasis> container initialization
-      methods (such as InitializingBean's <emphasis>afterPropertiesSet()</emphasis>
-      and any declared init method) are called as well as <emphasis>after</emphasis>
-      any bean initialization callbacks. The post-processor can take
-      any action with the bean instance, including ignoring the callback
-      completely. A bean post-processor typically checks for callback
-      interfaces or may wrap a bean with a proxy. Some Spring AOP
-      infrastructure classes are implemented as bean post-processors in order
-      to provide proxy-wrapping logic.</para>
+    <para><interfacename>org.springframework.beans.factory.config.BeanPostProcessor</interfacename>
+      인터페이스는 정확히 2개의 콜백 메서드로 구성되어 있다. 이러한 클래스를 컨테이너의 
+      후처리자(post-processor)로 등록했다면 컨테이너가 생성한 각 빈 인스턴스에 대해서 후처리자는 
+      컨테이너 초기화 메서드(InitializingBean의 <emphasis>afterPropertiesSet()</emphasis>와 
+      선언된 init 메서드같은)가 호출되기 <emphasis>이전</emphasis>뿐만 아니라 빈 초기화 콜백 
+      <emphasis>이후에</emphasis> 대해 컨테이너로부터 콜백을 얻는다. 후처리자는 콜백을 완전히 
+      무시해버리는 것을 포함해서 빈 인스턴스에 대한 어떤 액션도 할 수 있다. 빈 후처리자는 보통 콜백 
+      인터페이스를 확인하거나 빈을 프록시로 감쌀 것이다. 몇몇 스프링 AOP 인프라 클래스는 
+      프록시-랩핑(proxy-wrapping) 로직을 제공하려고 빈 후처리자로 구현되었다.</para>
 
-    <para>An <interfacename>ApplicationContext</interfacename>
-      <emphasis>automatically detects</emphasis> any beans that are defined in
-      the configuration metadata which implement the
-      <interfacename>BeanPostProcessor</interfacename> interface. The
-      <interfacename>ApplicationContext</interfacename> registers these beans as
-      post-processors so that they can be called later upon bean creation.
-      Bean post-processors can be deployed in the container just like any other
-      beans.</para>
+    <para><interfacename>ApplicationContext</interfacename>는 설정메타데이터에서 
+      선언된 빈중에 <interfacename>BeanPostProcessor</interfacename> 인터페이스를 
+      구현한 빈을 <emphasis>자동으로 찾아낸다.</emphasis> 
+      <interfacename>ApplicationContext</interfacename>는 이러한 빈을 빈 생성후에 호출될 
+      수 있도록 후처리자로 등록한다.빈 후처리자는 다른 빈들처럼 컨테이너에 배포될 수 있다.</para>
 
     <anchor id="beans-factory-programmatically-registering-beanpostprocessors"/>
     <note>
-      <title>Programmatically registering <interfacename>BeanPostProcessors
-        </interfacename></title>
+      <title>프로그래밍적인 <interfacename>BeanPostProcessors</interfacename> 
+        등록</title>
       <para>
-         While the recommended approach for <interfacename>BeanPostProcessor
-         </interfacename> registration is through <interfacename>ApplicationContext
-         </interfacename> auto-detection (as described above), it is also
-         possible to register them <emphasis>programmatically</emphasis>
-         against an <interfacename>ApplicationContext</interfacename> using the
-         <methodname>addBeanPostProcessor</methodname> method. This can be useful
-         when needing to evaluate conditional logic before registration, or even
-         for copying bean post processors across contexts in a hierarchy.  Note
-         however that <interfacename>BeanPostProcessors</interfacename> added
-         programmatically <emphasis>do not respect the <interfacename>Ordered
-         </interfacename> interface</emphasis>. Here it is the <emphasis>order of
-         registration</emphasis> that dictates the order of execution.  Note also
-         that <interfacename>BeanPostProcessors</interfacename> registered
-         programmatically are always processed before those registered through
-         auto-detection, regardless of any explicit ordering.
+         <interfacename>BeanPostProcessor</interfacename> 등록은 
+         <interfacename>ApplicationContext</interfacename>의 자동탐지(위에서 설명했듯이)를 
+         통한 접근을 권장하지만 addBeanPostProcessor 메서드를 사용해서 
+         <interfacename>ApplicationContext</interfacename>에 <emphasis>프로그래밍적으로</emphasis> 
+         <interfacename>BeanPostProcessor</interfacename>를 등록하는 것도 가능하다. 이는 등록하기 
+         전에 조건을 평가해 볼 필요가 있거나 계층사이의 컨텍스트를 넘어서 빈 후처리자를 복사해야 할 때 
+         유용하다. 하지만 프로그래밍으로 추가된 <interfacename>BeanPostProcessors</interfacename>는 
+         <emphasis><interfacename>Ordered</interfacename> 인터페이스를 고려해서는 안된다.
+         </emphasis> 여기서는 등록하는 순서가 실행의 순서이가. 프로그래밍으로 등록된 
+         <interfacename>BeanPostProcessors</interfacename>는 명시적인 순서에 상관없이 항상 
+         자동탐지로 등록된 <interfacename>BeanPostProcessors</interfacename>보다 먼저 처리된다.
       </para>
     </note>
 
     <note>
-      <title><interfacename>BeanPostProcessors</interfacename> and AOP
-        auto-proxying</title>
+      <title><interfacename>BeanPostProcessors</interfacename>와 AOP 
+        자동 프록싱(auto-proxying)</title>
 
-      <para>Classes that implement the
-        <interfacename>BeanPostProcessor</interfacename> interface are
-        <emphasis>special</emphasis> and are treated differently by the
-        container. All <interfacename>BeanPostProcessors</interfacename>
-        <emphasis>and beans that they reference directly</emphasis> are
-        instantiated on startup, as part of the special startup phase of the
-        <interfacename>ApplicationContext</interfacename>. Next, all
-        <interfacename>BeanPostProcessors</interfacename> are registered in a
-        sorted fashion and applied to all further beans in the container.
-        Because AOP auto-proxying is implemented as a
-        <interfacename>BeanPostProcessor</interfacename> itself, neither
-        <interfacename>BeanPostProcessors</interfacename> nor the beans they reference
-        directly are eligible for auto-proxying, and thus do not have aspects woven
-        into them.</para>
+      <para><interfacename>BeanPostProcessor</interfacename> 인터페이스를 구현한 
+        클래스들은 <emphasis>특별하고</emphasis> 컨테이너가 다르게 취급한다. 모든 
+        <interfacename>BeanPostProcessors</interfacename>와 <emphasis><interfacename>
+        BeanPostProcessors</interfacename>가 직접 참조하는 빈들은</emphasis> 
+        <interfacename>ApplicationContext</interfacename>의 특별한 시작 단계의 일부로 
+        시작할 때 인스턴스화된다. 그 다음 모든 <interfacename>BeanPostProcessors</interfacename>가 
+        정렬된 방식으로 등록되고 컨테이너의 모든 빈에 적용된다. AOP 자동 프록싱은 <interfacename>BeanPostProcessor</interfacename> 자체로 구현되었기 때문에 
+        <interfacename>BeanPostProcessor</interfacename>들과 
+        <interfacename>BeanPostProcessor</interfacename>들이 직접 참조하는 빈들 모두 
+        자동 프록싱에 적합하지 않으므로 관점(aspect)을 위빙(weave)하지 말아야 한다.</para>
 
-      <para>For any such bean, you should see an informational log message:
+      <para>이러한 빈에 대해서는 정보성 로그 메시지를 봐야한다. : 
         <quote><emphasis>Bean foo is not eligible for getting processed by all
         BeanPostProcessor interfaces (for example: not eligible for
         auto-proxying)</emphasis></quote>.</para>
     </note>
 
-    <para>The following examples show how to write, register, and use
-      <literal>BeanPostProcessors</literal> in an
-      <interfacename>ApplicationContext</interfacename>.</para>
+    <para>다음 예제는 <interfacename>ApplicationContext</interfacename>에서 
+      <literal>BeanPostProcessors</literal>를 어떻게 작성해서 등록하고 
+      사용하는 지를 보여준다.</para>
 
     <section id="beans-factory-extension-bpp-examples-hw">
-      <title>Example: Hello World,
-        <interfacename>BeanPostProcessor</interfacename>-style</title>
+      <title>예제 : <interfacename>BeanPostProcessor</interfacename> 
+        스타일의 Hello world</title>
 
-      <para>This first example illustrates basic usage. The example shows a
-        custom <interfacename>BeanPostProcessor</interfacename> implementation
-        that invokes the <methodname>toString()</methodname> method of each bean
-        as it is created by the container and prints the resulting string to the
-        system console.</para>
+      <para>첫 예제는 기본적인 사용방법을 설명한다. 예제는 컨테이너가 생성한 각 빈의 
+        <methodname>toString()</methodname> 메서드를 호출하고 시스템콘솔에 결과 문자열을 
+        출력하는 커스텀 <interfacename>BeanPostProcessor</interfacename> 구현체를 
+        보여준다.</para>
 
       <para>Find below the custom
         <interfacename>BeanPostProcessor</interfacename> implementation class
         definition:</para>
+      <para>다음 커스텀 <interfacename>BeanPostProcessor</interfacename> 구현클래스 
+        정의를 보자.</para>
 
       <programlisting language="java">package scripting;
 
@@ -157,10 +131,10 @@ import org.springframework.beans.BeansException;
 
 public class InstantiationTracingBeanPostProcessor implements BeanPostProcessor {
 
-  <lineannotation>// simply return the instantiated bean as-is</lineannotation>
+  <lineannotation>// 간단히 현상태의 인스턴스화 된 빈을 리턴한다</lineannotation>
   public Object postProcessBeforeInitialization(Object bean, String beanName)
                                                                      throws BeansException {
-      return bean; <lineannotation>// we could potentially return <emphasis>any</emphasis> object reference here...</lineannotation>
+      return bean; <lineannotation>// 여기서 잠재적으로 <emphasis>어떤</emphasis> 객체의 참조도 리턴할 수 있다...</lineannotation>
   }
 
   public Object postProcessAfterInitialization(Object bean, String beanName)
@@ -185,23 +159,19 @@ public class InstantiationTracingBeanPostProcessor implements BeanPostProcessor 
   &lt;/lang:groovy&gt;
 
   <lineannotation>&lt;!--
-      when the above bean (messenger) is instantiated, this custom
-      <interfacename>BeanPostProcessor</interfacename> implementation will output the fact to the system console
+      위의 빈(messenger)가 인스턴스화 되었을 때 이 커스텀 
+      <interfacename>BeanPostProcessor</interfacename> 구현체는 시스템콘솔에 결과를 출력할 것이다
    --&gt;</lineannotation>
   &lt;bean class="scripting.InstantiationTracingBeanPostProcessor"/&gt;
 
 &lt;/beans&gt;</programlisting>
 
-      <para>Notice how the
-        <classname>InstantiationTracingBeanPostProcessor</classname> is simply
-        defined. It does not even have a name, and because it is a bean it can
-        be dependency-injected just like any other bean. (The preceding
-        configuration also defines a bean that is backed by a Groovy script. The
-        Spring 2.0 dynamic language support is detailed in the chapter entitled
-        <xref linkend="dynamic-language"/>.)</para>
+      <para><classname>InstantiationTracingBeanPostProcessor</classname>를 얼마나 
+        간단히 정의했는지 봐라. 그냥 다른 빈처럼 의존성 주입될 수 있는 빈이기 때문에 이름도 
+        지정하지 않았다. (앞의 설정은 Grooby 스크립트가 지원하는 빈도 정의했다. 스프링 2.0의 
+        동적언어 지원은 <xref linkend="dynamic-language"/> 챕터에서 자세히 설명한다.)</para>
 
-      <para>The following simple Java application executes the preceding code and
-        configuration:</para>
+      <para>다음의 간단한 자바 어플리케이션의 앞의 코드와 설정을 실행한다.</para>
 
       <programlisting language="java">import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -216,133 +186,112 @@ public final class Boot {
   }
 }</programlisting>
 
-      <para>The output of the preceding application resembles the
-        following:</para>
+      <para>앞의 어플리케이션의 결과는 다음과 같다.</para>
 
       <programlisting>Bean 'messenger' created : org.springframework.scripting.groovy.GroovyMessenger@272961
 org.springframework.scripting.groovy.GroovyMessenger@272961</programlisting>
     </section>
 
     <section id="beans-factory-extension-bpp-examples-rabpp">
-      <title>Example: The
+      <title>예제 : 
         <classname>RequiredAnnotationBeanPostProcessor</classname></title>
 
-      <para>Using callback interfaces or annotations in conjunction with a
-        custom <interfacename>BeanPostProcessor</interfacename> implementation
-        is a common means of extending the Spring IoC container. An example is
-        Spring's <classname>RequiredAnnotationBeanPostProcessor</classname> &mdash; a
-        <interfacename>BeanPostProcessor</interfacename> implementation that
-        ships with the Spring distribution which ensures that JavaBean
-        properties on beans that are marked with an (arbitrary) annotation are
-        actually (configured to be) dependency-injected with a value.</para>
+      <para>보통 스프링 IoC 컨테이너를 확장하기 위해서 커스텀 
+        <interfacename>BeanPostProcessor</interfacename> 구현체와 겹합된 어노테이션이나 
+        콜백 인터페이스를 사용한다. 예제는 (임의의) 어노테이션으로 표시된 빈의 JavaBean 프로퍼티를 
+        보장하는 스프링 배포판에 포함된 스프링의 
+        <classname>RequiredAnnotationBeanPostProcessor</classname> &mdash; 
+        <interfacename>BeanPostProcessor</interfacename> 구현체는 실제로 값으로 의존성 
+        주입(되도록 설정)된다.</para>
     </section>
   </section>
 
   <section id="beans-factory-extension-factory-postprocessors">
-    <title>Customizing configuration metadata with a
-      <interfacename>BeanFactoryPostProcessor</interfacename></title>
+    <title><interfacename>BeanFactoryPostProcessor</interfacename>로 
+      설정 메타데이터 커스터마이징하기</title>
 
-    <para>The next extension point that we will look at is the
-      <interfacename>org.springframework.beans.factory.config.BeanFactoryPostProcessor</interfacename>.
-      The semantics of this interface are similar to those of the
-      <interfacename>BeanPostProcessor</interfacename>, with one major
-      difference: <literal>BeanFactoryPostProcessor</literal>s operate on the
-      <emphasis>bean configuration metadata</emphasis>; that is, the Spring IoC
-      container allows <literal>BeanFactoryPostProcessors</literal> to read the
-      configuration metadata and potentially change it
-      <emphasis>before</emphasis> the container instantiates any beans other
-      than <literal>BeanFactoryPostProcessors</literal>.</para>
+    <para>이제 살펴보려는 다음 확장점은 
+      <interfacename>org.springframework.beans.factory.config.BeanFactoryPostProcessor</interfacename>
+      이다. 이 인터페이스의 의미는 <interfacename>BeanPostProcessor</interfacename>가 
+      <emphasis>빈 설정 메타데이터</emphasis>상에서 수행된다는 주요한 차이점을 제외하면 
+      <interfacename>BeanPostProcessor</interfacename>와 유사하다. 이는 스프링 IoC 
+      컨테이너가 <literal>BeanFactoryPostProcessors</literal>가 설정 메타데이터를 읽고 
+      컨테이너가 <literal>BeanFactoryPostProcessors</literal>를 제외한 모든 빈을 
+      인스턴스화하기 <emphasis>전에</emphasis> 바꿀 수 있도록 한다.</para>
 
-    <para>You can configure multiple
-      <literal>BeanFactoryPostProcessors</literal>, and you can control the order in
-      which these <literal>BeanFactoryPostProcessors</literal> execute by
-      setting the <literal>order</literal> property. However, you can only set
-      this property if the
-      <interfacename>BeanFactoryPostProcessor</interfacename> implements the
-      <interfacename>Ordered</interfacename> interface. If you write your own
-      <interfacename>BeanFactoryPostProcessor</interfacename>, you should
-      consider implementing the <interfacename>Ordered</interfacename> interface
-      too. Consult the Javadoc for the
-      <interfacename>BeanFactoryPostProcessor</interfacename> and
-      <interfacename>Ordered</interfacename> interfaces for more details.</para>
+    <para>여러 <literal>BeanFactoryPostProcessors</literal>를 설정할 수 있고 
+      <literal>order</literal> 프로퍼티를 설정해서 이 <literal>BeanFactoryPostProcessor</literal>들의
+      실행순서를 제어할 수 있다. 하지만 <interfacename>BeanFactoryPostProcessor</interfacename>가 
+      <interfacename>Ordered</interfacename> 인터페이스를 구현했을 때만 <literal>order</literal> 
+      프로퍼티를 설정할 수 있다. 직접 <interfacename>BeanFactoryPostProcessor</interfacename>를 
+      작성한다면 <interfacename>Ordered</interfacename> 인터페이스도 구현하는 것을 고려해야 한다. 
+      더 자세한 내용은 <interfacename>BeanFactoryPostProcessor</interfacename>와 
+      <interfacename>Ordered</interfacename> 인터페이스의 Javadoc을 참고해라.</para>
 
     <note>
-      <para>If you want to change the actual bean <emphasis>instances</emphasis>
-        (i.e., the objects that are created from the configuration metadata), then you
-        instead need to use a <interfacename>BeanPostProcessor</interfacename>
-        (described above in <xref linkend="beans-factory-extension-bpp"/>). While
-        it is technically possible to work with bean instances within a
-        <interfacename>BeanFactoryPostProcessor</interfacename> (e.g., using
-        <methodname>BeanFactory.getBean()</methodname>), doing so causes
-        premature bean instantiation, violating the standard container lifecycle.
-        This may cause negative side effects such as bypassing bean post
-        processing.</para>
+      <para>실제 빈 <emphasis>인스턴스</emphasis>를 바꾸고 싶다면 (예를 들어 설정메타데이터로
+        생성된 객체들) 대신 <interfacename>BeanPostProcessor</interfacename>를 사용할 
+        필요가 있다. (앞의 <xref linkend="beans-factory-extension-bpp"/>에서 설명했다.) 이는 
+        기술적으로 <interfacename>BeanFactoryPostProcessor</interfacename>내에서 빈 인스턴스들과 
+        연동될 가능성이 있으므로 너무 이른 시기에 빈을 인스턴스화해서 표준 컨테이너 라이프사이클을 
+        위반하게 한다. 이는 빈의 후처리를 우회하는 것과 같은 부정적인 효과를 일으킬 것이다.</para>
 
-      <para>Also, <literal>BeanFactoryPostProcessors</literal> are scoped
-        <emphasis>per-container</emphasis>. This is only relevant if you are
-        using container hierarchies. If you define a
-        <interfacename>BeanFactoryPostProcessor</interfacename> in one
-        container, it will <emphasis>only</emphasis> be applied to the bean
-        definitions in that container. Bean definitions in one container
-        will not be post-processed by
-        <literal>BeanFactoryPostProcessors</literal> in another container, even
-        if both containers are part of the same hierarchy.</para>
+      <para>또한, <literal>BeanFactoryPostProcessors</literal>는 <emphasis>컨테이너에 
+        한정된(per-container)</emphasis> 범위를 가진다. 이는 컨테이너 계층을 사용할 경우에만 
+        관련있다. 한 컨테이너에서 <interfacename>BeanFactoryPostProcessor</interfacename>을 
+        정의한다면 해당 컨테이너의 빈 정의에<emphasis>만</emphasis> 적용될 것이다. 한 컨테이너의 
+        빈 정의는 두 컨테이너가 같은 계층에 속해있더라도 다른 컨테이너의 
+        <literal>BeanFactoryPostProcessors</literal>에 의해서는 후처리되지 
+        않을 것이다.</para>
     </note>
 
-    <para>A bean factory post-processor is executed automatically when it is
-      declared inside an <interfacename>ApplicationContext</interfacename>,
-      in order to apply changes to the configuration metadata that define the
-      container. Spring includes a number of predefined bean factory
-      post-processors, such as <classname>PropertyOverrideConfigurer</classname>
-      and <classname>PropertyPlaceholderConfigurer</classname>. A custom
-      <interfacename>BeanFactoryPostProcessor</interfacename> can also be used,
-      for example, to register custom property editors.</para>
+    <para>빈 팩토리 후처리자(post-processor)는 컨테이너를 정의하는 설정 메타데이터를 
+      수정하기 위해 <interfacename>ApplicationContext</interfacename> 내부에서 
+      선언되었을 때 자동적으로 실행된다. 스프링은 <classname>PropertyOverrideConfigurer</classname>와 
+      <classname>PropertyPlaceholderConfigurer</classname>같은 빈 팩토리 후처리자를 미리 
+      다수 정의해 놓고 있다. 커스텀 프로퍼티 에디터를 등록하는 것 같은 커스텀 
+      <interfacename>BeanFactoryPostProcessor</interfacename>도 사용할 수 있다.</para>
 
     <anchor id="beans-factory-autodetect-beanfactorypostprocessors"/>
 
-    <para>An <interfacename>ApplicationContext</interfacename> automatically
-      detects any beans that are deployed into it that implement the
-      <interfacename>BeanFactoryPostProcessor</interfacename> interface. It
-      uses these beans as bean factory post-processors, at the
-      appropriate time. You can deploy these post-processor beans as you
-      would any other bean.</para>
+    <para><interfacename>ApplicationContext</interfacename>는 
+      <interfacename>ApplicationContext</interfacename>내의 빈 중에서 
+      <interfacename>BeanFactoryPostProcessor</interfacename> 인터페이스를 구현한 
+      빈을 자동으로 감지한다. <interfacename>ApplicationContext</interfacename>는 
+      적절한 시기에 이러한 빈들을 빈 팩토리 후처리자로 사용한다. 다른 빈처럼 이러한 후처리자 
+      빈을 배포할 수 있다.</para>
 
     <note>
-      <para>As with <interfacename>BeanPostProcessor</interfacename>s, you typically
-        do not want to configure <interfacename>BeanFactoryPostProcessor</interfacename>s
-        for lazy initialization. If no other bean references a
-        <interfacename>Bean(Factory)PostProcessor</interfacename>,
-        that post-processor will not get instantiated at all. Thus, marking it for
-        lazy initialization will be ignored, and the 
-        <interfacename>Bean(Factory)PostProcessor</interfacename> will be
-        instantiated eagerly even if you set the <literal>default-lazy-init</literal>
-        attribute to <literal>true</literal> on the declaration of your
-        <code>&lt;beans /&gt;</code> element.</para>
+      <para><interfacename>BeanPostProcessor</interfacename>처럼 보통 
+        <interfacename>BeanFactoryPostProcessor</interfacename>들을 지연 초기화되도록 
+        설정하지 않는다. <interfacename>Bean(Factory)PostProcessor</interfacename>을 
+        참조하는 다른 빈이 없다면 이 후처리자는 절대 인스터스화되지 않을 것이다. 그러므로 지연 
+        초기화되도록 설정해도 이는 무시될 것이고 <code>&lt;beans /&gt;</code> 요소의 선언에서 
+        <literal>default-lazy-init</literal> 속성을 <literal>true</literal>로 설정했더라도 
+        <interfacename>Bean(Factory)PostProcessor</interfacename>는 인스터스화 되려고 
+        할 것이다.</para>
     </note>
 
     <section id="beans-factory-placeholderconfigurer">
-      <title>Example: the
+      <title>예제: 
         <interfacename>PropertyPlaceholderConfigurer</interfacename></title>
 
-      <para>You use the
-        <interfacename>PropertyPlaceholderConfigurer</interfacename> to
-        externalize property values from a bean definition in a separate
-        file using the standard Java <classname>Properties</classname> format.
-        Doing so enables the person deploying an application to customize
-        environment-specific properties such as database URLs and passwords,
-        without the complexity or risk of modifying the main XML definition file
-        or files for the container.</para>
+      <para>표준 자바 <classname>Properties</classname> 형식을 사용하는 분리된 파일의 
+        빈 정의에서 프로퍼티 값들을 구체화히하기 위해서 
+        <interfacename>PropertyPlaceholderConfigurer</interfacename>를 사용한다. 
+        <interfacename>PropertyPlaceholderConfigurer</interfacename>를 사용하면 
+        복잡합이나 핵심 XML 정의 파일이나 컨테이너에 대한 파일들을 수정하는 위험성없이 데이터베이스 
+        URL과 비밀번호같은 환경의존적인 프로퍼티들을 커스터마이징 하기 위해 사람들이 어플리케이션을 
+        배포할 수 있게 한다.</para>
 
       <!-- MLP: Beverly to review following 2 paragraphs -->
 
-      <para>Consider the following XML-based configuration metadata fragment,
-        where a <interfacename>DataSource</interfacename> with placeholder
-        values is defined. The example shows properties configured from an
-        external <classname>Properties</classname> file. At runtime, a
-        <classname>PropertyPlaceholderConfigurer</classname> is applied to the
-        metadata that will replace some properties of the DataSource. The values
-        to replace are specified as <emphasis>placeholders</emphasis> of the form
-        ${property-name} which follows the Ant / log4j / JSP EL style.</para>
+      <para>플레이스홀더 값들과 함께 <interfacename>DataSource</interfacename>가 정의된 
+        다음의 XML 기반 설정 메타데이터의 일부를 보자. 예제는 외부 <classname>Properties</classname> 
+        파일에서 설정되 프로퍼티들을 보여준다. 런타임에서 
+        <classname>PropertyPlaceholderConfigurer</classname>는 DataSource의 몇몇 프로퍼티들을 
+        교체할 메타데이터를 적용한다. 교체할 값들은 다음의 Ant / log4j / JSP EL 스타일의 
+        ${property-name} 혁식으로 <emphasis>placeholders</emphasis>로 지정한다.</para>
 
       <programlisting language="xml">&lt;bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"&gt;
   &lt;property name="locations" value="classpath:com/foo/jdbc.properties"/&gt;
@@ -356,63 +305,57 @@ org.springframework.scripting.groovy.GroovyMessenger@272961</programlisting>
   &lt;property name="password" value="<emphasis role="bold">${jdbc.password}</emphasis>"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>The actual values come from another file in the standard Java
-        <classname>Properties</classname> format:</para>
+      <para>실제 값들은 표준 자바 <classname>Properties</classname> 형식의 
+        다른 파일에서 가져온다.</para>
 
       <programlisting>jdbc.driverClassName=org.hsqldb.jdbcDriver
 jdbc.url=jdbc:hsqldb:hsql://production:9002
 jdbc.username=sa
 jdbc.password=root</programlisting>
 
-      <para>Therefore, the string <literal>${jdbc.username}</literal> is replaced
-        at runtime with the value 'sa', and the same applies for other placeholder
-        values that match keys in the properties file. The
-        <classname>PropertyPlaceholderConfigurer</classname> checks for
-        placeholders in most properties and attributes of a bean definition.
-        Furthermore, the placeholder prefix and suffix can be customized.</para>
+      <para>그러므로 <literal>${jdbc.username}</literal> 문자열은 런타임에서 'sa' 값으로 
+        교체되고 프로퍼티 파일에서 키가 일치하는 다른 플레이스홀더 값들에도 똑같이 적용된다. 
+        <classname>PropertyPlaceholderConfigurer</classname>는 빈 정의에서 대부분의 
+        프로퍼티와 속성의 플레이스 홀더를 확인한다. 게다가 플레이스홀더 접두사와 접미사는 
+        커스터마이징 될 수 있다.</para>
 
-      <para>With the <literal>context</literal> namespace introduced in Spring
-        2.5, it is possible to configure property placeholders with a dedicated
-        configuration element. One or more locations can be provided as a
-        comma-separated list in the <literal>location</literal>
-        attribute.</para>
+      <para>스프링 2.5에서 도입된 <literal>context</literal> 네임스페이스로 전용 설정 
+        요소의 프로퍼티 플레이스홀더를 설정할 수 있다. <literal>location</literal> 속성에서 
+        콤마로 분리된 리스트로 하나 이상의 위치를 제공할 수 있다.</para>
 
       <programlisting language="xml">&lt;context:property-placeholder location="classpath:com/foo/jdbc.properties"/&gt;</programlisting>
 
-      <para>The <classname>PropertyPlaceholderConfigurer</classname> not only
-        looks for properties in the <classname>Properties</classname> file
-        you specify. By default it also checks against the Java
-        <classname>System</classname> properties if it cannot find a property
-        in the specified properties files. You can customize this behavior by setting the
-        <literal>systemPropertiesMode</literal> property of the configurer with
-        one of the following three supported integer values:
+      <para><classname>PropertyPlaceholderConfigurer</classname>는 지정한 
+        <classname>Properties</classname> 파일에서만 프로퍼티를 찾지 않는다. 지정한 프로퍼티 
+        파일들에서 프로퍼티를 찾을 수 없다면 기본적으로 자바 <classname>System</classname> 
+        프로퍼티들도 확인한다. 다음 지원하는 세가지 정수값 중 하나로 설정해서 이러한 동작을 
+        수정할 수 있다.
         <!--What property is it overriding and what will replace the overridden value?-->
         <!--MLP: override a value in the Properties with one from the 'systemProperties' -->
         </para>
 
         <itemizedlist>
         	<listitem>
-	        	<para><emphasis>never</emphasis> (0): Never check system properties</para>
+            <para><emphasis>never</emphasis> (0): 시스템 프로퍼티들을 확인하지 않는다</para>
         	</listitem>
         	<listitem>
-	        	<para><emphasis>fallback</emphasis> (1): Check system properties if not resolvable in the specified properties files. This is the default.</para>
+            <para><emphasis>fallback</emphasis> (1): 지정한 프로퍼티 파일들에서 처리할 수 없으면 시스템 프로퍼티를 확인한다. 이 값이 기본값이다.</para>
         	</listitem>
         	<listitem>
-	        	<para><emphasis>override</emphasis> (2): Check system properties first, before trying the specified properties files. This allows system properties to override any other property source.</para>
+            <para><emphasis>override</emphasis> (2): 지정한 프로퍼티 파일들보다 시스템 프로퍼티를 먼저 확인한다. 이는 시스템 프로퍼티가 다른 프로퍼티 소스를 오버라이드하도록 한다.</para>
         	</listitem>
         </itemizedlist>
 
       <para>
-        Consult the Javadoc for the <classname>PropertyPlaceholderConfigurer</classname>
-        for more information.</para>
+        더 자세한 내용은 <classname>PropertyPlaceholderConfigurer</classname>의 
+        Javadoc을 봐라.</para>
 
       <tip>
-        <title>Class name substitution</title>
+        <title>클래스명 치환</title>
 
-        <para>You can use the
-          <classname>PropertyPlaceholderConfigurer</classname> to substitute
-          class names, which is sometimes useful when you have to pick a
-          particular implementation class at runtime. For example:</para>
+        <para>런타임에서 특정 구현 클래스를 선택하는데 종종 유용한 클래스명을 
+          치환에 <classname>PropertyPlaceholderConfigurer</classname>를 
+          사용할 수 있다. 예를 들어</para>
 
         <programlisting language="xml">&lt;bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"&gt;
   &lt;property name="locations"&gt;
@@ -425,133 +368,116 @@ jdbc.password=root</programlisting>
 
 &lt;bean id="serviceStrategy" class="${custom.strategy.class}"/&gt;</programlisting>
 
-        <para>If the class cannot be resolved at runtime to a valid class,
-          resolution of the bean fails when it is about to be created, which is
-          during the <methodname>preInstantiateSingletons()</methodname> phase
-          of an <interfacename>ApplicationContext</interfacename> for a
-          non-lazy-init bean.</para>
+        <para>런타임에서 유효한 클래스를 찾지 못하면 지연초기화 되지 않는 빈에 대해 
+          <interfacename>ApplicationContext</interfacename>의 
+          <methodname>preInstantiateSingletons()</methodname> 단계에서 클래스가 
+          생성될 때 빈 처리가 실패한다.</para>
       </tip>
     </section>
 
     <section id="beans-factory-overrideconfigurer">
-      <title>Example: the
+      <title>예제: 
         <classname>PropertyOverrideConfigurer</classname></title>
 
-      <para>The <classname>PropertyOverrideConfigurer</classname>, another bean
-        factory post-processor, resembles the
-        <interfacename>PropertyPlaceholderConfigurer</interfacename>, but unlike
-        the latter, the original definitions can have default values or no
-        values at all for bean properties. If an overriding
-        <classname>Properties</classname> file does not have an entry for a
-        certain bean property, the default context definition is used.</para>
+      <para>또다른 빈 팩토리 후처리자인 <classname>PropertyOverrideConfigurer</classname>는 
+        <interfacename>PropertyPlaceholderConfigurer</interfacename>와 비슷하지만 
+        원래의 정의가 빈 프로퍼티에 대해 기본값을 갖거나 값을 갖지 않을 수 있다는 점이 다르다. 
+        오버라이딩 된 <classname>Properties</classname> 파일에 어떤 빈 프로퍼티에 대한 
+        진입점이 없다면 기본 컨텍스트 정의가 사용된다.</para>
 
-      <para>Note that the bean definition is <emphasis>not</emphasis> aware of
-        being overridden, so it is not immediately obvious from the XML
-        definition file that the override configurer is being used. In case of
-        multiple <classname>PropertyOverrideConfigurer</classname> instances
-        that define different values for the same bean property, the last one
-        wins, due to the overriding mechanism.</para>
+      <para>빈 정의는 오버라이드되었다는 것을 알지 <emphasis>못한다.</emphasis> 그래서 
+        오버라이드 설정자를 사용하는 XML 정의에서 당장은 명확하지 않다. 같은 빈 프로퍼티에 
+        대해 다른 값을 정의한 여러 <classname>PropertyOverrideConfigurer</classname> 
+        인스턴스가 있는 경우 오버라이딩 메카니즘에 따라 마지막 
+        <classname>PropertyOverrideConfigurer</classname>의 값을 사용한다.</para>
 
-      <para>Properties file configuration lines take this format:</para>
+      <para>프로퍼티 파일 설정은 다음과 같은 형식이다.</para>
 
       <programlisting language="java">beanName.property=value</programlisting>
 
-      <para>For example:</para>
+      <para>예를 들어</para>
 
       <programlisting language="java">dataSource.driverClassName=com.mysql.jdbc.Driver
 dataSource.url=jdbc:mysql:mydb</programlisting>
 
-      <para>This example file can be used with a container definition that
-        contains a bean called <emphasis>dataSource</emphasis>, which has
-        <emphasis>driver</emphasis> and <emphasis>url</emphasis>
-        properties.</para>
+      <para>이 예제 파일은 <emphasis>driver</emphasis>와 <emphasis>url</emphasis> 
+        프로퍼티를 가진 <emphasis>dataSource</emphasis>라는 빈을 담고있는 컨테이너 
+        정의와 함께 사용된다.</para>
 
-      <para>Compound property names are also supported, as long as every
-        component of the path except the final property being overridden is
-        already non-null (presumably initialized by the constructors). In this
-        example...</para>
+      <para>오버라이드된 최종 프로퍼티를 제외한 경로의 모든 컴포넌트가 이미 null이 
+        아니라면 프로퍼티 이름의 혼합도 역시 지원한다.(아마도 생성자에 의해서 
+        초기화될 것이다.) 이 예제에서...</para>
 
       <programlisting language="java">foo.fred.bob.sammy=123</programlisting>
 
-      <para>... the <literal>sammy</literal> property of the
-        <literal>bob</literal> property of the <literal>fred</literal> property
-        of the <literal>foo</literal> bean is set to the scalar value
-        <literal>123</literal>.</para>
+      <para>... <literal>foo</literal> 빈의 <literal>fred</literal> 프로퍼티의 
+        <literal>bob</literal> 프로퍼티의 <literal>sammy</literal> 프로퍼티는 
+        <literal>123</literal>이라는 스칼라(scalar) 값으로 설정된다.</para>
 
       <note>
-        <para>Specified override values are always <emphasis>literal</emphasis>
-          values; they are not translated into bean references. This convention
-          also applies when the original value in the XML bean definition
-          specifies a bean reference.</para>
+        <para>지정한 오버라이드 값은 항상 <emphasis>리터럴(literal)</emphasis> 값이다. 
+          이 값들은 빈 참조로 변환되지 않는다. 이 관례는 XML 빈 정의에서 원래의 값이 빈 참조를 
+          지정한 경우에도 적용된다.</para>
       </note>
 
-      <para>With the <literal>context</literal> namespace introduced in Spring
-        2.5, it is possible to configure property overriding with a dedicated
-        configuration element:</para>
+      <para>스프링 2.5에서 도입된 <literal>context</literal> 네임스페이스를 사용하면 
+        전용 설정 요소로 설정 프로퍼티를 오버라이딩 하는 것이 가능하다.</para>
 
       <programlisting language="xml">&lt;context:property-override location="classpath:override.properties"/&gt;</programlisting>
     </section>
   </section>
 
   <section id="beans-factory-extension-factorybean">
-    <title>Customizing instantiation logic with a
-      <interfacename>FactoryBean</interfacename></title>
+    <title><interfacename>FactoryBean</interfacename>로 
+      인스턴스화(instantiation) 로직 커스터마이징하기</title>
 
-    <para>Implement the
-      <interfacename>org.springframework.beans.factory.FactoryBean</interfacename>
-      interface for objects that <emphasis>are themselves
-      factories</emphasis>.</para>
+    <para><interfacename>org.springframework.beans.factory.FactoryBean</interfacename> 
+      인터페이스를 구현한 객체들은 <emphasis>그 자체로 팩토리이다.</emphasis></para>
 
-    <para>The <interfacename>FactoryBean</interfacename> interface is a point of
-      pluggability into the Spring IoC container's instantiation logic. If you
-      have complex initialization code that is better expressed in Java as
-      opposed to a (potentially) verbose amount of XML, you can create your own
-      <interfacename>FactoryBean</interfacename>, write the complex
-      initialization inside that class, and then plug your custom
-      <interfacename>FactoryBean</interfacename> into the container.</para>
+    <para><interfacename>FactoryBean</interfacename> 인터페이스는 스프링 IoC 컨테이너의 
+      인스턴스화 로직에 플러그인할 수 있는 지점(a point of pluggability)이다. (잠재적으로) 
+      장황한 XML과는 반대로 자바로 더 좋게 표현한 복잡한 인스턴스화 코드가 있다면 자신만의 
+      <interfacename>FactoryBean</interfacename>를 생성해서 클래스에 복잡한 인스턴스화 
+      로직을 작성한 뒤 컨테이너에 커스터마이징한 <interfacename>FactoryBean</interfacename>를 
+      연결한다.</para>
 
-    <para>The <interfacename>FactoryBean</interfacename> interface provides
-      three methods:</para>
+    <para><interfacename>FactoryBean</interfacename> 인터페이스는 세 가지 메서드를 
+      제공한다.</para>
 
     <itemizedlist>
       <listitem>
-        <para><methodname>Object getObject()</methodname>: returns an instance
-          of the object this factory creates. The instance can possibly be
-          shared, depending on whether this factory returns singletons or
-          prototypes.</para>
+        <para><methodname>Object getObject()</methodname>: 이 팩토리가 생성한 객체의 
+          인스턴스를 리턴한다. 인스턴스는 이 팩토리가 싱글톤을 리턴하는지 프로토타입을 리턴하는지에 
+          따라 공유될 수도 있다.</para>
       </listitem>
 
       <listitem>
-        <para><methodname>boolean isSingleton()</methodname>: returns
-          <literal>true</literal> if this
-          <interfacename>FactoryBean</interfacename> returns singletons,
-          <literal>false</literal> otherwise.</para>
+        <para><methodname>boolean isSingleton()</methodname>: 
+          <interfacename>FactoryBean</interfacename>가 싱글톤을 리턴하면 
+          <literal>true</literal>를 리턴하고 싱글톤이 아니면 <literal>false</literal>를 
+          리턴한다.</para>
       </listitem>
 
       <listitem>
-        <para><methodname>Class getObjectType()</methodname>: returns the object
-          type returned by the <methodname>getObject()</methodname> method or
-          <literal>null</literal> if the type is not known in advance.</para>
+        <para><methodname>Class getObjectType()</methodname>: 
+          <methodname>getObject()</methodname> 메서드로 리턴되는 객체의 타입을 리턴한다. 
+          타입을 미리 알고 있지 않다면 <literal>null</literal>을 리턴한다.</para>
       </listitem>
     </itemizedlist>
 
-    <para>The <interfacename>FactoryBean</interfacename> concept and interface
-      is used in a number of places within the Spring Framework; more than 50
-      implementations of the <interfacename>FactoryBean</interfacename>
-      interface ship with Spring itself.</para>
+    <para><interfacename>FactoryBean</interfacename>의 개념과 인터페이스는 스프링 
+      프레임워크내 곳곳에서 사용된다. 스프링에는 <interfacename>FactoryBean</interfacename> 
+      인터페이스의 구현체가 50개 이상 포함되어 있다.</para>
 
-    <para>When you need to ask a container for an actual
-      <interfacename>FactoryBean</interfacename> instance itself instead of the bean
-      it produces, preface the bean's id with the ampersand symbol
-      (<literal>&amp;</literal>) when calling the
-      <methodname>getBean()</methodname> method of the
-      <interfacename>ApplicationContext</interfacename>. So for a given
-      <interfacename>FactoryBean</interfacename> with an id of
-      <literal>myBean</literal>, invoking <literal>getBean("myBean")</literal>
-      on the container returns the product of the
-      <interfacename>FactoryBean</interfacename>; whereas, invoking
-      <literal>getBean("&amp;myBean")</literal> returns the
-      <interfacename>FactoryBean</interfacename> instance
-      itself.<!--Moved ApplicationContext section to almost the end of the doc, right before BeanFactory and renamed it Additional Capabilities of.--></para>
+    <para>빈이 생성한 것 대신 컨테이너에 실제 <interfacename>FactoryBean</interfacename> 
+      인스턴스 자체를 요청할 필요가 있는 경우 <interfacename>ApplicationContext</interfacename>의 
+      <methodname>getBean()</methodname> 메서드를 호출할 때 앤드기호(<literal>&amp;</literal>)가 
+      있는 빈의 id로 시작해라. 그래서 <literal>myBean</literal>이라는 id로 주어진 
+      <interfacename>FactoryBean</interfacename>에 대해 컨테이너에서 
+      <literal>getBean("myBean")</literal>를 호출하면 
+      <interfacename>FactoryBean</interfacename>의 결과를 리턴한다. 반면에 
+      <literal>getBean("&amp;myBean")</literal>를 호출하면 
+      <interfacename>FactoryBean</interfacename> 인스턴스 자체를 
+      리턴한다.<!--Moved ApplicationContext section to almost the end of the doc, right before BeanFactory and renamed it Additional Capabilities of.--></para>
   </section>
 </section>
