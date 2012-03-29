@@ -2,7 +2,6 @@
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <section id="beans-factory-nature">
-  <title>Customizing the nature of a bean</title>
   <title>빈의 특성 커스터마이징하기</title>
 
   <section id="beans-factory-lifecycle">
