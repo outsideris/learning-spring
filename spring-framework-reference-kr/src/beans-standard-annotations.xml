@@ -2,19 +2,18 @@
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <section id="beans-standard-annotations">
-  <title>Using JSR 330 Standard Annotations</title>
+  <title>JSR 330 표준 어노테이션 사용</title>
   
-  <para>Starting with Spring 3.0, Spring offers support for JSR-330 standard annotations (Dependency Injection).
-  Those annotations are scanned in the same way as the Spring annotations. You just need to have the relevant jars in your classpath.
+  <para>스프링 3.0부터는 JSR-330 표준 어노테이션 (의존성 주입)을 지원한다.
+  이러한 어노테이션들은 스프링 어노테이션과 같은 방법으로 스캔한다. 클래스패스에 적절한 jar를 두기만 하면 된다.
   </para>
 
   <note>
-  	<para>
-      If you are using Maven, the <interfacename>javax.inject</interfacename> artifact is available
-      in the standard Maven repository
-      (<ulink url="http://repo1.maven.org/maven2/javax/inject/javax.inject/1/">http://repo1.maven.org/maven2/javax/inject/javax.inject/1/</ulink>).
-      You can add the following dependency to your file pom.xml:
-  	</para>
+    <para>
+      메이븐을 사용한다면 표준 메이븐 저장소(<ulink url="http://repo1.maven.org/maven2/javax/inject/javax.inject/1/">http://repo1.maven.org/maven2/javax/inject/javax.inject/1/</ulink>)에서 
+      <interfacename>javax.inject</interfacename> artifact를 사용할 수 있다. 
+      pom.xml 파일에 다음 의존성을 추가할 수 있다.
+    </para>
     <programlisting language="xml">
 &lt;dependency&gt;
     &lt;groupId&gt;javax.inject&lt;/groupId&gt;
@@ -24,10 +23,10 @@
   </note>
   
   <section id="beans-inject-named">
-    <title>Dependency Injection with <interfacename>@Inject</interfacename> and <interfacename>@Named</interfacename></title>
+    <title><interfacename>@Inject</interfacename>와 <interfacename>@Named</interfacename>를 사용한 의존성 주입</title>
 
-    <para>Instead of <interfacename>@Autowired</interfacename>,
-      <interfacename>@javax.inject.Inject</interfacename> may be used as follows:
+    <para><interfacename>@Autowired</interfacename> 대신
+      <interfacename>@javax.inject.Inject</interfacename> 를 다음처럼 사용할 수 있다.
 
     <programlisting language="java">import javax.inject.Inject;
 
@@ -43,11 +42,10 @@ public class SimpleMovieLister {
 }</programlisting>
     </para>
 
-    <para>As with <interfacename>@Autowired</interfacename>, it is possible to use <interfacename>@Inject</interfacename>
-	at the class-level, field-level, method-level and constructor-argument level.
+    <para><interfacename>@Autowired</interfacename>를 사용하듯이 클래스레벨, 필드레벨, 메서드레벨, 
+    생성자 아규먼트레벨에서 <interfacename>@Inject</interfacename>를 사용하는 것이 가능하다.
 
-	If you would like to use a qualified name for the dependency that should be injected,
-	you should use the <interfacename>@Named</interfacename> annotation as follows:
+  주입되어야 하는 의존성에 검증된 이름을 사용하기를 좋아한다면 다음과 같이 <interfacename>@Named</interfacename> 어노테이션을 사용할 수 있다.
 
     <programlisting language="java">import javax.inject.Inject;
 import javax.inject.Named;
@@ -67,9 +65,9 @@ public class SimpleMovieLister {
   </section>
 
 <section id="beans-named">
-    <title><interfacename>@Named</interfacename>: a standard equivalent to the <interfacename>@Component</interfacename> annotation</title>
+    <title><interfacename>@Named</interfacename>: <interfacename>@Component</interfacename> 어노테이션과 동일한 표준</title>
     <para>
-    Instead of <interfacename>@Component</interfacename>, <interfacename>@javax.inject.Named</interfacename> may be used as follows:
+    <interfacename>@Component</interfacename> 대신에 <interfacename>@javax.inject.Named</interfacename>를 다음과 같이 사용할 수 있다.
         <programlisting language="java">import javax.inject.Inject;
 import javax.inject.Named;
   
@@ -87,9 +85,9 @@ public class SimpleMovieLister {
 </para>
 
 <para>
-It is very common to use <interfacename>@Component</interfacename> without
-specifying a name for the component. <interfacename>@Named</interfacename>
-can be used in a similar fashion:
+컴포넌트에 이름을 지정하지 않고 <interfacename>@Component</interfacename>를 
+사용하는 것은 아주 일반적이다. 동일한 방법으로 <interfacename>@Named</interfacename>를 
+사용할 수 있다.
 
     <programlisting language="java">import javax.inject.Inject;
 import javax.inject.Named;
@@ -108,8 +106,8 @@ public class SimpleMovieLister {
 </para>
 
 <para>
-When using <interfacename>@Named</interfacename>, it is possible to use
-component-scanning in the exact same way as when using Spring annotations:
+<interfacename>@Named</interfacename>를 사용하면 스프링 어노테이션을 사용할 때와 완전히 
+같은 방법으로 컴포넌트 스캔을 사용할 수 있다.
 
     <programlisting language="xml">&lt;beans&gt;
     &lt;context:component-scan base-package="org.example"/&gt;
@@ -118,13 +116,13 @@ component-scanning in the exact same way as when using Spring annotations:
 </section>
 
 <section id="beans-standard-annotations-limitations">
-    <title>Limitations of the standard approach</title>
+    <title>표준 접근의 한계</title>
 
-	<para>When working with standard annotations, it is important to know that
-	some significant features are not available as shown in the table below:</para>
+  <para>표준 어노테이션들을 사용해서 작업할 때 다음 표에 나온 것처럼 몇가지 중요한 기능들을 
+  사용할 수 있다는 것을 꼭 알아야 한다.</para>
 	
 	 <para><table id="annotations-comparison">
-          <title>Spring annotations vs. standard annotations</title>
+          <title>스프링 어노테이션 vs. 표준 어노테이션</title>
 
           <tgroup cols="3">
 
@@ -136,7 +134,7 @@ component-scanning in the exact same way as when using Spring annotations:
               <row>
                 <entry>Spring</entry>
                 <entry>javax.inject.*</entry>
-                <entry>javax.inject restrictions / comments</entry>
+                <entry>javax.inject의 제약 / 설명</entry>
               </row>
             </thead>
 
@@ -144,7 +142,7 @@ component-scanning in the exact same way as when using Spring annotations:
               <row>
                 <entry>@Autowired</entry>
                 <entry>@Inject</entry>
-                <entry>@Inject has no 'required' attribute</entry>
+                <entry>@Inject에는 'required'속성이 없다</entry>
               </row>
               <row>
                 <entry>@Component</entry>
@@ -155,19 +153,20 @@ component-scanning in the exact same way as when using Spring annotations:
                 <entry>@Scope("singleton")</entry>
                 <entry>@Singleton</entry>
                 <entry>
-                	<para>
-                		The JSR-330 default scope is like Spring's <interfacename>prototype</interfacename>.
-                		However, in order to keep it consistent with Spring's general defaults,
-                		a JSR-330 bean declared in the Spring container is a
-                		<interfacename>singleton</interfacename> by default. In order to use a
-                		scope other than <interfacename>singleton</interfacename>, you should use Spring's
-                		<interfacename>@Scope</interfacename> annotation.
-                	</para>
-                	<para>
-                		<interfacename>javax.inject</interfacename> also provides a
-                		<ulink url="http://download.oracle.com/javaee/6/api/javax/inject/Scope.html">@Scope</ulink> annotation.
-                		Nevertheless, this one is only intended to be used for creating your own annotations.
-                	</para>
+                  <para>
+                    JSR-330의 기본 범위는 스프링의 <interfacename>prototype</interfacename>과 비슷하다.
+                    하지만 스프링의 일반적인 기본값과 일관성을 유지하기 위해 스프링 컨테이너에서 선언된 
+                    JSR-330 빈은 기본적으로 <interfacename>singleton</interfacename>이다. 
+                    The JSR-330 default scope is like Spring's 
+                    <interfacename>prototype</interfacename>. 
+                    <interfacename>singleton</interfacename> 대신 다은 범위를 사용하려면 스프링의 
+                    <interfacename>@Scope</interfacename> 어노테이션을 사용해야 한다.
+                  </para>
+                  <para>
+                    <interfacename>javax.inject</interfacename>도 
+                    <ulink url="http://download.oracle.com/javaee/6/api/javax/inject/Scope.html">@Scope</ulink> 어노테이션을 제공한다.
+                    그렇기는 하지만 이 어노테이션은 자신만의 어노테이션을 생성할 때만 사용하도록 만들어졌다.
+                  </para>
                 </entry>
               </row>              
               <row>
@@ -178,17 +177,17 @@ component-scanning in the exact same way as when using Spring annotations:
                <row>
                 <entry>@Value</entry>
                 <entry>&mdash;</entry>
-                <entry>no equivalent</entry>
+                <entry>동일한 것이 없다</entry>
               </row> 
                <row>
                 <entry>@Required</entry>
                 <entry>&mdash;</entry>
-                <entry>no equivalent</entry>
+                <entry>동일한 것이 없다</entry>
               </row> 
                <row>
                 <entry>@Lazy</entry>
                 <entry>&mdash;</entry>
-                <entry>no equivalent</entry>
+                <entry>동일한 것이 없다</entry>
               </row> 
             </tbody>     
           </tgroup>
