@@ -2,84 +2,71 @@
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <section id="beans-classpath-scanning">
-  <title>Classpath scanning and managed components</title>
+  <title>클래스패스 스캔과 관리된 컨포넌트</title>
 
-  <para>Most examples in this chapter use XML to specify the configuration
-    metadata that produces each <interfacename>BeanDefinition</interfacename>
-    within the Spring container. The previous section
-    (<xref linkend="beans-annotation-config"/>) demonstrates how to provide a
-    lot of the configuration metadata through source-level annotations. Even
-    in those examples, however, the "base" bean definitions are explicitly
-    defined in the XML file, while the annotations only drive the dependency
-    injection. This section describes an option for implicitly detecting the
-    <emphasis>candidate components</emphasis> by scanning the classpath.
-    Candidate components are classes that match against a filter criteria and
-    have a corresponding bean definition registered with the container. This
-    removes the need to use XML to perform bean registration, instead you can
-    use annotations (for example @Component), AspectJ type expressions, or your
-    own custom filter criteria to select which classes will have bean
-    definitions registered with the container.</para>
+  <para>이 챕터의 예제 대부분은 스프링 컨테이너에서 각 <interfacename>BeanDefinition</interfacename>를 
+    만드는 설정메타데이터로 XML을 사용한다. 이전 섹션(<xref linkend="beans-annotation-config"/>)에서 
+    소스레벨의 어노테이션으로 어떻게 설정 메타데이터를 사용할 수 있는지 보여주었다. 어노테이션을 사용하는 
+    예제에서도 "base" 빈 정의는 명시적으로 XML파일에 정의하고 어노테이션은 의존성 주입에만 사용한다. 
+    이번 섹션은 클래스패스를 스캔해서 <emphasis>후보 컴포넌트들</emphasis>을 암묵적으로 찾아내는 
+    옵션을 설명한다. 후보 컴포넌트들은 필터 크리테리아와 일치한 클래스들이고 컨테이너에 등록된 빈 정의들 
+    중에 대응되는 것들이다. 이는 빈 등록을 수행하는 XML을 사용하지 않아야 하고 대신 컨테이너에 등록된 
+    빈 정를 갖는 클래스들을 선택하기 위해 어노테이션(예를 들면 @Component)이나 AspectJ 타입의 표현식이나 
+    자신만의 커스텀 필터 크리테리아를 사용할 수 있다.</para>
 
   <note>
-    <para>Starting with Spring 3.0, many features provided by the <ulink
-      url="http://www.springsource.org/javaconfig">Spring JavaConfig
-      project</ulink> are part of the core Spring Framework. This allows you to
-      define beans using Java rather than using the traditional XML files. Take
-      a look at the <interfacename>@Configuration</interfacename>,
-      <interfacename>@Bean</interfacename>,
-      <interfacename>@Import</interfacename>, and
-      <interfacename>@DependsOn</interfacename> annotations for examples of how
-      to use these new features.</para>
+    <para>스프링 3.0에서는 <ulink url="http://www.springsource.org/javaconfig">Spring 
+      JavaConfig project</ulink>의 많은 기능들이 스프링 프레임워크 핵심의 일부가 되었다. 
+      이는 전통적인 XML파일 대신 자바로 빈을 정의할 수 있도록 한다. 이러한 새로운 기능들을 어떻게 
+      사용하는가에 대한 예제는 <interfacename>@Configuration</interfacename>,
+      <interfacename>@Bean</interfacename>, <interfacename>@Import</interfacename>, 
+      <interfacename>@DependsOn</interfacename> 어노테이션을 봐라.</para>
   </note>
 
   <section id="beans-stereotype-annotations">
-    <title><interfacename>@Component</interfacename> and further stereotype
-      annotations</title>
+    <title><interfacename>@Component</interfacename>와 스테레오타입(stereotype) 
+      어노테이션</title>
 
-    <para>In Spring 2.0 and later, the
-      <interfacename>@Repository</interfacename> annotation is a marker for any
-      class that fulfills the role or <emphasis>stereotype</emphasis> (also
-      known as Data Access Object or DAO) of a repository. Among the uses of
-      this marker is the automatic translation of exceptions as described in
-      <xref linkend="orm-exception-translation"/>.</para>
+    <para>스프링 2.0 이상의 버전에서 <interfacename>@Repository</interfacename> 
+      어노테이션은 어떤 클래스가 그 역할을 충족시켰거나 레파지토리의 <emphasis>stereotype</emphasis>
+      (또는 데이터 접근계층이나 DAO로 알려진)이라는 표시이다. 이 표시의 사용은 
+      <xref linkend="orm-exception-translation"/>에서 설명했듯이 예외의 자동 
+      변환이다.</para>
 
-    <para>Spring 2.5 introduces further stereotype annotations:
+    <para>스프링 2.5에 도입된 스테레오타입 어노테이션:
       <interfacename>@Component</interfacename>,
-      <interfacename>@Service</interfacename>, and
+      <interfacename>@Service</interfacename>, 
       <interfacename>@Controller</interfacename>.
-      <interfacename>@Component</interfacename> is a generic stereotype for any
-      Spring-managed component. <interfacename>@Repository</interfacename>,
-      <interfacename>@Service</interfacename>, and
-      <interfacename>@Controller</interfacename> are specializations of
-      <interfacename>@Component</interfacename> for more specific use cases, for
-      example, in the persistence, service, and presentation layers,
-      respectively. Therefore, you can annotate your component classes with
-      <interfacename>@Component</interfacename>, but by annotating them with
+      <interfacename>@Component</interfacename> 는 스프링이 관리하는 모든 컴포넌트에 대한 
+      제너릭 스테레오타입이다. <interfacename>@Repository</interfacename>,
+      <interfacename>@Service</interfacename>, 
+      <interfacename>@Controller</interfacename>는 더 특정한 유즈케이스에 대한 
+      <interfacename>@Component</interfacename>의 특수한 형태이다. 예를 들어 퍼시스턴스, 
+      서비스, 프리젠테이션 계층에서 각각 사용한다. 그러므로 컴포넌트 클래스에 
+      <interfacename>@Component</interfacename> 어노테이션을 붙힐 수도 있지만 대신 
       <interfacename>@Repository</interfacename>,
-      <interfacename>@Service</interfacename>, or
-      <interfacename>@Controller</interfacename> instead, your classes are more
-      properly suited for processing by tools or associating with aspects. For
-      example, these stereotype annotations make ideal targets for pointcuts. It
-      is also possible that <interfacename>@Repository</interfacename>,
-      <interfacename>@Service</interfacename>, and
-      <interfacename>@Controller</interfacename> may carry additional semantics
-      in future releases of the Spring Framework. Thus, if you are choosing
-      between using <interfacename>@Component</interfacename> or
-      <interfacename>@Service</interfacename> for your service layer,
-      <interfacename>@Service</interfacename> is clearly the better choice.
-      Similarly, as stated above, <interfacename>@Repository</interfacename> is
-      already supported as a marker for automatic exception translation in your
-      persistence layer.</para>
+      <interfacename>@Service</interfacename>, 
+      <interfacename>@Controller</interfacename> 어노테이션을 붙힘으로써 클래스들이 도구가 
+      처리하는데 더 적합하도록 할 수 있고 관점에 더 연관성이 있게 한 수 있다. 예를 들어 이러한 
+      스테레오타입 어노테이션은 포인트컷에 대한 이상적인 타겟을 만든다. 또한 
+      <interfacename>@Repository</interfacename>,
+      <interfacename>@Service</interfacename>, 
+      <interfacename>@Controller</interfacename>는 스프링 프레임웍의 차기 릴리즈버전에서 
+      추가적인 의미가 생길 가능성도 있다. 그래서 서비스계층에 
+      <interfacename>@Component</interfacename>나 
+      <interfacename>@Service</interfacename> 중에서 어느 것을 사용할기 선택해야 한다면 
+      <interfacename>@Service</interfacename>가 명확하게 더 나은 선택이다. 비슷하게 앞에서 
+      얘기했듯이 <interfacename>@Repository</interfacename>는 퍼시스턴스 계층에서 자동 
+      예외변환에 대한 표시로서 이미 지원된다.</para>
   </section>
 
   <section id="beans-scanning-autodetection">
-    <title>Automatically detecting classes and registering bean
-      definitions</title>
+    <title>자동 클래스 탐지와 빈 정의 등록</title>
 
-    <para>Spring can automatically detect stereotyped classes and register
-      corresponding <interfacename>BeanDefinition</interfacename>s with the
-      <interfacename>ApplicationContext</interfacename>. For example, the
-      following two classes are eligible for such autodetection:</para>
+    <para>스프링은 자동적으로 스테레오타입의 클래스들을 탐지하고 대응되는 
+      <interfacename>ApplicationContext</interfacename>의 
+      <interfacename>BeanDefinition</interfacename>를 등록한다. 예를 들어 다음 
+      두 클래스는 이러한 자동탐지에 알맞는 클래스들이다.</para>
 
     <programlisting language="java">@Service
 public class SimpleMovieLister {
@@ -94,14 +81,12 @@ public class SimpleMovieLister {
 
     <programlisting language="java">@Repository
 public class JpaMovieFinder implements MovieFinder {
-  <lineannotation>// implementation elided for clarity</lineannotation>
+  <lineannotation>// 명확하도록 구현은 생략한다</lineannotation>
 }</programlisting>
 
-    <para>To autodetect these classes and register the corresponding beans, you
-      need to include the following element in XML, where the base-package
-      element is a common parent package for the two classes. (Alternatively,
-      you can specify a comma-separated list that includes the parent package of
-      each class.)</para>
+    <para>이러한 클래스들을 자동탐지하고 대응하는 빈을 등록하려면 XML에 다음 요소를 포함시켜야 
+      한다. base-package 요소는 두 클래스에 대한 공통 부모 팩키지이다. (대신 각 클래스의 부모 
+      팩키지를 포함하는 리스트를 콤마로 분리해서 지정할 수도 있다.)</para>
 
     <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -117,26 +102,22 @@ public class JpaMovieFinder implements MovieFinder {
 &lt;/beans&gt;</programlisting>
 
     <note>
-      <para>The scanning of classpath packages requires the presence of
-        corresponding directory entries in the classpath. When you build JARs
-        with Ant, make sure that you do <emphasis>not</emphasis> activate the
-        files-only switch of the JAR task.</para>
+      <para>클래스패스 패키지의 스캔은 클래스패스에서 대응되는 디렉토리 진입점이 있어야 한다. 
+        Ant로 JAR를 빌드할 때 JAR 태스크의 files-only 스위치가 켜져있지(activate) 
+        <emphasis>않아야</emphasis> 한다.</para>
     </note>
 
-    <para>Furthermore, the
-      <interfacename>AutowiredAnnotationBeanPostProcessor</interfacename> and
-      <interfacename>CommonAnnotationBeanPostProcessor</interfacename> are both
-      included implicitly when you use the component-scan element. That means
-      that the two components are autodetected <emphasis>and</emphasis> wired
-      together - all without any bean configuration metadata provided in
-      XML.</para>
+    <para>게다가 component-scan 요소를 사용하면 
+      <interfacename>AutowiredAnnotationBeanPostProcessor</interfacename>와 
+      <interfacename>CommonAnnotationBeanPostProcessor</interfacename>는 둥다 암묵적으로 
+      포함된다. 이는 두 컴포넌트가 자동으로 탐지되<emphasis>고</emphasis> 함께 연결된다. - 
+      모두 XML에서 제공된 어떤 빈 설정 메타데이터는 없다.</para>
 
     <note>
-      <para>You can disable the registration of
-        <interfacename>AutowiredAnnotationBeanPostProcessor</interfacename> and
-        <interfacename>CommonAnnotationBeanPostProcessor</interfacename> by
-        including the <emphasis>annotation-config</emphasis> attribute with a
-        value of false.</para>
+      <para><emphasis>annotation-config</emphasis> 속성의 값을 false로 하면 
+        <interfacename>AutowiredAnnotationBeanPostProcessor</interfacename> 와
+        <interfacename>CommonAnnotationBeanPostProcessor</interfacename>가 등록되지 
+        않게 할 수 있다.</para>
     </note>
 
     <!--
@@ -155,21 +136,18 @@ public class JpaMovieFinder implements MovieFinder {
   </section>
 
   <section id="beans-scanning-filters">
-    <title>Using filters to customize scanning</title>
+    <title>스캐닝을 커스터마이징하기 위한 필요 사용</title>
 
-    <para>By default, classes annotated with
-      <interfacename>@Component</interfacename>,
+    <para>기본적으로 <interfacename>@Component</interfacename>,
       <interfacename>@Repository</interfacename>,
       <interfacename>@Service</interfacename>,
-      <interfacename>@Controller</interfacename>, or a custom annotation that
-      itself is annotated with <interfacename>@Component</interfacename> are the
-      only detected candidate components. However, you can modify and extend
-      this behavior simply by applying custom filters. Add them as
-      <emphasis>include-filter</emphasis> or <emphasis>exclude-filter</emphasis>
-      sub-elements of the <literal>component-scan</literal> element. Each filter
-      element requires the <literal>type</literal> and
-      <literal>expression</literal> attributes. The following table describes
-      the filtering options.</para>
+      <interfacename>@Controller</interfacename> 어노테이션들이나 
+      <interfacename>@Component</interfacename> 어노테이션이 붙은 커스텀 어노테이션이 
+      붙은 클래스들만 후보 컴포넌트로 탐지된다. 하지만 커스텀 필터를 적용해서 간단하게 이러한 
+      행동을 수정하거나 확장할 수 있다. <literal>component-scan</literal> 요소의 하위요소로 
+      <emphasis>include-filter</emphasis>나 <emphasis>exclude-filter</emphasis>를 추가한다. 
+      각 필터 요소들은 <literal>type</literal>와 <literal>expression</literal>속성을 필요로 
+      한다. 다음 표는 필터링 옵션을 설명한다.</para>
 
     <table id="beans-scanning-filters-tbl">
       <title>Filter Types</title>
@@ -183,11 +161,11 @@ public class JpaMovieFinder implements MovieFinder {
 
         <thead>
           <row>
-            <entry>Filter Type</entry>
+            <entry>필터 타입</entry>
 
-            <entry>Example Expression</entry>
+            <entry>표현식 예시</entry>
 
-            <entry>Description</entry>
+            <entry>설명</entry>
           </row>
         </thead>
 
@@ -197,8 +175,7 @@ public class JpaMovieFinder implements MovieFinder {
 
             <entry><literal>org.example.SomeAnnotation</literal></entry>
 
-            <entry>An annotation to be present at the type level in target
-              components.</entry>
+            <entry>타겟 컴포넌트에서 타입 레벨에서 표현되는 어노테이션</entry>
           </row>
 
           <row>
@@ -206,8 +183,8 @@ public class JpaMovieFinder implements MovieFinder {
 
             <entry><literal>org.example.SomeClass</literal></entry>
 
-            <entry>A class (or interface) that the target components are
-              assignable to (extend/implement).</entry>
+            <entry>타겟 컴포넌트들을 할달할 수 있는 (확장(extend)/구현(implement)) 
+              클래스(또는 인터페이스)</entry>
           </row>
 
           <row>
@@ -215,8 +192,7 @@ public class JpaMovieFinder implements MovieFinder {
 
             <entry><literal>org.example..*Service+</literal></entry>
 
-            <entry>An AspectJ type expression to be matched by the target
-              components.</entry>
+            <entry>타겟 컴포넌트들과 일치되는 AspectJ 타입 표현식</entry>
           </row>
 
           <row>
@@ -224,8 +200,7 @@ public class JpaMovieFinder implements MovieFinder {
 
             <entry><literal>org\.example\.Default.*</literal></entry>
 
-            <entry>A regex expression to be matched by the target components
-              class names.</entry>
+            <entry>타겟 컴포넌트 클래스명과 일치되는 정규 표현식</entry>
           </row>
 
           <row>
@@ -233,17 +208,15 @@ public class JpaMovieFinder implements MovieFinder {
 
             <entry><literal>org.example.MyTypeFilter</literal></entry>
 
-            <entry>A custom implementation of the
-              <interfacename>org.springframework.core.type
-              .TypeFilter</interfacename> interface.</entry>
+            <entry><interfacename>org.springframework.core.type
+              .TypeFilter</interfacename> 인터페이스를 구현한 커스텀 구현체</entry>
           </row>
         </tbody>
       </tgroup>
     </table>
 
-    <para>The following example shows the XML configuration ignoring all
-      <interfacename>@Repository</interfacename> annotations and using "stub"
-      repositories instead.</para>
+    <para>다음 예제는 모든 <interfacename>@Repository</interfacename> 어노테이션을 
+      무시하고 "stub" 레파지토리를 대신 사용하는 XML 설정을 보여준다.</para>
 
     <programlisting language="xml">&lt;beans&gt;
 
@@ -256,24 +229,23 @@ public class JpaMovieFinder implements MovieFinder {
 &lt;/beans&gt;</programlisting>
 
     <note>
-      <para>You can also disable the default filters by providing
-        <emphasis>use-default-filters="false"</emphasis> as an attribute of the
-        &lt;component-scan/&gt; element. This will in effect disable automatic
-        detection of classes annotated with
-        <interfacename>@Component</interfacename>,
+      <para>&lt;component-scan/&gt; 요소의 속성으로 
+        <emphasis>use-default-filters="false"</emphasis>를 지정해서 기본 필터를 
+        사용안하도록 할 수도 있다. 이는 <interfacename>@Component</interfacename>,
         <interfacename>@Repository</interfacename>,
-        <interfacename>@Service</interfacename>, or
-        <interfacename>@Controller</interfacename>.</para>
+        <interfacename>@Service</interfacename>, 
+        <interfacename>@Controller</interfacename> 어노테이션이 붙은 클래스들을 
+        자동 탐지하는 기능을 사용하지 않게 한다.</para>
     </note>
   </section>
 
   <section id="beans-factorybeans-annotations">
-    <title>Defining bean metadata within components</title>
+    <title>컴포넌트내에서 빈 메타데이터 정의</title>
 
-    <para>Spring components can also contribute bean definition metadata to the
-      container. You do this with the same <literal>@Bean</literal> annotation
-      used to define bean metadata within <literal>@Configuration</literal>
-      annotated classes. Here is a simple example:</para>
+    <para>스프링 컴포넌트들은 컨테이너에 빈 정의 메타데이터를 제공할 수도 있다. 이는 
+      <literal>@Configuration</literal> 어노테이션이 붙은 클래스들 내에서 빈 메타데이터를 
+      정의하기 위해서 동일한 <literal>@Bean</literal> 어노테이션을 사용해서 할 수 있다. 
+      다음은 간단한 예제이다.</para>
 
     <programlisting language="java">@Component
 public class FactoryMethodComponent {
@@ -284,21 +256,18 @@ public class FactoryMethodComponent {
   }
 
   public void doWork() {
-      // Component method implementation omitted
+      // 컴포넌트 메서드 구현체는 생략한다
   }
 }</programlisting>
 
-    <para>This class is a Spring component that has application-specific code
-      contained in its <methodname>doWork()</methodname> method. However, it
-      also contributes a bean definition that has a factory method referring to
-      the method <methodname>publicInstance()</methodname>. The
-      <literal>@Bean</literal> annotation identifies the factory method and
-      other bean definition properties, such as a qualifier value through the
-      <classname>@Qualifier</classname> annotation. Other method level
-      annotations that can be specified are <literal>@Scope</literal>,
-      <literal>@Lazy</literal>, and custom qualifier annotations. Autowired
-      fields and methods are supported as previously discussed, with additional
-      support for autowiring of <literal>@Bean</literal> methods:</para>
+    <para>이 클래스는 내부에 <methodname>doWork()</methodname> 메서드가 있는 어플리케이션에 
+      특화된 코드가 있는 스프링 컴포넌트다. 하지만 <methodname>publicInstance()</methodname> 
+      메서드를 참조하는 팩토리 메서드가 있는 빈 정의도 제공한다. <literal>@Bean</literal> 어노테이션은 
+      팩토리 매서드와 <classname>@Qualifier</classname> 어노테이션을 통한 제한자의 값같은 다른 
+      빈 정의 프로퍼티들을 식별한다. 다른 메서드 레벨의 어노테이션들은 <literal>@Scope</literal>, 
+      <literal>@Lazy</literal>와 커스텀 qualifier 어노테이션으로 지정할 수 있다. 앞에서 얘기했듯이 
+      추가적인 <literal>@Bean</literal> 메서드의 자동연결 지원과 함께 필드와 메서드들의 자동연결을 
+      지원한다.</para>
 
     <programlisting language="java">@Component
 public class FactoryMethodComponent {
@@ -310,7 +279,7 @@ public class FactoryMethodComponent {
       return new TestBean("publicInstance");
   }
 
-  // use of a custom qualifier and autowiring of method parameters
+  // 커스텀 qualifier와 메서드 파라미터의 자동연결의 사용
 
   @Bean
   protected TestBean protectedInstance(@Qualifier("public") TestBean spouse,
@@ -334,48 +303,40 @@ public class FactoryMethodComponent {
 }
 </programlisting>
 
-    <para>The example autowires the <classname>String</classname> method
-      parameter <literal>country</literal> to the value of the
-      <literal>Age</literal> property on another bean named
-      <literal>privateInstance</literal>. A Spring Expression Language element
-      defines the value of the property through the notation <literal>#{
-      &lt;expression&gt; }</literal>. For <literal>@Value</literal> annotations,
-      an expression resolver is preconfigured to look for bean names when
-      resolving expression text.</para>
+    <para>예제는 <classname>String</classname> 메서드 파라미터 <literal>country</literal>를 
+      또 다른 빈 <literal>privateInstance</literal>의 <literal>Age</literal> 프로퍼티의 
+      값으로 자동연결한다. 스프링 표현언어(Spring Expression Language)요소는 
+      <literal>#{ &lt;expression&gt; }</literal> 문법으로 프로퍼티의 값을 정의한다. 
+      <literal>@Value</literal> 어노테이션에 대한 표현식 리졸버는 표현식 문자를 처리할 때 
+      빈 이름을 찾으려머 먼저 설정된다.</para>
 
-    <para>The <literal>@Bean</literal> methods in a Spring component are
-      processed differently than their counterparts inside a Spring
-      <literal>@Configuration</literal> class. The difference is that
-      <literal>@Component</literal> classes are not enhanced with CGLIB to
-      intercept the invocation of methods and fields. CGLIB proxying is the
-      means by which invoking methods or fields within
-      <literal>@Configuration</literal> classes <literal>@Bean</literal> methods
-      create bean metadata references to collaborating objects. Methods are
-      <emphasis>not</emphasis> invoked with normal Java semantics. In contrast,
-      calling a method or field within a <literal>@Component</literal> classes
-      <literal>@Bean</literal> method <emphasis>has</emphasis> standard Java
-      semantics.</para>
+    <para>스프링 컴포넌트의 <literal>@Bean</literal> 메서드들은 스프링 
+      <literal>@Configuration</literal> 클래스 내부의 <literal>@Bean</literal> 메서드들과는 
+      다르게 수행된다. <literal>@Component</literal> 클래스들이 메서드와 필드의 호출을 가로채려고 
+      CGLIB로 향상(enhanced)되지 않는다는 것이 차이점이다. CGLIB 프록싱은 
+      <literal>@Configuration</literal> 클래스의 <literal>@Bean</literal> 메서드내에서 
+      메서드와 필드를 호출하는 것은 협력객체를 참조하는 빈 메타데이터를 생성한다. 메서드들은 일반적인 
+      자바 시맨틱으로 호출되지 <emphasis>않는다</emphasis>. 반면에 <literal>@Component</literal> 
+      클래스의 <literal>@Bean</literal> 메서드내에서 메서드나 필드를 호출하는 것은 표준 자바 
+      시맨틱을 <emphasis>갖는다</emphasis>.</para>
   </section>
 
   <section id="beans-scanning-name-generator">
-    <title>Naming autodetected components</title>
+    <title>이름으로 자동탐지되는 컴포넌트</title>
 
-    <para>When a component is autodetected as part of the scanning process, its
-      bean name is generated by the
-      <interfacename>BeanNameGenerator</interfacename> strategy known to that
-      scanner. By default, any Spring stereotype annotation
+    <para>스캐닝 과정 중에 컴포넌트를 자동탐지했을 때 그 빈의 이름은 해당 스캐너가 알고 있는 
+      <interfacename>BeanNameGenerator</interfacename> 전략에 의해 생성된다. 기본적으로 
+      <literal>name</literal> 값이 있는 어떤 스프링 스테레오타입 어노테이션
       (<interfacename>@Component</interfacename>,
       <interfacename>@Repository</interfacename>,
-      <interfacename>@Service</interfacename>, and
-      <interfacename>@Controller</interfacename>) that contains a
-      <literal>name</literal> value will thereby provide that name to the
-      corresponding bean definition.</para>
+      <interfacename>@Service</interfacename>, 
+      <interfacename>@Controller</interfacename>)도 <literal>name</literal> 값에 따라서 
+      대응되는 빈 정의에 이름을 제공할 것이다.</para>
 
-    <para>If such an annotation contains no <literal>name</literal> value or for
-      any other detected component (such as those discovered by custom filters),
-      the default bean name generator returns the uncapitalized non-qualified
-      class name. For example, if the following two components were detected,
-      the names would be myMovieLister and movieFinderImpl:</para>
+    <para>어노테이션이 <literal>name</literal> 값이 없거나 탐지된 다른 컴포넌트(커스텀 필터로 
+      발견된 컴포넌트 같은)가 있다면 기본 빈이름 생성기는 대문자로 쓰지 않고 정규화되지 않은 
+      클래스명을 리턴한다. 예를 들어 다음 두 컴포넌트가 담지되었다면 이름은 myMovieLister와 
+      movieFinderImpl가 될 것이다.</para>
 
     <programlisting language="java">@Service("myMovieLister")
 public class SimpleMovieLister {
@@ -388,12 +349,12 @@ public class MovieFinderImpl implements MovieFinder {
 }</programlisting>
 
     <note>
-      <para>If you do not want to rely on the default bean-naming strategy, you
-        can provide a custom bean-naming strategy. First, implement the <ulink
+      <para>기본 빈이름 전력에 의존하고 싶지 않다면 커스텀 빈이름 전략을 제공할 수 있다. 일단 
+        <ulink
         url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/support/BeanNameGenerator.html"
-        ><interfacename>BeanNameGenerator</interfacename></ulink> interface, and
-        be sure to include a default no-arg constructor. Then, provide the
-        fully-qualified class name when configuring the scanner:</para>
+        ><interfacename>BeanNameGenerator</interfacename></ulink> 인터페이스를 구현하고 
+        아규먼트가 없는 기본 생성자를 만든다. 그 다음 스캐너를 설정할 때 정규화된 클래스명을 
+        제공해라.</para>
     </note>
 
     <programlisting language="xml">&lt;beans&gt;
@@ -403,20 +364,18 @@ public class MovieFinderImpl implements MovieFinder {
 
 &lt;/beans&gt;</programlisting>
 
-    <para>As a general rule, consider specifying the name with the annotation
-      whenever other components may be making explicit references to it. On the
-      other hand, the auto-generated names are adequate whenever the container
-      is responsible for wiring.</para>
+    <para>일반적인 규칙에 따라 다른 컴포넌트들을 명시적으로 참조하도록 만들 때마다 어노테이션에 
+      이름을 지정하는 것을 고려해라. 반면 컨테이너가 연결에 대한 책임이 있는 경우에는 자동생성되는 
+      이름으로 충분하다.</para>
   </section>
 
   <section id="beans-scanning-scope-resolver">
-    <title>Providing a scope for autodetected components</title>
+    <title>자동탐지된 컴포넌트에 범위(scope) 제공하기</title>
 
-    <para>As with Spring-managed components in general, the default and most
-      common scope for autodetected components is singleton. However, sometimes
-      you need other scopes, which Spring 2.5 provides with a new
-      <interfacename>@Scope</interfacename> annotation. Simply provide the name
-      of the scope within the annotation:</para>
+    <para>보통의 스프링이 관리하는 컴포넌트처럼 자동탐지된 컴포넌트의 기본 범위와 가장 일반적인 
+      범위는 싱글톤이다. 하지만 때로는 다른 범위가 필요하고 스프링 2.5가 제공하는 새로운 
+      <interfacename>@Scope</interfacename> 어노테이션을 제공한다. 어노테이션에 범위의 
+      이름을 지정하면 된다.</para>
 
     <programlisting language="java">@Scope("prototype")
 @Repository
@@ -425,12 +384,11 @@ public class MovieFinderImpl implements MovieFinder {
 }</programlisting>
 
     <note>
-      <para>To provide a custom strategy for scope resolution rather than
-        relying on the annotation-based approach, implement the <ulink
+      <para>어노테이션에 기반한 접근대신에 커스텀 범위 처리 전략을 제공하려면 <ulink
         url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/context/annotation/ScopeMetadataResolver.html"
-        ><interfacename>ScopeMetadataResolver</interfacename></ulink> interface,
-        and be sure to include a default no-arg constructor. Then, provide the
-        fully-qualified class name when configuring the scanner:</para>
+        ><interfacename>ScopeMetadataResolver</interfacename></ulink> 인터페이스를 
+        구현하고 아규먼트가 없는 기본 생성자를 만들어라. 그 다음 스캐너를 설정할 때 정규화된 
+        클래스명을 제공해라.</para>
     </note>
 
     <programlisting language="xml">&lt;beans&gt;
@@ -440,13 +398,12 @@ public class MovieFinderImpl implements MovieFinder {
 
 &lt;/beans&gt;</programlisting>
 
-    <para>When using certain non-singleton scopes, it may be necessary to
-      generate proxies for the scoped objects. The reasoning is described in
-      <xref linkend="beans-factory-scopes-other-injection"/>. For this purpose,
-      a <emphasis>scoped-proxy</emphasis> attribute is available on the
-      component-scan element. The three possible values are: no, interfaces, and
-      targetClass. For example, the following configuration will result in
-      standard JDK dynamic proxies:</para>
+    <para>싱글톤이 아닌 어떤 범위를 사용하면 범위를 가진 객체에 대한 프록시를 생성할 필요가 
+      있을 수 있다. 프록시가 필요한 이유는 
+      <xref linkend="beans-factory-scopes-other-injection"/>에서 설명했다. 이 목적을 위해 
+      component-scan 요소에서 <emphasis>scoped-proxy</emphasis> 속성을 사용할 수 있다. 
+      이 속성에는 no, interfaces, targetClass 세 가지 값을 지정할 수 있다. 예를 들어 다음 
+      설정은 표준 JDK 다이나믹 프록시의가 될 것이다.</para>
 
     <programlisting language="xml">&lt;beans&gt;
 
@@ -457,20 +414,17 @@ public class MovieFinderImpl implements MovieFinder {
   </section>
 
   <section id="beans-scanning-qualifiers">
-    <title>Providing qualifier metadata with annotations</title>
+    <title>어노테이션으로 qualifier 메타데이터 제공하기</title>
 
-    <para>The <interfacename>@Qualifier</interfacename> annotation is discussed
-      in <xref linkend="beans-autowired-annotation-qualifiers"/>. The examples
-      in that section demonstrate the use of the
-      <interfacename>@Qualifier</interfacename> annotation and custom qualifier
-      annotations to provide fine-grained control when you resolve autowire
-      candidates. Because those examples were based on XML bean definitions, the
-      qualifier metadata was provided on the candidate bean definitions using
-      the <literal>qualifier</literal> or <literal>meta</literal> sub-elements
-      of the <literal>bean</literal> element in the XML. When relying upon
-      classpath scanning for autodetection of components, you provide the
-      qualifier metadata with type-level annotations on the candidate class. The
-      following three examples demonstrate this technique:</para>
+    <para><interfacename>@Qualifier</interfacename> 어노테이션은 
+      <xref linkend="beans-autowired-annotation-qualifiers"/>에서 이야기 했다. 해당 
+      섹션의 예제들은 자동연결 후보를 처리할 때 세밀한 제어를 제공하는 
+      <interfacename>@Qualifier</interfacename> 어노테이션과 커스텀 qualifier 어노테이션의 
+      사용방법을 보여준다. 이 예제들은 XML 빈 정의에 기반하기 때문에 qualifier 메타데이터는 XML의 
+      <literal>bean</literal> 요소의 하위요소로 <literal>qualifier</literal>나 
+      <literal>meta</literal> 사용하는 후보 빈 정의에서 제공된다. 컴포넌트 자동탐지를 클래스패스에 
+      기반해서 스캔할 때는 후보 클래스의 타입레벨 어노테이션으로 qualifier 메타데이터를 제공한다. 
+      다음 세 가지 예제는 이러한 기법을 보여준다.</para>
 
     <programlisting language="java">@Component
 <emphasis role="bold">@Qualifier("Action")</emphasis>
@@ -491,12 +445,10 @@ public class CachingMovieCatalog implements MovieCatalog {
 }</programlisting>
 
     <note>
-      <para>As with most annotation-based alternatives, keep in mind that the
-        annotation metadata is bound to the class definition itself, while the
-        use of XML allows for multiple beans <emphasis>of the same
-        type</emphasis> to provide variations in their qualifier metadata,
-        because that metadata is provided per-instance rather than
-        per-class.</para>
+      <para>어노테이션에 기반한 대부분의 대체방법들 처럼 어노테이션 메타데이터는 클래스 정의 
+        자체와 밀접한 관계가 된다는 것을 기억해야 한다. 반면 XML을 사용하면 해당 메타데이터가 
+        클래스마다가 아니라 인스턴스마다 제공되기 때문에 qualifier 메타데이터에서 다양함을 제공하기 
+        위해 <emphasis>같은 타입의</emphasis> 여러 가지 빈을 사용할 수 있다.</para>
     </note>
   </section>
 </section>
