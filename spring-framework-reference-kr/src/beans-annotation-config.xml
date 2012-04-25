@@ -658,7 +658,7 @@ public @interface MovieQualifier {
         <classname>CommonAnnotationBeanPostProcessor</classname>에 친화적인 
         <interfacename>ApplicationContext</interfacename>가 빈 이름으로 처리한다. 
         스프링의 <ulink url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/jndi/support/SimpleJndiBeanFactory.html"
-        ><classname>SimpleJndiBeanFactory</classname></ulink>을 명시적으로 설정했다면 
+        ><classname>SimpleJndiBeanFactory</classname></ulink>를 명시적으로 설정했다면 
         이 이름은 JNDI를 통해서 처리될 수 있다. 하지만 기본 동작에 의존하고 간접적인 수준을 
         유지하기 위해 스프링의 JNDI 검색 기능을 간단히 사용하기를 권장한다.</para>
     </note>

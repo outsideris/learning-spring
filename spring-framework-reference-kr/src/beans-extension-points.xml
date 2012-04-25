@@ -118,9 +118,6 @@
         출력하는 커스텀 <interfacename>BeanPostProcessor</interfacename> 구현체를 
         보여준다.</para>
 
-      <para>Find below the custom
-        <interfacename>BeanPostProcessor</interfacename> implementation class
-        definition:</para>
       <para>다음 커스텀 <interfacename>BeanPostProcessor</interfacename> 구현클래스 
         정의를 보자.</para>
 
