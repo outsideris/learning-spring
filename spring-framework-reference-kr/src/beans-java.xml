@@ -2,24 +2,19 @@
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <section id="beans-java">
-  <title>Java-based container configuration</title>
+  <title>자바기반의 컨테이너 설정</title>
 
   <section id="beans-java-basic-concepts">
-    <title>Basic concepts: <literal>@Configuration</literal> and
+    <title>기본 개념: <literal>@Configuration</literal>와
       <literal>@Bean</literal></title>
 
-    <para>The central artifact in Spring's new Java-configuration support is the
-      <interfacename>@Configuration</interfacename>-annotated class. These
-      classes consist principally of
-      <interfacename>@Bean</interfacename>-annotated methods that define
-      instantiation, configuration, and initialization logic for objects to be
-      managed by the Spring IoC container.</para>
+    <para>스프링의 새로운 자바설정 지원의 핵심부분은 
+      <interfacename>@Configuration</interfacename> 어노테이션이 붙은 클래스다. 이러한 
+      클래스들은 스프링 IoC 컨테이너가 관리하는 객체의 인스턴스화, 설정, 초기화 로직을 정의하는 
+      <interfacename>@Bean</interfacename> 어노테이션이 붙은 메서드들을 주로 이루어져 
+      있다.</para>
 
-    <para>Annotating a class with the
-      <interfacename>@Configuration</interfacename> indicates that the class can
-      be used by the Spring IoC container as a source of bean definitions. The
-      simplest possible <interfacename>@Configuration</interfacename> class
-      would read as follows:
+    <para>클래스에 <interfacename>@Configuration</interfacename> 어노테이션을 붙히는 것은 스프링 IoC 컨테이너가 해당 클래스를 빈 정의의 소스로 사용한다는 것을 나타낸다. 가장 간단한 <interfacename>@Configuration</interfacename> 클래스는 다음과 같을 것이다.
       <programlisting language="java">@Configuration
 public class AppConfig {
   @Bean
@@ -28,78 +23,71 @@ public class AppConfig {
   }
 }</programlisting></para>
 
-    <para>For those more familiar with Spring <literal>&lt;beans/&gt;</literal>
-      XML, the <literal>AppConfig</literal> class above would be equivalent to:
+    <para>스프링 <literal>&lt;beans/&gt;</literal> XML에 익숙하다면 앞의 
+      <literal>AppConfig</literal> 클래스는 다음과 같을 것이다.
       <programlisting language="xml">&lt;beans&gt;
   &lt;bean id="myService" class="com.acme.services.MyServiceImpl"/&gt;
 &lt;/beans&gt;</programlisting>
-      As you can see, the <literal>@Bean</literal> annotation plays the same
-      role as the <literal>&lt;bean/&gt;</literal> element. The
-      <literal>@Bean</literal> annotation will be discussed in depth in the
-      sections below. First, however, we'll cover the various ways of creating a
-      spring container using Java-based configuration.</para>
+      여기서 보듯이 <literal>@Bean</literal> 어노테이션은 
+      <literal>&lt;bean/&gt;</literal> 요소와 같은 역할을 한다. <literal>@Bean</literal> 
+      어노테이션은 이번 섹션 후반에 더 깊게 살펴볼 것이다. 하지만 우선 자바기반의 설정을 사용해서 
+      스프링 컨테이서를 생성하는 여러가지 방법을 살펴보자.</para>
   </section>
 
   <section id="beans-java-instantiating-container">
     <title><literal>AnnotationConfigApplicationContext</literal>를 사용하는 스프링 
       컨테이너 예제 살펴보기</title>
 
-    <para>The sections below document Spring's
-      <literal>AnnotationConfigApplicationContext</literal>, new in Spring 3.0.
-      This versatile <literal>ApplicationContext</literal> implementation is
-      capable of accepting not only <literal>@Configuration</literal> classes as
-      input, but also plain <literal>@Component</literal> classes and classes
-      annotated with JSR-330 metadata.</para>
+    <para>이 섹션에서는 스프링 3.0의 새 기능인 
+      <literal>AnnotationConfigApplicationContext</literal>를 설명한다. 이 다재다능한 
+      <literal>ApplicationContext</literal> 구현체는 인풋으로 <literal>@Configuration</literal> 
+      클래스뿐만 아니라 평범한 <literal>@Component</literal> 클래스와 JSR-330 메타데이터로 어노테이션이 
+      붙은 클래스들도 받아들일 수 있다.</para>
 
-    <para>When <literal>@Configuration</literal> classes are provided as input,
-      the <literal>@Configuration</literal> class itself is registered as a bean
-      definition, and all declared <literal>@Bean</literal> methods within the
-      class are also registered as bean definitions.</para>
+    <para>인풋으로 <literal>@Configuration</literal>클래스를 받았을 때 
+      <literal>@Configuration</literal> 클래스 자체가 빈 정의로 등록되고 해당 클래스내의 
+      선언된 모든 <literal>@Bean</literal> 메서드들도 빈 정의로 등록된다.</para>
 
-    <para>When <literal>@Component</literal> and JSR-330 classes are provided,
-      they are registered as bean definitions, and it is assumed that DI
-      metadata such as <literal>@Autowired</literal> or
-      <literal>@Inject</literal> are used within those classes where
-      necessary.</para>
+    <para><literal>@Component</literal>와 JSR-330 클래스들이 제공되었을 때 이 클래스들은 
+      빈 정의로 등록되고 해당 클래스내에서 필요한 곳에 <literal>@Autowired</literal>나 
+      <literal>@Inject</literal> 같은 DI 메타데이터가 사용되었다고 가정한다.</para>
 
     <section id="beans-java-instantiating-container-contstructor">
-      <title>Simple construction</title>
+      <title>간단한 구성</title>
 
-      <para>In much the same way that Spring XML files are used as input when
-        instantiating a <literal>ClassPathXmlApplicationContext</literal>,
-        <literal>@Configuration</literal> classes may be used as input when
-        instantiating an <literal>AnnotationConfigApplicationContext</literal>.
-        This allows for completely XML-free usage of the Spring container:
+      <para><literal>ClassPathXmlApplicationContext</literal>를 인스턴스화 할 때 
+        인풋으로 스프링 XML 파일을 사용하는 방법과 거의 동일하게 
+        <literal>AnnotationConfigApplicationContext</literal>를 인스턴스화 할 때 
+        <literal>@Configuration</literal> 클래스들을 인풋으로 사용할 것이다. 이를 통해 
+        전혀 XML을 사용하지 않고 스프링 컨테이너를 사용할 수 있다.
         <programlisting language="java">public static void main(String[] args) {
   ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
   MyService myService = ctx.getBean(MyService.class);
   myService.doStuff();
 }</programlisting>
-        As mentioned above,
-        <literal>AnnotationConfigApplicationContext</literal> is not limited to
-        working only with <literal>@Configuration</literal> classes. Any
-        <literal>@Component</literal> or JSR-330 annotated class may be supplied
-        as input to the constructor. For example:
+        위에서 말했듯이 <literal>AnnotationConfigApplicationContext</literal>는 
+        <literal>@Configuration</literal> 클래스들에서만 동작하는 제한같은 것은 없다. 
+        <literal>@Component</literal>이나 JSR-330 어노테이션이 붙은 어떤 클래스라도 
+        생성자에 인풋으로 제공할 수 있다. 예를 들어
         <programlisting language="java">public static void main(String[] args) {
   ApplicationContext ctx = new AnnotationConfigApplicationContext(MyServiceImpl.class, Dependency1.class, Dependency2.class);
   MyService myService = ctx.getBean(MyService.class);
   myService.doStuff();
 }</programlisting>
-        The above assumes that <literal>MyServiceImpl</literal>,
-        <literal>Dependency1</literal> and <literal>Dependency2</literal> use
-        Spring dependency injection annotations such as
-        <literal>@Autowired</literal>.</para>
+        위의 예제는 <literal>MyServiceImpl</literal>, 
+        <literal>Dependency1</literal>, <literal>Dependency2</literal>가 
+        <literal>@Autowired</literal>같은 스프링 의존성 주입 어노테이션을 사용한다고 
+        가정한다.</para>
     </section>
 
     <section id="beans-java-instantiating-container-register">
-      <title>Building the container programmatically using
-        <literal>register(Class&lt;?&gt;...)</literal></title>
+      <title><literal>register(Class&lt;?&gt;...)</literal>를 사용해서 
+        프로그래밍적으로 컨테이너 구성하기</title>
 
-      <para>An <literal>AnnotationConfigApplicationContext</literal> may be
-        instantiated using a no-arg constructor and then configured using the
-        <literal>register()</literal> method. This approach is particularly
-        useful when programmatically building an
-        <literal>AnnotationConfigApplicationContext</literal>.
+      <para><literal>AnnotationConfigApplicationContext</literal>를 아규먼트가 없는 
+        생성자로 인스턴스화한 후 <literal>register()</literal>  메서드로 설정할 것이다. 
+        <literal>AnnotationConfigApplicationContext</literal>를 프로그래밍적으로 
+        구성할 때 이 접근은 특히 유용하다.
         <programlisting language="java">public static void main(String[] args) {
   AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
   ctx.register(AppConfig.class, OtherConfig.class);
@@ -111,23 +99,20 @@ public class AppConfig {
     </section>
 
     <section id="beans-java-instantiating-container-scan">
-      <title>Enabling component scanning with
-        <literal>scan(String...)</literal></title>
+      <title><literal>scan(String...)</literal>으로 
+        컴포넌트 스캔 가능하게 하기</title>
 
-      <para>Experienced Spring users will be familiar with the following
-        commonly-used XML declaration from Spring's <literal>context:</literal>
-        namespace
+      <para>경험있는 스프링 사용자들은 다음과 같이 일반적으로 사용되는 스프링의 
+        <literal>context:</literal> 네임스페이스로 XML을 선언하는데 익숙할 것이다.
         <programlisting language="xml">&lt;beans&gt;
   &lt;context:component-scan base-package="com.acme"/&gt;
 &lt;/beans&gt;</programlisting>
-        In the example above, the <literal>com.acme</literal> package will be
-        scanned, looking for any <literal>@Component</literal>-annotated
-        classes, and those classes will be registered as Spring bean definitions
-        within the container.
-        <literal>AnnotationConfigApplicationContext</literal> exposes the
-        <literal>scan(String...)</literal> method to allow for the same
-        component-scanning
-        functionality:<programlisting language="java">public static void main(String[] args) {
+        위의 예제에서 <literal>com.acme</literal> 팩키지는 스캔되고 
+        <literal>@Component</literal> 어노테이션이 붙은 클래스들을 찾고 이러한 클래스를 
+        컨테이너내 스프링 빈 정의로 등록할 것이다. 
+        <literal>AnnotationConfigApplicationContext</literal>에는 같은 컴포넌트 스캔 
+        기능을 하는 <literal>scan(String...)</literal> 
+        메서드가 있다.<programlisting language="java">public static void main(String[] args) {
   AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
   ctx.scan("com.acme");
   ctx.refresh();
@@ -135,35 +120,32 @@ public class AppConfig {
 }</programlisting></para>
 
       <note>
-        <para>Remember that <literal>@Configuration</literal> classes are
-          meta-annotated with <literal>@Component</literal>, so they are
-          candidates for component-scanning! In the example above, assuming that
-          <literal>AppConfig</literal> is declared within the
-          <literal>com.acme</literal> package (or any package underneath), it
-          will be picked up during the call to <literal>scan()</literal>, and
-          upon <literal>refresh()</literal> all its <literal>@Bean</literal>
-          methods will be processed and registered as bean definitions within
-          the container.</para>
+        <para><literal>@Configuration</literal> 클래스들은 <literal>@Component</literal>로 
+          메타 어노테이션이 붙은 클래스라는 것을 기억해라. 그래서 이 클래스들은 컴포넌트 스캔의 후보들이 
+          된다. 위의 예제에서 <literal>com.acme</literal> 팩키지 (또는 그 하위의 어떤 팩키지)내에 
+          <literal>AppConfig</literal>가 선언었다는 것을 가정하고 이는 <literal>scan()</literal>을 
+          호출하는 동안 선택될 것이고 클래스의 모든 <literal>@Bean</literal> 메서드들을 
+          <literal>refresh()</literal> 할 때 컨테이너내 빈 정의로 처리되고 등록될 
+          것이다.</para>
       </note>
     </section>
 
     <section id="beans-java-instantiating-container-web">
-      <title>Support for web applications with
-        <literal>AnnotationConfigWebApplicationContext</literal></title>
+      <title><literal>AnnotationConfigWebApplicationContext</literal>를 
+        사용한 웹 어플리케이션 지원</title>
 
-      <para>A <literal>WebApplicationContext</literal> variant of
-        <literal>AnnotationConfigApplicationContext</literal> is available with
-        <literal>AnnotationConfigWebApplicationContext</literal>. This
-        implementation may be used when configuring the Spring
-        <literal>ContextLoaderListener</literal> servlet listener, Spring MVC
-        <literal>DispatcherServlet</literal>, etc. What follows is a
-        <literal>web.xml</literal> snippet that configures a typical Spring MVC
-        web application. Note the use of the <literal>contextClass</literal>
-        context-param and init-param:
+      <para><literal>AnnotationConfigApplicationContext</literal>의 
+        <literal>WebApplicationContext</literal> 변형은 
+        <literal>AnnotationConfigWebApplicationContext</literal>로 사용할 수 있다. 
+        이 구현체는 스프링 <literal>ContextLoaderListener</literal> 서블릿 리스너, 
+        스프링 MVC <literal>DispatcherServlet</literal> 등을 설정할 때 사용할 수 있다. 
+        다음은 전형적인 스프링 MVC 웹 어플리케이션을 설정하는 <literal>web.xml</literal>의 
+        예제이다. <literal>contextClass</literal> context-param과 init-param의 
+        사용방법을 보여준다.
         <programlisting language="xml">
 &lt;web-app&gt;
-  &lt;!-- Configure ContextLoaderListener to use AnnotationConfigWebApplicationContext
-       instead of the default XmlWebApplicationContext --&gt;
+  &lt;!-- 기본 XmlWebApplicationContext 대신 AnnotationConfigWebApplicationContext를 
+       사용하는 ContextLoaderListener를 설정한다 --&gt;
   &lt;context-param&gt;
       &lt;param-name&gt;contextClass&lt;/param-name&gt;
       &lt;param-value&gt;
@@ -171,40 +153,40 @@ public class AppConfig {
       &lt;/param-value&gt;
   &lt;/context-param&gt;
 
-  &lt;!-- Configuration locations must consist of one or more comma- or space-delimited
-       fully-qualified @Configuration classes. Fully-qualified packages may also be
-       specified for component-scanning --&gt;
+  &lt;!-- 설정 위치는 반드시 콤마나 공백을 구분자로 사용하는 하나 이상의 정규화된 @Configuration 
+       클래스들로 구성되어야 한다. 정규화된 팩키지는 컴포넌트 스캔으로 
+       지정될 수도 있다. --&gt;
   &lt;context-param&gt;
       &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
       &lt;param-value&gt;com.acme.AppConfig&lt;/param-value&gt;
   &lt;/context-param&gt;
 
-  &lt;!-- Bootstrap the root application context as usual using ContextLoaderListener --&gt;
+  &lt;!-- 평소처럼 ContextLoaderListener를 사용해서 루트 어플리케이션 시작하기 --&gt;
   &lt;listener&gt;
       &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
   &lt;/listener&gt;
 
-  &lt;!-- Declare a Spring MVC DispatcherServlet as usual --&gt;
+  &lt;!-- 평소처럼 스프링 MVC DispatcherServlet 선언 --&gt;
   &lt;servlet&gt;
       &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;
       &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
-      &lt;!-- Configure DispatcherServlet to use AnnotationConfigWebApplicationContext
-           instead of the default XmlWebApplicationContext --&gt;
+      &lt;!-- 기본 XmlWebApplicationContext 대신 AnnotationConfigWebApplicationContext를 
+           사용한 DispatcherServlet 설정 --&gt;
       &lt;init-param&gt;
           &lt;param-name&gt;contextClass&lt;/param-name&gt;
           &lt;param-value&gt;
               org.springframework.web.context.support.AnnotationConfigWebApplicationContext
           &lt;/param-value&gt;
       &lt;/init-param&gt;
-      &lt;!-- Again, config locations must consist of one or more comma- or space-delimited
-           and fully-qualified @Configuration classes --&gt;
+      &lt;!-- 다시한번, 설정 위치는 반드시 콤마나 공백을 구분자로 사용하는 하나 이상의 정규화된 
+           @Configuration 클래스들로 구성되어야 한다. --&gt;
       &lt;init-param&gt;
           &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
           &lt;param-value&gt;com.acme.web.MvcConfig&lt;/param-value&gt;
       &lt;/init-param&gt;
   &lt;/servlet&gt;
 
-  &lt;!-- map all requests for /app/* to the dispatcher servlet --&gt;
+  &lt;!-- /app/*에 대한 모든 요청을 디스패쳐 서블릿에 매핑한다 --&gt;
   &lt;servlet-mapping&gt;
       &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;
       &lt;url-pattern&gt;/app/*&lt;/url-pattern&gt;
@@ -214,16 +196,16 @@ public class AppConfig {
   </section>
 
   <section id="beans-java-composing-configuration-classes">
-    <title>Composing Java-based configurations</title>
+    <title>자바 기반으로 설정 구성하기</title>
 
     <section id="beans-java-using-import">
       <title>Using the <literal>@Import</literal> annotation</title>
+      <title><literal>@Import</literal> 어노테이션의 사용</title>
 
-      <para>Much as the <literal>&lt;import/&gt;</literal> element is used
-        within Spring XML files to aid in modularizing configurations, the
-        <literal>@Import</literal> annotation allows for loading
-        <literal>@Bean</literal> definitions from another configuration
-        class:<programlisting language="java">@Configuration
+      <para>스프링 XML 파일에서 설정 모듈화에 <literal>&lt;import/&gt;</literal>요소를 
+        사용하기는 하지만 <literal>@Import</literal> 어노테이션은 다른 설정 클래스에서 
+        <literal>@Bean</literal> 설정을 
+        로딩한다.<programlisting language="java">@Configuration
 public class ConfigA {
   public @Bean A a() { return new A(); }
 }
@@ -233,46 +215,40 @@ public class ConfigA {
 public class ConfigB {
   public @Bean B b() { return new B(); }
 }</programlisting>
-        Now, rather than needing to specify both
-        <literal>ConfigA.class</literal> and <literal>ConfigB.class</literal>
-        when instantiating the context, only <literal>ConfigB</literal> needs to
-        be supplied
-        explicitly:<programlisting language="java">public static void main(String[] args) {
+        이제 컨텍스트를 인스턴스화 할 때 <literal>ConfigA.class</literal>와 
+        <literal>ConfigB.class</literal>를 둘 다 지정해야하는 대신 
+        <literal>ConfigB</literal>만 명시적으로 제공하면 
+        된다.<programlisting language="java">public static void main(String[] args) {
   ApplicationContext ctx = new AnnotationConfigApplicationContext(ConfigB.class);
 
   // now both beans A and B will be available...
   A a = ctx.getBean(A.class);
   B b = ctx.getBean(B.class);
 }</programlisting>
-        This approach simplifies container instantiation, as only one class
-        needs to be dealt with, rather than requiring the developer to remember
-        a potentially large number of <literal>@Configuration</literal> classes
-        during construction.</para>
+        이 접근은 개발자가 설정을 구성하는 동안 잠재적으로 많은 수의 
+        <literal>@Configuration</literal> 클래스들을 기억해야 하는 대신 하나의 클래스만 
+        다루면 되므로 컨테이너 인스턴스화를 단순화한다.</para>
 
       <section id="beans-java-injecting-imported-beans">
-        <title>Injecting dependencies on imported <literal>@Bean</literal>
-          definitions</title>
+        <title>임포트한 <literal>@Bean</literal> 정의에서 의존성 
+          주입하기</title>
 
-        <para>The example above works, but is simplistic. In most practical
-          scenarios, beans will have dependencies on one another across
-          configuration classes. When using XML, this is not an issue, per se,
-          because there is no compiler involved, and one can simply declare
-          <literal>ref="someBean"</literal> and trust that Spring will work it
-          out during container initialization. Of course, when using
-          <literal>@Configuration</literal> classes, the Java compiler places
-          constraints on the configuration model, in that references to other
-          beans must be valid Java syntax.</para>
+        <para>위의 예제는 동작하기는 하지만 너무 간단하다. 대부분의 실무에서는 빈에 다른 
+          설정 클래스들에 대한 의존성이 있을 것이다. XML을 사용할 때 컴파일러가 관여하지 
+          않고 그냥 <literal>ref="someBean"</literal>만 선언한 뒤 스프링이 컨테이너를 
+          인스턴스화 하면제 제대로 동작하기를 믿으면 되기 때문에 의존성 자체는 이슈가 아니었다. 
+          물론 <literal>@Configuration</literal>를 사용할 때 자바 컴파일러는 다른 빈에 
+          대한 참조는 유효한 자바문법이어야 한다는 제약을 설정 모델에 둔다.</para>
 
-        <para>Fortunately, solving this problem is simple. Remember that
-          <literal>@Configuration</literal> classes are ultimately just another
-          bean in the container - this means that they can take advantage of
-          <literal>@Autowired</literal> injection metadata just like any other
-          bean!</para>
+        <para>다행히도 이 문제의 해결책은 간단하다. <literal>@Configuration</literal> 
+          클래스들은 결국 컨테이너내의 다른 빈일 뿐이라는 것을 기억해라. 이는 
+          <literal>@Configuration</literal> 클래스들이 다른 빈처럼 
+          <literal>@Autowired</literal> 주입 메타데이터의 이점을 취할 수 있다는 것을 
+          의미한다!</para>
 
-        <para>Let's consider a more real-world scenario with several
-          <literal>@Configuration</literal> classes, each depending on beans
-          declared in the
-          others:<programlisting language="java">@Configuration
+        <para>다른 빈들에 선언된 빈에 따라 각각 다수의 <literal>@Configuration</literal> 
+          클래스들이 있는 더 현실적인 시나리오를 생각해 
+          보자.<programlisting language="java">@Configuration
 public class ServiceConfig {
   private @Autowired AccountRepository accountRepository;
 
@@ -298,49 +274,44 @@ public class SystemTestConfig {
 
 public static void main(String[] args) {
   ApplicationContext ctx = new AnnotationConfigApplicationContext(SystemTestConfig.class);
-  // everything wires up across configuration classes...
+  // 모든 것들은 설정 클래스들 사이에서 연결된다...
   TransferService transferService = ctx.getBean(TransferService.class);
   transferService.transfer(100.00, "A123", "C456");
 }</programlisting></para>
 
         <section id="beans-java-injecting-imported-beans-fq">
-          <title>Fully-qualifying imported beans for ease of navigation</title>
+          <title>네비게이션을 편하게 하기 위해 임포트한 빈들을 정규화하기</title>
 
-          <para>In the scenario above, using <literal>@Autowired</literal> works
-            well and provides the desired modularity, but determining exactly
-            where the autowired bean definitions are declared is still somewhat
-            ambiguous. For example, as a developer looking at
-            <literal>ServiceConfig</literal>, how do you know exactly where the
-            <literal>@Autowired AccountRepository</literal> bean is declared?
-            It's not explicit in the code, and this may be just fine. Remember
-            that the <ulink url="http://www.springsource.com/products/sts"
-            >SpringSource Tool Suite</ulink> provides tooling that can render
-            graphs showing how everything is wired up - that may be all you
-            need. Also, your Java IDE can easily find all declarations and uses
-            of the <literal>AccountRepository</literal> type, and will quickly
-            show you the location of <literal>@Bean</literal> methods that
-            return that type.</para>
+          <para>위의 시나리오에서 <literal>@Autowired</literal>는 잘 동작하고 원하는 
+            모듈화를 제공하지만 정확히 자동연결된 빈정의가 어디인지 결정하는 것은 여전히 약간 
+            모호하다. 예를 들어 한 개발자가 <literal>ServiceConfig</literal>를 보듯이 정확히 
+            어디에 <literal>@Autowired AccountRepository</literal> 빈이 선언되었는지 어떻게 
+            알 수 있는가? 이는 코드에서 명백하지 않지만 괜찮을 것이다. <ulink 
+            url="http://www.springsource.com/products/sts">SpringSource Tool Suite</ulink>가 
+            모든 것들이 어떻게 연결되는지 보여주는 그래프를 그리는 도구를 제공한다. 이 그래프가 당신이 
+            바라는 전부일 것이다. 게다가 자바 IDE는 쉽게 모든 선언과 
+            <literal>AccountRepository</literal>의 사용을 찾을 수 있고 해당 타입을 리턴하는 
+            <literal>@Bean</literal> 메서드의 위치를 빠르게 보여줄 것이다.</para>
 
-          <para>In cases where this ambiguity is not acceptable and you wish to
-            have direct navigation from within your IDE from one
-            <literal>@Configuration</literal> class to another, consider
-            autowiring the configuration classes themselves:
+          <para>이 애매모호함을 받아들일 수 없고 한 <literal>@Configuration</literal> 
+            클래스에서 다른 클래스까지 IDE에서 직접 네비게이션하기를 원하는 경우에는 설정 
+            클래스들 자체를 자동연결하는 것을 고려해 봐라.
             <programlisting language="java">@Configuration
 public class ServiceConfig {
   private @Autowired RepositoryConfig repositoryConfig;
 
   public @Bean TransferService transferService() {
-      // navigate 'through' the config class to the @Bean method!
+      // 설정 클래스 '전체에서' @Bean 메서드를 탐색한다!
       return new TransferServiceImpl(repositoryConfig.accountRepository());
   }
 }</programlisting>
-            In the situation above, it is completely explicit where
-            <literal>AccountRepository</literal> is defined. However,
-            <literal>ServiceConfig</literal> is now tightly coupled to
-            <literal>RepositoryConfig</literal>; that's the tradeoff. This tight
-            coupling can be somewhat mitigated by using interface-based or
-            abstract class-based <literal>@Configuration</literal> classes.
-            Consider the following:
+            위의 상황에서는 어디 <literal>AccountRepository</literal>가 정의되었는지가 
+            아주 명백하다. 하지만 이제 <literal>ServiceConfig</literal>가 
+            <literal>RepositoryConfig</literal>에 강하게 연결되어 있다. 이는 
+            트레이드 오프(tradeoff)다. 인터페이스 기반이나 추상 클래스 기반의 
+            <literal>@Configuration</literal> 클래스들을 사용해서 이 강한 커플링을 
+            약간 완화할 수 있다. 
+            다음을 보자.
             <programlisting language="java">@Configuration
 public class ServiceConfig {
   private @Autowired RepositoryConfig repositoryConfig;
@@ -363,9 +334,9 @@ public class DefaultRepositoryConfig implements RepositoryConfig {
 }
 
 @Configuration
-@Import({ServiceConfig.class, DefaultRepositoryConfig.class}) // import the concrete config!
+@Import({ServiceConfig.class, DefaultRepositoryConfig.class}) // 구체적인(concrete) 설정을 임포트한다!
 public class SystemTestConfig {
-  public @Bean DataSource dataSource() { /* return DataSource */ }
+  public @Bean DataSource dataSource() { /* DataSource를 리턴한다 */ }
 }
 
 public static void main(String[] args) {
@@ -373,61 +344,51 @@ public static void main(String[] args) {
   TransferService transferService = ctx.getBean(TransferService.class);
   transferService.transfer(100.00, "A123", "C456");
 }</programlisting>
-            Now <literal>ServiceConfig</literal> is loosely coupled with respect
-            to the concrete <literal>DefaultRepositoryConfig</literal>, and
-            built-in IDE tooling is still useful: it will be easy for the
-            developer to get a type hierarchy of
-            <literal>RepositoryConfig</literal> implementations. In this way,
-            navigating <literal>@Configuration</literal> classes and their
-            dependencies becomes no different than the usual process of
-            navigating interface-based code.</para>
+            이제 <literal>ServiceConfig</literal>는 관련된 구체적인(concrete) 
+            <literal>DefaultRepositoryConfig</literal>에 약하게 연결되어 있고 
+            내장 IDE 도구는 여전히 유용하다. 개발자는 쉽게 <literal>RepositoryConfig</literal> 
+            구현체들의 타입 계층을 얻을 수 있을 것이다. 이 방법으로 
+            <literal>@Configuration</literal> 클래스들과 그 의존성들을 네비게이션 하는 것은 
+            인터페이스 기반의 코드를 네비게이션하는 일반적인 과정과 다르지 않아졌다.</para>
         </section>
       </section>
     </section>
 
     <section id="beans-java-combining">
-      <title>Combining Java and XML configuration</title>
+      <title>자바와 XML 설정을 조합하기</title>
 
-      <para>Spring's <literal>@Configuration</literal> class support does not
-        aim to be a 100% complete replacement for Spring XML. Some facilities
-        such as Spring XML namespaces remain an ideal way to configure the
-        container. In cases where XML is convenient or necessary, you have a
-        choice: either instantiate the container in an "XML-centric" way using,
-        for example, <literal>ClassPathXmlApplicationContext</literal>, or in a
-        "Java-centric" fashion using
-        <literal>AnnotationConfigApplicationContext</literal> and the
-        <literal>@ImportResource</literal> annotation to import XML as
-        needed.</para>
+      <para>스프링의 <literal>@Configuration</literal> 클래스 지원은 스프링의 XML을 100% 
+        완전히 대체하지 못한다. 스프링 XML 네임스페이스같은 몇몇 기능들은 여전히 컨테이너를 설정하는 
+        이상적인 방법이다. XML이 편리하거나 필수적인 상황에서 선택권이 있다. 
+        <literal>ClassPathXmlApplicationContext</literal>등을 사용한 "XML 중심적인" 방법으로 
+        컨테이너를 인스턴스화하거나 <literal>AnnotationConfigApplicationContext</literal>와 
+        필요한 XML을 임포트하는 <literal>@ImportResource</literal> 어노테이션을 사용하는 "자바 
+        중심적인"방법 중에서 선택할 수 있다.</para>
 
       <section id="beans-java-combining-xml-centric">
-        <title>XML-centric use of <literal>@Configuration</literal>
-          classes</title>
+        <title><literal>@Configuration</literal> 클래스의 XML 
+          중심적인 사용</title>
 
-        <para>It may be preferable to bootstrap the Spring container from XML
-          and include <literal>@Configuration</literal> classes in an ad-hoc
-          fashion. For example, in a large existing codebase that uses Spring
-          XML, it will be easier to create <literal>@Configuration</literal>
-          classes on an as-needed basis and include them from the existing XML
-          files. Below you'll find the options for using
-          <literal>@Configuration</literal> classes in this kind of
-          "XML-centric" situation.</para>
+        <para>애드훅으로 <literal>@Configuration</literal> 클래스와 함께 XML로 스프링 
+          컨테이너를 시작하는 것을 선호할 수도 있다. 예를 들어 스프링 XML을 사용하는 많은 양의 
+          코드가 이미 있는 경우 필요한만큼의 원리에 따라 <literal>@Configuration</literal> 
+          클래스를 생성하고 존재하는 XML파일에서 이 클래스들을 포함하는 것을 쉬울 것이다. 아래에서 
+          "XML 중심적인" 상황에 위와 같은 경우에서 <literal>@Configuration</literal> 클래스들을 
+          사용하는 옵션들을 볼 것이다.</para>
 
         <section id="beans-java-combining-xml-centric-declare-as-bean">
-          <title>Declaring <literal>@Configuration</literal> classes as plain
-            Spring <literal>&lt;bean/&gt;</literal> elements</title>
+          <title>평범한 스프링 <literal>&lt;bean/&gt;</literal> 요소처럼 
+            <literal>@Configuration</literal> 클래스 선언하기</title>
 
-          <para>Remember that <literal>@Configuration</literal> classes are
-            ultimately just bean definitions in the container. In this example,
-            we create a <literal>@Configuration</literal> class named
-            <literal>AppConfig</literal> and include it within
-            <literal>system-test-config.xml</literal> as a
-            <literal>&lt;bean/&gt;</literal>definition. Because
-            <literal>&lt;context:annotation-config/&gt;</literal> is switched
-            on, the container will recognize the
-            <literal>@Configuration</literal> annotation, and process the
-            <literal>@Bean</literal> methods declared in
-            <literal>AppConfig</literal>
-            properly.<programlisting language="java">@Configuration
+          <para><literal>@Configuration</literal>는 결국은 그냥 컨테이너의 빈 정의라는 
+            것을 기억해라. 이 예제에서 <literal>AppConfig</literal>라는 
+            <literal>@Configuration</literal> 클래스를 생성하고 이 클래스를 
+            <literal>&lt;bean/&gt;</literal>정의로 
+            <literal>system-test-config.xml</literal>안에 포함시켰다. 
+            <literal>&lt;context:annotation-config/&gt;</literal>를 활성화 했기 때문에 
+            컨테이너는 <literal>@Configuration</literal> 어노테이션을 인식하고 
+            <literal>AppConfig</literal>에 선언된 <literal>@Bean</literal> 메서드를 적절히 
+            처리할 것이다.<programlisting language="java">@Configuration
 public class AppConfig {
   private @Autowired DataSource dataSource;
 
@@ -441,7 +402,7 @@ public class AppConfig {
 }</programlisting>
             <programlisting language="xml"><lineannotation role="listingtitle">system-test-config.xml</lineannotation>
 &lt;beans&gt;
-  &lt;!-- enable processing of annotations such as @Autowired and @Configuration --&gt;
+  &lt;!-- @Autowired와 @Configuration같은 어노테이션 처리가 가능하게 하기 --&gt;
   &lt;context:annotation-config/&gt;
   &lt;context:property-placeholder location="classpath:/com/acme/jdbc.properties"/&gt;
 
@@ -464,35 +425,29 @@ jdbc.password=</programlisting>
 }</programlisting></para>
 
           <note>
-            <para>In <literal>system-test-config.xml</literal> above, the
-              <literal>AppConfig&lt;bean/&gt;</literal> does not declare an
-              <literal>id</literal> element. While it would be acceptable to do
-              so, it is unnecessary given that no other bean will ever refer to
-              it, and it is unlikely that it will be explicitly fetched from the
-              container by name. Likewise with the <literal>DataSource</literal>
-              bean - it is only ever autowired by type, so an explicit bean id
-              is not strictly required.</para>
+            <para>위의 <literal>system-test-config.xml</literal>에서 
+              <literal>AppConfig&lt;bean/&gt;</literal>에 <literal>id</literal> 
+              요소를 선언하지 않았다. 이렇게 하는 것은 허용되지 않으며 이를 참조하는 빈이 
+              없으므로 필요하지 않다. 그리고 이름으로 컨테이너에서 명시적으로 가져올 가능성도 없다. 
+              <literal>DataSource</literal> 빈과 마찬가지로 이는 타입으로만 자동연결되므로 
+              명시적인 빈 id가 엄격하게 필요하지 않다.</para>
           </note>
         </section>
 
         <section id="beans-java-combining-xml-centric-component-scan">
-          <title>Using <literal>&lt;context:component-scan/&gt;</literal> to
-            pick up <literal>@Configuration</literal> classes</title>
+          <title><literal>@Configuration</literal>를 선택하는 
+            <literal>&lt;context:component-scan/&gt;</literal>의 사용</title>
 
-          <para>Because <literal>@Configuration</literal> is meta-annotated with
-            <literal>@Component</literal>,
-            <literal>@Configuration</literal>-annotated classes are
-            automatically candidates for component scanning. Using the same
-            scenario as above, we can redefine
-            <literal>system-test-config.xml</literal> to take advantage of
-            component-scanning. Note that in this case, we don't need to
-            explicitly declare
-            <literal>&lt;context:annotation-config/&gt;</literal>, because
-            <literal>&lt;context:component-scan/&gt;</literal> enables all the
-            same
-            functionality.<programlisting language="xml"><lineannotation role="listingtitle">system-test-config.xml</lineannotation>
+          <para><literal>@Configuration</literal>에 <literal>@Component</literal> 
+            메타 어노테이션이 붙었으므로 <literal>@Configuration</literal> 어노테이션이 
+            붙은 클래스들은 자동적으로 컴포넌트 스캔의 후보가 된다. 위와 같은 시나리오에서 컴포넌트 
+            스캔의 이점을 얻기 위해 <literal>system-test-config.xml</literal>를 재정의 할 수 
+            있다. 이 경우에 <literal>&lt;context:component-scan/&gt;</literal>가 같은 기능을 
+            모두 사용가능하게 하므로 명시적으로 
+            <literal>&lt;context:annotation-config/&gt;</literal>를 선언할 필요가 
+            없다.<programlisting language="xml"><lineannotation role="listingtitle">system-test-config.xml</lineannotation>
 &lt;beans&gt;
-  &lt;!-- picks up and registers AppConfig as a bean definition --&gt;
+  &lt;!-- 빈 정의로 AppConfig를 선택하고 등록한다 --&gt;
   &lt;context:component-scan base-package="com.acme"/&gt;
   &lt;context:property-placeholder location="classpath:/com/acme/jdbc.properties"/&gt;
 
@@ -506,15 +461,13 @@ jdbc.password=</programlisting>
       </section>
 
       <section id="beans-java-combining-java-centric">
-        <title><literal>@Configuration</literal> class-centric use of XML with
-          <literal>@ImportResource</literal></title>
+        <title><literal>@ImportResource</literal>로 <literal>@Configuration</literal> 
+          클래스 중심적인 XML의 사용</title>
 
-        <para>In applications where <literal>@Configuration</literal> classes
-          are the primary mechanism for configuring the container, it will still
-          likely be necessary to use at least some XML. In these scenarios,
-          simply use <literal>@ImportResource</literal> and define only as much
-          XML as is needed. Doing so achieves a "Java-centric" approach to
-          configuring the container and keeps XML to a bare minimum.
+        <para><literal>@Configuration</literal>클래스가 컨테이너를 설정하는 주요 메카니즘인 
+          어플리케이션에서 여전히 최소한 약간의 XML은 사용할 필요가 있을 것이다. 이러한 시나리오에서 
+          간단히 <literal>@ImportResource</literal>를 사용하고 필요한만큼의 XML을 정의한다. 
+          이렇게 해서 최소한의 XML만으로 컨테이너를 설정하는 "자바 중심적인" 접근을 할 수 있다.
           <programlisting language="java">@Configuration
 @ImportResource("classpath:/com/acme/properties-config.xml")
 public class AppConfig {
@@ -544,32 +497,27 @@ jdbc.password=</programlisting>
   </section>
 
   <section id="beans-java-bean-annotation">
-    <title>Using the <interfacename>@Bean</interfacename> annotation</title>
+    <title><interfacename>@Bean</interfacename> 어노테이션의 사용</title>
 
-    <para><interfacename>@Bean</interfacename> is a method-level annotation and
-      a direct analog of the XML <code>&lt;bean/&gt;</code> element. The
-      annotation supports some of the attributes offered by
-      <code>&lt;bean/&gt;</code>, such as: <code><link
-      linkend="beans-factory-lifecycle-initializingbean"
-      >init-method</link></code>, <code><link
-      linkend="beans-factory-lifecycle-disposablebean"
-      >destroy-method</link></code>, <code><link
-      linkend="beans-factory-autowire">autowiring</link></code> and
-      <code>name</code>.</para>
+    <para><interfacename>@Bean</interfacename>는 메서드 레벨의 어노테이션이고 XML 
+      <code>&lt;bean/&gt;</code> 요소와 바로 대응되는 요소이다. 이 어노테이션은 
+      <code><link linkend="beans-factory-lifecycle-initializingbean">init-method</link></code>, 
+      <code><link linkend="beans-factory-lifecycle-disposablebean">destroy-method</link></code>, 
+      <code><link linkend="beans-factory-autowire">autowiring</link></code>, 
+      <code>name</code>처럼 <code>&lt;bean/&gt;</code>가 제공하는 속성들의 일부를 
+      지원한다.</para>
 
-    <para>You can use the <interfacename>@Bean</interfacename> annotation in a
-      <interfacename>@Configuration</interfacename>-annotated or in a
-      <interfacename>@Component</interfacename>-annotated class.</para>
+    <para><interfacename>@Configuration</interfacename> 어노테이션이나 
+      <interfacename>@Component</interfacename> 어노테이션이 붙은 클래스에서 
+      <interfacename>@Bean</interfacename> 어노테이션을 사용할 수 있다.</para>
 
     <section id="beans-java-declaring-a-bean">
-      <title>Declaring a bean</title>
+      <title>빈 선언하기</title>
 
-      <para>To declare a bean, simply annotate a method with the
-        <interfacename>@Bean</interfacename> annotation. You use this method to
-        register a bean definition within an <code>ApplicationContext</code> of
-        the type specified as the method's return value. By default, the bean
-        name will be the same as the method name. The following is a simple
-        example of a <interfacename>@Bean</interfacename> method declaration:
+      <para>빈을 선언하려면 메서드에 <interfacename>@Bean</interfacename> 어노테이션을 
+        붙히면 된다. 메서드가 리턴하는 값으로 지정한 타임의 <code>ApplicationContext</code>내에서 
+        빈 정의를 등록하기 위해 이 메서드를 사용한다. 기본적으로 빈 이름은 메서드의 이름과 같을 
+        것이다. 다음은 <interfacename>@Bean</interfacename> 메서드를 선언하는 간단한 예제이다.
         <programlisting language="java">@Configuration
 public class AppConfig {
 
@@ -580,26 +528,24 @@ public class AppConfig {
 
 }</programlisting></para>
 
-      <para>The preceding configuration is exactly equivalent to the following
-        Spring XML:
+      <para>앞의 설정은 다음 스프링 XML과 완전히 똑같다.
         <programlisting language="xml">&lt;beans&gt;
   &lt;bean id="transferService" class="com.acme.TransferServiceImpl"/&gt;
 &lt;/beans&gt;                </programlisting></para>
 
-      <para>Both declarations make a bean named <code>transferService</code>
-        available in the <code>ApplicationContext</code>, bound to an object
-        instance of type <code>TransferServiceImpl</code>:
+      <para>두 선언은 모두 <code>ApplicationContext</code>에서 사용할 수 있는 
+        <code>transferService</code>라는 빈을 만들고 <code>TransferServiceImpl</code> 
+        타입의 인스턴스에 바인딩한다.
         <programlisting>
 transferService -&gt; com.acme.TransferServiceImpl
               </programlisting></para>
     </section>
 
     <section id="beans-java-injecting-dependencies">
-      <title>Injecting dependencies</title>
+      <title>의존성 주입</title>
 
-      <para>When <interfacename>@Bean</interfacename>s have dependencies on one
-        another, expressing that dependency is as simple as having one bean
-        method call another:
+      <para><interfacename>@Bean</interfacename>들이 다른 빈에 대한 의존성이 있을 때 
+      의존성을 나타내는 것은 하나의 빈 메서드가 다른 메서드를 호출하는 것만큼 간단하다.
         <programlisting language="java">@Configuration
 public class AppConfig {
 
@@ -615,49 +561,43 @@ public class AppConfig {
 
 }                </programlisting></para>
 
-      <para>In the example above, the <code>foo</code> bean receives a reference
-        to <code> bar</code> via constructor injection.</para>
+      <para>위의 예제에서 <code>foo</code>은 생성자 주입으로 <code> bar</code>에 대한 
+        참조를 받는다.</para>
     </section>
 
     <section id="beans-java-lifecycle-callbacks">
-      <title>Receiving lifecycle callbacks</title>
+      <title>라이프사이클 콜백 받기</title>
 
-      <para>Beans declared in a
-        <interfacename>@Configuration</interfacename>-annotated class support
-        the regular lifecycle callbacks. Any classes defined with the
-        <literal>@Bean</literal> annotation can use the
-        <literal>@PostConstruct</literal> and <literal>@PreDestroy</literal>
-        annotations from JSR-250, see <link
-        linkend="beans-postconstruct-and-predestroy-annotations">JSR-250
-        annotations</link> for further details.</para>
+      <para><interfacename>@Configuration</interfacename> 어노테이션이 붙은 클래스에서 
+        선언한 빈들은 정규 라이프사이클 콜백을 지원한다. <literal>@Bean</literal> 어노테이션으로 
+        정의된 어떤 클래스들도 JSR-250의 <literal>@PostConstruct</literal>와 
+        <literal>@PreDestroy</literal> 어노테이션을 사용할 수 있다. JSR-250의 자세한 내용은 
+        <link linkend="beans-postconstruct-and-predestroy-annotations">JSR-250
+        annotations</link>를 봐라.</para>
 
-      <para>The regular Spring <link linkend="beans-factory-nature"
-        >lifecycle</link> callbacks are fully supported as well. If a bean
-        implements <code>InitializingBean</code>, <code>DisposableBean</code>,
-        or <code>Lifecycle</code>, their respective methods are called by the
-        container.</para>
+      <para>정규 스프링 <link linkend="beans-factory-nature">라이프사이클</link> 콜백을 
+        완전히 지원한다. 빈이 <code>InitializingBean</code>, <code>DisposableBean</code>, 
+        <code>Lifecycle</code>를 구현하면 컨테이너가 각각의 메서드를 호출한다.</para>
 
-      <para>The standard set of <code>*Aware</code> interfaces such as
-        <code><link linkend="beans-beanfactory">BeanFactoryAware</link></code>,
+      <para><code><link linkend="beans-beanfactory">BeanFactoryAware</link></code>,
         <code><link linkend="beans-factory-aware">BeanNameAware</link></code>,
         <code><link linkend="context-functionality-messagesource"
         >MessageSourceAware</link></code>, <code><link
-        linkend="beans-factory-aware">ApplicationContextAware</link></code>, and
-        so on are also fully supported.</para>
+        linkend="beans-factory-aware">ApplicationContextAware</link></code> 등과 같은 
+        <code>*Aware</code> 인터페이스 표준 세트도 완전히 지원한다.</para>
 
-      <para>The <interfacename>@Bean</interfacename> annotation supports
-        specifying arbitrary initialization and destruction callback methods,
-        much like Spring XML's <code>init-method</code> and
-        <code>destroy-method</code> attributes on the <code>bean</code> element:
+      <para>스프링 XML의 <code>bean</code> 요소에서 <code>init-method</code>와 
+        <code>destroy-method</code> 속성처럼 <interfacename>@Bean</interfacename> 
+        어노테이션은 임의의 초기화와 파괴 콜백 메서드 지정하는 것을 지원한다.
         <programlisting language="java">public class Foo {
   public void init() {
-      // initialization logic
+      // 초기화 로직
   }
 }
 
 public class Bar {
   public void cleanup() {
-      // destruction logic
+      // 파괴 로직
   }
 }
 
@@ -674,9 +614,8 @@ public class AppConfig {
 }
 </programlisting></para>
 
-      <para>Of course, in the case of <code>Foo</code> above, it would be
-        equally as valid to call the <code>init()</code> method directly during
-        construction:
+      <para>물론 위의 <code>Foo</code>의 경우는 생성과정동안 <code>init()</code> 
+        메서드를 유효하게 직접 호출하는 것과 같다.
         <programlisting language="java">@Configuration
 public class AppConfig {
   @Bean
@@ -690,29 +629,27 @@ public class AppConfig {
 }                    </programlisting></para>
 
       <tip>
-        <para>When you work directly in Java, you can do anything you like with
-          your objects and do not always need to rely on the container
-          lifecycle!</para>
+        <para>자바로 직접 작업할 때 객체로 할 수 있는 모든 것을 할 수 있고 항상 컨테이너 
+          라이프사이클에 의존한 필요가 없다!</para>
       </tip>
     </section>
 
     <section id="beans-java-specifying-bean-scope">
-      <title>Specifying bean scope</title>
+      <title>빈 범위 지정하기</title>
 
       <section id="beans-java-available-scopes">
-        <title>Using the <interfacename>@Scope</interfacename>
-          annotation</title>
+        <title><interfacename>@Scope</interfacename> 어노테이션의 
+          사용</title>
 
         <!-- MLP: Beverly, did not apply your edit as it changed meaning -->
 
-        <para>You can specify that your beans defined with the
-          <interfacename>@Bean</interfacename> annotation should have a specific
-          scope. You can use any of the standard scopes specified in the <link
-          linkend="beans-factory-scopes">Bean Scopes</link> section.</para>
+        <para><interfacename>@Bean</interfacename> 어노테이션으로 정의한 빈이 특정 범위를 
+          갖도록 지정할 수 있다. <link linkend="beans-factory-scopes">Bean Scopes</link> 
+          섹션에서 지정한 표준 범위들은 모두 사용할 수 있다.</para>
 
-        <para>The default scope is <literal>singleton</literal>, but you can
-          override this with the <interfacename>@Scope</interfacename>
-          annotation:
+        <para>기본 범위는 <literal>singleton</literal>이지만 
+          <interfacename>@Scope</interfacename> 어노테이션으로 이 기본 범위를 
+          오버라이드할 수 있다.
           <programlisting language="java">@Configuration
 public class MyConfiguration {
   @Bean
@@ -724,23 +661,21 @@ public class MyConfiguration {
       </section>
 
       <section id="beans-java-scoped-proxy">
-        <title><code>@Scope and scoped-proxy</code></title>
+        <title><code>@Scope와 범위를 가진 프록시</code></title>
 
-        <para>Spring offers a convenient way of working with scoped dependencies
-          through <link linkend="beans-factory-scopes-other-injection">scoped
-          proxies</link>. The easiest way to create such a proxy when using the
-          XML configuration is the <code>&lt;aop:scoped-proxy/&gt;</code>
-          element. Configuring your beans in Java with a @Scope annotation
-          offers equivalent support with the proxyMode attribute. The default is
-          no proxy (<varname>ScopedProxyMode.NO</varname>), but you can specify
-          <classname>ScopedProxyMode.TARGET_CLASS</classname> or
-          <classname>ScopedProxyMode.INTERFACES</classname>.</para>
+        <para>스프링은 <link linkend="beans-factory-scopes-other-injection">범위를 
+          가진 프록시</link>를 통해서 범위를 가진 의존성과 동작하도록 하는 편리한 방법을 제공한다. 
+          XML 설정을 사용할 때 이러한 프록시를 생성하는 가장 쉬운 방법은 
+          <code>&lt;aop:scoped-proxy/&gt;</code> 요소이다. 자바로 @Scope 어노테이션이 붙은 
+          빈을 설정할 때 proxyMode 속성으로 동일한 기능을 제공한다. 기본값은 프록시가 없는 
+          것이지만 (<varname>ScopedProxyMode.NO</varname>) 
+          <classname>ScopedProxyMode.TARGET_CLASS</classname>나 
+          <classname>ScopedProxyMode.INTERFACES</classname>를 지정할 수 있다.</para>
 
-        <para>If you port the scoped proxy example from the XML reference
-          documentation (see preceding link) to our
-          <interfacename>@Bean</interfacename> using Java, it would look like
-          the following:
-          <programlisting language="java">// an HTTP Session-scoped bean exposed as a proxy
+        <para>XML 레퍼런스 문서의 범위를 가진 프록시 예제를 (앞의 링크를 봐라) 자바를 
+          사용하는 <interfacename>@Bean</interfacename>으로 포팅하면 다음과 
+          같을 것이다.
+          <programlisting language="java">// HTTP 세션 범위를 가진 빈을 프록시로 노출한다
 @Bean
 <emphasis role="bold">@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)</emphasis>
 public UserPreferences userPreferences() {
@@ -750,50 +685,48 @@ public UserPreferences userPreferences() {
 @Bean
 public Service userService() {
  UserService service = new SimpleUserService();
- // a reference to the proxied userPreferences bean
+ // 프록시 userPreferences 빈에 대한 참조
  service.setUserPreferences(userPreferences());
  return service;
 }                </programlisting></para>
       </section>
 
       <section id="beans-java-method-injection">
-        <title>Lookup method injection</title>
+        <title>검색 메서드 주입</title>
 
-        <para>As noted earlier, <link linkend="beans-factory-method-injection"
-          >lookup method injection</link> is an advanced feature that you should
-          use rarely. It is useful in cases where a singleton-scoped bean has a
-          dependency on a prototype-scoped bean. Using Java for this type of
-          configuration provides a natural means for implementing this pattern.
+        <para>앞에서 얘기했듯이 <link linkend="beans-factory-method-injection">검색 
+          메서드 주입</link>은 드물게 사용하는 고급 기능이다. 이 기능은 싱글톤 범위를 가진 
+          빈이 프로토타입 범위를 가진 빈에 의존성이 있는 경우에 유용하다. 자바로 이러한 타입의 
+          설정을 사용한다는 것은 이 패턴을 구현한다는 자연스러운 의미가 된다.
           <programlisting language="java">public abstract class CommandManager {
   public Object process(Object commandState) {
-      // grab a new instance of the appropriate Command interface
+      // 적절한 Command 인터페이스의 새로운 인스턴스를 획득한다
       Command command = createCommand();
 
-      // set the state on the (hopefully brand new) Command instance
+      // (완전히 새로운) Command 인스턴스에 상태를 설정한다
       command.setState(commandState);
       return command.execute();
   }
 
-  // okay... but where is the implementation of this method?
+  // 괜찮다... 하지만 이 메서드의 구현은 어디에 있는가?
   protected abstract Command createCommand();
 }                   </programlisting></para>
 
-        <para>Using Java-configuration support , you can create a subclass of
-          <code>CommandManager</code> where the abstract
-          <code>createCommand()</code> method is overridden in such a way that
-          it looks up a new (prototype) command object:
+        <para>자바로 설정을 사용할 때 새로운 (프로토타입) 커맨드 객체를 검색하는 방법같은 
+          추상 <code>createCommand()</code> 메서드를 오버라이드한 
+          <code>CommandManager</code>의 서브클래스를 생성할 수 있다. 
           <programlisting language="java">@Bean
 @Scope("prototype")
 public AsyncCommand asyncCommand() {
   AsyncCommand command = new AsyncCommand();
-  // inject dependencies here as required
+  // 필요한 대로 여기서 의존성을 주입한다
   return command;
 }
 
 @Bean
 public CommandManager commandManager() {
-  // return new anonymous implementation of CommandManager with command() overridden
-  // to return a new prototype Command object
+  // 새로운 프로토타입 Command 객체를 리턴하도록 command()를 오버라이드한 CommandManager의 
+  // 새로운 익명 구현체를 리턴한다
   return new CommandManager() {
       protected Command createCommand() {
           return asyncCommand();
@@ -804,12 +737,11 @@ public CommandManager commandManager() {
     </section>
 
     <section id="beans-java-customizing-bean-naming">
-      <title>Customizing bean naming</title>
+      <title>빈 이름 커스터마이징하기</title>
 
-      <para>By default, configuration classes use a
-        <interfacename>@Bean</interfacename> method's name as the name of the
-        resulting bean. This functionality can be overridden, however, with the
-        <code>name</code> attribute.
+      <para>기본적으로 설정 클래스들은 <interfacename>@Bean</interfacename> 메서드의 
+        이름을 생성된 빈의 이름으로 사용한다. 하지만 이 기능은 <code>name</code> 속성으로 
+        오버라이드 할 수 있다.
         <programlisting language="java">@Configuration
 public class AppConfig {
 
@@ -825,19 +757,18 @@ public class AppConfig {
 
 
     <section id="beans-java-bean-aliasing">
-      <title>Bean aliasing</title>
+      <title>빈 별칭짓기</title>
 
-      <para>As discussed in <xref linkend="beans-beanname"/>, it is sometimes
-        desirable to give a single bean multiple names, otherwise known as
-        <emphasis>bean aliasing</emphasis>. The <literal>name</literal>
-        attribute of the <literal>@Bean</literal> annotation accepts a String
-        array for this purpose.
+      <para><xref linkend="beans-beanname"/>에서 얘기했듯이 때로는 
+        <emphasis>빈 별칭짓기</emphasis>로 알려진 단일 빈에 여러 가지 이름을 주어야 한다. 
+        <literal>@Bean</literal> 어노테이션의 <literal>name</literal> 속성은 이 용도를 
+        위해서 문자열 배열을 받아들인다.
         <programlisting language="java">@Configuration
 public class AppConfig {
 
   @Bean(name = { "dataSource", "subsystemA-dataSource", "subsystemB-dataSource" })
   public DataSource dataSource() {
-      // instantiate, configure and return DataSource bean...
+      // 인스턴스화하고 설정하고 DataSource 빈을 리턴한다...
   }
 
 }        </programlisting></para>
@@ -845,11 +776,10 @@ public class AppConfig {
   </section>
 
   <section id="beans-java-further-information-java-config">
-    <title>Further information about how Java-based configuration works
-      internally</title>
+    <title>자바기반의 설정의 내부동작에 대한 추가적인 내용</title>
 
-    <para>The following example shows a <literal>@Bean</literal> annotated
-      method being called twice:</para>
+    <para>다음 예제는 <literal>@Bean</literal> 어노테이션이 분은 메서드가 두번 
+      호출되는 것을 보여준다.</para>
 
     <programlisting language="java">
 @Configuration
@@ -874,33 +804,31 @@ public class AppConfig {
   }
 }
     </programlisting>
-    <para> <methodname>clientDao()</methodname> has been called once in
-      <methodname>clientService1()</methodname> and once in
-      <methodname>clientService2()</methodname>. Since this method creates a new
-      instance of <classname>ClientDaoImpl</classname> and returns it, you would
-      normally expect having 2 instances (one for each service). That definitely
-      would be problematic: in Spring, instantiated beans have a
-      <literal>singleton</literal> scope by default. This is where the magic
-      comes in: All <literal>@Configuration</literal> classes are subclassed at
-      startup-time with <literal>CGLIB</literal>. In the subclass, the child
-      method checks the container first for any cached (scoped) beans before it
-      calls the parent method and creates a new instance. </para>
+    <para> <methodname>clientDao()</methodname>는 <methodname>clientService1()</methodname>에서 
+      한번 <methodname>clientService2()</methodname>에서 한번 호출된다. 이 메서드가 
+      <classname>ClientDaoImpl</classname>의 새로운 인스턴스를 생성하고 리턴하기 때문에 
+      2개의 인스턴스를 (각 서비스마다 하나씩) 기대하는 것이 정상적이다. 이는 명확하게 문제의 
+      소지가 있다. 스프링에서 인스턴스화 된 빈들은 기본적으로 <literal>singleton</literal> 
+      범위를 가진다. 여기가 마법이 일어나는 곳이다. 모든 <literal>@Configuration</literal> 
+      클래스는 시작할 때(startup-time) <literal>CGLIB</literal>과 함께 서브클래스가 된다. 
+      서브클래스에서 자식 메서드는 부모 메서드를 호출하고 새로운 인스턴스를 생성하기 전에 캐싱된 
+      (범위를 가진) 빈이 컨터이너에 있는지 먼저 확인한다. </para>
     <note>
-      <para> The behavior could be different according to the scope of your
-        bean. We are talking about singletons here. </para>
+      <para> 이 동작은 빈의 범위에 따라 다를 수 있다. 여기서는 싱글톤에 대해서 얘기한 
+        것이다. </para>
     </note>
     <note>
-      <para> Beware that, in order for JavaConfig to work, you must include the
-        CGLIB jar in your list of dependencies. </para>
+      <para> JavaConfig가 동작하도록 하려면 의존성 리스트에 CGLIB jar를 반드시 포함시켜야 
+        한다는 것을 주의해라. </para>
     </note>
     <note>
-      <para> There are a few restrictions due to the fact that CGLIB dynamically
-        adds features at startup-time: <itemizedlist>
+      <para> CGLIB은 시작할 때 동적으로 기능을 추가하기 때문에 몇 가지 제약사항이 
+        있다.<itemizedlist>
         <listitem>
-          <para>Configuration classes should not be final</para>
+          <para>Configuration 클래스는 final이 될 수 없다.</para>
         </listitem>
         <listitem>
-          <para>They should have a constructor with no arguments</para>
+          <para>Configuration 클래스에는 아규먼트가 없는 생성자가 있어야 한다.</para>
         </listitem>
         </itemizedlist> </para>
     </note>
