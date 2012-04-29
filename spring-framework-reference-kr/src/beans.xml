@@ -834,11 +834,11 @@ List userList service.getUsernameList();
   <xi:include href="beans-java.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <section id="context-load-time-weaver">
-    <title>Registering a <interfacename>LoadTimeWeaver</interfacename></title>
+    <title><interfacename>LoadTimeWeaver</interfacename> 등록하기</title>
 
-    <para>The <literal>context</literal> namespace introduced in Spring 2.5
-      provides a <literal>load-time-weaver</literal>
-      element.<!--Need to explain purpose of LoadTimeWeaver? Is this section ok here? --></para>
+    <para>스프링 2.5에서 도입된 <literal>context</literal> 네임스페이스는 
+      <literal>load-time-weaver</literal> 요소를 
+      제공한다.<!--Need to explain purpose of LoadTimeWeaver? Is this section ok here? --></para>
 
     <programlisting language="xml">&lt;beans&gt;
 
@@ -846,17 +846,16 @@ List userList service.getUsernameList();
 
 &lt;/beans&gt;</programlisting>
 
-    <para>Adding this element to an XML-based Spring configuration file
-      activates a Spring <interfacename>LoadTimeWeaver</interfacename> for the
-      <interfacename>ApplicationContext</interfacename>. Any bean within that
-      <interfacename>ApplicationContext</interfacename> may implement
-      <interfacename>LoadTimeWeaverAware</interfacename>, thereby receiving a
-      reference to the load-time weaver instance. This is particularly useful in
-      combination with <link linkend="orm-jpa">Spring's JPA support</link> where
-      load-time weaving may be necessary for JPA class transformation. Consult
-      the <classname>LocalContainerEntityManagerFactoryBean</classname> Javadoc
-      for more detail. For more on AspectJ load-time weaving, see <xref
-      linkend="aop-aj-ltw"/>.</para>
+    <para>XML기반 스프링 설정파일에 이 요소를 추가하면 
+      <interfacename>ApplicationContext</interfacename>에 대한 스프링 
+      <interfacename>LoadTimeWeaver</interfacename>가 활성화된다. 해당 
+      <interfacename>ApplicationContext</interfacename>내의 어떤 빈도 
+      <interfacename>LoadTimeWeaverAware</interfacename>를 구현할 수 있기 때문에 로드타임 
+      위버(load-time weaver) 인스턴스에 대한 참조를 받는다. 이는 JPA 클래스 변환때문에 로드타임 
+      위빙이 필요한 <link linkend="orm-jpa">스프링의 JPA 지원</link>을 함께 사용할 때 특히 
+      유용하다. 더 자세한 내용은 <classname>LocalContainerEntityManagerFactoryBean</classname> 
+      Javadoc에 나와있다. AspectJ 로드타임 위빙에 대해서 더 알고 싶다면 
+      <xref linkend="aop-aj-ltw"/>를 봐라.</para>
   </section>
 
   <xi:include href="beans-context-additional.xml"
