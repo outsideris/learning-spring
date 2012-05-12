@@ -862,66 +862,60 @@ List userList service.getUsernameList();
     xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <section id="beans-beanfactory">
-    <title>The BeanFactory</title>
+    <title>BeanFactory</title>
 
-    <para>The <classname>BeanFactory</classname> provides the underlying basis
-      for Spring's IoC functionality but it is only used directly in integration
-      with other third-party frameworks and is now largely historical in nature
-      for most users of Spring. The <classname>BeanFactory</classname> and
-      related interfaces, such as <classname>BeanFactoryAware</classname>,
-      <classname>InitializingBean</classname>,
-      <classname>DisposableBean</classname>, are still present in Spring for the
-      purposes of backward compatibility with the large number of third-party
-      frameworks that integrate with Spring. Often third-party components that
-      can not use more modern equivalents such as <code>@PostConstruct</code> or
-      <code>@PreDestroy</code> in order to remain compatible with JDK 1.4 or to
-      avoid a dependency on JSR-250.</para>
+    <para><classname>BeanFactory</classname>는 스프링 IoC 기능의 근간을 이루는 원리를 
+      제공하지만 다른 서드파티 프레임워크와의 통합에서만 직접적으로 사용되고 대부분의 스프링 
+      유저들에게는 이제 전적으로 역사적인 것이다. <classname>BeanFactory</classname>와 
+      <classname>BeanFactoryAware</classname>, <classname>InitializingBean</classname>,
+      <classname>DisposableBean</classname>같은 관련 인터페이스들은 스프링과 통합된 많은 수의 
+      서드파티 프레임워크들과의 하위호환성 때문에 여전히 스프링에 존재한다. 종종 JDK 1.4 호환성을 
+      유지하거나 JSR-250에 대한 의존성을 없애기 위해 <code>@PostConstruct</code>나 
+      <code>@PreDestroy</code>같은 더 최신 기능을 사용할 수 없는 서드파티 컴포넌트들이 
+      있다.</para>
 
-    <para>This section provides additional background into the differences
-      between the <interfacename>BeanFactory</interfacename> and
-      <interfacename>ApplicationContext</interfacename> and how one might access
-      the IoC container directly through a classic singleton lookup.</para>
+    <para>이 섹션에서는 <interfacename>BeanFactory</interfacename>와
+      <interfacename>ApplicationContext</interfacename>의 차이점에 대한 추가적인 
+      배경을 설명하고 전형적인 싱글톤 검색으로 직접 IoC 컨테이너에 어떻게 접근하는 지를 
+      설명한다.</para>
 
     <section id="context-introduction-ctx-vs-beanfactory">
-      <title><interfacename>BeanFactory</interfacename> or
-        <interfacename>ApplicationContext</interfacename>?</title>
+      <title><interfacename>BeanFactory</interfacename>냐?
+        <interfacename>ApplicationContext</interfacename>냐?</title>
 
-      <para>Use an <interfacename>ApplicationContext</interfacename> unless you
-        have a good reason for not doing so.</para>
+      <para><interfacename>ApplicationContext</interfacename>을 사용하지 않을 좋은 
+        이유가 있는 것이 아니라면 <interfacename>ApplicationContext</interfacename>을 
+        사용해라.</para>
 
-      <para>Because the <interfacename>ApplicationContext</interfacename>
-        includes all functionality of the
-        <interfacename>BeanFactory</interfacename>, it is generally recommended
-        over the <interfacename>BeanFactory</interfacename>, except for a few
-        situations such as in an <classname>Applet</classname> where memory
-        consumption might be critical and a few extra kilobytes might make a
-        difference. However, for most typical enterprise applications and
-        systems, the <interfacename>ApplicationContext</interfacename> is what
-        you will want to use. Spring 2.0 and later makes
-        <emphasis>heavy</emphasis> use of the <link
-        linkend="beans-factory-extension-bpp"
-        ><interfacename>BeanPostProcessor</interfacename> extension point</link>
-        (to effect proxying and so on). If you use only a plain
-        <interfacename>BeanFactory</interfacename>, a fair amount of support
-        such as transactions and AOP will not take effect, at least not without
-        some extra steps on your part. This situation could be confusing because
-        nothing is actually wrong with the configuration.</para>
+      <para><interfacename>ApplicationContext</interfacename>가 
+        <interfacename>BeanFactory</interfacename>의 모든 기능을 포함하고 있기 때문에 
+        메모리 소비가 중대한 문제가 될 수 있거나 조금 많은 킬로바이트가 차이를 만들 수 있는 
+        <classname>Applet</classname>같은 몇가지 상황을 제외하고는 보통 
+        <interfacename>BeanFactory</interfacename>보다 
+        <interfacename>ApplicationContext</interfacename>를 더 권장한다. 하지만 대부분의 
+        전형적인 엔터프라이즈 어플리케이션과 시스템에서는 사용하려는 것이 바로 
+        <interfacename>ApplicationContext</interfacename>이다. 스프링 2.0이나 그 이상의 
+        버전에서는 <link linkend="beans-factory-extension-bpp"
+        ><interfacename>BeanPostProcessor</interfacename> 확장점</link>을 
+        <emphasis>많이</emphasis> 사용하게 된다.(프록싱하려는 등등) 평이한 
+        <interfacename>BeanFactory</interfacename>만 사용한다면 트랜잭션이나 AOP같은 꽤 
+        많은 지원을 사용할 수 없을 것이다. 최소한 개발자가 추가적인 어떤 작업을 해야한다. 이 
+        상황은 설정에는 실제로 잘못된 곳이 없기 때문에 혼란스러울 수 있다.</para>
 
-      <para>The following table lists features provided by the
-        <interfacename>BeanFactory</interfacename> and
-        <interfacename>ApplicationContext</interfacename> interfaces and
-        implementations.</para>
+      <para>다음 표는 <interfacename>BeanFactory</interfacename>와 
+        <interfacename>ApplicationContext</interfacename> 인터페이스와 구현체가 
+        제공하는 기능 목록이다.</para>
 
       <table id="context-introduction-ctx-vs-beanfactory-feature-matrix"
         pgwide="1">
-        <title>Feature Matrix</title>
+        <title>기능 매트릭스</title>
 
         <tgroup cols="3">
           <colspec align="left"/>
 
           <thead>
             <row>
-              <entry align="center">Feature</entry>
+              <entry align="center">기능</entry>
 
               <entry align="center"
                 ><interfacename>BeanFactory</interfacename></entry>
@@ -933,7 +927,7 @@ List userList service.getUsernameList();
 
           <tbody>
             <row>
-              <entry><para>Bean instantiation/wiring</para></entry>
+              <entry><para>빈 인스턴스화/연결</para></entry>
 
               <entry align="center"><para>Yes</para></entry>
 
@@ -941,9 +935,9 @@ List userList service.getUsernameList();
             </row>
 
             <row>
-              <entry><para>Automatic
+              <entry><para>자동 
                 <interfacename>BeanPostProcessor</interfacename>
-                registration</para></entry>
+                등록</para></entry>
 
               <entry align="center"><para>No</para></entry>
 
@@ -961,9 +955,9 @@ List userList service.getUsernameList();
             </row>
 
             <row>
-              <entry><para>Convenient
-                <interfacename>MessageSource</interfacename> access (for
-                i18n)</para></entry>
+              <entry><para>편리한
+                <interfacename>MessageSource</interfacename> 접근 (i18n에 
+                대한)</para></entry>
 
               <entry align="center"><para>No</para></entry>
 
@@ -972,7 +966,7 @@ List userList service.getUsernameList();
 
             <row>
               <entry><para><interfacename>ApplicationEvent</interfacename>
-                publication</para></entry>
+                발행</para></entry>
 
               <entry align="center"><para>No</para></entry>
 
@@ -982,81 +976,67 @@ List userList service.getUsernameList();
         </tgroup>
       </table>
 
-      <para>To explicitly register a bean post-processor with a
-        <interfacename>BeanFactory</interfacename> implementation, you must
-        write code like this:</para>
+      <para><interfacename>BeanFactory</interfacename> 구현체와 함께 빈 
+        후처리자(bean post-processor)를 명시적으로 등록하려면 다음과 같은 코드를 
+        반드시 작성해야 한다.</para>
 
       <programlisting language="java">ConfigurableBeanFactory factory = new XmlBeanFactory(...);
 
-<lineannotation>// now register any needed <interfacename>BeanPostProcessor</interfacename> instances</lineannotation>
+<lineannotation>// 필요한 <interfacename>BeanPostProcessor</interfacename> 인스턴스를 등록한다</lineannotation>
 MyBeanPostProcessor postProcessor = new MyBeanPostProcessor();
 factory.addBeanPostProcessor(postProcessor);
 
-<lineannotation>// now start using the factory</lineannotation></programlisting>
+<lineannotation>// 팩토리를 사용해서 시작한다</lineannotation></programlisting>
 
-      <para>To explicitly register a
-        <classname>BeanFactoryPostProcessor</classname> when using a
-        <interfacename>BeanFactory</interfacename> implementation, you must
-        write code like this:</para>
+      <para><interfacename>BeanFactory</interfacename>를 사용할 때 
+        <classname>BeanFactoryPostProcessor</classname>를 명시적으로 등록하려면 
+        다음과 같은 코드를 반드시 작성해야 한다.</para>
 
       <programlisting language="java">XmlBeanFactory factory = new XmlBeanFactory(new FileSystemResource("beans.xml"));
 
-<lineannotation>// bring in some property values from a <classname>Properties</classname> file</lineannotation>
+<lineannotation>// <classname>Properties</classname> 파일에서 몇몇 프로퍼티 값들을 가져온다</lineannotation>
 PropertyPlaceholderConfigurer cfg = new PropertyPlaceholderConfigurer();
 cfg.setLocation(new FileSystemResource("jdbc.properties"));
 
-<lineannotation>// now actually do the replacement</lineannotation>
+<lineannotation>// 이제 실제로 교체한다</lineannotation>
 cfg.postProcessBeanFactory(factory);</programlisting>
 
-      <para>In both cases, the explicit registration step is inconvenient, which
-        is one reason why the various
-        <interfacename>ApplicationContext</interfacename> implementations are
-        preferred above plain <interfacename>BeanFactory</interfacename>
-        implementations in the vast majority of Spring-backed applications,
-        especially when using <literal>BeanFactoryPostProcessors</literal> and
-        <classname>BeanPostProcessors</classname>. These mechanisms implement
-        important functionality such as property placeholder replacement and
-        AOP.</para>
+      <para>아주 대다수의 스프링을 사용하는 어플리케이션에서 다양한 
+        <interfacename>ApplicationContext</interfacename> 구현체들은 위의 평이한 
+        <interfacename>BeanFactory</interfacename> 구현체를 선호하기 때문에 두 경우의 
+        명시적인 등록과정은 편리하지 않다. 특히 <literal>BeanFactoryPostProcessors</literal>와 
+        <classname>BeanPostProcessors</classname>를 사용할 때 더욱 그렇다. 이러한 메카니즘은 
+        프로퍼티 플레이스홀더 교체와 AOP같은 중요한 기능을 구현한다.</para>
     </section>
 
     <section id="beans-servicelocator">
-      <title>Glue code and the evil singleton</title>
+      <title>딱 붙은 코드(Glue code)와 나쁜 싱글톤</title>
 
-      <para>It is best to write most application code in a dependency-injection
-        (DI) style, where that code is served out of a Spring IoC container, has
-        its own dependencies supplied by the container when it is created, and
-        is completely unaware of the container. However, for the small glue
-        layers of code that are sometimes needed to tie other code together, you
-        sometimes need a singleton (or quasi-singleton) style access to a Spring
-        IoC container. For example, third-party code may try to construct new
-        objects directly (<literal>Class.forName()</literal> style), without the
-        ability to get these objects out of a Spring IoC container.
-        <!--Can you reword the phrase singleton style access, above and next parragraph? Seems awkward.-->If
-        the object constructed by the third-party code is a small stub or proxy,
-        which then uses a singleton style access to a Spring IoC container to
-        get a real object to delegate to, then inversion of control has still
-        been achieved for the majority of the code (the object coming out of the
-        container). Thus most code is still unaware of the container or how it
-        is accessed, and remains decoupled from other code, with all ensuing
-        benefits. EJBs may also use this stub/proxy approach to delegate to a
-        plain Java implementation object, retrieved from a Spring IoC container.
-        While the Spring IoC container itself ideally does not have to be a
-        singleton, it may be unrealistic in terms of memory usage or
-        initialization times (when using beans in the Spring IoC container such
-        as a Hibernate <interfacename>SessionFactory</interfacename>) for each
-        bean to use its own, non-singleton Spring IoC container.</para>
+      <para>스프링 IoC 컨테이너가 서비스하는 코드와 생성될 때 컨테이너가 의존성을 제공하는 
+        코드, 컨테이너가 인지하지 못하는 코드는 의존성 주입(DI) 스타일로 대부분의 어플리케이션을 
+        작성하는 것이 가장 좋다. 하지만 때로는 다른 코드와 함께 묶을 필요가 있어서 코드의 딱 붙은 
+        작은 레이어에는 때로 스프링 IoC 컨테이너에 접근하는 싱글톤(또는 quasi-singleton) 스타일이 
+        필요하다. 예를 들어 서드파티 코드는 스프링 IoC 컨테이너에서 새로운 객체들을 얻는 능력없이 
+        직접 새로운 객체들을 생성하려고 할 수도 있다.(<literal>Class.forName()</literal> 스타일)
+        <!--Can you reword the phrase singleton style access, above and next parragraph? Seems awkward.-->서드파티 코드가 생성한 객체가 작은 스텁이나 프록시이면서 실제 객체를 얻는 것을 
+        위임하려고 스프링 IoC 컨테이너에 접근하는 싱글톤 스타일을 사용한다면 제어의 역전은 여전히 
+        대부분의 코드를 획득한다. 그러므로 대부분의 코드는 여전히 컨테이너를 알지 못하거나 어떻게 
+        접근해야 하는지 모르고 모든 이득을 보장한 채로 다른 코드와 커플링이 없다. EJB는 평이한 자바 
+        구현 객체에 위임하고, 스프링 IoC 컨테이서 획득하려고 이 스텁/프록시 접근을 사용할 것이다. 
+        스프링 IoC 컨테이너 자체는 이상적으로 싱글톤이 되지 않기 때문에 각 빈이 자신의 싱글톤이 
+        아닌 스프링 IoC 컨테이너를 사용하는 빈에서는 메모리 사용이나 초기화 시간 면에서 비현실적이 
+        될 수 있다. (하이버네이트 <interfacename>SessionFactory</interfacename>같은 스프링 
+        IoC 컨테이너의 빈을 사용할 때)</para>
 
-      <para>Looking up the application context in a service locator style is
-        sometimes the only option for accessing shared Spring-managed
-        components, such as in an EJB 2.1 environment, or when you want to share
-        a single ApplicationContext as a parent to WebApplicationContexts across
-        WAR files. In this case you should look into using the utility class
-        <ulink
-        url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/context/access/ContextSingletonBeanFactoryLocator.html"
-        ><classname>ContextSingletonBeanFactoryLocator</classname></ulink>
-        locator that is described in this <ulink
+      <para>EJB 2.1 환경에서나 WAR 파일을 넘어서 WebApplicationContexts에 부모로 단일 
+        ApplicationContext를 공유하고 싶을 때 서비스 로케이터 스타일로 어플리케이션 컨텍스트 
+        검색하는 것은 때로 공유된 스프링이 관리하는 컨포넌트에 접근하기 위한 유일한 선택사항이다. 
+        이 경우에 이 <ulink
         url="http://blog.springsource.com/2007/06/11/using-a-shared-parent-application-context-in-a-multi-war-spring-application/"
-        >SpringSource team blog entry</ulink>.</para>
+        >스프링 소스 팀블로그 글</ulink>에서 설명한 <ulink
+        url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/context/access/ContextSingletonBeanFactoryLocator.html"
+        ><classname>ContextSingletonBeanFactoryLocator</classname></ulink> 로케이터 
+        유틸리티 클래스를 사용해야 한다.</para>
     </section>
   </section>
 </chapter>
