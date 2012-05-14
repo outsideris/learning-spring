@@ -945,9 +945,9 @@ List userList service.getUsernameList();
             </row>
 
             <row>
-              <entry><para>Automatic
+              <entry><para>자동 
                 <interfacename>BeanFactoryPostProcessor</interfacename>
-                registration</para></entry>
+                등록</para></entry>
 
               <entry align="center"><para>No</para></entry>
 

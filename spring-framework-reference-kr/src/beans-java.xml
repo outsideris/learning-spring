@@ -199,7 +199,6 @@ public class AppConfig {
     <title>자바 기반으로 설정 구성하기</title>
 
     <section id="beans-java-using-import">
-      <title>Using the <literal>@Import</literal> annotation</title>
       <title><literal>@Import</literal> 어노테이션의 사용</title>
 
       <para>스프링 XML 파일에서 설정 모듈화에 <literal>&lt;import/&gt;</literal>요소를 
