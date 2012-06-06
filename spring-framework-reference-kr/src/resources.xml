@@ -633,10 +633,10 @@ ctx.getResource("/some/resource/path/myTemplate.txt");]]></programlisting>
       접두사를 사용해서 <classname>UrlResource</classname>의 사용을 
       강제해라.</para>
 
-      <programlisting language="java"><lineannotation>// actual context type doesn't matter, the <interfacename>Resource</interfacename> will always be <classname>UrlResource</classname></lineannotation><![CDATA[
+      <programlisting language="java"><lineannotation>// 실제 컨텍스트 타입과는 상관없이 <interfacename>Resource</interfacename>는 항상 <classname>UrlResource</classname>가 될 것이다</lineannotation><![CDATA[
 ctx.getResource("file:/some/resource/path/myTemplate.txt");]]></programlisting>
 
-      <programlisting language="java"><lineannotation>// force this FileSystemXmlApplicationContext to load its definition via a <classname>UrlResource</classname></lineannotation><![CDATA[
+      <programlisting language="java"><lineannotation>// <classname>UrlResource</classname>로 해당 정의를 로드하는데 이 FileSystemXmlApplicationContext를 사용하도록 강제한다</lineannotation><![CDATA[
 ApplicationContext ctx =
     new FileSystemXmlApplicationContext("file:/conf/context.xml");]]></programlisting>
     </section>
