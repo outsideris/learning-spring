@@ -3,32 +3,26 @@
  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <chapter id="resources">
-  <title>Resources</title>
+  <title>리소스</title>
 
   <section id="resources-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>Java's standard <classname>java.net.URL</classname> class and
-    standard handlers for various URL prefixes unfortunately are not quite
-    adequate enough for all access to low-level resources. For example,
-	there is no standardized <classname>URL</classname> implementation
-	that may be used to access a resource that needs to be obtained from
-	the classpath, or relative to a
-	<interfacename>ServletContext</interfacename>. While it is possible
-    to register new handlers for specialized <classname>URL</classname>
-	prefixes (similar to existing handlers for prefixes such as
-	<literal>http:</literal>), this is generally quite complicated, and the
-	<classname>URL</classname> interface still lacks some desirable
-    functionality, such as a method to check for the existence of the
-	resource being pointed to.</para>
+    <para>자바의 표준 <classname>java.net.URL</classname> 클래스와 다양한 URL 
+    접두어들에 대한 표준 핸들러는 안타깝게도 저수준 리소스에 모두 접근하기에는 전혀 충분하지 
+    않다. 예를 들면 클래스패스나 <interfacename>ServletContext</interfacename>에 상대경로에서 
+    얻어와야 하는 리소스에 접근하려고 사용할 표준화된 <classname>URL</classname> 구현체가 없다. 
+    전문화된 <classname>URL</classname> 접두사(<literal>http:</literal>같은 접두가에 
+    대한 핸들러가 존재하는 것처럼)에 대한 새로운 핸들러를 등록할 수 있기 때문에 이는 보통 꽤 
+    복잡하고 <classname>URL</classname> 인터페이스는 리소스의 존재여부를 확인하는 메서드같은 
+    몇가지 기대하는 기능이 여전히 부족하다.</para>
   </section>
 
   <section id="resources-resource">
-    <title>The <interfacename>Resource</interfacename> interface</title>
+    <title><interfacename>Resource</interfacename> 인터페이스</title>
 
-    <para>Spring's <interfacename>Resource</interfacename> interface is meant
-    to be a more capable interface for abstracting access to low-level
-    resources.</para>
+    <para>스프링의 <interfacename>Resource</interfacename> 인터페이스는 저수준 리소스 
+    접근을 추상화한 더 기능이 많은 인터페이스이다.</para>
 
     <programlisting language="java"><![CDATA[public interface Resource extends InputStreamSource {
 
@@ -52,262 +46,224 @@
     InputStream getInputStream() throws IOException;
 }]]></programlisting>
 
-    <para>Some of the most important methods from the
-    <interfacename>Resource</interfacename> interface are:</para>
+    <para>다음은 <interfacename>Resource</interfacename>인터페이스에서 
+    가장 중요한 메서드들이다.</para>
 
     <itemizedlist>
       <listitem>
-        <para><methodname>getInputStream()</methodname>: locates and opens the
-        resource, returning an <classname>InputStream</classname> for reading
-        from the resource. It is expected that each invocation returns a
-        fresh <classname>InputStream</classname>. It is the responsibility of
-        the caller to close the stream.</para>
+        <para><methodname>getInputStream()</methodname>: 리소스의 위치를 찾고 오픈한 
+        뒤 리소스를 읽기 위한 <classname>InputStream</classname>를 리턴한다. 호출할 
+        때마다 새로운 <classname>InputStream</classname>를 리턴한다. 스트림을 닫는 것은 
+        호출한 쪽에 책임이 있다.</para>
       </listitem>
 
       <listitem>
-        <para><methodname>exists()</methodname>: returns a
-        <literal>boolean</literal> indicating whether this resource actually
-        exists in physical form.</para>
+        <para><methodname>exists()</methodname>: 해당 리소스가 물리적인 형태로 실제 
+        존재하는지 나타내는 <literal>boolean</literal>을 리턴한다.</para>
       </listitem>
 
       <listitem>
-        <para><methodname>isOpen()</methodname>: returns a
-        <literal>boolean</literal> indicating whether this resource represents
-        a handle with an open stream. If <literal>true</literal>, the
-        <classname>InputStream</classname> cannot be read multiple times, and
-        must be read once only and then closed to avoid resource leaks. Will
-        be <literal>false</literal> for all usual resource implementations,
-        with the exception of
-        <classname>InputStreamResource</classname>.</para>
+        <para><methodname>isOpen()</methodname>: 해당 리소스가 오픈 스트림을 가진 
+        하나의 핸들을 나타내는 지를 가르키는 <literal>boolean</literal>을 리턴한다. 
+        이 값이 <literal>true</literal>이면 <classname>InputStream</classname>는 
+        여러번 읽을 수 없고 반드시 오직 한번만 읽은 뒤에 리소스 누출을 피하기 위해 닫아야 
+        한다. <classname>InputStreamResource</classname> 예외를 가진 모든 일반적인 
+        리소스 구현체에서는 <literal>false</literal>가 될 것이다.</para>
       </listitem>
 
       <listitem>
-        <para><methodname>getDescription()</methodname>: returns a description
-        for this resource, to be used for error output when working with the
-        resource. This is often the fully qualified file name or the actual
-        URL of the resource.</para>
+        <para><methodname>getDescription()</methodname>: 리소스로 작업할 때 오류 
+        출력에 사용할 해당 리소스에 대한 설명을 리턴합니다. 이는 때로 정규화된 파일명이나 
+        리소스의 실제 URL이다.</para>
       </listitem>
     </itemizedlist>
 
-    <para>Other methods allow you to obtain an actual
-    <classname>URL</classname> or <classname>File</classname> object
-    representing the resource (if the underlying implementation is compatible,
-    and supports that functionality).</para>
+    <para>다른 메서드들은 리소스를 나타내는 실제 <classname>URL</classname>나 
+    <classname>File</classname> 객체를 얻을 수 있게 한다.(기반을 이루는 구현체가 
+    호환성이 있고 해당 기능을 지원한다면)</para>
 
-    <para>The <interfacename>Resource</interfacename> abstraction is used
-    extensively in Spring itself, as an argument type in many method
-    signatures when a resource is needed. Other methods in some Spring APIs
-    (such as the constructors to various
-    <interfacename>ApplicationContext</interfacename> implementations), take a
-    <classname>String</classname> which in unadorned or simple form is used to
-    create a <interfacename>Resource</interfacename> appropriate to that
-    context implementation, or via special prefixes on the
-    <classname>String</classname> path, allow the caller to specify that a
-    specific <interfacename>Resource</interfacename> implementation must be
-    created and used.</para>
+    <para><interfacename>Resource</interfacename> 추상화는 리소스가 필요할 때 많은 메서드 
+    시그니처에서 아규먼트 타입으로 스프링내에서 광범위하게 사용된다. 몇몇 스프링 API의 다름 
+    메서드들은(다양한 <interfacename>ApplicationContext</interfacename> 구현체에 생성자같은) 
+    간소화되고 간단한 형식으로 해당 컨텍스트 구현체에 적절한 <interfacename>Resource</interfacename>를 
+    생성하는데 사용하거나 <classname>String</classname> 경로에서 특별한 접두사로 콜러(caller)가 
+    생성하고 사용해야 하는 특정 <interfacename>Resource</interfacename> 구현체를 지정하도록 
+    <classname>String</classname>을 받아들인다.</para>
 
-    <para>While the <interfacename>Resource</interfacename> interface is used
-    a lot with Spring and by Spring, it's actually very useful to use as a
-    general utility class by itself in your own code, for access to resources,
-    even when your code doesn't know or care about any other parts of Spring.
-    While this couples your code to Spring, it really only couples it to this
-    small set of utility classes, which are serving as a more capable
-    replacement for <classname>URL</classname>, and can be considered
-    equivalent to any other library you would use for this purpose.</para>
+    <para><interfacename>Resource</interfacename> 인터페이스는 스프링과 함께 또는 
+    스프링에서 많이 사용되기 때문에 심지어 코드가 알지 못하는 엑세스에 접근하거나 스프링의 
+    다른 부분에 관심이 있을 때 자신의 코드에서 단독으로 일반적인 유틸리티 클래스로써 사용하기에 
+    실제로 아주 유용하다. 이는 코드를 스프링에 커플링하지만 <classname>URL</classname>에 
+    대한 더 기능이 많은 대체제로 제공하는 이 작은 유틸리티 클래스 세트에만 실제로 커플링하고 
+    같은 목적으로 사용할 다른 어떤 라이브러리에 대한 동일한 역할로 생각할 수 있다.</para>
 
-    <para>It is important to note that the
-    <interfacename>Resource</interfacename> abstraction does not replace
-    functionality: it wraps it where possible. For example, a
-    <classname>UrlResource</classname> wraps a URL, and uses the wrapped
-    <classname>URL</classname> to do its work.</para>
+    <para><interfacename>Resource</interfacename> 추상화가 기능을 교체하지 않는다는 
+    것은 중요하다. 예를 들면 <classname>UrlResource</classname>는 URL을 감싸고 URL의 
+    작업을 하는데 감싸진 <classname>URL</classname>를 사용한다.</para>
   </section>
 
   <section id="resources-implementations">
-    <title>Built-in <interfacename>Resource</interfacename> implementations</title>
+    <title>내장된 <interfacename>Resource</interfacename> 구현체</title>
 
-    <para>There are a number of <interfacename>Resource</interfacename>
-    implementations that come supplied straight out of the box in
-    Spring:</para>
+    <para>스프링에서 혁신적으로 직접 제공하는 많은 수의 
+    <interfacename>Resource</interfacename> 구현체가 있다.</para>
 
     <section id="resources-implementations-urlresource">
       <title><classname>UrlResource</classname></title>
 
-      <para>The <classname>UrlResource</classname> wraps a
-      <classname>java.net.URL</classname>, and may be used to access any
-      object that is normally accessible via a URL, such as files, an HTTP
-      target, an FTP target, etc. All URLs have a standardized
-      <classname>String</classname> representation, such that appropriate
-      standardized prefixes are used to indicate one URL type from another.
-      This includes <literal>file:</literal> for accessing filesystem paths,
-      <literal>http:</literal> for accessing resources via the HTTP protocol,
-      <literal>ftp:</literal> for accessing resources via FTP, etc.</para>
+      <para><classname>UrlResource</classname>는 <classname>java.net.URL</classname>를 
+      감싸고 일반적으로 URL로 접근할 수 있는 파일, HTTP 대상, FTP 대상 등과 같은 객체에 접근하는데 
+      사용할 수 있다. 적절하게 표준화된 URL 접두사는 다른 타입에서 URL 타입을 가르키는데 사용는 것처럼 
+      모든 URL은 표준화된 <classname>String</classname>로 나타낸다. 이는 파일시스템 경로에 접근하는 
+      <literal>file:</literal>, HTTP 프로토콜로 리소스에 접근하는 <literal>http:</literal>, 
+      FTP로 리소스에 접근하는 <literal>ftp:</literal>등을 포함한다.</para>
 
-      <para>A <classname>UrlResource</classname> is created by Java code
-      explicitly using the <classname>UrlResource</classname> constructor, but
-      will often be created implicitly when you call an API method which takes
-      a <classname>String</classname> argument which is meant to represent a
-      path. For the latter case, a JavaBeans
-      <interfacename>PropertyEditor</interfacename> will ultimately decide
-      which type of <interfacename>Resource</interfacename> to create. If the
-      path string contains a few well-known (to it, that is) prefixes such as
-      <literal>classpath:</literal>, it will create an appropriate specialized
-      <interfacename>Resource</interfacename> for that prefix. However, if it
-      doesn't recognize the prefix, it will assume the this is just a standard
-      URL string, and will create a <classname>UrlResource</classname>.</para>
+      <para><classname>UrlResource</classname>는 자바 코드로 <classname>UrlResource</classname> 
+      생성자를 사용해서 명시적으로 생성하지만 때로는 경로를 나타내는 <classname>String</classname> 
+      아규먼트를 받아들이는 API 메서드를 호출했을 때 암묵적으로 생성될 것이다. 후자의 경우 JavaBeans 
+      <interfacename>PropertyEditor</interfacename>가 결국 어떤 타입의 
+      <interfacename>Resource</interfacename>를 생성할 것인지를 결정할 것이다. 경로 문자열에 
+      <literal>classpath:</literal>같은 어느정도 알려진 접두사가 있다면 해당 접두사에 적절한 
+      <interfacename>Resource</interfacename>를 생성할 것이다. 하지만 접두사를 인식하지 못한다면 
+      그냥 표준 URL 문자열이라고 가정하고 <classname>UrlResource</classname>을 생성할 
+      것이다.</para>
     </section>
 
     <section id="resources-implementations-classpathresource">
       <title><classname>ClassPathResource</classname></title>
 
-      <para>This class represents a resource which should be obtained from the
-      classpath. This uses either the thread context class loader, a given
-      class loader, or a given class for loading resources.</para>
+      <para>이 클래스는 클래스패스에서 얻어와야하는 리소스를 나타낸다. 이 클래스는 쓰레드 
+      컨텍스트 클래스 로더, 주어진 클래스로더, 클래스를 로딩하려주 주어진 클래스를 모두 
+      사용한다.</para>
 
-      <para>This <interfacename>Resource</interfacename> implementation
-      supports resolution as <classname>java.io.File</classname> if the class
-      path resource resides in the file system, but not for classpath
-      resources which reside in a jar and have not been expanded (by the
-      servlet engine, or whatever the environment is) to the filesystem. To
-      address this the various <interfacename>Resource</interfacename>
-      implementations always support resolution as a
-      <classname>java.net.URL</classname>.</para>
+      <para><interfacename>Resource</interfacename> 구현체는 클래스패스 리소스가 
+      파일시스템에 존재하면 <classname>java.io.File</classname>같은 해결책을 지원하지만 
+      jar에 존재하는 클래스패스 리소스는 지원하지 않고 파일시스템으로 확장하지도 않는다. 이를 
+      다양한 <interfacename>Resource</interfacename> 구현체에 배치시키려면 
+      <classname>java.net.URL</classname>같은 해결책을 항상 지원해야 한다.</para>
 
-      <para>A <classname>ClassPathResource</classname> is created by Java code
-      explicitly using the <classname>ClassPathResource</classname>
-      constructor, but will often be created implicitly when you call an API
-      method which takes a <classname>String</classname> argument which is
-      meant to represent a path. For the latter case, a JavaBeans
-      <interfacename>PropertyEditor</interfacename> will recognize the special
-      prefix <literal>classpath:</literal>on the string path, and create a
-      <classname>ClassPathResource</classname> in that case.</para>
+      <para><classname>ClassPathResource</classname>는 
+      <classname>ClassPathResource</classname> 생성자를 사용해서 자바코드로 명시적으로 
+      생성하지만 때로는 경로를 나타내는 <classname>String</classname> 아규먼트를 받아들이는 
+      API를 호출할 때 암묵적으로 생성될 것이다. 후자의 경우 JavaBeans 
+      <interfacename>PropertyEditor</interfacename>이 문자열 경로에서 특수한 
+      <literal>classpath:</literal> 접두사를 인식할 것이고 이 경우에 
+      <classname>ClassPathResource</classname>를 생성할 것이다.</para>
     </section>
 
     <section id="resources-implementations-filesystemresource">
       <title><classname>FileSystemResource</classname></title>
 
-      <para>This is a <interfacename>Resource</interfacename> implementation
-      for <classname>java.io.File</classname> handles. It obviously supports
-      resolution as a <classname>File</classname>, and as a
-      <classname>URL</classname>.</para>
+      <para>이는 <classname>java.io.File</classname> 핸들에 대한 
+      <interfacename>Resource</interfacename> 구현체이다. 명백하게 
+      <classname>File</classname>와 <classname>URL</classname>같은 해결책을 
+      지원한다.</para>
     </section>
 
     <section id="resources-implementations-servletcontextresource">
       <title><classname>ServletContextResource</classname></title>
 
-      <para>This is a <interfacename>Resource</interfacename> implementation
-      for <interfacename>ServletContext</interfacename> resources,
-      interpreting relative paths within the relevant web application's root
-      directory.</para>
+      <para>이는 관련된 웹 어플리케이션의 루트 경로내에서 상대 경로를 인터프리팅하는 
+      <interfacename>ServletContext</interfacename> 리소스에 대한 
+      <interfacename>Resource</interfacename> 구현체이다.</para>
 
-      <para>This always supports stream access and URL access, but only allows
-      <classname>java.io.File</classname> access when the web application
-      archive is expanded and the resource is physically on the filesystem.
-      Whether or not it's expanded and on the filesystem like this, or
-      accessed directly from the JAR or somewhere else like a DB (it's
-      conceivable) is actually dependent on the Servlet container.</para>
+      <para>이는 항상 스트림 접근과 URL 접근을 지원하지만 웹 어플리케이션 아카이브가 확장되었고 
+      리소스가 파일시스템에 물리적으로 있다면 <classname>java.io.File</classname> 접근만을 
+      허용한다. 이처럼 파일시스템에 있거나 확장되었거나 JAR나 DB같은 다른 곳에서(생각해 볼 수 
+      있는 곳이다.) 직접 접근했는가에 관계 없이 서블릿 컨테이너에 실제로 의존적이다.</para>
     </section>
 
     <section id="resources-implementations-inputstreamresource">
       <title><classname>InputStreamResource</classname></title>
 
-      <para>A <interfacename>Resource</interfacename> implementation for a
-      given <interfacename>InputStream</interfacename>. This should only be
-      used if no specific <interfacename>Resource</interfacename>
-      implementation is applicable. In particular, prefer
-      <classname>ByteArrayResource</classname> or any of the file-based
-      <interfacename>Resource</interfacename> implementations where
-      possible.</para>
+      <para>주어진 <interfacename>InputStream</interfacename>에 대한 
+      <interfacename>Resource</interfacename> 구현체이다. 이는 적용할 수 있는 특정 
+      <interfacename>Resource</interfacename> 구현체가 없을 때만 사용할 수 있다.특히 
+      <classname>ByteArrayResource</classname>나 파일 기잔의 어떤 
+      <interfacename>Resource</interfacename> 구현체가 가능한 곳에서 
+      더 선호한다.</para>
 
-      <para>In contrast to other <interfacename>Resource</interfacename>
-      implementations, this is a descriptor for an
-      <emphasis>already</emphasis> opened resource - therefore returning
-      <literal>true</literal> from <methodname>isOpen()</methodname>. Do not
-      use it if you need to keep the resource descriptor somewhere, or if you
-      need to read a stream multiple times.</para>
+      <para>다른 <interfacename>Resource</interfacename> 구현체와는 달리 이는 
+      <emphasis>이미</emphasis> 오픈된 리소스에 대한 디스크립터(descriptor)이다. 그러므로 
+      <methodname>isOpen()</methodname>는 <literal>true</literal>를 리턴한다. 리소스 
+      디스크립터를 어딘가에 유지할 필요가 있거나 스트림을 여러번 읽어야 할 때는 사용하지 
+      말아야 한다.</para>
     </section>
 
     <section id="resources-implementations-bytearrayresource">
       <title><classname>ByteArrayResource</classname></title>
 
-      <para>This is a <interfacename>Resource</interfacename> implementation
-      for a given byte array. It creates a
-      <classname>ByteArrayInputStream</classname> for the given byte
-      array.</para>
+      <para>주어진 바이트(byte) 배열에 대한 <interfacename>Resource</interfacename> 
+      구현체이다. 이는 주어진 바이트 배열에 대한 <classname>ByteArrayInputStream</classname>를 
+      생성한다.</para>
 
-      <para>It's useful for loading content from any given byte array, without
-      having to resort to a single-use
-      <classname>InputStreamResource</classname>.</para>
+      <para>일회용 <classname>InputStreamResource</classname>에 의지하지 않고 주어진 
+      바이트 배열에서 컨텐츠를 로딩하는데 유용하다.</para>
     </section>
   </section>
 
   <section id="resources-resourceloader">
-    <title>The <interfacename>ResourceLoader</interfacename></title>
+    <title><interfacename>ResourceLoader</interfacename></title>
 
-    <para>The <interfacename>ResourceLoader</interfacename> interface is meant
-    to be implemented by objects that can return (i.e. load)
-    <interfacename>Resource</interfacename> instances.</para>
+    <para><interfacename>ResourceLoader</interfacename> 인터페이스는 
+    <interfacename>Resource</interfacename> 인스턴스를 리턴(즉 로딩)할 수 있는 객체로 
+    구현된다는 것을 의미한다.</para>
 
     <programlisting language="java">public interface ResourceLoader {
     Resource getResource(String location);
 }</programlisting>
 
-    <para>All application contexts implement the
-    <interfacename>ResourceLoader</interfacename> interface, and therefore all
-    application contexts may be used to obtain
-    <interfacename>Resource</interfacename> instances.</para>
+    <para>모든 어플리케이션 컨텍스트는 <interfacename>ResourceLoader</interfacename> 
+    인터페이스를 구현하고 있으므로 <interfacename>Resource</interfacename> 인스턴스를 
+    획득하는데 모든 어플리케이션 컨텍스트를 사용할 수 있다.</para>
 
-    <para>When you call <methodname>getResource()</methodname> on a specific
-    application context, and the location path specified doesn't have a
-    specific prefix, you will get back a
-    <interfacename>Resource</interfacename> type that is appropriate to that
-    particular application context. For example, assume the following snippet
-    of code was executed against a
-    <classname>ClassPathXmlApplicationContext</classname> instance:</para>
+    <para>특정 어플리케이션 컨텍스트에서 <methodname>getResource()</methodname>를 호출하고 
+    지정된 위치경로가 특정 접두사를 가지지 않았을 때 특정 어플리케이션 컨텍스트에 적절한 
+    <interfacename>Resource</interfacename> 타입을 얻을 것이다. 예를 들어 
+    <classname>ClassPathXmlApplicationContext</classname> 인스턴스에 대해 실행하는 다음의 
+    코드가 있다고 해보자.</para>
 
     <programlisting language="java">Resource template = ctx.getResource("some/resource/path/myTemplate.txt");</programlisting>
 
-    <para>What would be returned would be a
-    <classname>ClassPathResource</classname>; if the same method was executed
-    against a <classname>FileSystemXmlApplicationContext</classname> instance,
-    you'd get back a <classname>FileSystemResource</classname>. For a
-    <classname>WebApplicationContext</classname>, you'd get back a
-    <classname>ServletContextResource</classname>, and so on.</para>
+    <para>리턴되는 것은 <classname>ClassPathResource</classname>가 될 것이다. 
+    <classname>FileSystemXmlApplicationContext</classname> 인스턴스에 대해서 같은 
+    메서드를 실행했다면 <classname>FileSystemResource</classname>를 얻을 것이다. 
+    <classname>WebApplicationContext</classname>에 대해서는 
+    <classname>ServletContextResource</classname>를 얻는 등이다.</para>
 
-    <para>As such, you can load resources in a fashion appropriate to the
-    particular application context.</para>
+    <para>이처럼 특정 어플리케이션 컨텍스트에 적절한 방법으로 리소스를 로드할 수 
+    있다.</para>
 
-    <para>On the other hand, you may also force
-    <classname>ClassPathResource</classname> to be used, regardless of the
-    application context type, by specifying the special
-    <literal>classpath:</literal> prefix:</para>
+    <para>반면에 <literal>classpath:</literal> 접두사를 지정함으로써 어플리케이션 
+    컨텍스트 타입에 관계없이 <classname>ClassPathResource</classname>를 사용하도록 
+    강제할 수도 있다.</para>
 
     <programlisting language="java">Resource template = ctx.getResource("classpath:some/resource/path/myTemplate.txt");</programlisting>
 
-    <para>Similarly, one can force a <classname>UrlResource</classname> to be
-    used by specifying any of the standard <classname>java.net.URL</classname>
-    prefixes:</para>
+    <para>비슷하게 표준 <classname>java.net.URL</classname> 접두사를 지정해서 
+    <classname>UrlResource</classname>를 사용하도록 강제할 수 있다.</para>
 
     <programlisting language="java">Resource template = ctx.getResource("file:/some/resource/path/myTemplate.txt");</programlisting>
 
     <programlisting language="java">Resource template = ctx.getResource("http://myhost.com/resource/path/myTemplate.txt");</programlisting>
 
-    <para>The following table summarizes the strategy for converting
-    <classname>String</classname>s to
-    <interfacename>Resource</interfacename>s:</para>
+    <para>다음 표에 <classname>String</classname>을 
+    <interfacename>Resource</interfacename>로 변환하는 전략을 
+    요약했다.</para>
 
     <table pgwide="1" id="resources-resource-strings">
-      <title>Resource strings</title>
+      <title>리소스 문자열</title>
 
       <tgroup cols="3">
         <colspec align="left" />
 
         <thead>
           <row>
-            <entry align="center">Prefix</entry>
+            <entry align="center">접두사</entry>
 
-            <entry align="center">Example</entry>
+            <entry align="center">예제</entry>
 
-            <entry align="center">Explanation</entry>
+            <entry align="center">설명</entry>
           </row>
         </thead>
 
@@ -318,7 +274,7 @@
             <entry><para> <literal>classpath:com/myapp/config.xml</literal>
             </para></entry>
 
-            <entry><para>Loaded from the classpath.</para></entry>
+            <entry><para>클래스패스에서 로드한다.</para></entry>
           </row>
 
           <row>
@@ -327,9 +283,8 @@
             <entry><para> <literal>file:/data/config.xml</literal>
             </para></entry>
 
-            <entry><para> Loaded as a <classname>URL</classname>, from the
-            filesystem. <footnote>
-                <para>But see also
+            <entry><para> 파일시스템에서 <classname>URL</classname>로 로드한다. <footnote>
+                <para>하지만 다음도 봐라.
                 <xref linkend="resources-filesystemresource-caveats" />.</para>
               </footnote> </para></entry>
           </row>
@@ -340,8 +295,8 @@
             <entry><para> <literal>http://myserver/logo.png</literal>
             </para></entry>
 
-            <entry><para>Loaded as a
-            <classname>URL</classname>.</para></entry>
+            <entry><para><classname>URL</classname>로 
+            로드한다..</para></entry>
           </row>
 
           <row>
@@ -349,8 +304,8 @@
 
             <entry><para> <literal>/data/config.xml</literal> </para></entry>
 
-            <entry><para> Depends on the underlying
-            <interfacename>ApplicationContext</interfacename>. </para></entry>
+            <entry><para> 기반하는 <interfacename>ApplicationContext</interfacename>에 
+            달려있다. </para></entry>
           </row>
         </tbody>
       </tgroup>
@@ -358,96 +313,79 @@
   </section>
 
   <section id="resources-resourceloaderaware">
-    <title>The <interfacename>ResourceLoaderAware</interfacename> interface</title>
+    <title><interfacename>ResourceLoaderAware</interfacename> 인터페이스</title>
 
-    <para>The <interfacename>ResourceLoaderAware</interfacename> interface is
-    a special marker interface, identifying objects that expect to be provided
-    with a <interfacename>ResourceLoader</interfacename> reference.</para>
+    <para><interfacename>ResourceLoaderAware</interfacename> 인터페이스는 
+    <interfacename>ResourceLoader</interfacename> 참조와 함께 제공되기를 기대하는 객체를 
+    식별하는 특별한 마커(marker) 인터페이스이다.</para>
 
     <programlisting language="java"><![CDATA[public interface ResourceLoaderAware {
 
    void setResourceLoader(ResourceLoader resourceLoader);
 }]]></programlisting>
 
-    <para>When a class implements
-    <interfacename>ResourceLoaderAware</interfacename> and is deployed into an
-    application context (as a Spring-managed bean), it is recognized as
-    <interfacename>ResourceLoaderAware</interfacename> by the application
-    context. The application context will then invoke the
-    <methodname>setResourceLoader(ResourceLoader)</methodname>, supplying
-    itself as the argument (remember, all application contexts in Spring
-    implement the <interfacename>ResourceLoader</interfacename>
-    interface).</para>
+    <para>클래스가 <interfacename>ResourceLoaderAware</interfacename>는 구현하고 
+    어플리케이션 컨텍스트에 배포했을 때(스프링이 관리하는 빈처럼) 어플리케이션 컨텍스트는 클래스를 
+    <interfacename>ResourceLoaderAware</interfacename>로 인식한다. 그 다음 어플리케이션 
+    컨텍스트는 자신을 아규먼트로 전달하면서 <methodname>setResourceLoader(ResourceLoader)</methodname>를 
+    호출할 것이다. (모든 스프링의 모든 어플리케이션 컨텍스트는 
+    <interfacename>ResourceLoader</interfacename> 인터페이스를 구현했다는 것을 
+    기억해라.)</para>
 
-    <para>Of course, since an
-    <interfacename>ApplicationContext</interfacename> is a
-    <interfacename>ResourceLoader</interfacename>, the bean could also
-    implement the <interfacename>ApplicationContextAware</interfacename>
-    interface and use the supplied application context directly to load
-    resources, but in general, it's better to use the specialized
-    <interfacename>ResourceLoader</interfacename> interface if that's all
-    that's needed. The code would just be coupled to the resource loading
-    interface, which can be considered a utility interface, and not the whole
-    Spring <interfacename>ApplicationContext</interfacename> interface.</para>
+    <para>물론 <interfacename>ApplicationContext</interfacename>가 
+    <interfacename>ResourceLoader</interfacename>이기 때문에 빈은 
+    <interfacename>ApplicationContextAware</interfacename>를 구현할 수도 있고 리소스를 
+    로드하려고 제공된 어플리케이션 컨텍스트를 직접 사용할 수도 있다. 하지만 리소스를 로드하려는 
+    목적이라면 전용 <interfacename>ResourceLoader</interfacename>를 사용하는 것이 더 낫다. 
+    코드는 전체 스프링 <interfacename>ApplicationContext</interfacename> 인터페이스가 아니라 
+    유틸리티 인터페이스로 고려될 수 있는 리소스 로딩 인터페이스에 그냥 커플링 될 것이다.</para>
 
-    <para>As of Spring 2.5, you can rely upon autowiring of the
-    <interfacename>ResourceLoader</interfacename> as an alternative to
-    implementing the <interfacename>ResourceLoaderAware</interfacename> interface.
-    The "traditional" <literal>constructor</literal> and <literal>byType</literal>
-    autowiring modes (as described in <xref linkend="beans-factory-autowire"/>)
-    are now capable of providing a dependency of type
-    <interfacename>ResourceLoader</interfacename> for either a
-    constructor argument or setter method parameter respectively. For more flexibility
-    (including the ability to autowire fields and multiple parameter methods), consider
-    using the new annotation-based autowiring features. In that case, the
-    <interfacename>ResourceLoader</interfacename> will be autowired into a field,
-    constructor argument, or method parameter that is expecting the
-    <interfacename>ResourceLoader</interfacename> type as long as the field,
-    constructor, or method in question carries the
-    <interfacename>@Autowired</interfacename> annotation. For more information,
-    see <xref linkend="beans-autowired-annotation"/>.</para>
+    <para>스프링 2.5에서 <interfacename>ResourceLoaderAware</interfacename> 인터페이스를 
+    구현하는 대신에 <interfacename>ResourceLoader</interfacename>의 자동연결에 의존할 수 있다. 
+    "전통적인" <literal>constructor</literal>와 <literal>byType</literal>의 자동연결 모드는 
+    (<xref linkend="beans-factory-autowire"/>에서 설명했듯이) 이제 생성자 아규먼트나 setter 
+    메서드 파라미터 각각에 대해서 <interfacename>ResourceLoader</interfacename> 타입의 의존성을 
+    제공하는 기능이 있다. 더 유연하게 하려면 (필드와 다중 파라미터 메서드를 자동연결하는 것을 포함해서) 
+    새로운 어노테이션 기반의 자동연결 기능의 사용을 고려해봐라. 이 경우에 
+    <interfacename>ResourceLoader</interfacename>는 필드나 생성자 메서드에 
+    <interfacename>@Autowired</interfacename> 어노테이션이 붙어있으면 
+    <interfacename>ResourceLoader</interfacename> 타입을 기대하는 필드나 생성자 아규먼트, 
+    메서드 파라미터에 자동연결 될 것이다. 더 자세한 내용은 
+    <xref linkend="beans-autowired-annotation"/>를 봐라.</para>
   </section>
 
   <section id="resources-as-dependencies">
-    <title><literal>Resources</literal> as dependencies</title>
+    <title>의존성으로써의 <literal>Resources</literal></title>
 
-    <para>If the bean itself is going to determine and supply the resource
-    path through some sort of dynamic process, it probably makes sense for the
-    bean to use the <interfacename>ResourceLoader</interfacename> interface to
-    load resources. Consider as an example the loading of a template of some
-    sort, where the specific resource that is needed depends on the role of
-    the user. If the resources are static, it makes sense to eliminate the use
-    of the <interfacename>ResourceLoader</interfacename> interface completely,
-    and just have the bean expose the <interfacename>Resource</interfacename>
-    properties it needs, and expect that they will be injected into it.</para>
+    <para>빈 자체가 어떤 동적인 과정을 통해 리소스 경로를 결정하고 제공할 것이라면 빈에 
+    리소스를 로드하는데 <interfacename>ResourceLoader</interfacename> 인터페이스를 
+    사용하는 것이 합리적일 것이다. 사용자의 역할(role)에 의존하는 특정 리소스가 있는 어떤 
+    템플릿을 로딩하는 예제를 생각해 보자. 리소스가 정적이라면 
+    <interfacename>ResourceLoader</interfacename> 인터페이스의 사용을 완전히 제거하고 
+    빈이 필요한 <interfacename>Resource</interfacename> 프로퍼티를 그냥 노출해서 주입되도록 
+    하는 것이 합리적이다.</para>
 
-    <para>What makes it trivial to then inject these properties, is that all
-    application contexts register and use a special JavaBeans
-    <interfacename>PropertyEditor</interfacename> which can convert
-    <classname>String</classname> paths to
-    <interfacename>Resource</interfacename> objects. So if
-    <literal>myBean</literal> has a template property of type
-    <interfacename>Resource</interfacename>, it can be configured with a
-    simple string for that resource, as follows:</para>
+    <para>이러한 프로퍼티 주입을 대수롭지 않게 만드는 것은 모든 어플리케이션 컨텍스트가 
+    <classname>String</classname> 경로를 <interfacename>Resource</interfacename> 
+    객체로 변환할 수 있는 특별한 자바빈 <interfacename>PropertyEditor</interfacename>를 
+    등록하고 사용하는 것이다. 그래서 <literal>myBean</literal>에 
+    <interfacename>Resource</interfacename> 타입의 템플릿 프로퍼티가 있다면 다음처럼 해당 
+    리소스에 대한 간단한 문자열로 설정할 수 있다.</para>
 	  
 	<programlisting language="xml"><![CDATA[<bean id="myBean" class="...">
   <property name="template" value="some/resource/path/myTemplate.txt"/>
 </bean>]]></programlisting>
 
-    <para>Note that the resource path has no prefix, so because the
-    application context itself is going to be used as the
-    <interfacename>ResourceLoader</interfacename>, the resource itself will be
-    loaded via a <classname>ClassPathResource</classname>,
-    <literal>FileSystemResource</literal>, or
-    <classname>ServletContextResource</classname> (as appropriate)
-    depending on the exact type of the context.</para>
+    <para>이 리소스 경로는 접두사가 없으므로 어플리케이션 컨텍스트 자체가 
+    <interfacename>ResourceLoader</interfacename>로 사용되기 때문에 리소스는 컨텍스트의 
+    정확한 타입에 의존하는 (적절한) <classname>ClassPathResource</classname>, 
+    <literal>FileSystemResource</literal>, 
+    <classname>ServletContextResource</classname>를 통해서 로드될 수 있다.</para>
 
-    <para>If there is a need to force a specific
-    <interfacename>Resource</interfacename> type to be used, then a prefix may
-    be used. The following two examples show how to force a
-    <classname>ClassPathResource</classname> and a
-    <classname>UrlResource</classname> (the latter being used to access a
-    filesystem file).</para>
+    <para>특정 <interfacename>Resource</interfacename> 타입을 사용하도록 강제해야 
+    한다면 접두사를 사용할 수 있다. 다음 두 예제는 어떻게 <classname>ClassPathResource</classname>와 
+    <classname>UrlResource</classname>를(후자는 파일시스템의 파일에 접근하는데 사용한다.) 
+    강제할 수 있는지 보여준다.</para>
 
     <programlisting language="xml"><![CDATA[<property name="template" value="classpath:some/resource/path/myTemplate.txt">]]></programlisting>
 
@@ -455,63 +393,56 @@
   </section>
 
   <section id="resources-app-ctx">
-    <title>Application contexts and <interfacename>Resource</interfacename> paths</title>
+    <title>어플리케이션 컨텍스트와 <interfacename>Resource</interfacename> 경로</title>
 
     <section id="resources-app-ctx-construction">
-      <title>Constructing application contexts</title>
+      <title>어플리케이션 컨텍스트 생성</title>
 
-      <para>An application context constructor (for a specific application
-      context type) generally takes a string or array of strings as the
-      location path(s) of the resource(s) such as XML files that make up the
-      definition of the context.</para>
+      <para>(특정 어플리케이션 컨텍스트 타입에 대한) 어플리케이션 컨텍스트 생성자는 보통 
+      컨텍스트의 정의를 구성하는 XML 파일같은 리소스의 위치 경로로 문자열이나 문자열의 
+      배열을 받는다.</para>
 
-      <para>When such a location path doesn't have a prefix, the specific
-      <interfacename>Resource</interfacename> type built from that path and
-      used to load the bean definitions, depends on and is appropriate to the
-      specific application context. For example, if you create a
-      <classname>ClassPathXmlApplicationContext</classname> as follows:</para>
+      <para>이러한 위치 경로에 접두사가 없을 때 특정 
+      <interfacename>Resource</interfacename> 타입은 해당 경로에서 만들어지고 특정 어플리케이션 
+      컨텍스트에 의존적이고 적절한 빈 정의를 로드하는데 사용한다. 예를 들어 다음처럼 
+      <classname>ClassPathXmlApplicationContext</classname>를 생성한다면</para>
 
       <programlisting language="java"><![CDATA[ApplicationContext ctx = new ClassPathXmlApplicationContext("conf/appContext.xml");]]></programlisting>
 
-      <para>The bean definitions will be loaded from the classpath, as a
-      <classname></classname><classname>ClassPathResource</classname> will be
-      used. But if you create a
-      <classname>FileSystemXmlApplicationContext</classname> as
-      follows:</para>
+      <para>빈 정의는 <classname></classname><classname>ClassPathResource</classname>처럼 
+      사용될 클래스패스에서 로드될 것이다. 하지만 
+      <classname>FileSystemXmlApplicationContext</classname>를 생성한다면</para>
 
       <programlisting language="java"><![CDATA[ApplicationContext ctx =
     new FileSystemXmlApplicationContext("conf/appContext.xml");]]></programlisting>
 
-      <para>The bean definition will be loaded from a filesystem location, in
-      this case relative to the current working directory.</para>
+      <para>빈 정의는 이 경우에 현재 워킹디렉토리에서 상대적인 파일시스템 위치에서 
+      로드될 것이다.</para>
 
-      <para>Note that the use of the special classpath prefix or a standard
-      URL prefix on the location path will override the default type of
-      <interfacename>Resource</interfacename> created to load the definition.
-      So this <classname>FileSystemXmlApplicationContext</classname>...</para>
+      <para>위치경로에 특별한 클래스패스 접두사나 표준 URL 접두사를 사용하면 정의를 로드하려고 
+      생성한 <interfacename>Resource</interfacename>의 기본 타입을 오버라이드할 것이다. 그래서 
+      이 <classname>FileSystemXmlApplicationContext</classname>...</para>
 
       <programlisting language="java"><![CDATA[ApplicationContext ctx =
     new FileSystemXmlApplicationContext("classpath:conf/appContext.xml");]]></programlisting>
 
-      <para>... will actually load its bean definitions from the classpath.
-      However, it is still a <classname>FileSystemXmlApplicationContext</classname>. If it is
-      subsequently used as a <interfacename>ResourceLoader</interfacename>,
-      any unprefixed paths will still be treated as filesystem paths.</para>
+      <para>... 클래스패스에서 해당 빈 정의를 실제로 로드할 것이다. 하지만 이는 여전히 
+      <classname>FileSystemXmlApplicationContext</classname>이다. 이어서 
+      <interfacename>ResourceLoader</interfacename>를 사용한다면 접두사가 없는 어떤 
+      경로도 여전히 파일시스템 경로로 다룰 것이다.</para>
 
       <section id="resources-app-ctx-classpathxml">
-        <title>Constructing <classname>ClassPathXmlApplicationContext</classname> instances - shortcuts</title>
+        <title><classname>ClassPathXmlApplicationContext</classname> 인스턴스 생성하기 - 단축키(shortcuts)</title>
 
-        <para>The <classname>ClassPathXmlApplicationContext</classname>
-        exposes a number of constructors to enable convenient instantiation.
-        The basic idea is that one supplies merely a string array containing
-        just the filenames of the XML files themselves (without the leading
-        path information), and one <emphasis>also</emphasis> supplies a
-        <classname>Class</classname>; the
-        <classname>ClassPathXmlApplicationContext</classname> will derive the
-        path information from the supplied class.</para>
+        <para><classname>ClassPathXmlApplicationContext</classname>는 편리한 
+        인스턴스화를 할 수 있도록 다수의 생성자를 노출한다. 기본 아이디어는 하나만 XML 파일 
+        자체의 파일명을(경로 정보없이) 담고 있는 문자열 배열을 제공하고 
+        <classname>Class</classname>도 <emphasis>또한</emphasis> 제공한다. 
+        <classname>ClassPathXmlApplicationContext</classname>는 제공된 클래스에서 
+        경로 정보를 얻을 것이다.</para>
 
-        <para>An example will hopefully make this clear. Consider a directory
-        layout that looks like this:</para>
+        <para>예제가 이를 명확하게 해줄 것이다. 다음과 같은 디렉토리 레이아웃을 
+        생각해 보자.</para>
 
         <programlisting><![CDATA[com/
   foo/
@@ -519,195 +450,166 @@
     daos.xml
     MessengerService.class]]></programlisting>
 
-        <para>A <classname>ClassPathXmlApplicationContext</classname> instance
-        composed of the beans defined in the <literal>'services.xml'</literal>
-        and <literal>'daos.xml'</literal> could be instantiated like
-        so...</para>
+        <para><classname>ClassPathXmlApplicationContext</classname> 인스턴스는 다음처럼 
+        인스턴스화될 수 있는 <literal>'services.xml'</literal>와 
+        <literal>'daos.xml'</literal>에 정의된 빈들로 구성되어 있다.</para>
 
         <programlisting language="java"><![CDATA[ApplicationContext ctx = new ClassPathXmlApplicationContext(
     new String[] {"services.xml", "daos.xml"}, MessengerService.class);]]></programlisting>
 
-        <para>Please do consult the Javadocs for the
-        <classname>ClassPathXmlApplicationContext</classname> class for
-        details of the various constructors.</para>
+        <para>다양한 생성자에 대한 자세한 내용은 
+        <classname>ClassPathXmlApplicationContext</classname> 클래스의 Javadoc을 
+        참고해라.</para>
       </section>
     </section>
 
     <section id="resources-app-ctx-wildcards-in-resource-paths">
-      <title>Wildcards in application context constructor resource paths</title>
+      <title>어플리케이션 컨텍스트 생성자 리소스 경로에 와일드카드 사용하기</title>
 
-      <para>The resource paths in application context constructor values may
-      be a simple path (as shown above) which has a one-to-one mapping to a
-      target Resource, or alternately may contain the special "classpath*:"
-      prefix and/or internal Ant-style regular expressions (matched using
-      Spring's <classname>PathMatcher</classname> utility). Both of the latter
-      are effectively wildcards</para>
+      <para>어플리케이션 컨텍스트 생성자 값의 리소스 경로들은 (위에서 본 것처럼) 타겟 리소스에 
+      일대일로 매핑되는 간단한 경로일 수도 있지만 "classpath*:"같은 접두사나 내부적으로 Ant 스타일의 
+      정규표현식(스프링의 <classname>PathMatcher</classname> 유틸리티의 사용과 일치하는)을 포함할 
+      수도 있다. 후자의 두 경우는 사실상 와일드카드이다.</para>
 
-      <para>One use for this mechanism is when doing component-style
-      application assembly. All components can 'publish' context definition
-      fragments to a well-known location path, and when the final application
-      context is created using the same path prefixed via
-      <literal>classpath*:</literal>, all component fragments will be picked
-      up automatically.</para>
+      <para>어플리케이션은 컴포넌트 스타일로 조립하는 것이 이 메카니즘의 한가지 용도이다. 모든 
+      컴포넌트들을 알고 있는 위치경로로 켄텍스트 정의 조각을 배포할 수 있고 
+      <literal>classpath*:</literal>로 접두사가 붙은 같은 경로를 사용해서 최종 어플리케이션 
+      컨텍스트를 생성할 때 모든 컴포넌트 조각들을 자동으로 선택할 것이다.</para>
 
-      <para>Note that this wildcarding is specific to use of resource paths in
-      application context constructors (or when using the
-      <classname>PathMatcher</classname> utility class hierarchy directly),
-      and is resolved at construction time. It has nothing to do with the
-      <interfacename>Resource</interfacename> type itself. It's not possible
-      to use the <literal>classpath*:</literal> prefix to construct an actual
-      <interfacename>Resource</interfacename>, as a resource points to just
-      one resource at a time.</para>
+      <para>이 와일드카드는 어플리케이션 컨텍스트 생성자(또는 <classname>PathMatcher</classname> 
+      유틸리티 클래스 계층을 직접 사용할 때)의 리소스 경로의 사용을 지정하고 생성시에 처리한다. 
+      이는 <interfacename>Resource</interfacename> 타입 자체는 아무것도 하는 것이 없다. 
+      리소스가 단순히 한번에 하나의 리소스만 가르키는 것처럼 실체 
+      <interfacename>Resource</interfacename>를 생성하는 <literal>classpath*:</literal> 
+      접두사를 사용하는 것은 불가능하다.</para>
 
       <section id="resources-app-ctx-ant-patterns-in-paths">
-        <title>Ant-style Patterns</title>
+        <title>Ant 스타일의 패턴</title>
 
-        <para>When the path location contains an Ant-style pattern, for example:</para>
+        <para>예를 들어 다음처럼 위치 경로가 Ant 스타일 패턴을 포함하고 있을 때</para>
 
         <programlisting><![CDATA[     /WEB-INF/*-context.xml
      com/mycompany/**/applicationContext.xml
      file:C:/some/path/*-context.xml
      classpath:com/mycompany/**/applicationContext.xml]]></programlisting>
 
-        <para>... the resolver follows a more complex but defined procedure to
-        try to resolve the wildcard. It produces a Resource for the path up to
-        the last non-wildcard segment and obtains a URL from it. If this URL
-        is not a "jar:" URL or container-specific variant (e.g.
-        "<literal>zip:</literal>" in WebLogic, "<literal>wsjar</literal>" in
-        WebSphere, etc.), then a <classname>java.io.File</classname> is
-        obtained from it and used to resolve the wildcard by traversing the
-        filesystem. In the case of a jar URL, the resolver either gets a
-        <classname>java.net.JarURLConnection</classname> from it or manually
-        parses the jar URL and then traverses the contents of the jar file
-        to resolve the wildcards.</para>
+        <para>... 리졸버는 복잡하지만 와일드카드를 처리하려고 정의되어 있는 정차를 따른다. 
+        리졸버는 마지막의 와일드카드가 아닌 부분의 경로로 Resource를 생성하고 그로부터 URL을 
+        획득한다. 이 URL이 "jar:" URL이나 컨테이너가 지정한 변형(예를 들어 WebLogic의 
+        "<literal>zip:</literal>"나 WebSphere의 "<literal>wsjar</literal>" 등)이 
+        아니라면 <classname>java.io.File</classname>를 URL에서 획득하고 파일시스템을 
+        탐색해서 와일드차드를 처리한다. jar URL일 경우에 리졸버는 URL에서 
+        <classname>java.net.JarURLConnection</classname>를 얻거나 와일드카드를 처리하기 
+        위해 수동으로 jar URL을 파싱해서 jar파일의 내용을 탐색한다.</para>
 
         <section id="resources-app-ctx-portability">
-          <title>Implications on portability</title>
+          <title>이식성의 영향(Implications on portability)</title>
 
-          <para>If the specified path is already a file URL (either
-          explicitly, or implicitly because the base
-		  <interfacename>ResourceLoader</interfacename> is a
-          filesystem one, then wildcarding is guaranteed to work in a
-          completely portable fashion.</para>
+          <para>지정된 경로가 이미 파일 URL이라면(명시적이든 암묵적이든) 기반 
+          <interfacename>ResourceLoader</interfacename>가 파일시스템이기 때문에 
+          와일드카드가 이식성에서도 완전히 동작한다는 것을 보장한다.</para>
 
-          <para>If the specified path is a classpath location, then the
-          resolver must obtain the last non-wildcard path segment URL via a
-          <methodname>Classloader.getResource()</methodname> call. Since this
-          is just a node of the path (not the file at the end) it is actually
-          undefined (in the <classname>ClassLoader</classname> Javadocs)
-          exactly what sort of a URL is returned in this case. In practice, it
-          is always a <classname>java.io.File</classname> representing the
-          directory, where the classpath resource resolves to a filesystem
-          location, or a jar URL of some sort, where the classpath resource
-          resolves to a jar location. Still, there is a portability concern on
-          this operation.</para>
+          <para>지정한 경로가 클래스패스라면 리졸버는 
+          <methodname>Classloader.getResource()</methodname> 호출을 통해서 와일드카드가 
+          아닌 마지막 경로 부분을 반드시 획득해야 한다. 이는 단순히 경로의 한 부분(결국 파일은 
+          아니다)이므로 사실상 정의되지 않았고(<classname>ClassLoader</classname> Javadoc에서) 
+          이 경우에 정확한 URL의 종류가 리턴된다. 실제로 이는 항상 클래스패스 리소스를 파일시스템 
+          위치로 처리하는 디렉토리나 jar 위치로 처리하는 jar URL을 나타내는 
+          <classname>java.io.File</classname>이다. 여전히 이 작업에서 이식성 
+          이슈가 있다.</para>
 
-          <para>If a jar URL is obtained for the last non-wildcard segment,
-          the resolver must be able to get a
-          <classname>java.net.JarURLConnection</classname> from it, or
-          manually parse the jar URL, to be able to walk the contents of the
-          jar, and resolve the wildcard. This will work in most environments,
-          but will fail in others, and it is strongly recommended that the
-          wildcard resolution of resources coming from jars be thoroughly
-          tested in your specific environment before you rely on it.</para>
+          <para>와일드카드가 아닌 마지막 부분으로 획득한 jar URL을 획득했다면 리졸버는 
+          URL에서 <classname>java.net.JarURLConnection</classname>를 얻거나 jar의 
+          컨텐츠를 탐색할 수 있도록 jar URL을 수동으로 파싱해서 와일드카드를 처리할 수 
+          있어야 한다. 이는 대부분의 환경에서 동작할 것이지만 몇몇 환경에서는 실패할 것이다. 
+          jar 리소스의 와일드카드 처리는 사용하기 전에 의존환경에 대한 완전히 테스트해 볼 
+          것을 강력히 추천한다.</para>
         </section>
       </section>
 
       <section id="resources-classpath-wildcards">
-        <title>The <literal>classpath*:</literal> prefix</title>
+        <title><literal>classpath*:</literal> 접두사</title>
 
-        <para>When constructing an XML-based application context, a location
-        string may use the special <literal>classpath*:</literal>
-        prefix:</para>
+        <para>XML 기반의 어플리케이션 컨텍스트를 생성할 때 위치 문자열은 특수한 
+        <literal>classpath*:</literal> 접두사를 사용할 것이다.</para>
 
         <programlisting language="java"><![CDATA[ApplicationContext ctx =
     new ClassPathXmlApplicationContext("classpath*:conf/appContext.xml");]]></programlisting>
 
-        <para>This special prefix specifies that all classpath resources that
-        match the given name must be obtained (internally, this essentially
-        happens via a <methodname>ClassLoader.getResources(...)</methodname>
-        call), and then merged to form the final application context
-        definition.</para>
+        <para>이 특수한 접두사는 주어진 이름과 일치하는 모든 클래스패스 리소스들이 획득되어야 
+        한다는 것을 가르키고 (내부적으로는 <methodname>ClassLoader.getResources(...)</methodname> 
+        호출을 통해서 이뤄진다.) 최종 어플리케이션 컨텍스트 정의의 형식으로 합쳐진다.</para>
 
         <note>
-          <title>Classpath*: portability</title>
+          <title>Classpath*: 이식성</title>
 
-          <para>The wildcard classpath relies on the <literal>getResources()</literal> method of the
-          underlying classloader. As most application servers nowadays supply
-          their own classloader implementation, the behavior might differ
-          especially when dealing with jar files. A simple test to check if
-          <literal>classpath*</literal> works is to use the classloader to load a file from
-          within a jar on the classpath:
-          <literal>getClass().getClassLoader().getResources("&lt;someFileInsideTheJar&gt;")</literal>.
-          Try this test with files that have the same name but are placed
-          inside two different locations. In case an inappropriate result is
-          returned, check the application server documentation for settings
-          that might affect the classloader behavior.</para>
+          <para>와일드카드 클래스패스는 의존하는 클래스로더의 <literal>getResources()</literal> 
+          메서드에 기반한다. 최근의 어플리케이션 서버 대부분은 자신만의 클래스로더 구현체를 제공하므로 
+          이 동작은 jar파일을 다룰 때 특히 다를 것이다. <literal>classpath*</literal>가 동작하는 
+          지 확인하기 위한 간단한 테스트는 클래스패스의 jar 내에서 파일을 로드하도록 클래스로더를 사용하는 
+          것이다: 
+          <literal>getClass().getClassLoader().getResources("&lt;someFileInsideTheJar&gt;")</literal>
+          이 테스트를 이름은 갖지만 다른 두가지 위치에 있는 파일로 시험해봐라. 적절하지 않은 결과가 
+          나온 경우에 클래스로더의 동작을 조정할 수 있는 세팅과 관련해서 어플리케이션 서버의 문서를 
+          확인해라.</para>
         </note>
 
-        <para>The "<literal>classpath*:</literal>" prefix can also be combined
-        with a <literal>PathMatcher</literal> pattern in the rest of the location path, for
-        example "<literal>classpath*:META-INF/*-beans.xml</literal>". In this
-        case, the resolution strategy is fairly simple: a
-        ClassLoader.getResources() call is used on the last non-wildcard path
-        segment to get all the matching resources in the class loader
-        hierarchy, and then off each resource the same PathMatcher resoltion
-        strategy described above is used for the wildcard subpath.</para>
+        <para>"<literal>classpath*:</literal>" 접두사는 위치 경로의 다른 부분에서 
+        <literal>PathMatcher</literal> 패턴과 조합할 수도 있다. 예를 들면 
+        "<literal>classpath*:META-INF/*-beans.xml</literal>"처럼 사용할 수 있다. 
+        이 경우에 처리 전략은 아주 간단하다. ClassLoader.getResources() 호출은 클래스 로더 
+        계층에서 일치하는 모든 리소스들을 얻기 위해 마지막 와일드카드가 아닌 경로 부분을 사용하고 
+        각 리소스를 빼와서 위에서 설명한 같은 PathMatcher 처리 전략을 와일드카드 하위경로에 
+        사용한다.</para>
       </section>
 
       <section id="resources-wildcards-in-path-other-stuff">
-        <title>Other notes relating to wildcards</title>
+        <title>와일드 카드와 관련된 추가적인 내용</title>
 
-        <para>Please note that "<literal>classpath*:</literal>" when
-        combined with Ant-style patterns will only work reliably with at least
-        one root directory before the pattern starts, unless the actual target
-        files reside in the file system. This means that a pattern like
-        "<literal>classpath*:*.xml</literal>" will not retrieve files from the
-        root of jar files but rather only from the root of expanded
-        directories. This originates from a limitation in the JDK's
-        <methodname>ClassLoader.getResources()</methodname> method which only
-        returns file system locations for a passed-in empty string (indicating
-        potential roots to search).</para>
+        <para>"<literal>classpath*:</literal>"를 Ant 스타일 패턴과 조합해서 사용할 때는 
+        실제 타겟 파일이 파일시스템에 존재하는냐와 상관없이 패턴이 시작하기 전에 최소한 하나의 
+        루트 디렉토리가에서만 확실하게 동작할 것이다. 이 말은 "<literal>classpath*:*.xml</literal>" 
+        같은 패턴은 jar 파일의 루트에서 파일을 획득하는 것이 아니라 확장된 디렉토리의 루트에서 
+        획득한다는 의미이다. 이는 (검색할 잠재적인 루트를 가르키는) 전달된 빈 문자열에 대해서 파일 
+        시스템 위치만 리턴하는 JDK의 <methodname>ClassLoader.getResources()</methodname> 
+        메서드의 제한에서 비롯된 것이다.</para>
 
-		<para>Ant-style patterns with "<literal>classpath:</literal>"
-		resources are not guaranteed to find matching resources if the root
-		package to search is available in multiple class path locations. This
-		is because a resource such as</para>
+    <para>"<literal>classpath:</literal>"를 가진 Ant 스타일 패턴의 리소스는 검색할 
+    루트 팩키지가 여러 클래스 경로에서 있을 경우 일치하는 리소스를 찾는다는 보장을 하지 않는다. 
+    이는 다음과 같은 리소스 때문이다.</para>
 
         <programlisting><![CDATA[    com/mycompany/package1/service-context.xml]]></programlisting>
 
-        <para>may be in only one location, but when a path such as</para>
+        <para>딱 한 위치에만 있을 것이지만 경로가 다음과 같은 경우</para>
 
         <programlisting><![CDATA[    classpath:com/mycompany/**/service-context.xml]]></programlisting>
         
-        <para>is used to try to resolve it, the resolver will work off the (first) URL
-        returned by <methodname>getResource("com/mycompany")</methodname>;. If
-        this base package node exists in multiple classloader locations, the
-        actual end resource may not be underneath. Therefore, preferably, use
-        "<literal>classpath*:</literal>" with the same Ant-style pattern in
-        such a case, which will search all class path locations that contain
-        the root package.</para>
+        <para>경로를 처리하려고 시도하면 리졸버는 
+        <methodname>getResource("com/mycompany")</methodname>가 리턴한 URL을 (먼저) 없앨 
+        것이다. 이 기반 패키지 노드가 여러 클래스로더 위치에 존재한다면 실제 최종 리소스는 최하단에 
+        존재하지 않을 수 있다. 그러므로 이러한 경우에는 차라리 루트 패키지를 포함하는 모든 클래스 
+        경로를 검색하도록 같은 Ant 스타일 패턴과 "<literal>classpath*:</literal>"를 
+        사용해라.</para>
       </section>
     </section>
 
     <section id="resources-filesystemresource-caveats">
-      <title><classname>FileSystemResource</classname> caveats</title>
+      <title><classname>FileSystemResource</classname>의 주의사항</title>
 
-      <para>A <classname>FileSystemResource</classname> that is not attached
-      to a <classname>FileSystemApplicationContext</classname> (that is, a
-      <classname>FileSystemApplicationContext</classname> is not the actual
-      <interfacename>ResourceLoader</interfacename>) will treat absolute vs.
-      relative paths as you would expect. Relative paths are relative to the
-      current working directory, while absolute paths are relative to the root
-      of the filesystem.</para>
+      <para><classname>FileSystemApplicationContext</classname>에 소속되지 않은 
+      <classname>FileSystemResource</classname>(즉 
+      <classname>FileSystemApplicationContext</classname>는 실제 
+      <interfacename>ResourceLoader</interfacename>가 아니다.)는 기대한 것처럼 절대경로 
+      대 상대경로로 다룰 것이다. 상대 경로는 현재 워킹디렉토리의 상대경로이고 절대경로는 
+      파일시스템의 루트의 상대적인 경로이다.</para>
 
-      <para>For backwards compatibility (historical) reasons however, this
-      changes when the <classname>FileSystemApplicationContext</classname> is
-      the <literal>ResourceLoader</literal>. The
-      <classname>FileSystemApplicationContext</classname> simply forces all
-      attached <classname>FileSystemResource</classname> instances to treat
-      all location paths as relative, whether they start with a leading slash
-      or not. In practice, this means the following are equivalent:</para>
+      <para>하지만 하위 호환성(역사적인) 때문에 
+      <classname>FileSystemApplicationContext</classname>가 
+      <literal>ResourceLoader</literal>일 때는 달라진다. 
+      <classname>FileSystemApplicationContext</classname>는 간단하게 모든 붙은(attached) 
+      <classname>FileSystemResource</classname> 인스턴스가 경로가 슬래시로 시작하던지 아니던 
+      지에 상관없이 모든 위치경로를 상대적으로 다루도록 한다. 사실 이는 다음 두 가지가 같다는 
+      것을 의미한다.</para>
 
       <programlisting language="java"><![CDATA[ApplicationContext ctx =
     new FileSystemXmlApplicationContext("conf/context.xml");]]></programlisting>
@@ -715,8 +617,8 @@
       <programlisting language="java"><![CDATA[ApplicationContext ctx =
     new FileSystemXmlApplicationContext("/conf/context.xml");]]></programlisting>
 
-      <para>As are the following: (Even though it would make sense for them to
-      be different, as one case is relative and the other absolute.)</para>
+      <para>다음 두 가지도 같다.(한 경우는 상대경로이고 다른 경우는 절대경로인 것처럼 
+      다른 것이 당연하다고 하더라도)</para>
 
       <programlisting language="java"><![CDATA[FileSystemXmlApplicationContext ctx = ...;
 ctx.getResource("some/resource/path/myTemplate.txt");]]></programlisting>
@@ -724,12 +626,12 @@ ctx.getResource("some/resource/path/myTemplate.txt");]]></programlisting>
       <programlisting language="java"><![CDATA[FileSystemXmlApplicationContext ctx = ...;
 ctx.getResource("/some/resource/path/myTemplate.txt");]]></programlisting>
 
-      <para>In practice, if true absolute filesystem paths are needed, it is
-      better to forgo the use of absolute paths with
+      <para>실제로 진짜 파일시스템 절대경로가 필요하다면 
       <classname>FileSystemResource</classname> /
-      <classname>FileSystemXmlApplicationContext</classname>, and just force
-      the use of a <classname>UrlResource</classname>, by using the
-      <literal>file:</literal> URL prefix.</para>
+      <classname>FileSystemXmlApplicationContext</classname>와 함께 절대경로를 
+      사용하는 것은 삼가하는 것이 더 낫다. 그리고 그냥 <literal>file:</literal> URL 
+      접두사를 사용해서 <classname>UrlResource</classname>의 사용을 
+      강제해라.</para>
 
       <programlisting language="java"><lineannotation>// actual context type doesn't matter, the <interfacename>Resource</interfacename> will always be <classname>UrlResource</classname></lineannotation><![CDATA[
 ctx.getResource("file:/some/resource/path/myTemplate.txt");]]></programlisting>
