@@ -3,96 +3,84 @@
  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <chapter id="validation">
-  <title>Validation, Data Binding, and Type Conversion</title>
+  <title>유효성검사(validation), 데이터 바인딩, 타입 변환</title>
 
   <section id="validation-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>There are pros and cons for considering validation as business logic,
-      and Spring offers a design for validation (and data binding) that does not
-      exclude either one of them. Specifically validation should not be tied to
-      the web tier, should be easy to localize and it should be possible to plug
-      in any validator available. Considering the above, Spring has come up with
-      a <interfacename>Validator</interfacename> interface that is both basic
-      ands eminently usable in every layer of an application. </para>
+    <para>비즈니스 로직처럼 유효성검사를 고려할 때 장단점이 있다. 스프링은 유효성검사와 
+      데이터바인딩 중 어느 쪽도 제외하지 않는 유효성 검사(와 데이터바인딩)에 대한 디자인을 
+      제공한다. 구체적으로 말하면 유효성검사는 웹티어에 묶이지 않아냐 하고 쉽게 지역화해야 하고 
+      이용가능한 어떤 밸리데이터(validator)에 연결할 수 있어야 한다. 스프링은 어플리케이션의 
+      모든 레이어에서 기본이 되고 아주 사용하기 편리한 <interfacename>Validator</interfacename> 
+      인터페이스를 제안했다. </para>
 
-    <para>Data binding is useful for allowing user input to be dynamically bound
-      to the domain model of an application (or whatever objects you use to
-      process user input). Spring provides the so-called
-      <interfacename>DataBinder</interfacename> to do exactly that. The
-      <interfacename>Validator</interfacename> and the
-      <interfacename>DataBinder</interfacename> make up the
-      <literal>validation</literal> package, which is primarily used in but not
-      limited to the MVC framework. </para>
+    <para>데이터바인딩은 어플리케이션의 도메인 모델(또는 사용자 입력을 처리하려고 사용하는 
+      어떤 객체)에 사용자 입력을 동적으로 바인딩하는데 유용하다. 스프링은 이 작업을 하기 위해서 
+      <interfacename>DataBinder</interfacename>를 제공한다. 
+      <interfacename>Validator</interfacename>와 
+      <interfacename>DataBinder</interfacename>는 주로 MVC 프레임워크에서 사용되지만 
+      제한이 있는 것은 아닌 <literal>validation</literal> 패키지를 구성한다. </para>
 
-    <para>The <interfacename>BeanWrapper</interfacename> is a fundamental
-      concept in the Spring Framework and is used in a lot of places. However,
-      you probably will not have the need to use the
-      <interfacename>BeanWrapper</interfacename> directly. Because this is
-      reference documentation however, we felt that some explanation might be in
-      order. We will explain the <interfacename>BeanWrapper</interfacename> in
-      this chapter since, if you were going to use it at all, you would most
-      likely do so when trying to bind data to objects.</para>
+    <para><interfacename>BeanWrapper</interfacename>는 스프링 프레임워크의 기본 
+      개념이고 많은 곳에서 사용된다. 하지만 <interfacename>BeanWrapper</interfacename>를 
+      직접 사용할 일은 거의 없을 것이다. 하지만 이 문서는 레퍼런스 문서이기 때문에 약간 설명하는 
+      것이 적절하다고 생각한다. 이번 장에서 <interfacename>BeanWrapper</interfacename>를 
+      설명할 것이고 <interfacename>BeanWrapper</interfacename>를 사용할 것이라면 객체에 
+      데이터를 바인딩할 때 사용할 가능성이 높다.</para>
 
-    <para>Spring's DataBinder and the lower-level BeanWrapper both use
-      PropertyEditors to parse and format property values. The
-      <interfacename>PropertyEditor</interfacename> concept is part of the
-      JavaBeans specification, and is also explained in this chapter. Spring 3
-      introduces a "core.convert" package that provides a general type
-      conversion facility, as well as a higher-level "format" package for
-      formatting UI field values. These new packages may be used as simpler
-      alternatives to PropertyEditors, and will also be discussed in this
-      chapter.</para>
+    <para>스프링의 DataBinder와 저수준 BeanWrapper는 둘 다 프로퍼티의 값들을 파싱하고 
+      포매팅하는데 PropertyEditor를 사용한다. <interfacename>PropertyEditor</interfacename> 
+      개념은 JavaBeans 명세의 일부이고 역시 이번 장에서 설명한다. 스프링 3는 UI 필드 값을 
+      포매팅하는 고수준 "format" 패키지 뿐만 아니라 일반적인 타입 변환의 기반을 제공하는 
+      "core.convert" 패키지를 도입했다. 이 새로운 패키지들을 PropertyEditor의 더 간단한 
+      대안으로 사용할 것이고 이에 대해서 이번 장에서 얘기할 것이다.</para>
   </section>
 
   <section id="validator">
-    <title>Validation using Spring's <interfacename>Validator</interfacename>
-      interface</title>
+    <title>스프링의 <interfacename>Validator</interfacename> 인터페이스를 
+      사용하는 유효성검사</title>
 
-    <para>Spring features a <interfacename>Validator</interfacename> interface
-      that you can use to validate objects. The
-      <interfacename>Validator</interfacename> interface works using an
-      <interfacename>Errors</interfacename> object so that while validating,
-      validators can report validation failures to the
-      <interfacename>Errors</interfacename> object.</para>
+    <para>스프링은 객체의 유효성검사에 사용할 수 있는 <interfacename>Validator</interfacename> 
+      인터페이스를 제공한다. <interfacename>Validator</interfacename> 인터페이스는 
+      유효성검사를 하면서 밸리데이터가 <interfacename>Errors</interfacename> 객체에 
+      유효성검사의 실패내역을 보고할 수 있도록 <interfacename>Errors</interfacename> 
+      객체를 사용해서 동작한다.</para>
 
-    <para>Let's consider a small data object:</para>
+    <para>작은 데이터를 가진 객체를 생각해 보자.</para>
 
     <programlisting language="java"><![CDATA[public class Person {
 
   private String name;
   private int age;
 
-  ]]><lineannotation>// the usual getters and setters...</lineannotation><![CDATA[
+  ]]><lineannotation>// 평범한 getter와 setter...</lineannotation><![CDATA[
 }]]></programlisting>
 
-    <para>We're going to provide validation behavior for the
-      <classname>Person</classname> class by implementing the following two
-      methods of the
-      <interfacename>org.springframework.validation.Validator</interfacename>
-      interface: <itemizedlist spacing="compact">
+    <para><interfacename>org.springframework.validation.Validator</interfacename> 
+      인터페이스의 다음 두 가지 메서드를 구현해서 <classname>Person</classname> 클래스에 
+      대한 유효성검사 동작을 제공할 것이다:  <itemizedlist spacing="compact">
       <listitem>
-        <para><methodname>supports(Class)</methodname> - Can this
-          <interfacename>Validator</interfacename> validate instances of the
-          supplied <classname>Class</classname>?</para>
+        <para><methodname>supports(Class)</methodname> - 이 
+          <interfacename>Validator</interfacename>가 제공된 
+          <classname>Class</classname>의 인스턴스를 유효성검사할 수 있는가?</para>
       </listitem>
       <listitem>
         <para><methodname>validate(Object,
-          org.springframework.validation.Errors)</methodname> - validates the
-          given object and in case of validation errors, registers those with
-          the given <interfacename>Errors</interfacename> object</para>
+          org.springframework.validation.Errors)</methodname> - 주어진 객체에 
+          유효성검사를 하고 유효성검사에 오류가 있는 경우 주어진 객체에 이 오류들을 
+          등록한다.</para>
       </listitem>
       </itemizedlist> </para>
 
-    <para> Implementing a <interfacename>Validator</interfacename> is fairly
-      straightforward, especially when you know of the
-      <classname>ValidationUtils</classname> helper class that the Spring
-      Framework also provides.</para>
+    <para> <interfacename>Validator</interfacename> 구현체는 꽤 직관적이고 특히 
+      스프링 프레임워크가 제공하는 <classname>ValidationUtils</classname> 헬퍼 
+      클래스를 알고 있다면 더욱 그렇다.</para>
 
     <programlisting language="java"><![CDATA[public class PersonValidator implements Validator {
 
     ]]><lineannotation>/**
-    * This <interfacename>Validator</interfacename> validates <emphasis role="bold">just</emphasis> <classname>Person</classname> instances
+    * 이 <interfacename>Validator</interfacename>는 <emphasis role="bold">단순히</emphasis> <classname>Person</classname> 인스턴스를 유효성검사한다
     */</lineannotation><![CDATA[
     public boolean supports(Class clazz) {
         return Person.class.equals(clazz);
@@ -109,31 +97,26 @@
     }
 }]]></programlisting>
 
-    <para>As you can see, the <literal>static</literal>
-      <methodname>rejectIfEmpty(..)</methodname> method on the
-      <classname>ValidationUtils</classname> class is used to reject the
-      <literal>'name'</literal> property if it is <literal>null</literal> or the
-      empty string. Have a look at the Javadoc for the
-      <classname>ValidationUtils</classname> class to see what functionality it
-      provides besides the example shown previously.</para>
+    <para>여기서 볼 수 있듯이 <classname>ValidationUtils</classname> 클래스의 
+      <literal>static</literal> <methodname>rejectIfEmpty(..)</methodname> 메서드는 
+      <literal>'name'</literal> 프로퍼티가 <literal>null</literal>이거나 빈(empty) 
+      문자열일 때 <literal>'name'</literal> 프로퍼티를 거절하는 데 사용한다. 앞에서 보여준 
+      예제와 함께 무슨 기능을 제공하는지 보려면 <classname>ValidationUtils</classname> 
+      클래스의 Javadoc을 봐라.</para>
 
-    <para>While it is certainly possible to implement a single
-      <interfacename>Validator</interfacename> class to validate each of the
-      nested objects in a rich object, it may be better to encapsulate the
-      validation logic for each nested class of object in its own
-      <interfacename>Validator</interfacename> implementation. A simple example
-      of a <emphasis>'rich'</emphasis> object would be a
-      <classname>Customer</classname> that is composed of two
-      <classname>String</classname> properties (a first and second name) and a
-      complex <classname>Address</classname> object.
-      <classname>Address</classname> objects may be used independently of
-      <classname>Customer</classname> objects, and so a distinct
-      <classname>AddressValidator</classname> has been implemented. If you want
-      your <classname>CustomerValidator</classname> to reuse the logic contained
-      within the <classname>AddressValidator</classname> class without resorting
-      to copy-and-paste, you can dependency-inject or instantiate an
-      <classname>AddressValidator</classname> within your
-      <classname>CustomerValidator</classname>, and use it like so:</para>
+    <para>풍부한(rich) 객체에서 내장된 각 객체들의 유효성을 검사하려고 하나의 
+      <interfacename>Validator</interfacename> 클래스를 구현하는 것이 확실히 가능하지만 
+      객체 자신만의 <interfacename>Validator</interfacename> 구현체에서 객체에 내장된 각 
+      클래스에 대한 유효성검사 로직을 은닉화하는 것이 더 나을 것이다. <emphasis>'풍부한'</emphasis> 
+      객체의 간단한 예는 두 개의 <classname>String</classname> 프로퍼티(이름과 성)와 하나의 
+      복잡한 <classname>Address</classname> 객체로 구성된 <classname>Customer</classname>이다. 
+      <classname>Address</classname> 객체들은 <classname>Customer</classname> 객체들과 
+      관계없이 사용될 것이므로 별도의 <classname>AddressValidator</classname>를 구현했다. 
+      복사-붙혀넣기를 사용하지 않고 <classname>AddressValidator</classname> 클래스내에 포함된 
+      로직을 재사용하려고 <classname>CustomerValidator</classname>를 원한다면 다음과 같이 
+      <classname>CustomerValidator</classname>내에서 
+      <classname>AddressValidator</classname>를 의존성 주입하거나 인스턴스화 해서 
+      사용할 수 있다.</para>
 
     <programlisting language="java"><![CDATA[public class CustomerValidator implements Validator {
 
@@ -152,7 +135,7 @@
     }
 
     ]]><lineannotation>/**
-    * This <interfacename>Validator</interfacename> validates <classname>Customer</classname> instances, and any subclasses of <classname>Customer</classname> too
+    * 이 <interfacename>Validator</interfacename>는 <classname>Customer</classname> 인스턴스의 유효성을 검사하고 <classname>Customer</classname>의 모든 하위 클래스도 유효성 검사한다
     */</lineannotation><![CDATA[
     public boolean supports(Class clazz) {
         return Customer.class.isAssignableFrom(clazz);
@@ -171,111 +154,94 @@
     }
 }]]></programlisting>
 
-    <para>Validation errors are reported to the
-      <interfacename>Errors</interfacename> object passed to the validator. In
-      case of Spring Web MVC you can use <literal>&lt;spring:bind/&gt;</literal>
-      tag to inspect the error messages, but of course you can also inspect the
-      errors object yourself. More information about the methods it offers can
-      be found from the Javadoc.</para>
+    <para>유효성 검사 오류는 밸리데이터에 전달한 <interfacename>Errors</interfacename> 
+      객체에 보고된다. 스프링 웹 MVC에서는 오류 메세지를 검사하려고 
+      <literal>&lt;spring:bind/&gt;</literal> 태그를 사용할 수 있지만 당연히 직접 오류 
+      객체를 검사할 수도 있다. 이 메서드가 제공하는 더 자세한 내용은 Javadoc에 나와 
+      있다.</para>
   </section>
 
   <section id="validation-conversion">
-    <title>Resolving codes to error messages</title>
+    <title>오류 메시지에 대한 코드 처리</title>
 
-    <para>We've talked about databinding and validation. Outputting messages
-      corresponding to validation errors is the last thing we need to discuss.
-      In the example we've shown above, we rejected the <literal>name</literal>
-      and the <literal>age</literal> field. If we're going to output the error
-      messages by using a <interfacename>MessageSource</interfacename>, we will
-      do so using the error code we've given when rejecting the field ('name'
-      and 'age' in this case). When you call (either directly, or indirectly,
-      using for example the <classname>ValidationUtils</classname> class)
-      <literal>rejectValue</literal> or one of the other
-      <literal>reject</literal> methods from the
-      <interfacename>Errors</interfacename> interface, the underlying
-      implementation will not only register the code you've passed in, but also
-      a number of additional error codes. What error codes it registers is
-      determined by the <interfacename>MessageCodesResolver</interfacename> that
-      is used. By default, the
-      <classname>DefaultMessageCodesResolver</classname> is used, which for
-      example not only registers a message with the code you gave, but also
-      messages that include the field name you passed to the reject method. So
-      in case you reject a field using <literal>rejectValue("age",
-      "too.darn.old")</literal>, apart from the <literal>too.darn.old</literal>
-      code, Spring will also register <literal>too.darn.old.age</literal> and
-      <literal>too.darn.old.age.int</literal> (so the first will include the
-      field name and the second will include the type of the field); this is
-      done as a convenience to aid developers in targeting error messages and
-      suchlike.</para>
+    <para>데이터바인딩과 유효성검사에 대해서 이야기했다. 마지막으로 유효성 오류에 대응되는 
+      출력 메세지에 대해서 얘기해야 한다. 위에서 본 예제에서 <literal>name</literal>와 
+      <literal>age</literal> 필드를 거절했다. <interfacename>MessageSource</interfacename>를 
+      사용해서 오류 메세지를 출력하려면 필드(이 경우에는 'name'와 'age')를 거절했을 때 전달받은 
+      오류 코드를 사용해야 할 것이다. <literal>rejectValue</literal>를 호출하거나(직접적이든 
+      간접적이든 <classname>ValidationUtils</classname>같은 클래스를 사용해서) 
+      <interfacename>Errors</interfacename> 인터페이스의 다른 <literal>reject</literal> 
+      메서드 중의 하나를 호출했을 때 기반이 되는 구현체는 전달한 코드뿐만 아니라 추가적인 다수의 
+      오류 코드를 등록한다. 어떤 오류 코드를 등록하는 지는 사용하는 
+      <interfacename>MessageCodesResolver</interfacename>가 결정한다. 기본적으로 
+      <classname>DefaultMessageCodesResolver</classname>를 사용한다. 예를 들어 
+      <classname>DefaultMessageCodesResolver</classname>는 전달한 코드와 메세지를 
+      등록하고 reject 메서드에 전달한 필드명을 포함한 메세지를 등록한다. 그래서 
+      <literal>rejectValue("age", "too.darn.old")</literal>를 사용해서 필드를 거절하는 
+      경우 스프링은 <literal>too.darn.old</literal> 코드 이외에 
+      <literal>too.darn.old.age</literal> 와 <literal>too.darn.old.age.int</literal>도 
+      등록할 것이다.(그래서 첫번째 것은 필드 명을 담고 있고 두번째 것은 필드의 타입을 담고 있다.) 
+      이는 대상 오유 메세지같은 부분에서 개발자를 도와주는 편리한 작업이다.</para>
 
-    <para>More information on the
-      <interfacename>MessageCodesResolver</interfacename> and the default
-      strategy can be found online with the Javadocs for <ulink
+    <para><interfacename>MessageCodesResolver</interfacename>와 기본 전략에 
+      대한 더 자세한 내용은 각각 <ulink
       url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/validation/MessageCodesResolver.html"
-      >MessageCodesResolver</ulink> and <ulink
+      >MessageCodesResolver</ulink>와 <ulink
       url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/validation/DefaultMessageCodesResolver.html"
-      >DefaultMessageCodesResolver</ulink> respectively.</para>
+      >DefaultMessageCodesResolver</ulink> 온라인 Javadoc에서 찾을 수 있다.</para>
   </section>
 
   <section id="beans-beans">
-    <title>Bean manipulation and the
+    <title>빈 조작과 
       <interfacename>BeanWrapper</interfacename></title>
 
-    <para>The <literal>org.springframework.beans</literal> package adheres to
-      the JavaBeans standard provided by Sun. A JavaBean is simply a class with
-      a default no-argument constructor, which follows a naming convention where
-      (by way of an example) a property named <literal>bingoMadness</literal>
-      would have a setter method <methodname>setBingoMadness(..)</methodname>
-      and a getter method <methodname>getBingoMadness()</methodname>. For more
-      information about JavaBeans and the specification, please refer to Sun's
-      website ( <ulink url="http://java.sun.com/products/javabeans/"
-      >java.sun.com/products/javabeans</ulink>).</para>
+    <para><literal>org.springframework.beans</literal> 패키지는 Sun의 자바 빈 표준을 
+      충실히 따른다. JavaBean은 아규먼트가 없는 기본 생성자를 가진 클래스이고 (한 예로써)
+      <literal>bingoMadness</literal>라는 프로퍼티는 
+      <methodname>setBingoMadness(..)</methodname> setter 메서드와 
+      <methodname>getBingoMadness()</methodname> getter 메서드를 가지는 네이밍 관례를 
+      따른다. JavaBens과 명세에 대한 더 자세한 정보를 알고 싶으면 Sun의 웹사이트 
+      ( <ulink url="http://java.sun.com/products/javabeans/"
+      >java.sun.com/products/javabeans</ulink>)를 참조해라.</para>
 
-    <para>One quite important class in the beans package is the
-      <interfacename>BeanWrapper</interfacename> interface and its corresponding
-      implementation (<classname>BeanWrapperImpl</classname>). As quoted from
-      the Javadoc, the <interfacename>BeanWrapper</interfacename> offers
-      functionality to set and get property values (individually or in bulk),
-      get property descriptors, and to query properties to determine if they are
-      readable or writable. Also, the <interfacename>BeanWrapper</interfacename>
-      offers support for nested properties, enabling the setting of properties
-      on sub-properties to an unlimited depth. Then, the
-      <interfacename>BeanWrapper</interfacename> supports the ability to add
-      standard JavaBeans <interfacename>PropertyChangeListeners</interfacename>
-      and <interfacename>VetoableChangeListeners</interfacename>, without the
-      need for supporting code in the target class. Last but not least, the
-      <interfacename>BeanWrapper</interfacename> provides support for the
-      setting of indexed properties. The
-      <interfacename>BeanWrapper</interfacename> usually isn't used by
-      application code directly, but by the
-      <interfacename>DataBinder</interfacename> and the
-      <interfacename>BeanFactory</interfacename>.</para>
+    <para>beans 패키지에서 아주 중요한 클래스는 <interfacename>BeanWrapper</interfacename> 
+      인터페이스와 그에 대한 구현체(<classname>BeanWrapperImpl</classname>)이다. Javadoc에 
+      나와있듯이 <interfacename>BeanWrapper</interfacename>는 프로퍼티 값(개별적으로나 한꺼번에)을 
+      설정하고 가져오는 기능과 프로퍼티 드스크립터를 가져오는 기능이나 프로퍼티가 읽을 수 있는지 쓸 
+      수 있는지 결정하기 위해 쿼리할 수 있는 기능을 제공한다. 
+      <interfacename>BeanWrapper</interfacename>는 무한 계층까지 하위 프로퍼티에서 프로퍼티를 
+      설정하는 것이 가능하도록 중첩된 프로퍼티도 지원한다. 그리고 
+      <interfacename>BeanWrapper</interfacename>는 대상 클래스에 지원 코드를 두지 않고도 표준 
+      자바빈 <interfacename>PropertyChangeListeners</interfacename>와 
+      <interfacename>VetoableChangeListeners</interfacename>를 추가하는 기능도 지원한다. 
+      마지막으로 가장 중요한 것은 <interfacename>BeanWrapper</interfacename>가 색인된 프로퍼티를 
+      설정하는 지원을 제공한다는 것이다. <interfacename>BeanWrapper</interfacename>는 보통 
+      어플리케이션 코드에서 직접 사용하지 않고 <interfacename>DataBinder</interfacename>와 
+      <interfacename>BeanFactory</interfacename>에서 사용한다.</para>
 
-    <para>The way the <interfacename>BeanWrapper</interfacename> works is partly
-      indicated by its name: <emphasis>it wraps a bean</emphasis> to perform
-      actions on that bean, like setting and retrieving properties.</para>
+    <para><interfacename>BeanWrapper</interfacename>의 동작방식은 그 이름이 어느 정도 
+      알려주고 있다. 프로퍼티를 설정하고 획득하는 것처런 해당 빈에 액셩을 수행하기 위해서 
+      <emphasis>빈을 감싼다</emphasis>.</para>
 
     <section id="beans-beans-conventions">
-      <title>Setting and getting basic and nested properties</title>
+      <title>기본적인 프로퍼티와 중첩된 프로퍼티를 설정하고 가져오기</title>
 
-      <para>Setting and getting properties is done using the
-        <literal>setPropertyValue(s)</literal> and
-        <literal>getPropertyValue(s)</literal> methods that both come with a
-        couple of overloaded variants. They're all described in more detail in
-        the Javadoc Spring comes with. What's important to know is that there
-        are a couple of conventions for indicating properties of an object. A
-        couple of examples:</para>
+      <para>프로퍼티를 설정하고 가져오는 것은 <literal>setPropertyValue(s)</literal>와 
+        <literal>getPropertyValue(s)</literal> 메서드를 사용해서 이뤄진다. 둘 다 다수의 
+        오버로드된 메서드들이 있다. 자세한 내용은 스프링 자바독에 모두 설명되어 있다. 객체의 
+        프로퍼티를 나타내는 여러 가지 관례가 있다는 사실은 중요하다. 다음은 몇가지 
+        예제이다.</para>
 
       <table id="beans-beans-conventions-properties-tbl">
-        <title>Examples of properties</title>
+        <title>프로퍼티 예제</title>
 
         <tgroup cols="2">
           <colspec colname="c1" colwidth="1*"/>
           <colspec colname="c2" colwidth="3*"/>
           <thead>
             <row>
-              <entry>Expression</entry>
-              <entry>Explanation</entry>
+              <entry>표현식</entry>
+              <entry>설명</entry>
             </row>
           </thead>
 
@@ -283,55 +249,52 @@
             <row>
               <entry><literal>name</literal></entry>
 
-              <entry>Indicates the property <literal>name</literal>
-                corresponding to the methods <methodname>getName()</methodname>
-                or <methodname>isName()</methodname> and
-                <methodname>setName(..)</methodname></entry>
+              <entry><methodname>getName()</methodname>나 
+                <methodname>isName()</methodname>나 
+                <methodname>setName(..)</methodname> 메서드와 대응되는 
+                <literal>name</literal> 프로퍼티를 나타낸다.</entry>
             </row>
 
             <row>
               <entry><literal>account.name</literal></entry>
 
-              <entry>Indicates the nested property <literal>name</literal> of
-                the property <literal>account</literal> corresponding e.g. to
-                the methods <literal>getAccount().setName()</literal> or
-                <literal>getAccount().getName()</literal></entry>
+              <entry><literal>account</literal> 프로퍼티의 중첩된 
+                <literal>name</literal> 프로퍼티를 나타낸다. 예를 들면 
+                <literal>getAccount().setName()</literal>나 
+                <literal>getAccount().getName()</literal>에 대응된다.</entry>
             </row>
 
             <row>
               <entry><literal>account[2]</literal></entry>
 
-              <entry>Indicates the <emphasis>third</emphasis> element of the
-                indexed property <literal>account</literal>. Indexed properties
-                can be of type <literal>array</literal>, <literal>list</literal>
-                or other <emphasis>naturally ordered</emphasis>
-                collection</entry>
+              <entry>색인된 <literal>account</literal> 프로퍼티의 
+                <emphasis>세번째</emphasis> 요소를 나타낸다. 색인된 프로퍼티는 
+                <literal>array</literal>, <literal>list</literal>나 
+                <emphasis>자연스럽게 정렬된</emphasis> 컬렉션이 될 수 있다.</entry>
             </row>
 
             <row>
               <entry><literal>account[COMPANYNAME]</literal></entry>
 
-              <entry>Indicates the value of the map entry indexed by the key
-                <emphasis>COMPANYNAME</emphasis> of the Map property
-                <literal>account</literal></entry>
+              <entry>Map 프로퍼티 <literal>account</literal>의 
+                <emphasis>COMPANYNAME</emphasis> 키로 찾은 값을 나타낸다.</entry>
             </row>
           </tbody>
         </tgroup>
       </table>
 
-      <para>Below you'll find some examples of working with the
-        <interfacename>BeanWrapper</interfacename> to get and set
-        properties.</para>
+      <para>아래에서 프로퍼티를 얻거나 설정하는 
+        <interfacename>BeanWrapper</interfacename> 동작 예제를 
+        보여줄 것이다.</para>
 
-      <para><emphasis>(This next section is not vitally important to you if
-        you're not planning to work with the
-        <interfacename>BeanWrapper</interfacename> directly. If you're just
-        using the <interfacename>DataBinder</interfacename> and the
-        <interfacename>BeanFactory</interfacename> and their out-of-the-box
-        implementation, you should skip ahead to the section about
-        <interfacename>PropertyEditors</interfacename>.)</emphasis></para>
+      <para><emphasis>(<interfacename>BeanWrapper</interfacename>를 직접 사용해서 
+        작업하지 않는다면 다음 부분은 아주 중요한 것은 아니다. 
+        <interfacename>DataBinder</interfacename>와 
+        <interfacename>BeanFactory</interfacename>나 이들의 어떤 구현체를 그냥 사용할 
+        것이라면 <interfacename>PropertyEditors</interfacename>에 대한 섹션으로 
+        건너뛰어도 좋다.)</emphasis></para>
 
-      <para>Consider the following two classes:</para>
+        <para>다음 두 클래스를 보자.</para>
 
       <programlisting language="java"><![CDATA[public class Company {
     private String name;
@@ -369,81 +332,72 @@
     }
 }]]></programlisting>
 
-      <para>The following code snippets show some examples of how to retrieve
-        and manipulate some of the properties of instantiated
-        <literal>Companies</literal> and <literal>Employees</literal>:</para>
+      <para>다음 코드는 인스턴스화된 <literal>Companies</literal>와 
+        <literal>Employees</literal>의 프로퍼티를 어떻게 획득하고 조작하는 
+        가를 보여주는 예제이다.</para>
 
       <programlisting language="java"><![CDATA[BeanWrapper company = BeanWrapperImpl(new Company());
-]]><lineannotation>// setting the company name..</lineannotation><![CDATA[
+]]><lineannotation>// 회사이름을 설정한다..</lineannotation><![CDATA[
 company.setPropertyValue("name", "Some Company Inc.");
-]]><lineannotation>// ... can also be done like this:</lineannotation><![CDATA[
+]]><lineannotation>// ... 또는 다음과 같이 할 수 있다:</lineannotation><![CDATA[
 PropertyValue value = new PropertyValue("name", "Some Company Inc.");
 company.setPropertyValue(value);
 
-]]><lineannotation>// ok, let's create the director and tie it to the company:</lineannotation><![CDATA[
+]]><lineannotation>// 감독관을 생성하고 회사에 연결한다:</lineannotation><![CDATA[
 BeanWrapper jim = BeanWrapperImpl(new Employee());
 jim.setPropertyValue("name", "Jim Stravinsky");
 company.setPropertyValue("managingDirector", jim.getWrappedInstance());
 
-]]><lineannotation>// retrieving the salary of the managingDirector through the company</lineannotation><![CDATA[
+]]><lineannotation>// company를 통해 managingDirector의 봉급을 획득한다</lineannotation><![CDATA[
 Float salary = (Float) company.getPropertyValue("managingDirector.salary");]]></programlisting>
     </section>
 
     <section id="beans-beans-conversion">
-      <title>Built-in <interface>PropertyEditor</interface>
-        implementations</title>
+      <title>내장 <interface>PropertyEditor</interface>
+        구현체</title>
 
-      <para>Spring uses the concept of <literal>PropertyEditors</literal> to
-        effect the conversion between an <classname>Object</classname> and a
-        <classname>String</classname>. If you think about it, it sometimes might
-        be handy to be able to represent properties in a different way than the
-        object itself. For example, a <classname>Date</classname> can be
-        represented in a human readable way (as the
-        <classname>String</classname> '<literal>2007-14-09</literal>'), while
-        we're still able to convert the human readable form back to the original
-        date (or even better: convert any date entered in a human readable form,
-        back to <classname>Date</classname> objects). This behavior can be
-        achieved by <emphasis>registering custom editors</emphasis>, of type
-        <interfacename>java.beans.PropertyEditor</interfacename>. Registering
-        custom editors on a <interfacename>BeanWrapper</interfacename> or
-        alternately in a specific IoC container as mentioned in the previous
-        chapter, gives it the knowledge of how to convert properties to the
-        desired type. Read more about
-        <interfacename>PropertyEditors</interfacename> in the Javadoc of the
-        <literal>java.beans</literal> package provided by Sun.</para>
+      <para>스프링은 <classname>Object</classname>와 <classname>String</classname>간의 
+        변환에 <literal>PropertyEditors</literal>의 개념을 사용한다. 생각해보면 때때로 
+        객체 자체와는 다른 방법으로 프로퍼티를 표현할 수 있는 손쉬운 방법이다. 예를 들어 
+        <classname>Date</classname>는 사람이 읽을 수 있게 표현할 수 있고
+        (<classname>String</classname> '<literal>2007-14-09</literal>'처럼) 동시에 
+        여전히 사람이 읽을 수 있는 형식을 다시 원래의 날짜로 변환할 수 있다.(또는 더 낫다: 
+        사람이 읽을 수 있는 형식의 어떤 날짜도 다시 <classname>Date</classname> 객체로 
+        변환할 수 있다.) 이 동작은 <interfacename>java.beans.PropertyEditor</interfacename> 
+        타입의 <emphasis>커스텀 에디터를 등록함</emphasis>으로써 이뤄질 수 있다. 
+        <interfacename>BeanWrapper</interfacename>나 이전 챕터에서 얘기했던 대안적인 
+        특정 IoC 컨테이너에 커스텀 에디터를 등록하면 어떻게 프로퍼티를 원하는 타입으로 변환하는 
+        지 알려준다. 더 자세한 내용은 Sun이 제공하는 <literal>java.beans</literal> 
+        패키지의 Javadoc에서 <interfacename>PropertyEditors</interfacename> 부분을 
+        읽어봐라.</para>
 
-      <para>A couple of examples where property editing is used in Spring:
+      <para>스프링에서 프로퍼티 수정을 사용하는 몇가지 예제:
         <itemizedlist spacing="compact">
         <listitem>
-          <para><emphasis>setting properties on beans</emphasis> is done using
-            <literal>PropertyEditors</literal>. When mentioning
-            <literal>java.lang.String</literal> as the value of a property of
-            some bean you're declaring in XML file, Spring will (if the setter
-            of the corresponding property has a
-            <classname>Class</classname>-parameter) use the
-            <classname>ClassEditor</classname> to try to resolve the parameter
-            to a <classname>Class</classname> object.</para>
+          <para><literal>PropertyEditors</literal>를 사용해서 <emphasis>빈에 
+            프로퍼티를 설정한다</emphasis>. XML 파일에 선언한 어떤 빈의 프로퍼티 값으로 
+            <literal>java.lang.String</literal>을 사용했을 때 스프링은 (해당 프로퍼티의 
+            setter가 <classname>Class</classname>-parameter를 가지고 있다면)파라미터를 
+            <classname>Class</classname> 객체로 처리하려고 
+            <classname>ClassEditor</classname>를 사용할 것이다.</para>
         </listitem>
 
         <listitem>
-          <para><emphasis>parsing HTTP request parameters</emphasis> in Spring's
-            MVC framework is done using all kinds of
-            <literal>PropertyEditors</literal> that you can manually bind in all
-            subclasses of the <classname>CommandController</classname>.</para>
+          <para>스프링 MVC 프레임워크에서 <emphasis>HTTP 요청 파라미터의 파싱은</emphasis> 
+            <classname>CommandController</classname>의 모든 하위클래스에 수동으로 연결할 
+            수 있는 모든 종류의 <literal>PropertyEditors</literal>를 사용해서 이뤄진다.</para>
         </listitem>
         </itemizedlist> </para>
 
-      <para>Spring has a number of built-in <literal>PropertyEditors</literal>
-        to make life easy. Each of those is listed below and they are all
-        located in the
-        <literal>org.springframework.beans.propertyeditors</literal> package.
-        Most, but not all (as indicated below), are registered by default by
-        <classname>BeanWrapperImpl</classname>. Where the property editor is
-        configurable in some fashion, you can of course still register your own
-        variant to override the default one:</para>
+      <para>스프링은 쉽게 사용할 수 있도록 다수의 내장 <literal>PropertyEditors</literal>를 
+        가진다. 이 내장 <literal>PropertyEditors</literal>는 아래 목록에 나와있고 이 모두는 
+        <literal>org.springframework.beans.propertyeditors</literal> 패키지에 존재한다. 
+        (아래에 표시했듯이)모두는 아니지만 대부분은 <classname>BeanWrapperImpl</classname>의 
+        기본으로 등록된다. 프로퍼티 데이터가 몇가지 방법으로 설정할 수 있는 곳에서도 당연히 기본값은 
+        자신만의 번형으로 오버라이드해서 등록할 수 있다.</para>
 
       <table id="beans-beans-property-editors-tbl">
-        <title>Built-in <literal>PropertyEditors</literal></title>
+        <title>내장 <literal>PropertyEditors</literal></title>
 
         <tgroup cols="2">
           <colspec colname="c1" colwidth="3*"/>
@@ -452,7 +406,7 @@ Float salary = (Float) company.getPropertyValue("managingDirector.salary");]]></
           <thead>
             <row>
               <entry>Class</entry>
-              <entry>Explanation</entry>
+              <entry>설명</entry>
             </row>
           </thead>
 
@@ -460,164 +414,151 @@ Float salary = (Float) company.getPropertyValue("managingDirector.salary");]]></
             <row>
               <entry><classname>ByteArrayPropertyEditor</classname></entry>
 
-              <entry>Editor for byte arrays. Strings will simply be converted to
-                their corresponding byte representations. Registered by default
-                by <classname>BeanWrapperImpl</classname>.</entry>
+              <entry>바이트 배열에 대한 에디터. 문자열은 간단하게 대응되는 바이트 표현으로 
+                변환될 것이다. <classname>BeanWrapperImpl</classname>의 기본값으로 
+                등록된다.</entry>
             </row>
 
             <row>
               <entry><classname>ClassEditor</classname></entry>
 
-              <entry>Parses Strings representing classes to actual classes and
-                the other way around. When a class is not found, an
-                <classname>IllegalArgumentException</classname> is thrown.
-                Registered by default by
-                <classname>BeanWrapperImpl</classname>.</entry>
+              <entry>클래스를 나타내는 문자열을 실제 클래스로 파싱하거나 그 반대로 파싱한다. 
+                클래스를 찾지 못하면 <classname>IllegalArgumentException</classname>를 
+                던진다. <classname>BeanWrapperImpl</classname>의 기본값으로 
+                등록된다.</entry>
             </row>
 
             <row>
               <entry><classname>CustomBooleanEditor</classname></entry>
 
-              <entry>Customizable property editor for
-                <classname>Boolean</classname> properties. Registered by default
-                by <classname>BeanWrapperImpl</classname>, but, can be
-                overridden by registering custom instance of it as custom
-                editor.</entry>
+              <entry><classname>Boolean</classname> 프로퍼티에 대해 커스터마이징할 수 
+                있는 프로퍼티 데이터다. <classname>BeanWrapperImpl</classname>의 
+                기본값으로 등록되지만 커스텀 에디터처럼 커스텀 인스턴스를 등록함으로써 
+                오버라이드할 수 있다.</entry>
             </row>
             <row>
               <entry><classname>CustomCollectionEditor</classname></entry>
-              <entry>Property editor for Collections, converting any source
-                <interfacename>Collection</interfacename> to a given target
-                <interfacename>Collection</interfacename> type.</entry>
+              <entry>컬렉션에 대한 프로퍼티 에디터로 모든 소스 
+                <interfacename>Collection</interfacename>를 전달한 타겟 
+                <interfacename>Collection</interfacename> 타입으로 변환한다.</entry>
             </row>
             <row>
               <entry><classname>CustomDateEditor</classname></entry>
 
-              <entry>Customizable property editor for java.util.Date, supporting
-                a custom DateFormat. NOT registered by default. Must be user
-                registered as needed with appropriate format.</entry>
+              <entry>java.util.Date에 대한 커스터마이징 할 수 있는 프로퍼티 에디터로 
+                커스텀 DateFormat을 지원한다. 기본값으로 등록되지 않는다. 적절한 형식으로 
+                필요한 만큼 사용자가 등록해야 한다.</entry>
             </row>
 
             <row>
               <entry><classname>CustomNumberEditor</classname></entry>
 
-              <entry>Customizable property editor for any Number subclass like
-                <classname>Integer</classname>, <classname>Long</classname>,
-                <classname>Float</classname>, <classname>Double</classname>.
-                Registered by default by <classname>BeanWrapperImpl</classname>,
-                but can be overridden by registering custom instance of it as a
-                custom editor.</entry>
+              <entry><classname>Integer</classname>, <classname>Long</classname>,
+                <classname>Float</classname>, <classname>Double</classname>같은 
+                숫자타입의 하위클래스에 대한 커스마타이징할 수 있는 프로퍼티 에디터이다. 
+                <classname>BeanWrapperImpl</classname>의 기본값으로 등록되지만 커스텀 
+                에디터처럼 커스텀 인스턴스를 등록해서 오바라이드할 수 있다.</entry>
             </row>
 
             <row>
               <entry><classname>FileEditor</classname></entry>
 
-              <entry>Capable of resolving Strings to
-                <classname>java.io.File</classname> objects. Registered by
-                default by <classname>BeanWrapperImpl</classname>. </entry>
+              <entry>문자열을 <classname>java.io.File</classname> 객체로 처리할 
+                수 있다. <classname>BeanWrapperImpl</classname>의 기본값으로 
+                등록된다. </entry>
             </row>
 
             <row>
               <entry><classname>InputStreamEditor</classname></entry>
 
-              <entry>One-way property editor, capable of taking a text string
-                and producing (via an intermediate
-                <classname>ResourceEditor</classname> and
-                <interfacename>Resource</interfacename>) an
-                <interfacename>InputStream</interfacename>, so
-                <interfacename>InputStream</interfacename> properties may be
-                directly set as Strings. Note that the default usage will not
-                close the <interfacename>InputStream</interfacename> for you!
-                Registered by default by
-                <classname>BeanWrapperImpl</classname>.</entry>
+              <entry><interfacename>InputStream</interfacename> 프로퍼티를 문자열로 
+                직접 설정할 수 있도록 텍스트 문자열을 받아서 
+                <interfacename>InputStream</interfacename>을 생성하는(중간에 
+                <classname>ResourceEditor</classname>와 
+                <interfacename>Resource</interfacename>를 통해서) 단방향 프로퍼티 
+                에디터이다. 기본 사용법은 <interfacename>InputStream</interfacename>를 
+                닫지 않을 것이다. <classname>BeanWrapperImpl</classname>의 
+                기본값으로 등록된다.</entry>
             </row>
 
             <row>
               <entry><classname>LocaleEditor</classname></entry>
 
-              <entry>Capable of resolving Strings to
-                <classname>Locale</classname> objects and vice versa (the String
-                format is [language]_[country]_[variant], which is the same
-                thing the toString() method of Locale provides). Registered by
-                default by <classname>BeanWrapperImpl</classname>.</entry>
+              <entry>문자열을 <classname>Locale</classname> 객체로 처리하거나 그 
+                반대로 할 수 있다.(문자열 형식은 Locale의 toString() 메서드가 제공하는 
+                형식과 같은 [language]_[country]_[variant]이다.) 
+                <classname>BeanWrapperImpl</classname>의 기본값으로 등록된다.</entry>
             </row>
 
             <row>
               <entry><classname>PatternEditor</classname></entry>
 
-              <entry>Capable of resolving Strings to JDK 1.5
-                <classname>Pattern</classname> objects and vice versa.</entry>
+              <entry>문자열을 JDK 1.5 <classname>Pattern</classname> 객체로 처리하거나 
+                그 반대로 처리할 수 있다.</entry>
             </row>
 
             <row>
               <entry><classname>PropertiesEditor</classname></entry>
 
-              <entry>Capable of converting Strings (formatted using the format
-                as defined in the Javadoc for the java.lang.Properties class) to
-                <classname>Properties</classname> objects. Registered by default
-                by <classname>BeanWrapperImpl</classname>.</entry>
+              <entry>문자열(java.lang.Properties 클래스의 Javadoc에서 정의된 것과 같은 
+                형식으로 포매팅된)을 <classname>Properties</classname> 객체로 변환할 
+                수 있다.<classname>BeanWrapperImpl</classname>의 기본값으로 
+                등록된다.</entry>
             </row>
 
             <row>
               <entry><classname>StringTrimmerEditor</classname></entry>
 
-              <entry>Property editor that trims Strings. Optionally allows
-                transforming an empty string into a <literal>null</literal>
-                value. NOT registered by default; must be user registered as
-                needed.</entry>
+              <entry>스트림을 trim하는 프로퍼티 에디터이다. 선택적으로 비어있는 문자열을 
+                <literal>null</literal> 값으로 변형할 수도 있다. 기본적으로는 등록되지 
+                않는다. 필요에 따라 사용자가 등록해야 한다.</entry>
             </row>
 
             <row>
               <entry><classname>URLEditor</classname></entry>
 
-              <entry>Capable of resolving a String representation of a URL to an
-                actual <classname>URL</classname> object. Registered by default
-                by <classname>BeanWrapperImpl</classname>.</entry>
+              <entry>URL의 문자열 표현을 실제 <classname>URL</classname> 객체로 처리할 
+                수 있다. <classname>BeanWrapperImpl</classname>의 기본값으로 
+                등록된다.</entry>
             </row>
           </tbody>
         </tgroup>
       </table>
 
-      <para> Spring uses the
-        <interfacename>java.beans.PropertyEditorManager</interfacename> to set
-        the search path for property editors that might be needed. The search
-        path also includes <literal>sun.bean.editors</literal>, which includes
-        <interfacename>PropertyEditor</interfacename> implementations for types
-        such as <classname>Font</classname>, <classname>Color</classname>, and
-        most of the primitive types. Note also that the standard JavaBeans
-        infrastructure will automatically discover
-        <interfacename>PropertyEditor</interfacename> classes (without you
-        having to register them explicitly) if they are in the same package as
-        the class they handle, and have the same name as that class, with
-        <literal>'Editor'</literal> appended; for example, one could have the
-        following class and package structure, which would be sufficient for the
-        <classname>FooEditor</classname> class to be recognized and used as the
-        <interfacename>PropertyEditor</interfacename> for
-        <classname>Foo</classname>-typed properties. </para>
+      <para> 스프링은 필요한 프로퍼티 에디터에 검색경로를 설정하는데 
+        <interfacename>java.beans.PropertyEditorManager</interfacename>를 사용한다. 
+        검색 경로는 <classname>Font</classname>와 <classname>Color</classname>나 
+        대부분의 프리미티브 타입같은 타입에 대한 <interfacename>PropertyEditor</interfacename> 
+        구현체를 포함하는 <literal>sun.bean.editors</literal>를 포함할 수도 있다. 다루는 
+        클래스와 같은 패키지에 있고 해당 클래스와 같은 이름이면서 <literal>'Editor'</literal>가 
+        붙어있으면 표준 자바빈 기반은 자동적으로 <interfacename>PropertyEditor</interfacename> 
+        클래스(명시적으로 등록하지 않아도)를 검색할 것이다. 예를 들어 
+        <classname>FooEditor</classname> 클래스를 인식하기에 충분하고 
+        <classname>Foo</classname> 타입에 대한 프로퍼티를 위한 
+        <interfacename>PropertyEditor</interfacename>로 사용되려면 다음 클래스와 패키지 
+        구조를 갖고 있어야 한다. </para>
       <programlisting><![CDATA[com
   chank
     pop
       Foo
-      FooEditor   ]]><lineannotation>// the <interfacename>PropertyEditor</interfacename> for the <classname>Foo</classname> class</lineannotation></programlisting>
+      FooEditor   ]]><lineannotation>// <classname>Foo</classname> 클래스에 대한 <interfacename>PropertyEditor</interfacename></lineannotation></programlisting>
 
-      <para>Note that you can also use the standard
-        <interfacename>BeanInfo</interfacename> JavaBeans mechanism here as well
-        (described <ulink
+      <para>여기서도 표준 <interfacename>BeanInfo</interfacename> 자바빈 메카니즘을 사용할
+        수 있다.(<ulink
         url="http://java.sun.com/docs/books/tutorial/javabeans/customization/index.html"
-        >in not-amazing-detail here</ulink>). Find below an example of using the
-        <interfacename>BeanInfo</interfacename> mechanism for explicitly
-        registering one or more <interfacename>PropertyEditor</interfacename>
-        instances with the properties of an associated class.</para>
+        >아주 자세하지는 않지만 여기에</ulink> 설명되어 있다.) 다음은 연관된 클래스의 프로퍼티와 하나 이상의
+        <interfacename>PropertyEditor</interfacename> 인스턴스를 명시적으로 등록하기 위해
+        <interfacename>BeanInfo</interfacename> 메카니즘을 사용하는 예제다.</para>
       <programlisting><![CDATA[com
   chank
     pop
       Foo
-      FooBeanInfo   ]]><lineannotation>// the <interfacename>BeanInfo</interfacename> for the <classname>Foo</classname> class</lineannotation></programlisting>
+      FooBeanInfo   ]]><lineannotation>// <classname>Foo</classname> 클래스에 대한 <interfacename>BeanInfo</interfacename></lineannotation></programlisting>
 
-      <para> Here is the Java source code for the referenced
-        <classname>FooBeanInfo</classname> class. This would associate a
-        <classname>CustomNumberEditor</classname> with the
-        <literal>age</literal> property of the <classname>Foo</classname> class. </para>
+      <para> 다음은 참조한 <classname>FooBeanInfo</classname>
+        클래스의 자바 소스코드다. <classname>Foo</classname> 클래스의 
+        <literal>age</literal> 프로퍼티와 <classname>CustomNumberEditor</classname>를 
+        연결한다.</para>
 
       <programlisting language="java"><![CDATA[public class FooBeanInfo extends SimpleBeanInfo {
 
@@ -638,60 +579,48 @@ Float salary = (Float) company.getPropertyValue("managingDirector.salary");]]></
 }]]></programlisting>
 
       <section id="beans-beans-conversion-customeditor-registration">
-        <title>Registering additional custom
-          <interfacename>PropertyEditors</interfacename></title>
+        <title>추가적인 커스텀 
+          <interfacename>PropertyEditors</interfacename> 등록</title>
 
-        <para>When setting bean properties as a string value, a Spring IoC
-          container ultimately uses standard JavaBeans
-          <literal>PropertyEditors</literal> to convert these Strings to the
-          complex type of the property. Spring pre-registers a number of custom
-          <literal>PropertyEditors</literal> (for example, to convert a
-          classname expressed as a string into a real
-          <classname>Class</classname> object). Additionally, Java's standard
-          JavaBeans <interfacename>PropertyEditor</interfacename> lookup
-          mechanism allows a <classname>PropertyEditor</classname> for a class
-          simply to be named appropriately and placed in the same package as the
-          class it provides support for, to be found automatically.</para>
+        <para>빈 프로퍼티를 문자열로 설정하는 경우 스프링 IoC 컨테이너는 이 문자열을 복잡한
+          프로퍼티 타입으로 변환하는데(예를 들어 문자열로 된 클래스명을 실제 
+          <classname>Class</classname> 객체로 변환한다.) 표준 자바빈 
+          <literal>PropertyEditors</literal>를 사용한다. 게다가 자바 표준 자바빈
+          <interfacename>PropertyEditor</interfacename>의 검색 메카니즘은 
+          클래스의 <classname>PropertyEditor</classname>에 적절한 이름을 붙히고 
+          자동으로 찾아지도록 클래스와 같은 패키지 안에 둔다.</para>
 
-        <para>If there is a need to register other custom
-          <literal>PropertyEditors</literal>, there are several mechanisms
-          available. The most manual approach, which is not normally convenient
-          or recommended, is to simply use the
-          <methodname>registerCustomEditor()</methodname> method of the
-          <interfacename>ConfigurableBeanFactory</interfacename> interface,
-          assuming you have a <interfacename>BeanFactory</interfacename>
-          reference. Another, slightly more convenient, mechanism is to use a
-          special bean factory post-processor called
-          <classname>CustomEditorConfigurer</classname>. Although bean factory
-          post-processors can be used with
-          <interfacename>BeanFactory</interfacename> implementations, the
-          <classname>CustomEditorConfigurer</classname> has a nested property
-          setup, so it is strongly recommended that it is used with the
-          <interfacename>ApplicationContext</interfacename>, where it may be
-          deployed in similar fashion to any other bean, and automatically
-          detected and applied.</para>
+        <para>다른 커스텀 <literal>PropertyEditors</literal>를 등록해야 하는 경우
+          여러 가지 메카니즘을 사용할 수 있다. 보통 편리하지도 않고 추천하지도 않지만 가장 수동적인
+          접근은 <interfacename>BeanFactory</interfacename> 참조를 가지고 있다고 가정했을 때
+          <interfacename>ConfigurableBeanFactory</interfacename> 인터페이스의
+          <methodname>registerCustomEditor()</methodname> 메서드를 사용하는 것이다.
+          약간 더 편리한 메카니즘은 <classname>CustomEditorConfigurer</classname>라는 
+          전용 빈 팩토리 후처리자를 사용하는 것이다. 빈 팩토리 후처리자를 
+          <interfacename>BeanFactory</interfacename> 구현체와 함께 사용할 수 있기는 하지만
+          <classname>CustomEditorConfigurer</classname>는 중첩 프로퍼티 설정을 가지고 있으므로 
+          비슷한 방법으로 다른 빈에 배포되고 자동으로 찾아서 적용되는 
+          <interfacename>ApplicationContext</interfacename>와 함께 사용하기를 간단히 
+          추천한다.</para>
 
-        <para>Note that all bean factories and application contexts
-          automatically use a number of built-in property editors, through their
-          use of something called a <interfacename>BeanWrapper</interfacename>
-          to handle property conversions. The standard property editors that the
-          <interfacename>BeanWrapper</interfacename> registers are listed in
-          <link linkend="beans-beans-conversion">the previous section</link>.
-          Additionally, <literal>ApplicationContexts</literal> also override or
-          add an additional number of editors to handle resource lookups in a
-          manner appropriate to the specific application context type.</para>
+        <para>모든 빈 팩토리와 어플리케이션 컨텍스트는 프로퍼티 변환을 위해 
+          <interfacename>BeanWrapper</interfacename>를 사용하기 위해 자동으로 다수의 
+          내장된 프로퍼티 에디터를 사용한다. <interfacename>BeanWrapper</interfacename>가
+          등록하는 표준 프로퍼티 에디터는 <link linkend="beans-beans-conversion">이전 
+          섹션</link>에 나와 있다. 게다가 <literal>ApplicationContexts</literal>는
+          해당 어플리케이션 컨텍스트 타입에 적절한 방법으로 리소스 검색을 위해 에디터를 덮어쓰거나 
+          추가적으로 다수의 에디터를 추가하기도 한다.</para>
 
-        <para>Standard JavaBeans <interfacename>PropertyEditor</interfacename>
-          instances are used to convert property values expressed as strings to
-          the actual complex type of the property.
-          <classname>CustomEditorConfigurer</classname>, a bean factory
-          post-processor, may be used to conveniently add support for additional
-          <interfacename>PropertyEditor</interfacename> instances to an
-          <interfacename>ApplicationContext</interfacename>.</para>
+        <para>문자열의 프로퍼티 값을 프로퍼티의 실제 복잡한 타입으로 변환하는데 표준 자바빈 
+          <interfacename>PropertyEditor</interfacename> 인스턴스를 사용한다.
+          <interfacename>ApplicationContext</interfacename>에 추가적인 
+          <interfacename>PropertyEditor</interfacename> 인스턴스를 편리하게 추가하기 위해 
+          빈 팩토리 후처리자인 <classname>CustomEditorConfigurer</classname>를 
+          사용한다.</para>
 
-        <para>Consider a user class <classname>ExoticType</classname>, and
-          another class <classname>DependsOnExoticType</classname> which needs
-          <classname>ExoticType</classname> set as a property:</para>
+        <para><classname>ExoticType</classname>를 프로퍼티로 설정할 필요가 있는 
+          사용자 클래스 <classname>ExoticType</classname>와 
+          <classname>DependsOnExoticType</classname> 클래스를 고려해 봐라.</para>
 
         <programlisting language="java"><![CDATA[package example;
 
@@ -713,19 +642,16 @@ public class DependsOnExoticType {
     }
 }]]></programlisting>
 
-        <para>When things are properly set up, we want to be able to assign the
-          type property as a string, which a
-          <interfacename>PropertyEditor</interfacename> will behind the scenes
-          convert into an actual <classname>ExoticType</classname>
-          instance:</para>
+        <para><interfacename>PropertyEditor</interfacename>가 뒤에서 실제 
+          <classname>ExoticType</classname> 인스턴스로 변환할 
+          type 프로퍼티를 설정시에 문자열로 할당할 수 있기를 원한다.</para>
 
         <programlisting language="xml"><![CDATA[<bean id="sample" class="example.DependsOnExoticType">
     <property name="type" value="aNameForExoticType"/>
 </bean>]]></programlisting>
 
-        <para>The <interfacename>PropertyEditor</interfacename> implementation
-          could look similar to this:</para>
-        <programlisting language="java"><lineannotation>// converts string representation to <classname>ExoticType</classname> object</lineannotation><![CDATA[
+        <para><interfacename>PropertyEditor</interfacename> 구현체는 다음과 같을 것이다.</para>
+        <programlisting language="java"><lineannotation>// 문자열 표현을 <classname>ExoticType</classname> 객체로 변환한다</lineannotation><![CDATA[
 package example;
 
 public class ExoticTypeEditor extends PropertyEditorSupport {
@@ -735,10 +661,10 @@ public class ExoticTypeEditor extends PropertyEditorSupport {
     }
 }]]></programlisting>
 
-        <para>Finally, we use <classname>CustomEditorConfigurer</classname> to
-          register the new <interfacename>PropertyEditor</interfacename> with
-          the <interfacename>ApplicationContext</interfacename>, which will then
-          be able to use it as needed:</para>
+        <para>마지막으로 <interfacename>ApplicationContext</interfacename>에 새로운
+          <interfacename>PropertyEditor</interfacename>를 등록하려고 
+          <classname>CustomEditorConfigurer</classname>를 사용하고 필요에 따라
+          사용할 수 있다.</para>
 
         <programlisting language="xml"><![CDATA[<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
   <property name="customEditors">
@@ -749,41 +675,40 @@ public class ExoticTypeEditor extends PropertyEditorSupport {
 </bean>]]></programlisting>
 
         <section id="beans-beans-conversion-customeditor-registration-per">
-          <title>Using
-            <interfacename>PropertyEditorRegistrars</interfacename></title>
+          <title><interfacename>PropertyEditorRegistrars</interfacename>의
+            사용</title>
 
-          <para>Another mechanism for registering property editors with the
-            Spring container is to create and use a
-            <interfacename>PropertyEditorRegistrar</interfacename>. This
-            interface is particularly useful when you need to use the same set
-            of property editors in several different situations: write a
-            corresponding registrar and reuse that in each case.
-            <literal>PropertyEditorRegistrars</literal> work in conjunction with
-            an interface called
-            <interfacename>PropertyEditorRegistry</interfacename>, an interface
-            that is implemented by the Spring
-            <interfacename>BeanWrapper</interfacename> (and
-            <interfacename>DataBinder</interfacename>).
-            <literal>PropertyEditorRegistrars</literal> are particularly
-            convenient when used in conjunction with the
-            <classname>CustomEditorConfigurer</classname> (introduced <link
+          <para>스프링 컨테이너에 프로퍼티 에디터를 등록하는 또다른 메카니즘은 
+            <interfacename>PropertyEditorRegistrar</interfacename>를
+            생성하고 사용하는 것이다. 이 인터페이스는 여러 가지 다른 상황에서 같은 프로퍼티 에디터의
+            세트를 사용해야할 때 특히 유용하다. 즉 대응되는 담당자(registrar)를 작성하고
+            각 상황에서 재사용한다. <literal>PropertyEditorRegistrars</literal>는 
+            스프링의 <interfacename>BeanWrapper</interfacename>(와 
+            <interfacename>DataBinder</interfacename>)가 구현한 
+            <interfacename>PropertyEditorRegistry</interfacename> 인터페이스와 결합해서 동작한다.
+            <literal>PropertyEditorRegistrars</literal>는 
+            <methodname>setPropertyEditorRegistrars(..)</methodname>라는 프로퍼티를 노출하는
+            <classname>CustomEditorConfigurer</classname>(<link
             linkend="beans-beans-conversion-customeditor-registration"
-            >here</link>), which exposes a property called
-            <methodname>setPropertyEditorRegistrars(..)</methodname>:
-            <literal>PropertyEditorRegistrars</literal> added to a
-            <classname>CustomEditorConfigurer</classname> in this fashion can
-            easily be shared with <interfacename>DataBinder</interfacename> and
-            Spring MVC <interfacename>Controllers</interfacename>. Furthermore,
-            it avoids the need for synchronization on custom editors: a
-            <interfacename>PropertyEditorRegistrar</interfacename> is expected
-            to create fresh <interfacename>PropertyEditor</interfacename>
-            instances for each bean creation attempt.</para>
+            >여기</link>에 설명되어 있다)와 결합해서 사용할 때 특히 편리하다. 이 방법에서 
+            <classname>CustomEditorConfigurer</classname>에 추가된
+            <literal>PropertyEditorRegistrars</literal>는 쉽게 
+            <interfacename>DataBinder</interfacename>와 Spring MVC 
+            <interfacename>Controllers</interfacename>와 공유될 수 있다. 게다가 이는
+            커스텀 에디터에서 동기화를 피한다. 
+            <interfacename>PropertyEditorRegistrar</interfacename>는 각각의 빈을 생성하는 
+            시도에서 새로운 <interfacename>PropertyEditor</interfacename> 인스턴스를 
+            생성할 것이다.</para>
 
           <para>Using a <interfacename>PropertyEditorRegistrar</interfacename>
             is perhaps best illustrated with an example. First off, you need to
             create your own
             <interfacename>PropertyEditorRegistrar</interfacename>
             implementation:</para>
+          <para><interfacename>PropertyEditorRegistrar</interfacename>를 사용하는
+            방법은 예제로 설명하는 것이 가장 좋을 것이다. 먼저 자신만의 
+            <interfacename>PropertyEditorRegistrar</interfacename> 구현체를
+            생성해야 한다.</para>
 
           <programlisting language="java"><![CDATA[package com.foo.editors.spring;
 
@@ -791,25 +716,22 @@ public final class CustomPropertyEditorRegistrar implements PropertyEditorRegist
 
     public void registerCustomEditors(PropertyEditorRegistry registry) {
 
-        ]]><lineannotation>// it is expected that new <interfacename>PropertyEditor</interfacename> instances are created</lineannotation><![CDATA[
+        ]]><lineannotation>// <interfacename>PropertyEditor</interfacename> 인스턴스가 생성되기를 기대한다</lineannotation><![CDATA[
         registry.registerCustomEditor(ExoticType.class, new ExoticTypeEditor());
 
-        ]]><lineannotation>// you could register as many custom property editors as are required here...</lineannotation><![CDATA[
+        ]]><lineannotation>// 여기서 커스텀 프로퍼티 에디터를 필요한만큼 등록할 수 있다</lineannotation><![CDATA[
     }
 }]]></programlisting>
 
-          <para>See also the
-            <classname>org.springframework.beans.support.ResourceEditorRegistrar</classname>
-            for an example
-            <interfacename>PropertyEditorRegistrar</interfacename>
-            implementation. Notice how in its implementation of the
-            <methodname>registerCustomEditors(..)</methodname> method it creates
-            new instances of each property editor.</para>
+          <para><interfacename>PropertyEditorRegistrar</interfacename> 구현체에 대한 예제는
+            <classname>org.springframework.beans.support.ResourceEditorRegistrar</classname>를
+            봐라. <methodname>registerCustomEditors(..)</methodname> 메서드의
+            <interfacename>PropertyEditorRegistrar</interfacename> 구현체가 각 프로퍼티 에디터의 
+            새로운 인스턴스를 어떻게 생성하는 지 봐라.</para>
 
-          <para>Next we configure a
-            <classname>CustomEditorConfigurer</classname> and inject an instance
-            of our <classname>CustomPropertyEditorRegistrar</classname> into
-            it:</para>
+          <para>그 다음 <classname>CustomEditorConfigurer</classname>를 설정하고 
+            <classname>CustomPropertyEditorRegistrar</classname> 인스턴스를 
+            <interfacename>PropertyEditorRegistrar</interfacename>에 주입한다.</para>
           <programlisting language="xml"><![CDATA[<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
     <property name="propertyEditorRegistrars">
         <list>
@@ -821,17 +743,14 @@ public final class CustomPropertyEditorRegistrar implements PropertyEditorRegist
 <bean id="customPropertyEditorRegistrar"
       class="com.foo.editors.spring.CustomPropertyEditorRegistrar"/>]]></programlisting>
 
-          <para>Finally, and in a bit of a departure from the focus of this
-            chapter, for those of you using <link linkend="mvc">Spring's MVC web
-            framework</link>, using
-            <interfacename>PropertyEditorRegistrars</interfacename> in
-            conjunction with data-binding
-            <interfacename>Controllers</interfacename> (such as
-            <classname>SimpleFormController</classname>) can be very convenient.
-            Find below an example of using a
-            <interfacename>PropertyEditorRegistrar</interfacename> in the
-            implementation of an <methodname>initBinder(..)</methodname>
-            method:</para>
+          <para>마지막으로 이번 챕터의 주제에서 약간 벗어나서 
+            <link linkend="mvc">Spring의 MVC 웹 프레임워크</link>를 사용하는 경우
+            데이터 바인딩 <interfacename>Controllers</interfacename> 
+            (<classname>SimpleFormController</classname> 같은)와 함께 
+            <interfacename>PropertyEditorRegistrars</interfacename>를 사용한다면 
+            아주 편리하다. 다음은 <methodname>initBinder(..)</methodname> 메서드의 
+            구현체에서 <interfacename>PropertyEditorRegistrar</interfacename>를 
+            사용하는 예제다.</para>
 
           <programlisting language="java"><![CDATA[public final class RegisterUserController extends SimpleFormController {
 
@@ -846,37 +765,32 @@ public final class CustomPropertyEditorRegistrar implements PropertyEditorRegist
         ]]><emphasis role="bold">this.customPropertyEditorRegistrar.registerCustomEditors(binder);</emphasis><![CDATA[
     }
 
-    ]]><lineannotation>// other methods to do with registering a <classname>User</classname></lineannotation><![CDATA[
+    ]]><lineannotation>// <classname>User</classname>를 등록하는 등의 다른 메서드</lineannotation><![CDATA[
 }]]></programlisting>
 
-          <para>This style of <interfacename>PropertyEditor</interfacename>
-            registration can lead to concise code (the implementation of
-            <methodname>initBinder(..)</methodname> is just one line long!), and
-            allows common <interfacename>PropertyEditor</interfacename>
-            registration code to be encapsulated in a class and then shared
-            amongst as many <interfacename>Controllers</interfacename> as
-            needed.</para>
+          <para>이러한 방식의 <interfacename>PropertyEditor</interfacename> 등록으로 
+            코드는 간결해 지고(<methodname>initBinder(..)</methodname>의 구현체는 딱 한줄 
+            뿐이다!) 공통 <interfacename>PropertyEditor</interfacename> 등록코드를 클래스에 
+            은닉화해서 필요한만큼의 많은 <interfacename>Controllers</interfacename>에서 
+            공유할 수 있다.</para>
         </section>
       </section>
     </section>
   </section>
 
   <section id="core-convert">
-    <title>Spring 3 Type Conversion</title>
+    <title>Spring 3 타입 변환</title>
 
-    <para> Spring 3 introduces a <filename>core.convert</filename> package that
-      provides a general type conversion system. The system defines an SPI to
-      implement type conversion logic, as well as an API to execute type
-      conversions at runtime. Within a Spring container, this system can be used
-      as an alternative to PropertyEditors to convert externalized bean property
-      value strings to required property types. The public API may also be used
-      anywhere in your application where type conversion is needed. </para>
+    <para> 스프링 3는 일반적인 타입변환 시스템을 위해 <filename>core.convert</filename> 
+      패키지를 도입했다. 타입변환 시스템은 타입변환 로직을 구현하는 SPI와 런타임시에 타입변환을 실행하는 
+      API를 정의한다. 스프링 컨테이너에서 구체적인 빈 프로퍼티값을 필요한 프로퍼티 타입으로 변환하는 프로퍼티 
+      에디터 대신에 타입변환 시스템을 사용할 수 있다. 어플리케이션내에서 타입변환이 필요한 어디서든 퍼블릭 
+      API를 사용할 수 있다.</para>
 
     <section id="core-convert-Converter-API">
       <title>Converter SPI</title>
 
-      <para> The SPI to implement type conversion logic is simple and strongly
-        typed: </para>
+      <para> 타입변환 로직을 구현하는 SPI는 간단하고 강타입(strongly typed)이다.</para>
 
       <programlisting language="java"><![CDATA[package org.springframework.core.convert.converter;
 
@@ -886,19 +800,15 @@ public interface Converter<S, T> {
 
 }]]></programlisting>
 
-      <para> To create your own Converter, simply implement the interface above.
-        Parameterize S as the type you are converting from, and T as the type
-        you are converting to. For each call to convert(S), the source argument
-        is guaranteed to be NOT null. Your Converter may throw any Exception if
-        conversion fails. An IllegalArgumentException should be thrown to report
-        an invalid source value. Take care to ensure your Converter
-        implementation is thread-safe. </para>
+      <para> 자신만의 Converter를 만들려면 위의 인터페이스를 구현하면 된다. 파라미터 S는 변환되기 
+        전의 타입이고 파라미터 T는 변환할 타입이다. convert(S)를 호출할 때 source 아규먼트는 null이 
+        아니라는 것을 보장해야 한다. 작성한 Converter는 변환에 실패했을 때 Exception을 던질 것이다. 
+        source의 값이 유효하지 않은 경우 IllegalArgumentException을 던져야 한다. 작성한 
+        Converter 구현체가 쓰레드 세이프하도록 해야 한다. </para>
 
-      <para> Several converter implementations are provided in the
-        <filename>core.convert.support</filename> package as a convenience.
-        These include converters from Strings to Numbers and other common types.
-        Consider <classname>StringToInteger</classname> as an example Converter
-        implementation: </para>
+      <para> <filename>core.convert.support</filename> 패키지에 핀리한 여러 가지 컨버터 
+        구현체가 있다. 이 구현체들은 문자열을 숫자나 다른 일반적인 타입으로 변환하는 컨버터가 포한되어 있다. 
+        Converter 구현의 예제로 <classname>StringToInteger</classname>를 보자. </para>
 
       <programlisting language="java"><![CDATA[package org.springframework.core.convert.support;
 
@@ -914,10 +824,9 @@ final class StringToInteger implements Converter<String, Integer> {
     <section id="core-convert-ConverterFactory-SPI">
       <title>ConverterFactory</title>
 
-      <para> When you need to centralize the conversion logic for an entire
-        class hierarchy, for example, when converting from String to
-        java.lang.Enum objects, implement
-        <interfacename>ConverterFactory</interfacename>: </para>
+      <para> String을 java.lang.Enum 객체로 변환하는 등 전체 클래스 계층에서 
+        변환로직을 한 곳에 모으려고 한다면 
+        <interfacename>ConverterFactory</interfacename>를 구현해라. </para>
 
       <programlisting language="java"><![CDATA[package org.springframework.core.convert.converter;
 
@@ -927,13 +836,12 @@ public interface ConverterFactory<S, R> {
 
 }]]></programlisting>
 
-      <para> Parameterize S to be the type you are converting from and R to be
-        the base type defining the <emphasis>range</emphasis> of classes you can
-        convert to. Then implement getConverter(Class&lt;T&gt;), where T is a
-        subclass of R. </para>
+      <para> 파라미터 S는 변환하기 전의 타입이고 파라미터 R은 변환할 클래스의 
+        <emphasis>범위</emphasis>를 정의하는 기본타입이다. 이제 getConverter(Class&lt;T&gt;)를 
+        구현해라. T는 R의 슈퍼클래스다. </para>
 
-      <para> Consider the <classname>StringToEnum</classname> ConverterFactory
-        as an example: </para>
+      <para> <classname>StringToEnum</classname> ConverterFactory 예제를 
+        보자. </para>
 
       <programlisting language="java"><![CDATA[package org.springframework.core.convert.support;
 
@@ -961,14 +869,11 @@ final class StringToEnumConverterFactory implements ConverterFactory<String, Enu
     <section id="core-convert-GenericConverter-SPI">
       <title>GenericConverter</title>
 
-      <para> When you require a sophisticated Converter implementation, consider
-        the GenericConverter interface. With a more flexible but less strongly
-        typed signature, a GenericConverter supports converting between multiple
-        source and target types. In addition, a GenericConverter makes available
-        source and target field context you can use when implementing your
-        conversion logic. Such context allows a type conversion to be driven by
-        a field annotation, or generic information declared on a field
-        signature. </para>
+      <para> 세련된 Converter 구현체가 필요하다면 GenericConverter 인터페이스를 고려해봐라. 
+        훨씬 유연하면서도 타입 제약이 적은 GenericConverter는 여러 가지 타입의 소스와 타겟간의 
+        변환을 지원한다. 게다가 GenericConverter는 자신만의 변환 로직을 구현할 때 소스와 타겟 필드 
+        컨텍스트를 사용할 수 있게 해준다. 이러한 컨텍스트로 필드 어노테이션이나 필드정의에 선언된 제너릭 
+        정보로 타입변환을 할 수 있다. </para>
 
       <programlisting language="java"><![CDATA[package org.springframework.core.convert.converter;
 
@@ -980,37 +885,29 @@ public interface GenericConverter {
 
 }]]></programlisting>
 
-      <para> To implement a GenericConverter, have getConvertibleTypes() return
-        the supported source-&gt;target type pairs. Then implement
-        convert(Object, TypeDescriptor, TypeDescriptor) to implement your
-        conversion logic. The source TypeDescriptor provides access to the
-        source field holding the value being converted. The target
-        TypeDescriptor provides access to the target field where the converted
-        value will be set. </para>
+      <para> GenericConverter를 구현하려면 지원하는 source-&gt;target 타입의 쌍을 반환하는 
+        getConvertibleTypes()를 정의하고 변환 로직을 위해 
+        convert(Object, TypeDescriptor, TypeDescriptor)를 구현한다. 소스 
+        TypeDescriptor는 변환될 값이 있는 소스 필드에 접근하게 해주고 타겟 
+        TypeDescriptor는 변환된 값이 할당될 타겟 필드에 접근하게 해준다. </para>
 
-      <para> A good example of a GenericConverter is a converter that converts
-        between a Java Array and a Collection. Such an
-        ArrayToCollectionConverter introspects the field that declares the
-        target Collection type to resolve the Collection's element type. This
-        allows each element in the source array to be converted to the
-        Collection element type before the Collection is set on the target
-        field. </para>
+      <para> 자바 배열과 컬렉션을 변환해주는 컨버터는 GenericConverter의 좋은 예제다. 이 
+        ArrayToCollectionConverter는 컬렉션의 엘리먼트 타입을 위한 타겟 컬렉션 타입을 선언한 
+        필드를 가진다. 이는 타겟 필드에 컬렉션을 할당하기 전에 소스 배열의 각 엘리먼트를 컬렉션 
+        엘리먼트 타입으로 변환한다. </para>
       <note>
-        <para> Because GenericConverter is a more complex SPI interface, only
-          use it when you need it. Favor Converter or ConverterFactory for basic
-          type conversion needs. </para>
+        <para> GenericConverter은 훨씬 복잡한 SPI 인터페이스이므로 필요할때만 사용해야 한다. 
+          기본적인 타입 변환이 필요하다면 Converter나 ConverterFactory를 사용해라. </para>
       </note>
 
       <section id="core-convert-ConditionalGenericConverter-SPI">
         <title>ConditionalGenericConverter</title>
 
-        <para> Sometimes you only want a Converter to execute if a specific
-          condition holds true. For example, you might only want to execute a
-          Converter if a specific annotation is present on the target field. Or
-          you might only want to execute a Converter if a specific method, such
-          as static valueOf method, is defined on the target class.
-          ConditionalGenericConverter is an subinterface of GenericConverter
-          that allows you to define such custom matching criteria: </para>
+        <para> 때로는 지정한 상태가 참일 경우에만 Converter를 실행하고 싶을 것이다. 예를 들어 
+          타겟 필드에 어노테이션을 지정했을 때만 Converter를 실행하고 싶을 것이다. 또는 정적 
+          valueOf 메서드처럼 지정한 메서드가 타켓클래스에 정의되었을 때만 Converter를 실행하기를 
+          원할 것이다. GenericConverter의 하위인터페이스인 ConditionalGenericConverter는 
+          이러한 커스텀 크리테리아 검사를 정의할 수 있다. </para>
 
         <programlisting language="java"><![CDATA[public interface ConditionalGenericConverter extends GenericConverter {
 
@@ -1018,21 +915,19 @@ public interface GenericConverter {
 
 }]]></programlisting>
 
-        <para> A good example of a ConditionalGenericConverter is an
-          EntityConverter that converts between an persistent entity identifier
-          and an entity reference. Such a EntityConverter might only match if
-          the target entity type declares a static finder method e.g.
-          findAccount(Long). You would perform such a finder method check in the
-          implementation of matches(TypeDescriptor, TypeDescriptor). </para>
+        <para> 퍼시스턴트 엔티티 식별자와 엔티티 참조간의 변환을 하는 EntityConverter가 
+          ConditionalGenericConverter의 좋은 예이다. 이러한 EntityConverter는 타겟 
+          엔티티 타입이 정적 finder 메서드(예: findAccount(Long))를 정의했을 때만 수행된다. 
+          matches(TypeDescriptor, TypeDescriptor)의 구현체에서 이러한 finder 메서드 
+          검사를 수행한다. </para>
       </section>
     </section>
 
     <section id="core-convert-ConversionService-API">
       <title>ConversionService API</title>
 
-      <para> The ConversionService defines a unified API for executing type
-        conversion logic at runtime. Converters are often executed behind this
-        facade interface: </para>
+      <para> ConversionService는 런타임시에 타입 변환 로직을 실행하는 통일된 API를 정의한다. 
+        때로는 이러한 퍼사드 인터페이스뒤에서 컨버터가 실행된다. </para>
 
       <programlisting language="java"><![CDATA[package org.springframework.core.convert;
 
@@ -1048,48 +943,40 @@ public interface ConversionService {
 
 }]]></programlisting>
 
-      <para> Most ConversionService implementations also implement
-        <interface>ConverterRegistry</interface>, which provides an SPI for
-        registering converters. Internally, a ConversionService implementation
-        delegates to its registered converters to carry out type conversion
-        logic. </para>
+      <para> 대부분의 ConversionService 구현체는 컨버터를 등록하는 SPI를 제공하는 
+        <interface>ConverterRegistry</interface>도 구현하고 있다. 내부적으로 
+        ConversionService 구현체는 타입변환 로직 수행을 등록된 컨버터에 위임한다. </para>
 
-      <para> A robust ConversionService implementation is provided in the
-        <filename>core.convert.support</filename> package.
-        <classname>GenericConversionService</classname> is the general-purpose
-        implementation suitable for use in most environments.
-        <classname>ConversionServiceFactory</classname> provides a convenient
-        factory for creating common ConversionService configurations. </para>
+      <para> 신뢰할 수 있는 ConversionService 구현체는 
+        <filename>core.convert.support</filename> 패키지에 있다. 
+        <classname>GenericConversionService</classname>는 대부분에 환경에서 사용할 수 
+        있는 범용적인 구현체이다. <classname>ConversionServiceFactory</classname>는 
+        공통적인 ConversionService 설정을 생성하는 편리한 팩토리를 제공한다. </para>
     </section>
 
     <section id="core-convert-Spring-config">
-      <title>Configuring a ConversionService</title>
+      <title>ConversionService 설정</title>
 
-      <para> A ConversionService is a stateless object designed to be
-        instantiated at application startup, then shared between multiple
-        threads. In a Spring application, you typically configure a
-        ConversionService instance per Spring container (or ApplicationContext).
-        That ConversionService will be picked up by Spring and then used
-        whenever a type conversion needs to be performed by the framework. You
-        may also inject this ConversionService into any of your beans and invoke
-        it directly. </para>
+      <para> ConversionService는 어플리케이션 구동시에 인스턴스화되고 여러 쓰레드 사이에서 공유되도록 
+        설계된 무상태의 객체이다. 스프링 어플리케이션에서는 보통 스프링 컨테이너(또는 ApplicationContext)마다 
+        ConversionService 인스턴스를 설정한다. 설정한 ConversionService를 스프링이 선택해서 
+        프레임워크가 타입변환을 수행해야 할 때마다 사용할 것이다. 이 ConversionService를 어떤 
+        빈에라도 주입해서 직접 호출할 수도 있다. </para>
       <note>
-        <para> If no ConversionService is registered with Spring, the original
-          PropertyEditor-based system is used. </para>
+        <para> 스프링에 등록된 ConversionService가 없으면 원래의 
+          PropertyEditor기반 시스템을 사용한다. </para>
       </note>
 
-      <para> To register a default ConversionService with Spring, add the
-        following bean definition with id <code>conversionService</code>: </para>
+      <para> <code>conversionService</code> id의 다음 빈 정의를 추가해서 
+        스프링에 기본 ConversionService를 등록한다. </para>
       <programlisting language="xml"><![CDATA[<bean id="conversionService"
       class="org.springframework.context.support.ConversionServiceFactoryBean"/>]]>
       </programlisting>
 
-      <para> A default ConversionService can convert between strings, numbers,
-        enums, collections, maps, and other common types. To suppliment or
-        override the default converters with your own custom converter(s), set
-        the <code>converters</code> property. Property values may implement
-        either of the Converter, ConverterFactory, or GenericConverter
-        interfaces. </para>
+      <para> 기본 ConversionService는 문자열, 숫자, 이넘(enums), 컬렉션, 맵 등의 타입을
+        변환한다. <code>converters</code> 프로퍼티를 설정해서 자신의 커스텀 컴버터로 기본
+        컨버터를 보완하거나 오버라이드할 수 있다. 프로퍼티 값은 Converter, ConverterFactory,
+        GenericConverter 인터페이스를 구현할 것이다. </para>
 
       <programlisting language="xml"><![CDATA[<bean id="conversionService"
       class="org.springframework.context.support.ConversionServiceFactoryBean">
@@ -1100,22 +987,21 @@ public interface ConversionService {
     </property>
 </bean>]]></programlisting>
 
-      <para>It is also common to use a ConversionService within a Spring MVC
-        application. See <xref linkend="format-configuring-FormattingConversionService"/>
-        for details on use with
-        <literal>&lt;mvc:annotation-driven/&gt;</literal>.</para>
+      <para>스프링 MVC 어플리케이션에서 ConversionService를 사용하는 것도 일반적이다. 
+        <literal>&lt;mvc:annotation-driven/&gt;</literal>로 사용하는 방법은
+        <xref linkend="format-configuring-FormattingConversionService"/>를
+        봐라.</para>
 
-      <para>In certain situations you may wish to apply formatting during
-        conversion. See <xref linkend="format-FormatterRegistry-SPI"/> for
-        details on using
-        <classname>FormattingConversionServiceFactoryBean</classname>.</para>
+      <para>변환하는 과정에서 포매팅을 적용해야 하는 경우도 있다.
+        <classname>FormattingConversionServiceFactoryBean</classname>를 사용하는
+        방법은 <xref linkend="format-FormatterRegistry-SPI"/>를 봐라.</para>
     </section>
 
     <section id="core-convert-programmatic-usage">
-      <title>Using a ConversionService programatically</title>
+      <title>프로그래밍적인 ConversionService의 사용</title>
 
-      <para> To work with a ConversionService instance programatically, simply
-        inject a reference to it like you would for any other bean: </para>
+      <para> 다른 빈에 ConversionService 인스턴스의 참조를 주입해서 
+        프로그래밍적으로 ConversionService 인스턴스를 사용할 수 있다. </para>
 
       <programlisting language="java"><![CDATA[@Service
 public class MyService {
@@ -1133,51 +1019,44 @@ public class MyService {
   </section>
 
   <section id="format">
-    <title>Spring 3 Field Formatting</title>
+    <title>Spring 3 필드 포매팅</title>
 
-    <para> As discussed in the previous section, <link linkend="core-convert"
-      ><filename>core.convert</filename></link> is a general-purpose type
-      conversion system. It provides a unified ConversionService API as well as
-      a strongly-typed Converter SPI for implementing conversion logic from one
-      type to another. A Spring Container uses this system to bind bean property
-      values. In addition, both the Spring Expression Language (SpEL) and
-      DataBinder use this system to bind field values. For example, when SpEL
-      needs to coerce a <classname>Short</classname> to a
-      <classname>Long</classname> to complete an
-      <function>expression.setValue(Object bean, Object value)</function>
-      attempt, the core.convert system performs the coercion. </para>
+    <para> 이전 섹션에서 얘기했듯이 <link linkend="core-convert"
+      ><filename>core.convert</filename></link>는 범용적인 타입변환 시스템이다. 이는 
+      한 타입에서 다른 타입으로 변환하는 로직을 구현하는 강타입의 Converter SPI처럼 통일된 
+      ConversionService API를 제공한다. 스프링 컨테이너는 빈 프로퍼티의 값을 바인딩하는데 
+      이 시스템을 사용한다. 게다가 스프링 표현언어 (SpEL)와 DataBinder는 둘 다 필드 값을 
+      바인딩 하는데 이 시스템을 사용한다. 예를 들어 
+      <function>expression.setValue(Object bean, Object value)</function>를 
+      실행하기 위해 SpEL이 <classname>Short</classname>를 
+      <classname>Long</classname>으로 강제해야 할 때 core.convert 
+      시스템이 강제한다. </para>
 
-    <para> Now consider the type conversion requirements of a typical client
-      environment such as a web or desktop application. In such environments,
-      you typically convert <emphasis>from String</emphasis> to support the
-      client postback process, as well as back <emphasis>to String</emphasis> to
-      support the view rendering process. In addition, you often need to
-      localize String values. The more general <emphasis>core.convert</emphasis>
-      Converter SPI does not address such <emphasis>formatting</emphasis>
-      requirements directly. To directly address them, Spring 3 introduces a
-      convenient Formatter SPI that provides a simple and robust alternative to
-      PropertyEditors for client environments. </para>
+    <para> 웹 어플리케이션이나 데스크톱 어플리케이션같은 전형적인 클라이언트 환경에서의 타입변환 
+      요구사항을 생각해 보자. 이러한 환경에서는 보통 <emphasis>String을</emphasis> 클라이언트의 
+      포스트백(postback) 과정을 지원하도록 변환하고 뷰 렌더링 과정을 위해 다시 
+      <emphasis>String</emphasis>로 변환한다. 또한 때로는 문자열 값을 로컬라이징할 필요가 있다. 
+      더 일반적인 <emphasis>core.convert</emphasis> Converter SPI는 
+      <emphasis>포매팅</emphasis>같은 요구사항을 직접 다루지 않는다. 이러한 것들을 직접 다루기 위해 
+      스프링 3는 PropertyEditor 대신 클라이언트 환경에서 사용할 수 있는 간단하고 신뢰할 수 있으며 
+      편리한 Formatter SPI를 도입했다. </para>
 
-    <para> In general, use the Converter SPI when you need to implement
-      general-purpose type conversion logic; for example, for converting between
-      a java.util.Date and and java.lang.Long. Use the Formatter SPI when you're
-      working in a client environment, such as a web application, and need to
-      parse and print localized field values. The ConversionService provides a
-      unified type conversion API for both SPIs. </para>
+    <para> 보통 범용적인 타입 변환 로직을 구현할 때 Converter SPI를 사용하는데 java.util.Date와 
+      java.lang.Long 간에 변환을 하는 경우이다. 웹 어플리케이션같은 클라이언트 환경에서 작업하고 
+      로컬라이징된 필드값을 파싱해서 출력해야 할 때 Formatter SPI를 사용해라. ConversionService는 
+      두 SPI에 대한 일관된 타입변환 API를 제공한다. </para>
 
     <section id="format-Formatter-SPI">
       <title>Formatter SPI</title>
 
-      <para> The Formatter SPI to implement field formatting logic is simple and
-        strongly typed: </para>
+      <para> 필드 포매팅 로직을 구현하는 Formatter SPI는 간단하면서도 강타입이다. </para>
 
       <programlisting language="java"><![CDATA[package org.springframework.format;
 
 public interface Formatter<T> extends Printer<T>, Parser<T> {
 }]]></programlisting>
 
-      <para> Where Formatter extends from the Printer and Parser building-block
-        interfaces: </para>
+      <para> Formatter는 Printer와 Parser 인터페이스를 상속받는다. </para>
 
       <programlisting language="java"><![CDATA[public interface Printer<T> {
     String print(T fieldValue, Locale locale);
@@ -1189,30 +1068,25 @@ public interface Parser<T> {
     T parse(String clientValue, Locale locale) throws ParseException;
 }]]></programlisting>
 
-      <para> To create your own Formatter, simply implement the Formatter
-        interface above. Parameterize T to be the type of object you wish to
-        format, for example, <classname>java.util.Date</classname>. Implement
-        the <methodname>print()</methodname> operation to print an instance of T
-        for display in the client locale. Implement the
-        <methodname>parse()</methodname> operation to parse an instance of T from
-        the formatted representation returned from the client locale. Your
-        Formatter should throw a ParseException or IllegalArgumentException if a
-        parse attempt fails. Take care to ensure your Formatter implementation
-        is thread-safe. </para>
+      <para> 위의 Formatter 인터페이스를 구현해서 자신만의 Formatter를 만들 수 있다. 파라미터 
+        T는 포매팅할 객체의 타입으로 <classname>java.util.Date</classname>등이 될 수 있다. 
+        T의 인스턴스를 클라이언트 로케일(locale)로 출력하는 <methodname>print()</methodname>를 
+        구현한다. 클라이언트 로케일이 반환한 포매팅된 표현에서 T의 인스턴스를 파싱하는 
+        <methodname>parse()</methodname>를 구현해라. 작성한 Formatter가 파싱에 실패하면 
+        ParseException나 IllegalArgumentException를 던져야 한다. Formatter가 
+        쓰레드세이프하게 구현되도록 신경써라. </para>
 
-      <para> Several Formatter implementations are provided in
-        <filename>format</filename> subpackages as a convenience. The
-        <filename>number</filename> package provides a NumberFormatter,
-        CurrencyFormatter, and PercentFormatter to format java.lang.Number
-        objects using a java.text.NumberFormat. The
-        <filename>datetime</filename> package provides a DateFormatter to format
-        java.util.Date objects with a java.text.DateFormat. The
-        <filename>datetime.joda</filename> package provides comprehensive
-        datetime formatting support based on the <ulink
-        url="http://joda-time.sourceforge.net">Joda Time library</ulink>. </para>
+      <para> 여러가지 포매터 구현체는 편리하게 <filename>format</filename> 하위패키지 
+        아래 있다. <filename>number</filename>는 java.text.NumberFormat를 사용해서 
+        java.lang.Number 객체를 포매팅하는 NumberFormatter, CurrencyFormatter, 
+        PercentFormatter를 제공한다. <filename>datetime</filename> 패키지는 
+        java.util.Date 객체를 java.text.DateFormat로 포매팅하는 DateFormatter를 
+        제공한다. <filename>datetime.joda</filename> 패키지는 <ulink 
+        url="http://joda-time.sourceforge.net">Joda 시간 라이브러리</ulink>에 
+        기반해서 포괄적인 datetime 포매팅을 지원한다. </para>
 
-      <para> Consider <classname>DateFormatter</classname> as an example
-        <interfacename>Formatter</interfacename> implementation: </para>
+      <para> <interfacename>Formatter</interfacename> 구현체의 예제로
+        <classname>DateFormatter</classname>를 보자. </para>
 
       <programlisting language="java"><![CDATA[package org.springframework.format.datetime;
 
@@ -1246,17 +1120,16 @@ public final class DateFormatter implements Formatter<Date> {
 
 }]]></programlisting>
 
-      <para> The Spring team welcomes community-driven Formatter contributions;
-        see <ulink url="http://jira.springframework.org"
-        >http://jira.springframework.org</ulink> to contribute. </para>
+      <para> 스프링 개발팀은 커뮤니티가 포매터를 추가하는 것을 환영하고 있다. 포매터에 공헌하려면 
+        <ulink url="http://jira.springframework.org"
+        >http://jira.springframework.org</ulink>를 봐라. </para>
     </section>
 
     <section id="format-CustomFormatAnnotations">
-      <title>Annotation-driven Formatting</title>
+      <title>어노테이션 기반의 포매팅</title>
 
-      <para> As you will see, field formatting can be configured by field type
-        or annotation. To bind an Annotation to a formatter, implement
-        AnnotationFormatterFactory: </para>
+      <para> 다음과 같이 필드 타입이나 어노테이션으로 필드 포매팅을 설정할 수 있다. 포매터에 
+        어노테이션을 바인딩하려면 AnnotationFormatterFactory를 구현해라. </para>
 
       <programlisting language="java"><![CDATA[package org.springframework.format;
 
@@ -1270,18 +1143,14 @@ public interface AnnotationFormatterFactory<A extends Annotation> {
 
 }]]></programlisting>
 
-      <para> Parameterize A to be the field annotationType you wish to associate
-        formatting logic with, for example
-        <code>org.springframework.format.annotation.DateTimeFormat</code>. Have
-        <methodname>getFieldTypes()</methodname> return the types of fields the
-        annotation may be used on. Have <methodname>getPrinter()</methodname>
-        return a Printer to print the value of an annotated field. Have
-        <methodname>getParser()</methodname> return a Parser to parse a
-        clientValue for an annotated field. </para>
+      <para> 파라미터 A는 <code>org.springframework.format.annotation.DateTimeFormat</code>같은 
+        포매팅 로직과 연결될 annotationType 필드이다. <methodname>getFieldTypes()</methodname>는 
+        어노테이션이 사용된 필드의 타입을 반환한다. <methodname>getPrinter()</methodname>는 
+        어노테이션이 붙은 필드의 값을 출력하는 Printer를 반환한다. <methodname>getParser()</methodname>는 
+        어노테이션이 붙은 필트의 clientValue를 파싱하는 Parser를 반환한다. </para>
 
-      <para> The example AnnotationFormatterFactory implementation below binds
-        the @NumberFormat Annotation to a formatter. This annotation allows
-        either a number style or pattern to be specified: </para>
+      <para> 아래의 AnnotationFormatterFactory 구현예제는 포매터에 NumberFormat 
+        어노테이션을 붙혔다. 이 어노테이션은 숫자형식과 패틴을 지정하게 한다. </para>
 
       <programlisting language="java"><![CDATA[public final class NumberFormatAnnotationFormatterFactory
         implements AnnotationFormatterFactory<NumberFormat> {
@@ -1317,7 +1186,7 @@ public interface AnnotationFormatterFactory<A extends Annotation> {
     }
 }]]></programlisting>
 
-      <para> To trigger formatting, simply annotate fields with @NumberFormat: </para>
+      <para> 필드에 @NumberFormat 어노테이션을 붙혀서 포매팅을 실행한다. </para>
 
       <programlisting language="java"><![CDATA[public class MyModel {
 
@@ -1327,16 +1196,15 @@ public interface AnnotationFormatterFactory<A extends Annotation> {
 }]]></programlisting>
 
       <section id="format-annotations-api">
-        <title>Format Annotation API</title>
+        <title>포맷 어노테이션 API</title>
 
-        <para> A portable format annotation API exists in the
-          <filename>org.springframework.format.annotation</filename> package.
-          Use @NumberFormat to format java.lang.Number fields. Use
-          @DateTimeFormat to format java.util.Date, java.util.Calendar,
-          java.util.Long, or Joda Time fields. </para>
+        <para> 포맷 어노테이션 API는 <filename>org.springframework.format.annotation</filename> 
+          패키지에 있다. java.lang.Number 필드를 포매팅하려면 @NumberFormat를 사용하고 
+          java.util.Date, java.util.Calendar, java.util.Long, Joda Time 
+          필드를 포매팅하려면 @DateTimeFormat를 사용해라. </para>
 
-        <para> The example below uses @DateTimeFormat to format a java.util.Date
-          as a ISO Date (yyyy-MM-dd): </para>
+        <para> 아래의 예제는 java.util.Date를 ISO Date (yyyy-MM-dd)로 포매팅하려고 
+          @DateTimeFormat를 사용한다. </para>
 
         <programlisting language="java"><![CDATA[public class MyModel {
 
@@ -1350,19 +1218,16 @@ public interface AnnotationFormatterFactory<A extends Annotation> {
     <section id="format-FormatterRegistry-SPI">
       <title>FormatterRegistry SPI</title>
 
-      <para> The FormatterRegistry is an SPI for registering formatters and 
-      	converters. <classname>FormattingConversionService</classname> is 
-      	an implementation of FormatterRegistry suitable for most environments. 
-      	This implementation may be configured programatically or declaratively 
-      	as a Spring bean using 
-      	<classname>FormattingConversionServiceFactoryBean</classname>.
-      	Because this implemementation also implements
-        <classname>ConversionService</classname>, it can be directly 
-        configured for use with Spring's DataBinder and the Spring Expression 
-        Language (SpEL).
+      <para> FormatterRegistry는 포매터와 컨버터를 등록하는 SPI다. 
+        <classname>FormattingConversionService</classname>는 대부분의 환경에 적합한 
+        FormatterRegistry의 구현체이다. 이 구현체는 
+        <classname>FormattingConversionServiceFactoryBean</classname>를 사용하는 
+        스프링 빈처럼 프로그래밍적으로나 선언적으로 설정할 수 있다. 이 구현체가 
+        <classname>ConversionService</classname>도 구현했기 때문에 스프링의 DataBinder와 
+        스프링 표현언어(SpEL)를 사용해서 직접설정할 수도 있다.
       </para>
 
-      <para> Review the FormatterRegistry SPI below: </para>
+      <para> 아래의 FormatterRegistry SPI를 보자. </para>
 
       <programlisting language="java"><![CDATA[package org.springframework.format;
 
@@ -1378,24 +1243,21 @@ public interface FormatterRegistry extends ConverterRegistry {
 
 }]]></programlisting>
 
-      <para> As shown above, Formatters can be registered by fieldType or
-        annotation. 
+      <para> 위에서 보았듯이 Formatter는 fieldType이나 어노테이션으로 등록할 수 있다.
       </para>
-      <para> The FormatterRegistry SPI allows you to configure Formatting rules
-        centrally, instead of duplicating such configuration across your
-        Controllers. For example, you might want to enforce that all Date fields
-        are formatted a certain way, or fields with a specific annotation are
-        formatted in a certain way. With a shared FormatterRegistry, you define
-        these rules once and they are applied whenever formatting is needed. 
-      </para>      
+      <para> FormatterRegistry SPI는 여러 컨트롤러에서 중복된 설정을 하는 대신에 중앙에 포매팅 
+        규칙을 설정할 수 있다. 예를 들어 모든 Date 필드를 특정 방법으로 포매팅하거나 특정 어노테이션을 
+        가진 필드를 특정 방법으로 포매팅하는 것을 강제할 수 있다. 공유된 FormatterRegistry로 
+        이러한 규칙을 한번만 정의하고 포매팅이 필요한 곳마다 적용한다. 
+      </para>
     </section>
 
     <section id="format-FormatterRegistrar-SPI">
       <title>FormatterRegistrar SPI</title>
 	
-	  <para> The FormatterRegistrar is an SPI for registering formatters and 
-	  	converters through the FormatterRegistry: 
-	  </para>
+    <para> FormatterRegistrar는 FormatterRegistry를 통해 포매터와 컨버터를 
+      등록하는 SPI다.
+    </para>
 	  
       <programlisting language="java"><![CDATA[package org.springframework.format;
 
@@ -1405,29 +1267,24 @@ public interface FormatterRegistrar {
 
 }]]></programlisting>
 
-	    <para> A FormatterRegistrar is useful when registering multiple related 
-	        converters and formatters for a given formatting category, such as Date 
-	        formatting. It can also be useful where declarative registration is
-	        insufficient. For example when a formatter needs to be indexed under a 
-	        specific field type different from its own &lt;T&gt; or when registering
-	        a Printer/Parser pair. The next section provides more information on 
-	        converter and formatter registration.
-	    </para>
+      <para> Date 포매팅처럼 주어진 포매팅 분류에 따라 관련된 여러가지 컨버터와 포매터를 등록할 때 
+          FormatterRegistrar가 유용하다. 선언적인 등록이 충분하지 않을 때도 유용하다. 예를 들어 
+          포매터가 포매터의 &lt;T&gt;와는 다른 특정 필드 타입하에 색인되어야 하거나 Printer/Parser 
+          쌍을 등록하는 경우이다. 다음 섹션에서는 컨터버와 포매터 등록에 대해서 더 자세히 얘기한다.
+      </para>
 	</section>
       
     <section id="format-configuring-FormattingConversionService">
-      <title>Configuring Formatting in Spring MVC</title>
+      <title>Spring MVC에서의 포매팅 설정</title>
 
-      <para> In a Spring MVC application, you may configure a custom
-        ConversionService instance explicity as an attribute of the
-        <literal>annotation-driven</literal> element of the MVC namespace. This
-        ConversionService will then be used anytime a type conversion is
-        required during Controller model binding. If not configured explicitly,
-        Spring MVC will automatically register default formatters and converters
-        for common types such as numbers and dates. </para>
+      <para> 스프링 MVC 어플리케이션에서 MVC 네임스페이스의 <literal>annotation-driven</literal> 
+        요소의 속성으로 커스텀 ConversionService 인스턴스를 명시적으로 설정할 수 있다. 컨트롤러 
+        모델 바인딩을 하면서 타입변환이 필요할 때마다 이 ConversionService를 사용한다. 명시적으로 
+        설정하지 않은 경우 스프링 MVC는 숫자나 날짜같은 일반적인 타입에 대한 기본 포매터와 컨버터를 
+        자동으로 등록할 것이다. </para>
 
-      <para> To rely on default formatting rules, no custom configuration is
-        required in your Spring MVC config XML: </para>
+      <para> 기본 포매팅 룰을 사용하는데 스프링 MVC 설정 XML에서 어떤 커스턴 설정도 
+        필요없다. </para>
 
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -1443,16 +1300,13 @@ public interface FormatterRegistrar {
 
 </beans>]]></programlisting>
 
-      <para> With this one-line of configuation, default formatters for Numbers
-        and Date types will be installed, including support for the
-        @NumberFormat and @DateTimeFormat annotations. Full support for the Joda
-        Time formatting library is also installed if Joda Time is present on the
-        classpath. </para>
+      <para> 이 한줄의 설정으로 @NumberFormat와 @DateTimeFormat 어노테이션을 포함해서 숫자와 
+        날짜타임에 대한 기본 포매터를 설정할 수 있다. 클래스패스에 Joda Time 라이브러리가 있다면 
+        Joda 타임 포매팅 라이브러리에 대한 완전한 지원을 할 수 있다. </para>
 
-      <para> To inject a ConversionService instance with custom formatters and
-        converters registered, set the conversion-service attribute and then 
-        specify custom converters, formatters, or FormatterRegistrars as properties
-        of the FormattingConversionServiceFactoryBean: </para>
+      <para> 커스텀 포매터와 컨버터가 등록된 ConversionService 인스턴스를 주입하려면 
+        conversion-service 속성을 설정한 뒤 FormattingConversionServiceFactoryBean의 
+        프로퍼티로 커스텀 컨버터나 포매터, FormatterRegistrar를 지정해라. </para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:mvc="http://www.springframework.org/schema/mvc"
@@ -1489,43 +1343,42 @@ public interface FormatterRegistrar {
 ]]></programlisting>
 
       <note>
-	      <para> See <xref linkend="format-FormatterRegistrar-SPI"/> and  
-	        the <classname>FormattingConversionServiceFactoryBean</classname> 
-	        for more information on when to use FormatterRegistrars.
-	      </para>
+        <para> FormatterRegistrar 사용에 대한 자세한 내용은 
+          <xref linkend="format-FormatterRegistrar-SPI"/> 와 
+          <classname>FormattingConversionServiceFactoryBean</classname>를 
+          봐라.
+        </para>
       </note>
 
     </section>
   </section>
 
   <section id="validation-beanvalidation">
-    <title>Spring 3 Validation</title>
+    <title>Spring 3 유효성 검사(Validation)</title>
 
-    <para> Spring 3 introduces several enhancements to its validation support.
-      First, the JSR-303 Bean Validation API is now fully supported. Second,
-      when used programatically, Spring's DataBinder can now validate objects as
-      well as bind to them. Third, Spring MVC now has support for declaratively
-      validating @Controller inputs. </para>
+    <para> 스프링 3에서는 유효성검사에 대한 지원이 여러 모로 강화되었다. 우선 JSR-303 Bean 
+      Validation API를 이제 완전히 지원한다. 두번째로 프로그래밍적으로 사용할 때 스프링의 
+      DataBinder는 객체에 대한 바인딩 뿐만 아니라 객체의 유효성검사도 할 수 있다. 세번째로 
+      스프링 MVC는 @Controller 입력에 대한 유효성 검사를 선언적으로 할 수 있다. </para>
 
     <section id="validation-beanvalidation-overview">
-      <title>Overview of the JSR-303 Bean Validation API</title>
+      <title>JSR-303 Bean Validation API의 개요</title>
 
-      <para> JSR-303 standardizes validation constraint declaration and metadata
-        for the Java platform. Using this API, you annotate domain model
-        properties with declarative validation constraints and the runtime
-        enforces them. There are a number of built-in constraints you can take
-        advantage of. You may also define your own custom constraints. </para>
+      <para> JSR-303는 자바플랫폼의 유효성 검사 제약사항 선언과 메타데이터를 표준화한다. JSR-303 
+        API를 사용해서 선언적인 유효성 제약사항으로 도에인 모델 프로퍼티에 어노테이션을 붙히고 런타임시에 
+        이를 강제할 수 있다. 사용할 만한 다수의 내장 제약사항이 존재한다. 물론 자신만의 커스텀 
+        제약사항도 정의할 수 있다. </para>
 
-      <para> To illustrate, consider a simple PersonForm model with two
-        properties: </para>
+      <para> 설명을 위해 2개의 프로퍼티를 가진 간단한 PersonForm 모델을 생각해 
+        보자. </para>
 
       <programlisting language="java"><![CDATA[public class PersonForm {
     private String name;
     private int age;
 }]]></programlisting>
 
-      <para> JSR-303 allows you to define declarative validation constraints
-        against such properties: </para>
+      <para> JSR-303으로 이러한 프로퍼티에 대한 유효성 검사 제약사항을 선언적으로 정의할 
+        수 있다. </para>
 
       <programlisting language="java"><![CDATA[public class PersonForm {
 
@@ -1538,51 +1391,45 @@ public interface FormatterRegistrar {
 
 }]]></programlisting>
 
-      <para> When an instance of this class is validated by a JSR-303 Validator,
-        these constraints will be enforced. </para>
+      <para> JSR-303 Validator가 이 클래스의 인스턴스를 검사할 때 이러한 제약사항을 강제할 
+        것이다. </para>
 
-      <para> For general information on JSR-303, see the <ulink
+      <para> JSR-303에 대한 일반적인 내용은 <ulink
         url="http://jcp.org/en/jsr/detail?id=303">Bean Validation
-        Specification</ulink>. For information on the specific capabilities of
-        the default reference implementation, see the <ulink
-        url="https://www.hibernate.org/412.html">Hibernate Validator</ulink>
-        documentation. To learn how to setup a JSR-303 implementation as a
-        Spring bean, keep reading. </para>
+        Specification</ulink>를 봐라. 기본 레퍼런스 구현체의 특정 능력에 대한 내용은 <ulink
+        url="https://www.hibernate.org/412.html">Hibernate Validator</ulink> 문서를 
+        봐라. JSR-303 구현체를 어떻게 스프링 빈으로 설정하는지 알고 싶으면 계속 읽어봐라. </para>
     </section>
 
     <section id="validation-beanvalidation-spring">
-      <title>Configuring a Bean Validation Implementation</title>
+      <title>Bean Validation 구현체 설정</title>
 
-      <para> Spring provides full support for the JSR-303 Bean Validation API.
-        This includes convenient support for bootstrapping a JSR-303
-        implementation as a Spring bean. This allows for a
-        <code>javax.validation.ValidatorFactory</code> or
-        <code>javax.validation.Validator</code> to be injected wherever
-        validation is needed in your application. </para>
+      <para> 스프링은 JSR-303 Bean Validation API를 완전히 지원한다. 이는 JSR-303 구현체를 
+        스프링 빈으로 편리하게 설정하도록 하는 것도 포함한다. 또한 어플리케이션에서 유효성검사가 필요할 
+        때마다 <code>javax.validation.ValidatorFactory</code>나 
+        <code>javax.validation.Validator</code>를 주입할 수 있다. </para>
 
-      <para> Use the <classname>LocalValidatorFactoryBean</classname> to
-        configure a default JSR-303 Validator as a Spring bean: </para>
+      <para> 기본 JSR-303 Validator를 스프링 빈으로 설정하려면 
+        <classname>LocalValidatorFactoryBean</classname>를 사용해라. </para>
 
       <programlisting language="xml"><![CDATA[<bean id="validator"
       class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>]]></programlisting>
 
-      <para> The basic configuration above will trigger JSR-303 to initialize
-        using its default bootstrap mechanism. A JSR-303 provider, such as
-        Hibernate Validator, is expected to be present in the classpath and will
-        be detected automatically. </para>
+      <para> 위의 기본 설정은 JSR-303의 기본 부트스트랩 메카니즘을 사용해서 JSR-303을 초기화한다. 
+        Hibernate Validator같은 JSR-303 프로바이더는 클래스패스에 존재해야 하고 자동적으로 
+        탐지될 것이다. </para>
 
       <section id="validation-beanvalidation-spring-inject">
-        <title>Injecting a Validator</title>
+        <title>Validator 주입</title>
 
-        <para> <classname>LocalValidatorFactoryBean</classname> implements both
-          <code>javax.validation.ValidatorFactory</code> and
-          <code>javax.validation.Validator</code>, as well as Spring's
-          <code>org.springframework.validation.Validator</code>. You may inject
-          a reference to either of these interfaces into beans that need to
-          invoke validation logic. </para>
+        <para> <classname>LocalValidatorFactoryBean</classname>는 
+          <code>org.springframework.validation.Validator</code>뿐만 아니라 
+          <code>javax.validation.ValidatorFactory</code>와 
+          <code>javax.validation.Validator</code>를 모두 구현한다. 이러한 인터페이스에 
+          대한 참조를 유효성검사 로직을 실행해야하는 빈에 주입할 것이다. </para>
 
-        <para> Inject a reference to <code>javax.validation.Validator</code> if
-          you prefer to work with the JSR-303 API directly: </para>
+        <para> JSR-303 API를 직접 사용하는 걸 좋아한다면 
+          <code>javax.validation.Validator</code>에 대한 참조를 주입해라. </para>
 
         <programlisting language="java"><![CDATA[import javax.validation.Validator;
 
@@ -1592,9 +1439,9 @@ public class MyService {
     @Autowired
     private Validator validator;]]></programlisting>
 
-        <para> Inject a reference to
-          <code>org.springframework.validation.Validator</code> if your bean
-          requires the Spring Validation API: </para>
+        <para> 빈(bean)이 Spring Validation API를 필요로 한다면 
+          <code>org.springframework.validation.Validator</code>에 대한 
+          참조를 주입해라. </para>
 
         <programlisting language="java"><![CDATA[import org.springframework.validation.Validator;
 
@@ -1608,28 +1455,23 @@ public class MyService {
       </section>
 
       <section id="validation-beanvalidation-spring-constraints">
-        <title>Configuring Custom Constraints</title>
+        <title>커스텀 제약사항(Constraints) 설정</title>
 
-        <para> Each JSR-303 validation constraint consists of two parts. First,
-          a @Constraint annotation that declares the constraint and its
-          configurable properties. Second, an implementation of the
-          <code>javax.validation.ConstraintValidator</code> interface that
-          implements the constraint's behavior. To associate a declaration with
-          an implementation, each @Constraint annotation references a
-          corresponding ValidationConstraint implementation class. At runtime, a
-          <code>ConstraintValidatorFactory</code> instantiates the referenced
-          implementation when the constraint annotation is encountered in your
-          domain model. </para>
+        <para> 각 JSR-303 유효성검사 제약사항은 두 부분으로 구성되어 있다. 첫째, 제약사항과 
+          설정가능한 제약사항의 프로퍼티를 설정하는 @Constraint. 두번째는 제약사항의 동작을 구현하는 
+          <code>javax.validation.ConstraintValidator</code> 인터페이스의 구현체이다. 
+          선언과 구현체의 연결을 위해 각 @Constraint 어노테이션은 대응되는 ValidationConstraint 
+          구현체를 참조한다. 런타임시에 <code>ConstraintValidatorFactory</code>는 제약사항 
+          어노테이션이 도메인 모델을 만났을 때 참조된 구현체를 인스턴스화한다. </para>
 
-        <para> By default, the <classname>LocalValidatorFactoryBean</classname>
-          configures a <code>SpringConstraintValidatorFactory</code> that uses
-          Spring to create ConstraintValidator instances. This allows your
-          custom ConstraintValidators to benefit from dependency injection like
-          any other Spring bean. </para>
+        <para> 기본적으로 <classname>LocalValidatorFactoryBean</classname>는 스프링이 
+          ConstraintValidator 인스턴스를 생성하려고 사용하는 
+          <code>SpringConstraintValidatorFactory</code>를 설정한다. 이는 다른 스프링 
+          빈처럼 의존성 주입의 이점을 가진 커스텀 ConstraintValidator를 사용할 수 있다. </para>
 
-        <para> Shown below is an example of a custom @Constraint declaration,
-          followed by an associated <code>ConstraintValidator</code>
-          implementation that uses Spring for dependency injection: </para>
+        <para> 다음은 의존성주입을 위해 스프링을 사용하는 관련 
+          <code>ConstraintValidator</code> 구현체가는 붙은 커스텀 @Constraint 
+          선언의 예제이다. </para>
 
         <programlisting language="java"><![CDATA[@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -1647,59 +1489,56 @@ public class MyConstraintValidator implements ConstraintValidator {
     ...
 }]]></programlisting>
 
-        <para> As you can see, a ConstraintValidator implementation may have its
-          dependencies @Autowired like any other Spring bean. </para>
+        <para> 여기서 보듯이 ConstraintValidator 구현체는 다른 스프링 빈처럼 
+          @Autowired로 의존성을 가진다. </para>
       </section>
 
       <section id="validation-beanvalidation-spring-other">
-        <title>Additional Configuration Options</title>
+        <title>추가적인 설정 옵션</title>
 
-        <para> The default <classname>LocalValidatorFactoryBean</classname>
-          configuration should prove sufficient for most cases. There are a
-          number of other configuration options for various JSR-303 constructs,
-          from message interpolation to traversal resolution. See the JavaDocs
-          of <classname>LocalValidatorFactoryBean</classname> for more
-          information on these options. </para>
+        <para> 대부분의 경우에 기본 <classname>LocalValidatorFactoryBean</classname> 
+          설정으로도 충분하다. 메시지 삽입부터 탐색 처리(traversal resolution)까지 다양한 
+          JSR-303 생성에 대한 다수의 설정 옵션이 있다. 이러한 옵션에 대한 자세한 내용은 
+          <classname>LocalValidatorFactoryBean</classname>의 
+          JavaDoc을 봐라. </para>
       </section>
     </section>
 
     <section id="validation-binder">
-      <title>Configuring a DataBinder</title>
+      <title>DataBinder 설정</title>
 
-      <para> Since Spring 3, a DataBinder instance can be configured with a
-        Validator. Once configured, the Validator may be invoked by calling
-        <code>binder.validate()</code>. Any validation Errors are automatically
-        added to the binder's BindingResult. </para>
+      <para> 스프링 3부터 DataBinder 인스턴스는 Validator와 함께 설정할 수 있다. 일단 설정되면 
+        <code>binder.validate()</code> 호출에 의해서 Validator가 실행된다. 유효성 검사 오류는 
+        자동적으로 바인더의 BindingResult에 추가된다. </para>
 
-      <para> When working with the DataBinder programatically, this can be used
-        to invoke validation logic after binding to a target object: </para>
+      <para> 프로그래밍적으로 DataBinder를 사용하는 경우 타겟 객체에 바인딩한 후 유효성 검사 로직을 
+        실행하려고 DataBinder를 사용한다. </para>
 
       <programlisting language="java">Foo target = new Foo();
 DataBinder binder = new DataBinder(target);
 binder.setValidator(new FooValidator());
 
-<lineannotation>// bind to the target object</lineannotation>
+<lineannotation>// 타겟 객체에 바인딩</lineannotation>
 binder.bind(propertyValues);
 
-<lineannotation>// validate the target object</lineannotation>
+<lineannotation>// 타겟객체의 유효성 검사</lineannotation>
 binder.validate();
 
-<lineannotation>// get BindingResult that includes any validation errors</lineannotation>
+<lineannotation>// 유효성검사 오류를 포함한 BindingResult 획득</lineannotation>
 BindingResult results = binder.getBindingResult();</programlisting>
     </section>
 
     <section id="validation-mvc">
       <title>Spring MVC 3 Validation</title>
 
-      <para> Beginning with Spring 3, Spring MVC has the ability to
-        automatically validate @Controller inputs. In previous versions it was
-        up to the developer to manually invoke validation logic. </para>
+      <para> 스프링 3부터 스프링 MVC는 @Controller의 입력을 자동으로 유효성감사할 수 있다. 
+        이전 버전에서는 개발자가 수동으로 유효성검사 로직을 실행해야 했다. </para>
 
       <section id="validation-mvc-triggering">
-        <title>Triggering @Controller Input Validation</title>
+        <title>@Controller 입력의 유효성 검사 실행</title>
 
-        <para> To trigger validation of a @Controller input, simply annotate the
-          input argument as @Valid: </para>
+        <para> 입력 아규먼트에 간단히 @Valid 어노테이션을 붙혀서 @Controller 입력에 대한 
+          유효성검사를 실행한다. </para>
 
         <programlisting language="java">@Controller
 public class MyController {
@@ -1708,22 +1547,21 @@ public class MyController {
     public void processFoo(<emphasis role="bold">@Valid</emphasis> Foo foo) { <lineannotation>/* ... */</lineannotation> }
 </programlisting>
 
-        <para> Spring MVC will validate a @Valid object after binding so-long as
-          an appropriate Validator has been configured. </para>
+        <para> 적절한 Validator가 설정되었다면 Spring MVC 바인딩한 후 @Valid 객체의 
+          유효성을 검사한다. </para>
         <note>
-          <para> The @Valid annotation is part of the standard JSR-303 Bean
-            Validation API, and is not a Spring-specific construct. </para>
+          <para> @Valid 어노테이션은 표준 JSR-303 Bean Validation API의 일부이고 
+            스프링에 한정된 것은 아니다. </para>
         </note>
       </section>
 
       <section id="validation-mvc-configuring">
-        <title>Configuring a Validator for use by Spring MVC</title>
+        <title>Spring MVC가 사용하는 Validator 설정</title>
 
-        <para> The Validator instance invoked when a @Valid method argument is
-          encountered may be configured in two ways. First, you may call
-          binder.setValidator(Validator) within a @Controller's @InitBinder
-          callback. This allows you to configure a Validator instance per
-          @Controller class: </para>
+        <para> @Valid 메서드 아규먼트가 있을때 호출되는 Validator 인스턴스는 2가지 방법으로 
+          설정할 수 있다. 첫번째 방법은 @Controller의 @InitBinder 콜백내에서 
+          binder.setValidator(Validator)를 호출하는 것이다. 이 방법으로 @Controller마다 
+          Validator 인스턴스를 설정할 수 있다. </para>
 
         <programlisting language="java"><![CDATA[@Controller
 public class MyController {
@@ -1738,10 +1576,9 @@ public class MyController {
 
 }]]></programlisting>
 
-        <para> Second, you may call setValidator(Validator) on the global
-          WebBindingInitializer. This allows you to configure a Validator
-          instance across all @Controllers. This can be achieved easily by using
-          the Spring MVC namespace: </para>
+        <para> 두번째 방법은 전역 WebBindingInitializer에서 setValidator(Validator)를 
+          호출하는 것이다. 이 방법으로 모든 @Controllers에 걸쳐서 Validator 인스턴스를 설정할 
+          수 있다. 이는 Spring MVC 네임스페이스로 쉽게 설정할 수 있다. </para>
 
         <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -1760,17 +1597,15 @@ public class MyController {
       </section>
 
       <section id="validation-mvc-jsr303">
-        <title>Configuring a JSR-303 Validator for use by Spring MVC</title>
+        <title>Spring MVC가 사용하는 JSR-303 Validator 설정</title>
 
-        <para> With JSR-303, a single <code>javax.validation.Validator</code>
-          instance typically validates <emphasis>all</emphasis> model objects
-          that declare validation constraints. To configure a JSR-303-backed
-          Validator with Spring MVC, simply add a JSR-303 Provider, such as
-          Hibernate Validator, to your classpath. Spring MVC will detect it and
-          automatically enable JSR-303 support across all Controllers. </para>
+        <para> JSR-303에서 단일 <code>javax.validation.Validator</code> 인스턴스는 
+          보통 유효성검사 제약사항을 선언한 <emphasis>모든</emphasis> 모델 객체의 유효성을 
+          검사한다. 스프링 MVC에 JSR-303에 기반한 Validator를 설정하려면 Hibernate Validator같은 
+          JSR-303 Provider를 클래스패스에 추가한다. 스프링 MVC는 자동으로 이 프로바이더를 탐지해서 
+          모든 컨트롤러에 걸쳐서 JSR-303 지원을 활성화할 것이다. </para>
 
-        <para> The Spring MVC configuration required to enable JSR-303 support
-          is shown below: </para>
+        <para> JSR-303 지원을 활성화하는데 필요한 스프링 MVC 설정은 다음과 같다. </para>
 
         <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -1788,12 +1623,10 @@ public class MyController {
 </beans>
 ]]></programlisting>
 
-        <para> With this minimal configuration, anytime a @Valid @Controller
-          input is encountered, it will be validated by the JSR-303 provider.
-          JSR-303, in turn, will enforce any constraints declared against the
-          input. Any ConstraintViolations will automatically be exposed as
-          errors in the BindingResult renderable by standard Spring MVC form
-          tags. </para>
+        <para> 이러한 최소의 설정으로 @Valid @Controller 입력을 만났을 때마다 JSR-303 
+          프로바이더가 유효성을 검사한다. 다음으로 JSR-303은 입력에 대해 설정된 제약사항을 강제할 
+          것이다. 모든 ConstraintViolation은 표준 스프링 MVC 폼태그로 랜더링할 수 있는 오류로 
+          BindingResult에 노출된다. </para>
       </section>
     </section>
   </section>
