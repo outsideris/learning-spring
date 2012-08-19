@@ -2,219 +2,198 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="expressions">
-  <title>Spring Expression Language (SpEL)</title>
+  <title>Spring 표현 언어 (SpEL)</title>
 
   <section id="expressions-intro">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>The Spring Expression Language (SpEL for short) is a powerful
-    expression language that supports querying and manipulating an object
-    graph at runtime. The language syntax is similar to Unified EL but offers
-    additional features, most notably method invocation and basic string
-    templating functionality.</para>
+    <para>스프링 표현언어 (줄여서 SpEL)는 런타임시에 객체 그래프를 조회하고 조작하는 강력한 
+    표현언어이다. 언어의 문법은 통일된 EL(Unified EL)과 비슷하지만 추가적인 기능을 제공한다. 
+    가장 눈에 띄는 것은 메서드 호출과 기본 문자열 템플릿 기능이다.</para>
 
-    <para>While there are several other Java expression languages available,
-    OGNL, MVEL, and JBoss EL, to name a few, the Spring Expression Language
-    was created to provide the Spring community with a single well supported
-    expression language that can be used across all the products in the Spring
-    portfolio. Its language features are driven by the requirements of the
-    projects in the Spring portfolio, including tooling requirements for code
-    completion support within the eclipse based SpringSource Tool Suite. That
-    said, SpEL is based on a technology agnostic API allowing other
-    expression language implementations to be integrated should the need
-    arise.</para>
+    <para>OGNL, MVEL, JBoss EL 등의 여러가지 자바 표현언어가 존재하지만 스프링 표현언어는 
+    스프링 포트폴리오의 모든 제품에 걸쳐서 사용할 수 있는 하나의 표현언어를 스프링 커뮤니티에 
+    제공하기 위해서 만들어졌다. 스프링 표현언어의 기능은 이클립스에 기반한 SpringSource Tool 
+    Suite에서 코드 자동완성같은 도구의 요구사항을 포함해서 스프링 포트폴리오의 제품들의 필요사항에 
+    따라 만들어졌다. SpEL은 통합되어야 하는 다른 표현언어 구현체를 허용하기 위해 기술 불가지론 
+    API(technology agnostic API)에 기반하고 있다.</para>
 
-    <para>While SpEL serves as the foundation for expression evaluation within
-    the Spring portfolio, it is not directly tied to Spring and can be used
-    independently. In order to be self contained, many of the examples in this
-    chapter use SpEL as if it were an independent expression language. This
-    requires creating a few bootstrapping infrastructure classes such as the
-    parser. Most Spring users will not need to deal with this infrastructure
-    and will instead only author expression strings for evaluation. An example
-    of this typical use is the integration of SpEL into creating XML or
-    annotated based bean definitions as shown in the section <link
-    linkend="expressions-beandef">Expression support for defining bean
-    definitions.</link></para>
+    <para>스프링 포트폴리오내에서 표현식 평가(expression evaluation)의 기반으로 SpEL을 제공하지만 
+    SpEL은 스프링에 직접 묶여있지 않고 독립적으로 사용할 수 있다. 독립적이기 위해서 이번 챕터의 많은 
+    예제는 독립적인 표현언어처럼 SpEL을 사용한다. 독립적으로 사용하려면 파서같은 부트스트랩핑 기반 클래스 
+    몇가지를 생성할 필요가 있다. 대부분의 스프링 사용자들은 이러한 기반 클래스를 다룰 필요 없이 평가할 
+    표현문을 작성하기만 하면 된다. 일반적인 사용에 대한 예제는 <link
+    linkend="expressions-beandef">빈 정의를 정의하는 표현식</link> 섹션에서 보여주는 것과 같은 
+    XML 생성이나 어노테이션 기반의 빈정의를 생성하는 곳에 SpEL을 통합하는 것이다.</para>
 
-    <para>This chapter covers the features of the expression language, its
-    API, and its language syntax. In several places an Inventor and Inventor's
-    Society class are used as the target objects for expression evaluation.
-    These class declarations and the data used to populate them are listed at
-    the end of the chapter.</para>
+  <para>이번 챕터에서는 표현언어의 기능, API, 언어의 문법을 다룬다. 여러 부분에서 Inventor와 
+    Inventor의 Society 클래스를 표현식 평가에 대한 타겟객체로 사용한다. 이러한 클래스 선언과 
+    선언에 관한 데이터들은 이 챕터의 마지막 부분에 나와있다.</para>
   </section>
 
   <section id="expressions-features">
-    <title>Feature Overview</title>
+    <title>기능 개요</title>
 
-    <para>The expression language supports the following functionality</para>
+    <para>표현 언어는 다음의 기능을 지원한다.</para>
 
     <itemizedlist>
       <listitem>
-        <para>Literal expressions</para>
+        <para>리터럴 표현식</para>
       </listitem>
 
       <listitem>
-        <para>Boolean and relational operators</para>
+        <para>불리언과 관계형 오퍼레이터</para>
       </listitem>
 
       <listitem>
-        <para>Regular expressions</para>
+        <para>정규 표현식</para>
       </listitem>
 
       <listitem>
-        <para>Class expressions</para>
+        <para>Class 표현식</para>
       </listitem>
 
       <listitem>
-        <para>Accessing properties, arrays, lists, maps</para>
+        <para>프로퍼티, 배열, 리스트, 맵에 대한 접근</para>
       </listitem>
 
       <listitem>
-        <para>Method invocation</para>
+        <para>메서드 호출</para>
       </listitem>
 
       <listitem>
-        <para>Relational operators</para>
+        <para>관계형 오퍼레이터</para>
       </listitem>
 
       <listitem>
-        <para>Assignment</para>
+        <para>할당</para>
       </listitem>
 
       <listitem>
-        <para>Calling constructors</para>
+        <para>생성자 호출</para>
       </listitem>
       
       <listitem>
-        <para>Bean references</para>
+        <para>빈(Bean) 참조</para>
       </listitem>
       
       <listitem>
-        <para>Array construction</para>
+        <para>배열 생성</para>
       </listitem>
 	
 	  <listitem>
-        <para>Inline lists</para>
+        <para>인라인 리스</para>
       </listitem>
 
       <listitem>
-        <para>Ternary operator</para>
+        <para>삼항 연산자</para>
       </listitem>
 
       <listitem>
-        <para>Variables</para>
+        <para>변수</para>
       </listitem>
 
       <listitem>
-        <para>User defined functions</para>
+        <para>사용자 정의 함수</para>
       </listitem>
 
       <listitem>
-        <para>Collection projection</para>
+        <para>컬렉션 투영(Collection projection)</para>
       </listitem>
 
       <listitem>
-        <para>Collection selection</para>
+        <para>컬렉션 선택</para>
       </listitem>
 
       <listitem>
-        <para>Templated expressions</para>
+        <para>템플릿화된 표현식</para>
       </listitem>
     </itemizedlist>
   </section>
 
   <section id="expressions-evaluation">
-    <title>Expression Evaluation using Spring's Expression Interface</title>
+    <title>스프링의 Expression 인터페이스를 사용한 표현식 평가</title>
 
-    <para>This section introduces the simple use of SpEL interfaces and its
-    expression language. The complete language reference can be found in the
-    section <link lang="" linkend="expressions-language-ref">Language
-    Reference</link>.</para>
+    <para>이번 섹션에서는 SpEL 인터페이스의 간단한 사용방법과 SpEL의 표현언어를 설명한다. 완전한 
+    언어 레퍼런스는 <link lang="" linkend="expressions-language-ref">언어 
+    레퍼런스</link> 섹션에 나와 있다.</para>
 
-    <para>The following code introduces the SpEL API to evaluate the literal
-    string expression 'Hello World'.</para>
+    <para>다음 코드는 리터럴 문자표현인 'Hello World'를 평가하는 SpEL API를 
+    설명한다.</para>
 
     <para><programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 Expression exp = parser.parseExpression("<emphasis role="bold">'Hello World'</emphasis>");
-String message = (String) exp.getValue();</programlisting>The value of the
-    message variable is simply 'Hello World'.</para>
+String message = (String) exp.getValue();</programlisting>message 변수의 값은 
+    'Hello World'다.</para>
 
-    <para>The SpEL classes and interfaces you are most likely to use are
-    located in the packages <package>org.springframework.expression</package>
-    and its sub packages and <package>spel.support</package>.</para>
+    <para>아마도 가장 많이 사용할 SpEL 클래스와 인터페이스는 
+    <package>org.springframework.expression</package> 패키지와 이 패키지의 하위 
+    페이지와 <package>spel.support</package> 패키지안에 있다.</para>
 
-    <para>The interface <interfacename>ExpressionParser</interfacename> is
-    responsible for parsing an expression string. In this example the
-    expression string is a string literal denoted by the surrounding single
-    quotes. The interface <interfacename>Expression</interfacename> is
-    responsible for evaluating the previously defined expression string. There
-    are two exceptions that can be thrown,
-    <classname>ParseException</classname> and
-    <classname>EvaluationException</classname> when calling
-    '<literal>parser.parseExpression</literal>' and
-    '<literal>exp.getValue</literal>' respectively.</para>
+    <para><interfacename>ExpressionParser</interfacename> 인터페이스는 문자열 표현을 
+    파싱하는 책임이 있다. 이 예제에서 문자열 표현은 따옴표로 묶인 문자열 리터럴로 표현됐다. 
+    <interfacename>Expression</interfacename> 인터페이스는 앞에서 정의한 문자열 
+    표현의 평가를 책임진다. '<literal>parser.parseExpression</literal>'와 
+    '<literal>exp.getValue</literal>'를 호출할 때 각각 
+    <classname>ParseException</classname>와 
+    <classname>EvaluationException</classname>의 두 가지 예외가 
+    던져질 수 있다.</para>
 
-    <para>SpEL supports a wide range of features, such as calling methods,
-    accessing properties, and calling constructors.</para>
+    <para>SpEL은 메서드 호출이나 프로퍼티 접근, 생성자 호출같은 넓은 범위의 기능을 
+    지원한다.</para>
 
-    <para>As an example of method invocation, we call the 'concat' method on
-    the string literal.</para>
+    <para>메서드 호출의 예제로 문자열 리터럴에서 'concat' 메서드를 호출한다.</para>
 
     <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 Expression exp = parser.parseExpression("<emphasis role="bold">'Hello World'.concat('!')</emphasis>");
 String message = (String) exp.getValue();</programlisting>
 
-    <para>The value of message is now 'Hello World!'.</para>
+    <para>message의 값은 이제 'Hello World!'이다.</para>
 
-    <para>As an example of calling a JavaBean property, the String property
-    'Bytes' can be called as shown below.</para>
+    <para>JavaBean 프로터티를 호출하는 예제로 다음에서 보듯이 문자열 프로퍼티 'Bytes'를 
+    호출할 수 있다.</para>
 
     <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 
-// invokes 'getBytes()'
+// 'getBytes()' 실행
 Expression exp = parser.parseExpression("<emphasis role="bold">'Hello World'.bytes</emphasis>");  
 
 byte[] bytes = (byte[]) exp.getValue();</programlisting>
 
-    <para>SpEL also supports nested properties using standard 'dot' notation,
-    i.e. prop1.prop2.prop3 and the setting of property values</para>
+    <para>SpEL은 표준 'dot' 표기법(예: prop1.prop2.prop3)을 사용해서 중첩된 프로퍼티와 
+    프로퍼티의 값 설정도 지원한다.</para>
 
-    <para>Public fields may also be accessed.</para>
+    <para>퍼블릭 필드도 접근할 수 있다.</para>
 
     <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 
-// invokes 'getBytes().length'
+// 'getBytes().length' 실행
 Expression exp = parser.parseExpression("<emphasis role="bold">'Hello World'.bytes.length</emphasis>");  
 
 int length = (Integer) exp.getValue();</programlisting>
 
-    <para>The String's constructor can be called instead of using a string
-    literal.</para>
+    <para>문자열 리터럴 대신 String의 생성자를 호출할 수 있다.</para>
 
     <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 Expression exp = parser.parseExpression("<emphasis role="bold">new String('hello world').toUpperCase()</emphasis>");
 String message = exp.getValue(String.class);</programlisting>
 
-    <para>Note the use of the generic method <literal>public &lt;T&gt; T
-    getValue(Class&lt;T&gt; desiredResultType)</literal>. Using this method
-    removes the need to cast the value of the expression to the desired result
-    type. An <classname>EvaluationException</classname> will be thrown if the
-    value cannot be cast to the type <literal>T</literal> or converted using
-    the registered type converter.</para>
+    <para>제너릭 메서드 <literal>public &lt;T&gt; T
+    getValue(Class&lt;T&gt; desiredResultType)</literal>의 사용을 보자.
+    이 메서드를 사용하면 표현식의 값을 원하는 결과 타입으로 캐스팅할 필요가 없어진다. 값이 타입 
+    <literal>T</literal>로 캐스팅할 수 없거나 등록된 타입 컴버터를 사용해서 변환할 수 없다면 
+    <classname>EvaluationException</classname>가 던져질 것이다.</para>
 
-    <para>The more common usage of SpEL is to provide an expression string that
-    is evaluated against a specific object instance (called the root object). 
-    There are two options here and which to choose depends on whether the object 
-    against which the expression is being evaluated will be changing with each 
-    call to evaluate the expression.  In the following example
-    we retrieve the <literal>name</literal> property from an instance of the
-    Inventor class.</para>
+    <para>SpEL의 더 일반적인 사용방법은 특정 객체 인스턴스(root 객체라고 부른다.)에 대해서 평가되는 
+    표현식 문자열을 제공하는 것이다. 두가지 옵션이 있는데 표현식을 평가하는 각 호출과 함께 변경될 수 있는 
+    평가될 표현식에 대한 객체에 따라 선택한다. 다음 예제에서 Inventor 클래스의 인스턴스에서 
+    <literal>name</literal> 프로퍼티를 획득한다.</para>
 
-    <programlisting language="java">// Create and set a calendar 
+    <programlisting language="java">// 캘린더를 생성하고 설정한다
 GregorianCalendar c = new GregorianCalendar();
 c.set(1856, 7, 9);
 
-//  The constructor arguments are name, birthday, and nationality.
+//  생성자 아규먼트는 name, birthday, nationality이다.
 Inventor tesla = new Inventor("Nikola Tesla", c.getTime(), "Serbian");
 
 ExpressionParser parser = new SpelExpressionParser();
@@ -222,109 +201,86 @@ Expression exp = parser.parseExpression("<emphasis role="bold">name</emphasis>")
 EvaluationContext context = new StandardEvaluationContext(tesla);
 
 String name = (String) exp.getValue(context);</programlisting>
-<para>In the last
-    line, the value of the string variable 'name' will be set to "Nikola
-    Tesla". The class StandardEvaluationContext is where you can specify which
-    object the "name" property will be evaluated against.  This is the mechanism
-    to use if the root object is unlikely to change, it can simply be set once
-    in the evaluation context.  If the root object is likely to change
-    repeatedly, it can be supplied on each call to <literal>getValue</literal>, 
-    as this next example shows:</para>
+<para>마지막 줄에서 
+    문자열 변수 'name'의 값은 "Nikola Tesla"로 설정될 것이다. StandardEvaluationContext 
+    클래스는 "name" 프로퍼티가 평가될 객체를 지정할 수 있는 곳이다. 이는 root 객체가 변경되지 않는 경우 
+    사용할 메카니즘이고 평가 컨텍스트에서 설정할 수 있다. root 객체가 계속해서 변경될 것이라면 다음 예제에서 
+    보여주듯이 각 <literal>getValue</literal> 호출에서 제공할 수 있다.</para>
     
-    <programlisting language="java">/ Create and set a calendar 
+    <programlisting language="java">// 캘린더를 생성하고 설정한다
 GregorianCalendar c = new GregorianCalendar();
 c.set(1856, 7, 9);
 
-//  The constructor arguments are name, birthday, and nationality.
+//  생성자 아규먼트는 name, birthday, nationality이다.
 Inventor tesla = new Inventor("Nikola Tesla", c.getTime(), "Serbian");
 
 ExpressionParser parser = new SpelExpressionParser();
 Expression exp = parser.parseExpression("<emphasis role="bold">name</emphasis>");
 
 String name = (String) exp.getValue(tesla);
-    </programlisting><para>In this case the inventor <literal>tesla</literal> has been
-    supplied directly to <literal>getValue</literal> and the expression
-    evaluation infrastructure creates and manages a default evaluation context 
-    internally - it did not require one to be supplied.</para>
+    </programlisting><para>이 경우에 inventor <literal>tesla</literal>를 직접 
+    <literal>getValue</literal>에 제공하고 표현식 평가의 기반은 내부적으로 기본 평가 컨텍스트를 
+    생성하고 관리한다 - 이는 제공하는 것을 필요로 하지 않는다.</para>
     
-    <para>The StandardEvaluationContext is relatively expensive to construct and
-    during repeated usage it builds up cached state that enables subsequent
-    expression evaluations to be performed more quickly.  For this reason it is
-    better to cache and reuse them where possible, rather than construct a new 
-    one for each expression evaluation.
+    <para>StandardEvaluationContext는 생성하는 비용이 상대적으로 비싸고 반복적으로 사용하는 동안 
+    상태를 캐시해서 다음 표현식 평가를 더 빠르게 수행할 수 있도록 한다. 이 때문에 각 표현식 평가에서 새로운 
+    것을 생성하는 것보다는 가능한한 캐시한 후에 재사용 하는 것이 더 좋다.
     </para>
-    <para>In some cases it can be desirable to use a configured evaluation context and
-    yet still supply a different root object on each call to <literal>getValue</literal>.
-    <literal>getValue</literal> allows both to be specified on the same call.
-    In these situations the root object passed on the call is considered to override
-    any (which maybe null) specified on the evaluation context.</para>
+    <para>몇몇 경우에 평가 컨텍스트를 설정해서 사용하기를 원할 수 있고 <literal>getValue</literal>를 
+    호출할 때마다 다른 루트객체를 제공하기 원할 수 있다. <literal>getValue</literal>는 같은 호출에서 
+    두 가지를 모두 지정할 수 있다. 이러한 경우에 호출에 전달된 루트객체는 평가 컨텍스트가 지정한 
+    것(null일수도 있다.)을 오버라이드한다.</para>
 
     <para>
 	<note>
-        <para>In standalone usage of SpEL there is a need to create the parser,
-        parse expressions and perhaps provide evaluation contexts and a root
-        context object. However, more common usage
-        is to provide only the SpEL expression string as part of a
-        configuration file, for example for Spring bean or Spring Web Flow
-        definitions. In this case, the parser, evaluation context, root object
-        and any predefined variables are all set up implicitly, requiring
-        the user to specify nothing other than the expressions.</para>
+        <para>SpEL를 독립적으로 사용할 때 파서를 생성하고 표현식을 파싱할 필요가 있고 어쩌면 평가 
+        컨텍스트와 루트 컨텍스트 객체를 제공할 필요가 있을 수도 있다. 하지만 설정 파일(예를 들면 
+        스프링 빈이나 스프링 Web Flow 정의에서)의 일부로 SpEL 표현식 문자열만 제공하는 것이 더 
+        일반적인 사용방법이다. 이 경우에 파서, 평가 컨텍스트, 루트 객체와 미리 정의한 어떤 변수도 
+        암묵적으로 설정할 수 있어서 사용자는 표현식 외에는 아무것도 설정할 필요가 없다.</para>
     </note>
-	As a final introductory example, the use of a boolean operator is
-    shown using the Inventor object in the previous example.</para>
+  마지막 소개하는 예제로 불리언 연산자의 사용은 이전 예제의 Inventor객체의 사용을 
+    보여준다.</para>
 
     <programlisting language="java">Expression exp = parser.parseExpression("name == 'Nikola Tesla'");
-boolean result = exp.getValue(context, Boolean.class);  // evaluates to true</programlisting>
+boolean result = exp.getValue(context, Boolean.class);  // true로 평가된다</programlisting>
 
     <section>
-      <title>The EvaluationContext interface</title>
+      <title>EvaluationContext 인터페이스</title>
 
-      <para>The interface <interfacename>EvaluationContext</interfacename> is
-      used when evaluating an expression to resolve properties, methods,
-      fields, and to help perform type conversion. The out-of-the-box
-      implementation, <classname>StandardEvaluationContext</classname>, uses
-      reflection to manipulate the object, caching
-      <package>java.lang.reflect</package>'s <classname>Method</classname>,
-      <classname>Field</classname>, and <classname>Constructor</classname>
-      instances for increased performance.</para>
+      <para>프로퍼티, 메서드, 필드를 처리하고 타입변환을 수행하는 표현식을 평가할 때 
+      <interfacename>EvaluationContext</interfacename> 인터페이스를 사용한다. 새로운 
+      구현체 <classname>StandardEvaluationContext</classname>는 객체를 조작하려고 
+      리플렉션을 사용하고 성능을 향상시키기 위해서 <package>java.lang.reflect</package>의 
+      <classname>Method</classname>, <classname>Field</classname>, 
+      <classname>Constructor</classname>를 캐싱한다.</para>
 
-      <para>The <classname>StandardEvaluationContext</classname> is where you
-      may specify the root object to evaluate against via the method
-      <methodname>setRootObject()</methodname> or passing the root object into
-      the constructor. You can also specify variables and functions that
-      will be used in the expression using the methods
-      <methodname>setVariable()</methodname> and
-      <methodname>registerFunction()</methodname>. The use of variables and
-      functions are described in the language reference sections <link
-      linkend="expressions-ref-variables">Variables</link> and <link lang=""
-      linkend="expressions-ref-functions">Functions</link>. The
-      <classname>StandardEvaluationContext</classname> is also where you can
-      register custom <classname>ConstructorResolver</classname>s,
-      <classname>MethodResolver</classname>s, and
-      <classname>PropertyAccessor</classname>s to extend how SpEL evaluates
-      expressions. Please refer to the JavaDoc of these classes for more
-      details.</para>
+      <para><classname>StandardEvaluationContext</classname>는 
+      <methodname>setRootObject()</methodname> 메서드나 생성자에 루트객체를 전달해서 
+      평가에 사용할 루트객체를 지정하는 곳이다. <methodname>setVariable()</methodname>와 
+      <methodname>registerFunction()</methodname> 메서드를 사용해서 표현식에서 사용할 
+      변수나 함수를 지정할 수도 있다. 변수와 함수의 사용방법은 언어 레퍼런스 섹션인 <link
+      linkend="expressions-ref-variables">변수</link>와 <link lang=""
+      linkend="expressions-ref-functions">함수</link>에 설명되어 있다. 
+      <classname>StandardEvaluationContext</classname>는 SpEL이 표현식을 평가하는 
+      방법을 확장하기 위해서 커스텀 <classname>ConstructorResolver</classname>, 
+      <classname>MethodResolver</classname>, <classname>PropertyAccessor</classname>를 
+      등록할 수 있는 곳이기도 하다. 이러한 클래스들에 대한 더 자세한 내용은 JavaDoc을 참고해라.</para>
 
       <section>
-        <title>Type Conversion</title>
+        <title>타입 변환</title>
 
-        <para>By default SpEL uses the conversion service available in Spring
-        core
-        (<literal>org.springframework.core.convert.ConversionService</literal>).
-        This conversion service comes with many converters built in for common
-        conversions but is also fully extensible so custom conversions between
-        types can be added. Additionally it has the key capability that it is
-        generics aware. This means that when working with generic types in
-        expressions, SpEL will attempt conversions to maintain type
-        correctness for any objects it encounters.</para>
+        <para>기본적으로 SpEL은 스프링 코어에서 사용할 수 있는 변환 서비스
+        (<literal>org.springframework.core.convert.ConversionService</literal>)를 
+        사용한다. 일반적인 타입에 대해서 내장된 많은 컨버터들과 함께 온 이 컨버전 서비스는 추가할 수 있다. 
+        게다가 제너릭에 친화적이라는 것이 변환서비스의 핵심기능이다. 즉 표현식에서 제너릭 타입을 사용할 때 
+        어떤 객체를 만다더라도 SpEL은 제대로된 타입을 유지하려고 변환을 시도할 것이다.</para>
 
-        <para>What does this mean in practice? Suppose assignment, using
-        <literal>setValue()</literal>, is being used to set a
-        <literal>List</literal> property. The type of the property is actually
-        <literal>List&lt;Boolean&gt;</literal>. SpEL will recognize that the
-        elements of the list need to be converted to
-        <literal>Boolean</literal> before being placed in it. A simple
-        example:</para>
+        <para>이는 실사용에서 무엇을 의미하는가? <literal>List</literal> 프로퍼티를 설정하려고 
+        <literal>setValue()</literal>를 사용하는 경우를 생각해 보자. 실제 프로퍼티의 타입은 
+        <literal>List&lt;Boolean&gt;</literal>이다. SpEL은 엘리먼트가 위치하기 전에 리스트의 
+        엘리먼트가 <literal>Boolean</literal>르오 변환되어야 한다는 것을 인지할 것이다. 
+        다음은 간단한 예제다.</para>
 
         <programlisting language="java">class Simple {
     public List&lt;Boolean&gt; booleanList = new ArrayList&lt;Boolean&gt;();
@@ -336,11 +292,11 @@ simple.booleanList.add(true);
 
 StandardEvaluationContext simpleContext = new StandardEvaluationContext(simple);
 
-// false is passed in here as a string.  SpEL and the conversion service will 
-// correctly recognize that it needs to be a Boolean and convert it
+// 여기서 false를 문자열로 전달한다. SpEL과 변환 서비스는 Boolean이 되어야 한다는 것을
+// 인식하고 변환할 것이다
 parser.parseExpression("booleanList[0]").setValue(simpleContext, "false");
 
-// b will be false
+// b느 false가 될 것이다
 Boolean b = simple.booleanList.get(0);
         </programlisting>
       </section>
@@ -348,61 +304,55 @@ Boolean b = simple.booleanList.get(0);
   </section>
 
   <section id="expressions-beandef">
-    <title>Expression support for defining bean definitions</title>
+    <title>빈 정의를 정의하는 표현식</title>
 
-    <para>SpEL expressions can be used with XML or annotation based
-    configuration metadata for defining BeanDefinitions. In both cases the
-    syntax to define the expression is of the form <literal>#{ &lt;expression
-    string&gt; }</literal>.</para>
+    <para>BeanDefinition을 정의하는 XML이나 어노테이션 기반의 설정 메타데이터와 
+    SpEL 표현식을 같이 쓸 수 있다. 두 경우에 모두 표현식을 정의하는 문법은 
+    <literal>#{ &lt;표현식 문자열&gt; }</literal>의 형식이다.</para>
 
     <section id="expressions-beandef-xml-based">
-      <title>XML based configuration</title>
+      <title>XML기반의 설정</title>
 
-      <para>A property or constructor-arg value can be set using expressions
-      as shown below</para>
+      <para>프로퍼티나 생성자 아규먼트의 값을 다음과 같이 표현식으로 설정할 수 있다.</para>
 
       <programlisting language="xml">&lt;bean id="numberGuess" class="org.spring.samples.NumberGuess"&gt;
     &lt;property name="randomNumber" value="#{ T(java.lang.Math).random() * 100.0 }"/&gt;
 
-    &lt;!-- other properties --&gt;
+    &lt;!-- 다른 프로퍼티들 --&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>The variable 'systemProperties' is predefined, so you can use it
-      in your expressions as shown below. Note that you do not have to prefix
-      the predefined variable with the '#' symbol in this context.</para>
+      <para>'systemProperties' 변수는 미리 정의되었으므로 다음과 같이 표현식내에서 사용할 수 
+      있다. 이 컨텍스트에서 미리 정의된 변수앞에 '#'기호를 붙히지 않은 것에 주의해라.</para>
 
       <programlisting language="xml">&lt;bean id="taxCalculator" class="org.spring.samples.TaxCalculator"&gt;
     &lt;property name="defaultLocale" value="#{ systemProperties['user.region'] }"/&gt;
 
-    &lt;!-- other properties --&gt;
+    &lt;!-- 다른 프로퍼티들 --&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>You can also refer to other bean properties by name, for
-      example.</para>
+<para>다음 예제처럼 이름으로 다른 빈 프로퍼티를 참조할 수도 있다.</para>
 
       <para><programlisting language="xml">&lt;bean id="numberGuess" class="org.spring.samples.NumberGuess"&gt;
     &lt;property name="randomNumber" value="#{ T(java.lang.Math).random() * 100.0 }"/&gt;
 
-    &lt;!-- other properties --&gt;
+    &lt;!-- 다른 프로퍼티들 --&gt;
 &lt;/bean&gt;
 
 
 &lt;bean id="shapeGuess" class="org.spring.samples.ShapeGuess"&gt;
     &lt;property name="initialShapeSeed" value="#{ numberGuess.randomNumber }"/&gt;
 
-    &lt;!-- other properties --&gt;
+    &lt;!-- 다른 프로퍼티들 --&gt;
 &lt;/bean&gt;</programlisting></para>
     </section>
 
     <section id="expressions-beandef-annotation-based">
-      <title>Annotation-based configuration</title>
+      <title>어노테이션 기반의 설정</title>
 
-      <para>The <literal>@Value</literal> annotation can be placed on fields,
-      methods and method/constructor parameters to specify a default
-      value.</para>
+      <para>기본값을 지정하기 위해 <literal>@Value</literal> 어노테이션을 필드나 메서드, 
+      메서드/생성자의 파라미터에 붙힐 수 있다.</para>
 
-      <para>Here is an example to set the default value of a field
-      variable.</para>
+      <para>다음은 필드 변수의 기본값을 설정하는 예제다.</para>
 
       <programlisting language="java">public static class FieldValueTestBean
 
@@ -423,8 +373,7 @@ Boolean b = simple.booleanList.get(0);
 
 </programlisting>
 
-      <para>The equivalent but on a property setter method is shown
-      below.</para>
+      <para>다음 예제는 프로퍼티 setter 메서드에 붙혔다는 점만 다르다.</para>
 
       <programlisting language="java">public static class PropertyValueTestBean
 
@@ -443,8 +392,8 @@ Boolean b = simple.booleanList.get(0);
 
 }</programlisting>
 
-      <para>Autowired methods and constructors can also use the
-      <literal>@Value</literal> annotation.</para>
+      <para>자동연결된(Autowired) 메서드나 생성자에도 
+      <literal>@Value</literal> 어노테이션을 사용할 수 있다.</para>
 
       <programlisting language="java">public class SimpleMovieLister {
 
@@ -480,27 +429,25 @@ Boolean b = simple.booleanList.get(0);
   </section>
 
   <section id="expressions-language-ref">
-    <title>Language Reference</title>
+    <title>언어 레퍼런스</title>
 
     <section id="expressions-ref-literal">
-      <title>Literal expressions</title>
+      <title>리터럴 표현식</title>
 
-      <para>The types of literal expressions supported are strings, dates,
-      numeric values (int, real, and hex), boolean and null. Strings are
-      delimited by single quotes. To put a single quote itself in a string use
-      two single quote characters. The following listing shows simple usage of
-      literals. Typically they would not be used in isolation like this, but
-      as part of a more complex expression, for example using a literal on one
-      side of a logical comparison operator.</para>
+      <para>지원하는 리터럴 표현식의 타입은 문자열, 날짜, 숫자값(int, real, hex), 불리언, 
+      null이다. 문자열은 따옴표로 구분된다. 문자열내에 따옴표를 사용하려면 2개의 따옴표를 사용해라. 
+      다음 예제에서 리터럴의 사용방법을 간단히 보여준다. 보통은 이 예제처럼 단독적으로 쓰이지 않고 
+      더 복잡한 표현식의 일부로써 사용한다. 예를 들면 논리적인 비교연산의 한쪽부분에 리터럴을 
+      사용한다.</para>
 
       <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 
-// evals to "Hello World"
+// "Hello World"로 평가된다
 String helloWorld = (String) parser.parseExpression("'Hello World'").getValue(); 
 
 double avogadrosNumber  = (Double) parser.parseExpression("6.0221415E+23").getValue();  
 
-// evals to 2147483647
+// 2147483647로 평가된다
 int maxValue = (Integer) parser.parseExpression("0x7FFFFFFF").getValue();  
 
 boolean trueValue = (Boolean) parser.parseExpression("true").getValue();
@@ -508,191 +455,184 @@ boolean trueValue = (Boolean) parser.parseExpression("true").getValue();
 Object nullValue = parser.parseExpression("null").getValue();
 </programlisting>
 
-      <para>Numbers support the use of the negative sign, exponential
-      notation, and decimal points. By default real numbers are parsed using
-      Double.parseDouble().</para>
+      <para>숫자는 음수기호, 지수표시, 소수점을 지원한다. 기본적으로 실제 숫자는 
+      Double.parseDouble()로 파싱한다.</para>
     </section>
 
     <section>
-      <title>Properties, Arrays, Lists, Maps, Indexers</title>
+      <title>프로퍼티, 배열, 리스트, 맵, 인덱서</title>
 
-      <para>Navigating with property references is easy, just use a period to
-      indicate a nested property value. The instances of Inventor class, pupin
-      and tesla, were populated with data listed in the section <link
-      linkend="expressions-example-classes">Classes used in the
-      examples</link>. To navigate "down" and get Tesla's year of birth and
-      Pupin's city of birth the following expressions are used.</para>
+      <para>프로퍼티 참조를 탐색하는 것은 쉬운데 그냥 중첩된 프로퍼티 값을 가리키는 마침표를 
+      사용해라. Inventor 클래스의 pupin과 tesla 인스턴스에는 <link 
+      linkend="expressions-example-classes">예제에 사용한 클래스들</link> 섹션에 
+      나온 데이터들이 있다. 다음의 표현식을 사용해서 Tesla가 태어난 해솨 Pupin이 태어난 
+      도시를 탐색한다.</para>
 
-      <programlisting lang="" language="java">// evals to 1856
+      <programlisting lang="" language="java">// 1856으로 평가된다.
 int year = (Integer) parser.parseExpression("Birthdate.Year + 1900").getValue(context); 
 
 
 String city = (String) parser.parseExpression("placeOfBirth.City").getValue(context);</programlisting>
 
-      <para>Case insensitivity is allowed for the first letter of property
-      names. The contents of arrays and lists are obtained using square
-      bracket notation.</para>
+      <para>프로퍼티명의 첫글자는 대소문자를 구별하지 않는다. 배열과 리스트의 내용은 대괄호를 
+      사용해서 획득한다.</para>
 
       <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 
-// Inventions Array
+// 발명품 배열
 StandardEvaluationContext teslaContext = new StandardEvaluationContext(tesla);
 
-// evaluates to "Induction motor"
+// "Induction motor"로 평가된다.
 String invention = parser.parseExpression("inventions[3]").getValue(teslaContext, 
                                                                     String.class); 
 
 
-// Members List
+// 회원 리스트
 StandardEvaluationContext societyContext = new StandardEvaluationContext(ieee);
 
-// evaluates to "Nikola Tesla"
+// "Nikola Tesla"로 평가된다.
 String name = parser.parseExpression("Members[0].Name").getValue(societyContext, String.class);
 
-// List and Array navigation
-// evaluates to "Wireless communication"
+// 리스트와 배열 탐색
+// "Wireless communication"로 평가된다.
 String invention = parser.parseExpression("Members[0].Inventions[6]").getValue(societyContext,
                                                                                String.class);
 </programlisting>
 
-      <para>The contents of maps are obtained by specifying the literal key
-      value within the brackets. In this case, because keys for the Officers
-      map are strings, we can specify string literals.</para>
+      <para>대괄호로 키값 리터럴을 지정해서 맵의 내용을 획득한다. 아래 예제의 경우 Officers 
+      맵의 키가 문자열이므로 문자열 리터럴을 지정할 수 있다.</para>
 
-      <programlisting language="java">// Officer's Dictionary
+      <programlisting language="java">// Officer의 딕션어리
 
 Inventor pupin = parser.parseExpression("Officers['president']").getValue(societyContext, 
                                                                           Inventor.class);
 
-// evaluates to "Idvor"
+// "Idvor"로 평가된다
 String city = 
     parser.parseExpression("Officers['president'].PlaceOfBirth.City").getValue(societyContext,
                                                                                String.class);
 
-// setting values
+// 값을 설정한다
 parser.parseExpression("Officers['advisors'][0].PlaceOfBirth.Country").setValue(societyContext,
                                                                                 "Croatia");
 
 </programlisting>
     </section>
     <section>
-      <title>Inline lists</title>
+      <title>인라인 리스트</title>
 
-      <para>Lists can be expressed directly in an expression using {} notation.
+      <para>리스트는 {} 표시법을 사용한 표현식으로 직접 나타낼 수 있다.
       </para>
 
       <programlisting lang="" language="java">
-// evaluates to a Java list containing the four numbers
+// 4개의 숫자를 담고 있는 자바 리스트로 평가된다
 List numbers = (List) parser.parseExpression("{1,2,3,4}").getValue(context); 
 
 List listOfLists = (List) parser.parseExpression("{{'a','b'},{'x','y'}}").getValue(context); 
 </programlisting>
-      <para>{} by itself means an empty list.  For performance reasons, if the
-      list is itself entirely composed of fixed literals then a constant list is created
-      to represent the expression, rather than building a new list on each evaluation.</para>
+      <para>단독으로 {}를 사용하면 비어있는 리스트를 의미한다. 성능때문에 리스트 자체가 고정된 
+      리터럴로 구성되어 있다면 각 평가마다 새로운 리스트를 만드는 것이 아니라 표현식을 나타내는 
+      변하지 않는 리스트를 생성한다.</para>
 	</section>
 	
 	<section>
-      <title>Array construction</title>
+    <title>배열 생성</title>
 
-      <para>Arrays can be built using the familiar Java syntax, optionally
-      supplying an initializer to have the array populated at construction time.
+      <para>배열은 자바문법과 유사하게 만들 수 있고 선택적으로 생성시에 존재해야 하는 배열을 갖는 
+      initializer를 제공할 수 있다.
       </para>
 
       <programlisting lang="" language="java">int[] numbers1 = (int[]) parser.parseExpression("new int[4]").getValue(context); 
 
-// Array with initializer
+// initializer가진 배열
 int[] numbers2 = (int[]) parser.parseExpression("new int[]{1,2,3}").getValue(context); 
 
-// Multi dimensional array
+// 다차원 배열
 int[][] numbers3 = (int[][]) parser.parseExpression("new int[4][5]").getValue(context); 
 </programlisting>
-      <para>It is not currently allowed to supply an initializer when constructing
-      a multi-dimensional array.</para>
+      <para>현재는 다차원 배열을 생성할 때 initializer를 제공할 수 없다.</para>
 	</section>
 	
     <section>
-      <title>Methods</title>
+      <title>메서드</title>
 
-      <para>Methods are invoked using typical Java programming syntax. You may
-      also invoke methods on literals. Varargs are also supported.</para>
+      <para>메서드는 전형적인 자바 프로그래밍 문법을 사용해서 호출한다. 리터럴에서 메서드를 호출할 
+      수도 있다. 가변인자(Varargs)도 지원한다.</para>
 
-      <programlisting language="java">// string literal, evaluates to "bc"
+      <programlisting language="java">// 문자열 리터럴, "bc"로 평가된다
 String c = parser.parseExpression("'abc'.substring(2, 3)").getValue(String.class);
 
-// evaluates to true
+// true로 평가된다.
 boolean isMember = parser.parseExpression("isMember('Mihajlo Pupin')").getValue(societyContext,
                                                                                 Boolean.class);</programlisting>
     </section>
 
     <section>
-      <title>Operators</title>
+      <title>연산자(Operators)</title>
 
       <section>
-        <title>Relational operators</title>
+        <title>관계 연산자</title>
 
-        <para>The relational operators; equal, not equal, less than, less than
-        or equal, greater than, and greater than or equal are supported using
-        standard operator notation.</para>
+        <para>표준 연산자 표기법을 사용해서 같다, 같지 않다, 작다, 작거나 같다, 크다, 크거나 같다 
+        등의 관계 연산자를 지원한다.</para>
 
-        <para><programlisting language="java">// evaluates to true
+        <para><programlisting language="java">// true로 평가된다
 boolean trueValue = parser.parseExpression("2 == 2").getValue(Boolean.class);
 
-// evaluates to false
+// false로 평가된다
 boolean falseValue = parser.parseExpression("2 &lt; -5.0").getValue(Boolean.class);
 
-// evaluates to true
+// true로 평가된다
 boolean trueValue = parser.parseExpression("'black' &lt; 'block'").getValue(Boolean.class);</programlisting>
-        In addition to standard relational operators SpEL supports the
-        'instanceof' and regular expression based 'matches' operator.</para>
+        표준 관계 연산자뿐만 아니라 SpEL은 'matches' 연산자에 기반한 정규표현식과 
+        'instanceof'를 지원한다.</para>
 
-        <programlisting language="java">// evaluates to false
+        <programlisting language="java">// false로 평가된다
 boolean falseValue = parser.parseExpression("'xyz' instanceof T(int)").getValue(Boolean.class);
 
-// evaluates to true
+// true로 평가된다
 boolean trueValue = 
      parser.parseExpression("'5.00' matches '^-?\\d+(\\.\\d{2})?$'").getValue(Boolean.class);
 
-//evaluates to false
+// false로 평가된다
 boolean falseValue = 
      parser.parseExpression("'5.0067' matches '^-?\\d+(\\.\\d{2})?$'").getValue(Boolean.class);
 
 </programlisting>
-      <para>Each symbolic operator can also be specified as a purely alphabetic equivalent.  This avoids
-      problems where the symbols used have special meaning for the document type in which 
-      the expression is embedded (eg. an XML document).  The textual equivalents are shown
-      here: lt ('&lt;'), gt ('&gt;'), le ('&lt;='), ge ('&gt;='),
+      <para>각 심볼릭 연산자는 순수하게 연문자로 지정할 수도 있다. 표현식을 내장하는 문서형식에서(예를 들면 XML 문서) 
+      특별한 의미를 가지는 기호를 사용할 때 발생할 수 있는 문제를 피하기 위해서 사용한다. 문자표현은 다음과 
+      같다. lt ('&lt;'), gt ('&gt;'), le ('&lt;='), ge ('&gt;='),
       eq ('=='), ne ('!='), div ('/'), mod ('%'), not ('!').
-      These are case insensitive.</para>
+      대소문자는 구별하지 않는다.</para>
       </section>
 
       <section>
-        <title>Logical operators</title>
+        <title>논리 연산자</title>
 
-        <para>The logical operators that are supported are and, or, and not.
-        Their use is demonstrated below.</para>
+        <para>and, or, not 같은 논리 연산자를 지원한다. 사용방법은 다음 예제에 
+        나온다.</para>
 
         <para><programlisting language="java">// -- AND --
 
-// evaluates to false
+// false로 평가된다
 boolean falseValue = parser.parseExpression("true and false").getValue(Boolean.class);
 
-// evaluates to true
+// true로 평가된다
 String expression =  "isMember('Nikola Tesla') and isMember('Mihajlo Pupin')";
 boolean trueValue = parser.parseExpression(expression).getValue(societyContext, Boolean.class);
 
 // -- OR --
 
-// evaluates to true
+// true로 평가된다
 boolean trueValue = parser.parseExpression("true or false").getValue(Boolean.class);
 
-// evaluates to true
+// true로 평가된다
 String expression =  "isMember('Nikola Tesla') or isMember('Albert Einstien')";
 boolean trueValue = parser.parseExpression(expression).getValue(societyContext, Boolean.class);
 
 // -- NOT --
 
-// evaluates to false
+// false로 평가된다
 boolean falseValue = parser.parseExpression("!true").getValue(Boolean.class);
 
 
@@ -702,60 +642,57 @@ boolean falseValue = parser.parseExpression(expression).getValue(societyContext,
       </section>
 
       <section>
-        <title>Mathematical operators</title>
+        <title>수식 연산자</title>
 
-        <para>The addition operator can be used on numbers, strings and dates.
-        Subtraction can be used on numbers and dates. Multiplication and
-        division can be used only on numbers. Other mathematical operators
-        supported are modulus (%) and exponential power (^). Standard operator
-        precedence is enforced. These operators are demonstrated below.</para>
+        <para>더하기 연산자를 숫자, 문자열 날짜에서 사용할 수 있다. 빼기는 숫자와 날짜에서 사용할 
+        수 있다. 곱하기와 나누기는 숫자에서만 사용할 수 있다. 다른 수식 연산자로 계수(%)와 지수(^)를 
+        지원한다. 표준 연산자를 우선적으로 처리한다. 이러한 연산자는 다음 예제에서 보여준다.</para>
 
-        <para><programlisting language="java">// Addition
+        <para><programlisting language="java">// 더하기
 int two = parser.parseExpression("1 + 1").getValue(Integer.class); // 2
 
 String testString = 
    parser.parseExpression("'test' + ' ' + 'string'").getValue(String.class);  // 'test string'
 
-// Subtraction
+// 빼기
 int four =  parser.parseExpression("1 - -3").getValue(Integer.class); // 4
 
 double d = parser.parseExpression("1000.00 - 1e4").getValue(Double.class); // -9000
 
-// Multiplication
+// 곱하기
 int six =  parser.parseExpression("-2 * -3").getValue(Integer.class); // 6
 
 double twentyFour = parser.parseExpression("2.0 * 3e0 * 4").getValue(Double.class); // 24.0
 
-// Division
+// 나누기
 int minusTwo =  parser.parseExpression("6 / -3").getValue(Integer.class); // -2
 
 double one = parser.parseExpression("8.0 / 4e0 / 2").getValue(Double.class); // 1.0
 
-// Modulus
+// 계수(Modulus)
 int three =  parser.parseExpression("7 % 4").getValue(Integer.class); // 3
 
 int one = parser.parseExpression("8 / 5 % 2").getValue(Integer.class); // 1
 
-// Operator precedence
+// 연산자 우선순위
 int minusTwentyOne = parser.parseExpression("1+2-3*8").getValue(Integer.class); // -21
 </programlisting></para>
       </section>
     </section>
 
     <section>
-      <title>Assignment</title>
+      <title>할당</title>
 
-      <para>Setting of a property is done by using the assignment operator.
-      This would typically be done within a call to
-      <literal>setValue</literal> but can also be done inside a call to
-      <literal>getValue</literal>.</para>
+      <para>할당 연산자를 사용해서 프로퍼티를 설정한다. 
+      이는 보통 <literal>setValue</literal> 호출내에서 이뤄지지만 
+      <literal>getValue</literal>호출내에서도 이뤄질 수 있다.</para>
 
       <programlisting language="java">Inventor inventor = new Inventor();		
 StandardEvaluationContext inventorContext = new StandardEvaluationContext(inventor);
 
 parser.parseExpression("Name").setValue(inventorContext, "Alexander Seovic2");
 
-// alternatively
+// 대신에
 
 String aleks = parser.parseExpression("Name = 'Alexandar Seovic'").getValue(inventorContext, 
                                                                             String.class);
@@ -765,16 +702,15 @@ String aleks = parser.parseExpression("Name = 'Alexandar Seovic'").getValue(inve
     </section>
 
     <section>
-      <title>Types</title>
+      <title>타입</title>
 
-      <para>The special 'T' operator can be used to specify an instance of
-      java.lang.Class (the 'type'). Static methods are invoked using this
-      operator as well. The <classname>StandardEvaluationContext</classname>
-      uses a <classname>TypeLocator</classname> to find types and the
-      <classname>StandardTypeLocator</classname> (which can be replaced) is
-      built with an understanding of the java.lang package. This means T()
-      references to types within java.lang do not need to be fully qualified,
-      but all other type references must be.</para>
+      <para>특수한 'T' 연산자를 java.lang.Class ('type')의 인스턴스를 지정하는 데 사용할 
+      수 있다. 정적 메서드도 이 연산자를 사용해서 호출한다. 
+      <classname>StandardEvaluationContext</classname>는 타입을 찾으려고 
+      <classname>TypeLocator</classname>를 사용하고 
+      <classname>StandardTypeLocator</classname>(교체할 수 있다)는 java.lang 패키지로 
+      만들어진다. 즉, java.lang 내에서 타입을 참조하는 T()는 정규화될 필요는 없지만 다른 
+      모든 타입참조는 정규화되어야 한다.</para>
 
       <programlisting language="java">Class dateClass = parser.parseExpression("T(java.util.Date)").getValue(Class.class);
 
@@ -787,18 +723,17 @@ boolean trueValue =
     </section>
 
     <section>
-      <title>Constructors</title>
+      <title>생성자</title>
 
-      <para>Constructors can be invoked using the new operator. The fully
-      qualified class name should be used for all but the primitive type and
-      String (where int, float, etc, can be used).</para>
+      <para>생성자는 새로운 연산자를 사용해서 호출할 수 있다. 프리미티브 타입과 String 
+      외에는(int, float등이 사용될 수 있는) 모두 정규화된 클래스명을 사용해야 한다.</para>
 
       <programlisting language="java">Inventor einstein = 
   p.parseExpression("new org.spring.samples.spel.inventor.Inventor('Albert Einstein', 
                                                                    'German')")
                                                                    .getValue(Inventor.class);
 
-//create new inventor instance within add method of List
+//리스트의 add 메서드내에서 새로운 inventor 인스턴스를 생성한다
 p.parseExpression("Members.add(new org.spring.samples.spel.inventor.Inventor('Albert Einstein',
                                                                    'German'))")
                                                                    .getValue(societyContext);
@@ -806,11 +741,11 @@ p.parseExpression("Members.add(new org.spring.samples.spel.inventor.Inventor('Al
     </section>
 
     <section id="expressions-ref-variables">
-      <title>Variables</title>
+      <title>변수</title>
 
-      <para>Variables can be referenced in the expression using the syntax
-      #variableName. Variables are set using the method setVariable on the
-      StandardEvaluationContext.</para>
+      <para>#변수명 문법을 사용해서 표현식내에서 변수를 참조할 수 있다. 
+      StandardEvaluationContext에서 setVariable 메서드를 사용해서 
+      변수를 설정한다.</para>
 
       <programlisting language="java">Inventor tesla = new Inventor("Nikola Tesla", "Serbian");
 StandardEvaluationContext context = new StandardEvaluationContext(tesla);
@@ -821,25 +756,23 @@ parser.parseExpression("Name = #newName").getValue(context);
 System.out.println(tesla.getName()) // "Mike Tesla"</programlisting>
 
       <section>
-        <title>The #this and #root variables</title>
+        <title>#this와 #root 변수</title>
 
-        <para>The variable #this is always defined and refers to the current
-        evaluation object (against which unqualified references are resolved).
-        The variable #root is always defined and refers to the root
-        context object.  Although #this may vary as components of an expression
-        are evaluated, #root always refers to the root.</para>
+        <para>#this 변수는 항상 정의되어 있고 현재 평가객체를(정규화되지 않은 참조를 처리하는 
+        것에 대비해서) 참조한다. #root변수도 항상 정의되어 있고 루트 컨텍스트 객체를 참조한다. 
+        #this가 평가되는 표현식 컴포넌트에 따라 다양하지만 #root는 항상 루트를 참조한다.</para>
 
         <programlisting language="java">// create an array of integers
 List&lt;Integer&gt; primes = new ArrayList&lt;Integer&gt;();
 primes.addAll(Arrays.asList(2,3,5,7,11,13,17));
 
-// create parser and set variable 'primes' as the array of integers
+// 파서를 생성하고 'primes' 변수를 정수 배열로 설정한다
 ExpressionParser parser = new SpelExpressionParser();
 StandardEvaluationContext context = new StandardEvaluationContext();
 context.setVariable("primes",primes);
 
-// all prime numbers &gt; 10 from the list (using selection ?{...})
-// evaluates to [11, 13, 17]
+// 리스트에서 10보다 큰 모든 소수(?{...} 선택을 사용)
+// [11, 13, 17]로 평가된다
 List&lt;Integer&gt; primesGreaterThanTen = 
              (List&lt;Integer&gt;) parser.parseExpression("#primes.?[#this&gt;10]").getValue(context);
 
@@ -867,18 +800,16 @@ List&lt;Integer&gt; primesGreaterThanTen =
     </section>
 
     <section id="expressions-ref-functions">
-      <title>Functions</title>
+      <title>함수</title>
 
-      <para>You can extend SpEL by registering user defined functions that can
-      be called within the expression string. The function is registered with
-      the <classname>StandardEvaluationContext</classname> using the
-      method.</para>
+      <para>표현식 문자열내에서 호출할 수 있는 사용자 정의 함수를 등록해서 SpEL을 확장할 수 있다. 
+      사용자 정의 함수는 메서드를 사용해서 <classname>StandardEvaluationContext</classname>에 
+      등록한다.</para>
 
       <programlisting language="java">public void registerFunction(String name, Method m)</programlisting>
 
-      <para>A reference to a Java Method provides the implementation of the
-      function. For example, a utility method to reverse a string is shown
-      below.</para>
+      <para>자바 메서드에 대한 참조는 함수의 구현체를 제공한다. 예를 들어 다음에서 문자열을 
+      뒤집는 유틸리티 메서드를 보여준다.</para>
 
       <programlisting>public abstract class StringUtils {
 
@@ -891,8 +822,7 @@ List&lt;Integer&gt; primesGreaterThanTen =
   }
 }</programlisting>
 
-      <para>This method is then registered with the evaluation context and can
-      be used within an expression string.</para>
+      <para>이 메서드를 평가 컨텍스트에 등록하고 표현식 문자열내에서 사용할 수 있다.</para>
 
       <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 StandardEvaluationContext context = new StandardEvaluationContext();
@@ -906,29 +836,28 @@ String helloWorldReversed =
     </section>
 
     <section>
-    	<title>Bean references</title>
-    	<para>If the evaluation context has been configured with a bean resolver it is possible to
-    	lookup beans from an expression using the (@) symbol.
-    	</para>
+    	<title>빈(Bean) 참조</title>
+      <para>평가 컨텍스트가 빈 리졸버로 설정되었다면 (@) 기호를 사용해서 표현식에서 빈을 검색하는 것이 가능하다.
+      </para>
       <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 StandardEvaluationContext context = new StandardEvaluationContext();
 context.setBeanResolver(new MyBeanResolver());
 
-// This will end up calling resolve(context,"foo") on MyBeanResolver during evaluation
+// 평가하는 동안 MyBeanResolver에서 resolve(context,"foo")를 호출할 것이다
 Object bean = parser.parseExpression("@foo").getValue(context);</programlisting>
     </section>
     
     <section>
-      <title>Ternary Operator (If-Then-Else)</title>
+      <title>3항 연산자 (If-Then-Else)</title>
 
-      <para>You can use the ternary operator for performing if-then-else
-      conditional logic inside the expression. A minimal example is:</para>
+      <para>표현식에서 if-then-else 조건을 위해 3항 연산자를 사용할 수 있다. 
+      다음은 간단한 예제다.</para>
 
       <programlisting language="java">String falseString = 
              parser.parseExpression("false ? 'trueExp' : 'falseExp'").getValue(String.class);</programlisting>
 
-      <para>In this case, the boolean false results in returning the string
-      value 'falseExp'. A more realistic example is shown below.</para>
+      <para>이 경우에 false 불리언값으로 'falseExp' 문자열값을 리턴한다. 
+      다음은 좀 더 실제적인 예제다.</para>
 
       <programlisting language="java">parser.parseExpression("Name").setValue(societyContext, "IEEE");
 societyContext.setVariable("queryName", "Nikola Tesla");
@@ -940,24 +869,21 @@ String queryResultString =
                     parser.parseExpression(expression).getValue(societyContext, String.class);
 // queryResultString = "Nikola Tesla is a member of the IEEE Society"</programlisting>
 
-      <para>Also see the next section on the Elvis operator for an even
-      shorter syntax for the ternary operator.</para>
+      <para>3항 연산자의 더 간단한 문법은 다은 섹션의 엘비스 연산자를 봐라.</para>
     </section>
 
     <section>
-      <title>The Elvis Operator</title>
+      <title>엘비스(Elvis) 연산자</title>
 
-      <para>The Elvis operator is a shortening of the ternary operator syntax
-      and is used in the <ulink
-      url="http://groovy.codehaus.org/Operators#Operators-ElvisOperator(%3F%3A)">Groovy</ulink>
-      language. With the ternary operator syntax you usually have to repeat a
-      variable twice, for example:</para>
+      <para>엘비스 연산자는 3항 연산자 문법의 단축형으로 <ulink
+      url="http://groovy.codehaus.org/Operators#Operators-ElvisOperator(%3F%3A)">Groovy</ulink> 
+      언어에서 사용된다. 보통 3항 연산자에서는 변수를 두번 반복해야 한다. 
+      예를 들면 다음과 같다.</para>
 
       <programlisting>String name = "Elvis Presley";
 String displayName = name != null ? name : "Unknown";</programlisting>
 
-      <para>Instead you can use the Elvis operator, named for the resemblance
-      to Elvis' hair style.</para>
+      <para>대신에 엘비스의 헤어스타일과 유사한 엘비스 연산자를 사용할 수 있다.</para>
 
       <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 
@@ -967,7 +893,7 @@ System.out.println(name);  // 'Unknown'
 
 </programlisting>
 
-      <para>Here is a more complex example.</para>
+      <para>좀 더 복잡한 예제를 보자.</para>
 
       <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 
@@ -986,15 +912,14 @@ System.out.println(name); // Elvis Presley</programlisting>
     </section>
 
     <section>
-      <title>Safe Navigation operator</title>
+      <title>안전한 탐색(Navigation) 연산자</title>
 
-      <para>The Safe Navigation operator is used to avoid a
-      <literal>NullPointerException</literal> and comes from the <ulink
-      url="http://groovy.codehaus.org/Operators#Operators-SafeNavigationOperator(%3F.)">Groovy</ulink>
-      language. Typically when you have a reference to an object you might
-      need to verify that it is not null before accessing methods or
-      properties of the object. To avoid this, the safe navigation operator
-      will simply return null instead of throwing an exception.</para>
+      <para>안전한 탐색 연산자는 <literal>NullPointerException</literal>를 
+      피하기 위해 사용하고 <ulink
+      url="http://groovy.codehaus.org/Operators#Operators-SafeNavigationOperator(%3F.)">Groovy</ulink> 
+      언어에서 가져왔다. 보통 객체를 참조할 때 메서드에 접근하거나 객체의 프로퍼티에 접근할 때 
+      null이 아닌지 확인해야 한다. 이 작업을 하지 않기 위해 안전한 탐색 연산자는 예외를 
+      던지는 대신에 null을 반환한다.</para>
 
       <programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
 
@@ -1010,97 +935,83 @@ tesla.setPlaceOfBirth(null);
 
 city = parser.parseExpression("PlaceOfBirth?.City").getValue(context, String.class);
 
-System.out.println(city); // null - does not throw NullPointerException!!!</programlisting>
+System.out.println(city); // null - NullPointerException을 던지지 않는다!!!</programlisting>
       <note>
-        <para>The Elvis operator can be used to apply default values in
-        expressions, e.g. in an <interfacename>@Value</interfacename> expression:</para>
+        <para>엘비스 연산자를 표현식의 기본값을 설정하는데 사용할 수 있다. 예를 들어 
+        <interfacename>@Value</interfacename> 표현식에서 다음과 같이 사용한다.</para>
 
         <programlisting>@Value("#{systemProperties['pop3.port'] ?: 25}")</programlisting>
 
-        <para>This will inject a system property <code>pop3.port</code> if it
-        is defined or 25 if not.</para>
+        <para>이는 시스템 프로퍼티 <code>pop3.port</code>가 정의되어 있다면 
+        <code>pop3.port</code>를 주입하고 정의되어 있지 않다면 25를 주입한다.</para>
       </note>
     </section>
 
     <section>
-      <title>Collection Selection</title>
+      <title>컬렉션 선택기능(Selection)</title>
 
-      <para>Selection is a powerful expression language feature that allows you
-      to transform some source collection into another by selecting from its
-      entries.</para>
+      <para>선택기능(Selection)은 소스 컨텍션에서 언트리를 선택해서 다른 컬렉션으로 변환하는 
+      강력한 표현식 언어의 기능이다.</para>
 
-      <para>Selection uses the syntax
-      <literal>?[selectionExpression]</literal>. This will filter the
-      collection and return a new collection containing a subset of the
-      original elements. For example, selection would allow us to easily get a
-      list of Serbian inventors:</para>
+      <para>선택기능은 <literal>?[selectionExpression]</literal>의 문법을 사용한다. 
+      선택기능은 컬렉션을 필터링해서 원래 요소의 서브셋을 가진 새로운 컬렉션을 반환한다. 예를 들어 
+      선택기능으로 세르비아(Serbian) 발명가의 리스트를 쉽게 얻을 수 있다.</para>
 
       <programlisting language="java">List&lt;Inventor&gt; list = (List&lt;Inventor&gt;) 
       parser.parseExpression("Members.?[Nationality == 'Serbian']").getValue(societyContext);</programlisting>
 
-      <para>Selection is possible upon both lists and maps. In the former case
-      the selection criteria is evaluated against each individual list element
-      whilst against a map the selection criteria is evaluated against each
-      map entry (objects of the Java type <literal>Map.Entry</literal>). Map
-      entries have their key and value accessible as properties for use in the
-      selection.</para>
+      <para>선택기능은 리스트와 맵에서 도무 사용할 수 있다. 리스트의 경우 선택 크리테리아는 개별 
+      리스트요소에 대해 평가되고 맵에서 선택 크리테리아는 맵의 각 엔트리에 대해 평가된다.
+      (<literal>Map.Entry</literal> 자바 타입의 객체들) 맵 엔트리는 선택기능에서 사용하기 
+      위해 프로퍼티로 접근할 수 있는 키와 값을 가진다.</para>
 
-      <para>This expression will return a new map consisting of those elements
-      of the original map where the entry value is less than 27.</para>
+      <para>다음 표현식은 원래의 맵에서 27보다 작은 값을 가진 엔트리로 이루어진 새로운 맵을 
+      반환한다.</para>
 
       <programlisting language="java">Map newMap = parser.parseExpression("map.?[value&lt;27]").getValue();</programlisting>
 
-      <para>In addition to returning all the selected elements, it is possible
-      to retrieve just the first or the last value. To obtain the first entry
-      matching the selection the syntax is <literal>^[...]</literal> whilst to
-      obtain the last matching selection the syntax is
-      <literal>$[...]</literal>.</para>
+      <para>게다가 선택된 모든 요소에서 첫번째나 마지막 값을 획득하는 것도 가능한다. 선택기능의 
+      <literal>^[...]</literal> 문법을 사용해서 매칭된 첫 엔트리를 획득하고 
+      <literal>$[...]</literal>로 마지막 엔티르를 획득한다.</para>
     </section>
 
     <section>
-      <title>Collection Projection</title>
+      <title>컬렉션 투영(Projection)</title>
 
-      <para>Projection allows a collection to drive the evaluation of a
-      sub-expression and the result is a new collection. The syntax for
-      projection is <literal>![projectionExpression]</literal>. Most easily
-      understood by example, suppose we have a list of inventors but want the
-      list of cities where they were born. Effectively we want to evaluate
-      'placeOfBirth.city' for every entry in the inventor list. Using
-      projection:</para>
+      <para>투영기능은 컬렉션에 하위 표현식을 평가해서 새로운 컬렉션을 반환한다. 투영 문법은 
+      <literal>![projectionExpression]</literal>이다. 예제로 이해하는 것이 가장 쉬운데 
+      발명가들의 리스트를 가지고 있지만 발명가들이 테어난 도시의 리스트를 원한다고 가정해보자. 발명가 
+      리스트에서 모든 인트리에 대해 'placeOfBirth.city'를 효율적으로 평가하기를 원한다. 
+      다음과 같이 투영을 사용한다.</para>
 
-      <programlisting language="java">// returns [ 'Smiljan', 'Idvor' ]
+      <programlisting language="java">// [ 'Smiljan', 'Idvor' ]를 반환한다.
 List placesOfBirth = (List)parser.parseExpression("Members.![placeOfBirth.city]");</programlisting>
 
-      <para>A map can also be used to drive projection and in this case the
-      projection expression is evaluated against each entry in the map
-      (represented as a Java <literal>Map.Entry</literal>). The result of a
-      projection across a map is a list consisting of the evaluation of the
-      projection expression against each map entry.</para>
+      <para>맵에서도 투영기능을 사용할 수 있고 맵의 경우 투영 표현식은 맵의 각 엔트리마다(자바 
+      <literal>Map.Entry</literal>로 표현되는) 평가된다. 맵의 투영결과는 맵의 각 엔트리에 
+      대한 투영 표현식의 평가결과로 이루어진 리스트이다.</para>
     </section>
 
     <section>
-      <title>Expression templating</title>
+      <title>표현식 템플릿</title>
 
-      <para>Expression templates allow a mixing of literal text with one or
-      more evaluation blocks. Each evaluation block is delimited with prefix
-      and suffix characters that you can define, a common choice is to use
-      <literal>#{ }</literal> as the delimiters. For example,</para>
+      <para>표현식 템플릿으로 하나 이상의 평가 블럭을 가진 리터럴 문자를 섞을 수 있다. 각 평가 
+      블럭은 사용자가 정의할 수 있는 접두사와 접미사로 구분되고 일반적으로는 구분자로 
+      <literal>#{ }</literal>를 사용한다. 다음 예제를 보자.</para>
 
       <programlisting language="java">String randomPhrase = 
    parser.parseExpression("random number is #{T(java.lang.Math).random()}", 
                           new TemplateParserContext()).getValue(String.class);
 
-// evaluates to "random number is 0.7038186818312008"</programlisting>
+// "random number is 0.7038186818312008"로 평가된다</programlisting>
 
-      <para>The string is evaluated by concatenating the literal text 'random
-      number is ' with the result of evaluating the expression inside the #{ }
-      delimiter, in this case the result of calling that random() method. The
-      second argument to the method <literal>parseExpression()</literal> is of
-      the type <interfacename>ParserContext</interfacename>. The
-      <interfacename>ParserContext</interfacename> interface is used to
-      influence how the expression is parsed in order to support the
-      expression templating functionality. The definition of
-      <classname>TemplateParserContext</classname> is shown below.</para>
+      <para>#{ } 구분자내의 표현식을 평가한 결과(이 예제에서는 random() 메서드를 호출한 
+      결과이다.)와 'random number is ' 리터럴 문자를 연결해서 문자열을 평가한다. 
+      <literal>parseExpression()</literal> 메서드의 두번째 아규먼트는 
+      <interfacename>ParserContext</interfacename>의 타입이다. 
+      <interfacename>ParserContext</interfacename> 인터페이스는 표현식 템플릿 기능을 
+      지원하려고 표현식을 어떻게 파싱하는 지에 영향을 주려고 사용한다. 
+      <classname>TemplateParserContext</classname>의 정의는 다음에 나와있다.</para>
 
       <programlisting language="java">public class TemplateParserContext implements ParserContext {
 
@@ -1120,7 +1031,7 @@ List placesOfBirth = (List)parser.parseExpression("Members.![placeOfBirth.city]"
   </section>
 
   <section id="expressions-example-classes">
-    <title>Classes used in the examples</title>
+    <title>예제에 사용한 클래스들</title>
 
     <para>Inventor.java</para>
 
