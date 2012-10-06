@@ -2,38 +2,33 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="aop-api">
-  <title>Spring AOP APIs</title>
+  <title>Spring AOP API</title>
 
   <section id="aop-api-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>The previous chapter described the Spring 2.0 and later version's
-    support for AOP using @AspectJ and schema-based aspect definitions. In
-    this chapter we discuss the lower-level Spring AOP APIs and the AOP
-    support used in Spring 1.2 applications. For new applications, we
-    recommend the use of the Spring 2.0 and later AOP support described in the
-    previous chapter, but when working with existing applications, or when
-    reading books and articles, you may come across Spring 1.2 style examples.
-    Spring 3.0 is backwards compatible with Spring 1.2 and everything
-    described in this chapter is fully supported in Spring 3.0.</para>
+    <para>이전 장에서 @AspectJ와 스키마 기반의 관점 정의를 사용하는 AOP에 대한 스프링 2.0과 
+    그 이후 버전의 지원에 대해서 설명했다. 이번 장에서는 저수준 스프링 AOP API와 스프링 1.2 
+    어플리케이션에서 사용하는 AOP 지원에 대해서 설명한다. 새로운 어플리케이션에서는 이전 장에서 
+    설명한 스프링 2.0이상의 AOP지원을 사용하기를 권장하지만 이미 존재하는 어플리케이션에서 작업하거나 
+    책이나 글을 읽는 경우에 스프링 1.2 방식의 예제를 봐야할 것이다. 스프링 3.0은 스프링 1.2와 
+    하위호환성을 자기도 있으며 이번 장에서 설명하는 내용은 모두 스프링 3.0에서도 완전히 지원한다.</para>
   </section>
 
   <section id="aop-api-pointcuts">
-    <title>Pointcut API in Spring</title>
+    <title>스프링의 포인트컷 API</title>
 
-    <para>Let's look at how Spring handles the crucial pointcut
-    concept.</para>
+    <para>스프링이 포인트컷의 핵심 개념을 어떻게 다루는 지 보자.</para>
 
     <section id="aop-api-concepts">
-      <title>Concepts</title>
+      <title>개념</title>
 
-      <para>Spring's pointcut model enables pointcut reuse independent of
-      advice types. It's possible to target different advice using the same
-      pointcut.</para>
+      <para>스프링의 포인트컷 모델은 어드바이스 타입과 독립적으로 포인트컷을 재사용할 수 있다. 
+      그래서 다른 대상 어드바이스에 같은 포인트컷을 사용할 수 있다.</para>
 
-      <para>The <literal>org.springframework.aop.Pointcut</literal> interface
-      is the central interface, used to target advices to particular classes
-      and methods. The complete interface is shown below:</para>
+      <para><literal>org.springframework.aop.Pointcut</literal> 인터페이스가 특정 
+      클래스와 메서드에 어드바이스를 적용하는데 사용하는 핵심 인터페이스이다. 전체 인터페이스는 
+      다음에 나와있다.</para>
 
       <programlisting language="java">public interface Pointcut {
 
@@ -43,23 +38,21 @@
 
 }</programlisting>
 
-      <para>Splitting the <interfacename>Pointcut</interfacename> interface
-      into two parts allows reuse of class and method matching parts, and
-      fine-grained composition operations (such as performing a "union" with
-      another method matcher).</para>
+      <para><interfacename>Pointcut</interfacename> 인터페이스를 두 부분으로 분리해서 
+      클래스와 메서드 매칭 부분과 세밀한 구성 작업(다른 메서드 매처(matcher)와의 "결합" 
+      작업같은)을 재사용할 수 있다.</para>
 
-      <para>The <interfacename>ClassFilter</interfacename> interface is used
-      to restrict the pointcut to a given set of target classes. If the
-      <literal>matches()</literal> method always returns true, all target
-      classes will be matched:</para>
+      <para><interfacename>ClassFilter</interfacename> 인터페이스는 포인트컷을 주어진 
+      대상 클래스의 세트로 제한하는데 사용한다. <literal>matches()</literal> 메서드가 항상 
+      true를 반환한다면 모든 대상 클래스가 매치될 것이다.</para>
 
       <programlisting language="java">public interface ClassFilter {
 
     boolean matches(Class clazz);
 }</programlisting>
 
-      <para>The <interfacename>MethodMatcher</interfacename> interface is
-      normally more important. The complete interface is shown below:</para>
+      <para>일반적으로는 <interfacename>MethodMatcher</interfacename> 인터페이스가 
+      더 중요하다. 전체 인터페이스는 다음에 나와있다.</para>
 
       <programlisting language="java">public interface MethodMatcher {
 
@@ -70,106 +63,96 @@
     boolean matches(Method m, Class targetClass, Object[] args);
 }</programlisting>
 
-      <para>The <literal>matches(Method, Class) </literal>method is used to
-      test whether this pointcut will ever match a given method on a target
-      class. This evaluation can be performed when an AOP proxy is created, to
-      avoid the need for a test on every method invocation. If the 2-argument
-      matches method returns true for a given method, and the
-      <literal>isRuntime()</literal> method for the MethodMatcher returns
-      true, the 3-argument matches method will be invoked on every method
-      invocation. This enables a pointcut to look at the arguments passed to
-      the method invocation immediately before the target advice is to
-      execute.</para>
+      <para><literal>matches(Method, Class) </literal> 메서드는 대상 클래스의 주어진 
+      메서드가 매치될 것인지를 검사하는데 사용한다. 이 평가작업은 메서드를 호출할 때마다 검사하는 것을 
+      피하기 위해서 AOP 프록시를 생성할 때 수행할 수 있다. 2개의 아규먼트로 매칭하는 메서드가 주어진 
+      메서드에 대해서 true를 반환하고 MethodMatcher에 대해서 <literal>isRuntime()</literal> 
+      메서드가 true를 반환하면 3개의 아규먼트로 매칭하는 메서드는 메서드가 호출될 때마다 실행될 것이다. 
+      이는 대상 어드바이스가 실행되기 이전에 포인트컷이 메서드 호출에 전달된 아규먼트를 바로 볼 수 
+      있도록 한다.</para>
 
-      <para>Most MethodMatchers are static, meaning that their
-      <literal>isRuntime()</literal> method returns false. In this case, the
-      3-argument matches method will never be invoked.</para>
+      <para>대부분의 MethodMatcher는 static이다. 즉 MethodMatchers의 
+      <literal>isRuntime()</literal> 메서드는 false를 반환한다. 이 경우에 3개의 
+      아규먼트로 매칭하는 메서드는 실행되지 않을 것이다.</para>
 
       <tip>
-        <para>If possible, try to make pointcuts static, allowing the AOP
-        framework to cache the results of pointcut evaluation when an AOP
-        proxy is created.</para>
+        <para>AOP 프레임워크가 AOP 프록시를 생성할 때 포인트컷의 평가 결과를 캐시할 수 
+        있도록 가능한한 포인트컷을 스태틱으로 만들어라.</para>
       </tip>
     </section>
 
     <section id="aop-api-pointcut-ops">
-      <title>Operations on pointcuts</title>
+      <title>포인트컷 상에서의 연산작업</title>
 
-      <para>Spring supports operations on pointcuts: notably,
-      <emphasis>union</emphasis> and <emphasis>intersection</emphasis>.</para>
+      <para>스프링은 포인트컷의 연산작업을 지원한다. 특히 
+      <emphasis>union</emphasis>과 <emphasis>intersection</emphasis>.</para>
 
       <itemizedlist>
         <listitem>
-          <para>Union means the methods that either pointcut matches.</para>
+          <para>Union은 어떤 포인트컷이라도 매칭된 메서드를 의미한다.</para>
         </listitem>
 
         <listitem>
-          <para>Intersection means the methods that both pointcuts
-          match.</para>
+          <para>Intersection은 두 포인트컷이 모두 매칭된 메서드를
+          의미한다.</para>
         </listitem>
 
         <listitem>
-          <para>Union is usually more useful.</para>
+          <para>보통은 Union이 더 유용하다.</para>
         </listitem>
 
         <listitem>
-          <para>Pointcuts can be composed using the static methods in the
-          <emphasis>org.springframework.aop.support.Pointcuts</emphasis>
-          class, or using the <emphasis>ComposablePointcut</emphasis> class in
-          the same package. However, using AspectJ pointcut expressions is
-          usually a simpler approach.</para>
+          <para><emphasis>org.springframework.aop.support.Pointcuts</emphasis> 
+          클래스의 정적 메서드나 같은 팩키지의 <emphasis>ComposablePointcut</emphasis> 
+          클래스를 사용해서 포인트컷을 구성할 수 있다. 하지만 일반적으로는 AspectJ 포인트컷 
+          현식이 더 간단하다.</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section id="aop-api-pointcuts-aspectj">
-      <title>AspectJ expression pointcuts</title>
+      <title>AspectJ 표현식 포인트컷</title>
 
-      <para>Since 2.0, the most important type of pointcut used by Spring is
-      <literal>org.springframework.aop.aspectj.AspectJExpressionPointcut</literal>.
-      This is a pointcut that uses an AspectJ supplied library to parse an
-      AspectJ pointcut expression string.</para>
+      <para>2.0부터 스프링이 사용하는 가장 중요한 포인트컷 타입은 
+      <literal>org.springframework.aop.aspectj.AspectJExpressionPointcut</literal>이다. 
+      이 포인트컷은 AspectJ 포인트컷 표현식 문자열을 파싱하기 위해 AspectJ가 제공하는 
+      라이브러리를 사용한다.</para>
 
-      <para>See the previous chapter for a discussion of supported AspectJ
-      pointcut primitives.</para>
+      <para>지원하는 AspectJ 포인트컷 프리미티브를 설명한 이전 장을 참고해라.</para>
     </section>
 
     <section id="aop-api-pointcuts-impls">
-      <title>Convenience pointcut implementations</title>
+      <title>편리한 포인트컷 구현체</title>
 
-      <para>Spring provides several convenient pointcut implementations. Some
-      can be used out of the box; others are intended to be subclassed in
-      application-specific pointcuts.</para>
+      <para>스프링은 편리한 포인트컷 구현체를 다수 제공한다. 이 구현체 중 일부는 독창적으로 
+      사용할 수 있다. 다른 구현체들은 어플리케이션에 한정적인 포인트컷의 하위 클래스가 
+      되기 위해 만들어졌다.</para>
 
       <section id="aop-api-pointcuts-static">
-        <title>Static pointcuts</title>
+        <title>정적(Static) 포인트컷</title>
 
-        <para>Static pointcuts are based on method and target class, and
-        cannot take into account the method's arguments. Static pointcuts are
-        sufficient - <emphasis>and best</emphasis> - for most usages. It's
-        possible for Spring to evaluate a static pointcut only once, when a
-        method is first invoked: after that, there is no need to evaluate the
-        pointcut again with each method invocation.</para>
+        <para>정적 포인트컷은 메서드와 대상 클래스에 기반을 두고 있고 메서드의 아규먼트를 참조할 
+        수 없다. 대부분의 용도에는 정적 포인트컷으로도 충분하다(<emphasis>가장 좋다</emphasis>). 
+        스프링에서 정적 포인트컷은 최초 메서드가 호출될 때 딱 한번만 평가할 수 있고 그 이후의 메서드 
+        호출마다 포인트컷을 다시 평가할 필요는 없다.</para>
 
-        <para>Let's consider some static pointcut implementations included
-        with Spring.</para>
+        <para>스프링에 포함된 몇가지 정적 포인트컷 구현체를 살펴보자.</para>
 
         <section id="aop-api-pointcuts-regex">
-          <title>Regular expression pointcuts</title>
+          <title>정규 표현식 포인트컷</title>
 
-          <para>One obvious way to specify static pointcuts is regular
-          expressions. Several AOP frameworks besides Spring make this
-          possible.
-          <literal>org.springframework.aop.support.JdkRegexpMethodPointcut</literal>
-          is a generic regular expression pointcut, using the regular
-          expression support in JDK 1.4+.</para>
+          <para>정적 포인트컷을 지정하는 확실한 방법 중 하나는 정규표현식을 사용하는 것이다. 
+          스프링을 포함한 다수의 AOP 프레임워크는 정규표현식을 사용하는 것이 가능하다. 
+          <literal>org.springframework.aop.support.JdkRegexpMethodPointcut</literal>이 
+          JDK 1.4이상에서 지원하는 정규표현식을 사용하는 일반적인 정규표현식 
+          포인트컷이다.</para>
 
-          <para>Using the <literal>JdkRegexpMethodPointcut</literal> class,
-          you can provide a list of pattern Strings. If any of these is a
-          match, the pointcut will evaluate to true. (So the result is
-          effectively the union of these pointcuts.)</para>
+          <para><literal>JdkRegexpMethodPointcut</literal> 클래스를 사용해서 패턴 
+          문자열의 목록을 제공할 수 있다. 제공한 패턴 문자열 중에 일치하는 것이 있다면 포인트컷을 
+          true라고 평가할 것이다. (그래서 효율적으로 이러한 포인트컷을 결합(union)한 
+          결과가 된다.)</para>
 
-          <para>The usage is shown below:</para>
+          <para>다음에서 사용방법을 보여준다.</para>
 
           <para><programlisting language="xml">&lt;bean id="settersAndAbsquatulatePointcut" 
     class="org.springframework.aop.support.JdkRegexpMethodPointcut"&gt;
@@ -181,14 +164,13 @@
     &lt;/property&gt;
 &lt;/bean&gt;</programlisting></para>
 
-          <para>Spring provides a convenience class,
-          <literal>RegexpMethodPointcutAdvisor</literal>, that allows us to
-          also reference an Advice (remember that an Advice can be an
-          interceptor, before advice, throws advice etc.). Behind the scenes,
-          Spring will use a <literal>JdkRegexpMethodPointcut</literal>. Using
-          <literal>RegexpMethodPointcutAdvisor</literal> simplifies wiring, as
-          the one bean encapsulates both pointcut and advice, as shown
-          below:</para>
+          <para>스프링은 Advice(Advice는 인터셉터, before advice, throws advice등이 
+          될 수 있다는 점을 기억해라.)도 참조할 수 있도록 
+          <literal>RegexpMethodPointcutAdvisor</literal>라는 편리한 클래스를 제공한다.
+          스프링은 내부에서 <literal>JdkRegexpMethodPointcut</literal>를 사용할 것이다. 
+          다음 예제처럼 <literal>RegexpMethodPointcutAdvisor</literal>을 사용해서 
+          간단하게 연결(wiring)할 수 있다.(하나의 빈이 포인트컷과 어드바이스를 모두 
+          은닉화한다.)</para>
 
           <para><programlisting language="xml">&lt;bean id="settersAndAbsquatulateAdvisor" 
     class="org.springframework.aop.support.RegexpMethodPointcutAdvisor"&gt;
@@ -203,149 +185,138 @@
     &lt;/property&gt;
 &lt;/bean&gt;</programlisting></para>
 
-          <para><emphasis>RegexpMethodPointcutAdvisor</emphasis> can be used
-          with any Advice type.</para>
+          <para><emphasis>RegexpMethodPointcutAdvisor</emphasis>는 어떤 타입의 
+          Advice에도 사용할 수 있다.</para>
         </section>
 
         <section id="aop-api-pointcuts-attribute-driven">
-          <title>Attribute-driven pointcuts</title>
+          <title>속성 주도(Attribute-driven) 포인트컷</title>
 
-          <para>An important type of static pointcut is a
-          <emphasis>metadata-driven</emphasis> pointcut. This uses the values
-          of metadata attributes: typically, source-level metadata.</para>
+          <para><emphasis>metadata-driven</emphasis> 포인트컷은 중요한 정적 포인트컷 
+          타입이다. 이 포인트컷은 메타데이터 속성의 값을 사용한다. 일반적으로는 소스레벨의 
+          메타데이터를 사용한다.</para>
         </section>
       </section>
 
       <section id="aop-api-pointcuts-dynamic">
-        <title>Dynamic pointcuts</title>
+        <title>동적(Dynamic) 포인트컷</title>
 
-        <para>Dynamic pointcuts are costlier to evaluate than static
-        pointcuts. They take into account method
-        <emphasis>arguments</emphasis>, as well as static information. This
-        means that they must be evaluated with every method invocation; the
-        result cannot be cached, as arguments will vary.</para>
+        <para>동적 포인트컷은 정적 포인트컷보다 평가하는데 비용이 더 많이 든다. 동적 포인트컷은 
+        정적 정보와 마찬가지로 메서드의 <emphasis>arguments</emphasis>를 참조한다. 즉 
+        동적 포인트컷은 메서드 호출시마다 매번 평가되어야 한다. 아규먼트가 달라질 것이므로 평가 
+        결과는 캐싱할 수 없다.</para>
 
-        <para>The main example is the <literal>control flow</literal>
-        pointcut.</para>
+        <para>주요한 예제는 <literal>흐름 제어(control flow)</literal> 
+        포인트컷이다.</para>
 
         <section id="aop-api-pointcuts-cflow">
-          <title>Control flow pointcuts</title>
+          <title>흐름 제어(Control flow) 포인트컷</title>
 
-          <para>Spring control flow pointcuts are conceptually similar to
-          AspectJ <emphasis>cflow</emphasis> pointcuts, although less
-          powerful. (There is currently no way to specify that a pointcut
-          executes below a join point matched by another pointcut.) A control
-          flow pointcut matches the current call stack. For example, it might
-          fire if the join point was invoked by a method in the
-          <literal>com.mycompany.web</literal> package, or by the
-          <literal>SomeCaller</literal> class. Control flow pointcuts are
-          specified using the
-          <literal>org.springframework.aop.support.ControlFlowPointcut
-          </literal>class.<note>
-              <para>Control flow pointcuts are significantly more expensive to
-              evaluate at runtime than even other dynamic pointcuts. In Java
-              1.4, the cost is about 5 times that of other dynamic
-              pointcuts.</para>
+          <para>스프링의 흐름제어 포인트컷은 개념적으로 AspectJ의 <emphasis>cflow</emphasis> 
+          포인트컷과 비슷하지만 기능을 더 적다. (현재는 다른 포인트컷이 매칭한 조인 포인트하에서 포인트컷을 
+          실행하도록 지정할 수 있는 방법이 없다.) 흐름 제어 포인트컷은 현재 호출스택(call stack)을 
+          매칭한다. 예를 들어 <literal>com.mycompany.web</literal> 패키지의 메서드나 
+          <literal>SomeCaller</literal> 클래스가 조인 포인트를 호출한 경우 발생(fire)할 것이다. 
+          흐름 제어 포인트컷은 <literal>org.springframework.aop.support.ControlFlowPointcut
+          </literal> 클래스를 사용해서 지정한다.<note>
+              <para>흐름제어 포인트컷은 동적 포인트컷보다도 런타임에서 평가하는 비용이 약간 더 비싸다. 
+              자바 1.4에서는 다른 동적 포인트컷보다 비용이 약 5배정도 크다.</para>
             </note></para>
         </section>
       </section>
     </section>
 
     <section id="aop-api-pointcuts-superclasses">
-      <title>Pointcut superclasses</title>
+      <title>포인트컷 슈퍼클래스</title>
 
-      <para>Spring provides useful pointcut superclasses to help you to
-      implement your own pointcuts.</para>
+      <para>스프링은 자신만의 포인트컷을 구현할 수 있도록 유용한 포인트컷 슈퍼클래스들을
+      제공한다.</para>
 
-      <para>Because static pointcuts are most useful, you'll probably subclass
-      StaticMethodMatcherPointcut, as shown below. This requires implementing
-      just one abstract method (although it's possible to override other
-      methods to customize behavior):</para>
+      <para>정적 포인트컷이 가장 유용하기 때문에 다음과 같이 StaticMethodMatcherPointcut의 
+      하위클래스를 만들 것이다. 이 하위클래스는 딱 하나의 추상 메서드를 구현해야 한다.(동작을 바꾸기 
+      위해 다른 메서드를 오버라이드하는 것도 가능하다.)</para>
 
       <para><programlisting language="java">class TestStaticPointcut extends StaticMethodMatcherPointcut {
 
     public boolean matches(Method m, Class targetClass) {
-        // return true if custom criteria match
+        // 커스텀 크리테리아가 일치하면 true를 반환한다
     }
-}</programlisting>There are also superclasses for dynamic pointcuts.</para>
+}</programlisting>동적 포인트컷에 대한 슈퍼클래스들도 존재한다.</para>
 
-      <para>You can use custom pointcuts with any advice type in Spring 1.0
-      RC2 and above.</para>
+      <para>스프링 1.0 RC2 이상의 버전에서는 어떤 타입의 어드바이스로도 커스텀 포인트컷을 
+      사용할 수 있다.</para>
     </section>
 
     <section id="aop-api-pointcuts-custom">
-      <title>Custom pointcuts</title>
+      <title>커스텀 포인트컷</title>
 
-      <para>Because pointcuts in Spring AOP are Java classes, rather than
-      language features (as in AspectJ) it's possible to declare custom
-      pointcuts, whether static or dynamic. Custom pointcuts in Spring can be
-      arbitrarily complex. However, using the AspectJ pointcut expression
-      language is recommended if possible.</para>
+      <para>스프링 AOP에서 포인트컷은 언어의 기능(AspectJ처럼)이 아니라 자바 클래스이기 때문에 
+      정적이든 동적이든 커스텀 포인트컷을 선언할 수 있다. 스프링의 커스텀 포인트컷은 상황에 따라 
+      복잡해 질 수 있다. 하지만 가능하다면 AspectJ 포인트컷 표현식 언어를 사용하기를 
+      추천한다.</para>
 
       <note>
-        <para>Later versions of Spring may offer support for "semantic
-        pointcuts" as offered by JAC: for example, "all methods that change
-        instance variables in the target object."</para>
+        <para>스프링의 차기 버전에서는 JAC가 제안한 것과 같은 "시맨틱(semantic) 포인트컷"을 
+        지원할 것이다. 예를 들면 "대상 클래스에서 인스턴스 변수를 변경하는 모든 메서드"같은 
+        것이다.</para>
       </note>
     </section>
   </section>
 
   <section id="aop-api-advice">
-    <title>Advice API in Spring</title>
+    <title>스프링의 Advice API</title>
 
-    <para>Let's now look at how Spring AOP handles advice.</para>
+    <para>이제 스프링 AOP가 어떻게 어드바이스를 다루는지 살펴보자.</para>
 
     <section id="aop-api-advice-lifecycle">
-      <title>Advice lifecycles</title>
+      <title>어드바이스 생명주기</title>
 
-      <para>Each advice is a Spring bean. An advice instance can be shared
-      across all advised objects, or unique to each advised object. This
-      corresponds to <emphasis>per-class</emphasis> or
-      <emphasis>per-instance</emphasis> advice.</para>
+      <para>각각의 어드바이스는 스프링 빈이다. 어드바이스 인스턴스는 어드바이즈된 모든 객체사이에서 
+      공유되거나 어드바이즈된 각 객체에 유일하게 공유될 수 있다. 각각 
+      <emphasis>per-class</emphasis> 어드바이스와 
+      <emphasis>per-instance</emphasis> 어드바이스다.</para>
 
-      <para>Per-class advice is used most often. It is appropriate for generic
-      advice such as transaction advisors. These do not depend on the state of
-      the proxied object or add new state; they merely act on the method and
-      arguments.</para>
+      <para>Per-class 어드바이스를 가장 자주 사용한다. Per-class 어드바이스는 트랜잭션 
+      어드바이저같은 일반적인 어드바이스에 적절하다. 이 어드바이스는 프록시된 객체의 상태에 의존하거나 
+      새로운 상태를 추가하지 말아야 한다. 이 어드바이스는 주로 메서드와 아규먼트에서 
+      동작한다.</para>
 
-      <para>Per-instance advice is appropriate for introductions, to support
-      mixins. In this case, the advice adds state to the proxied
-      object.</para>
+      <para>Per-instance 어드바이스는 믹스인을 사용하기 위한 인트로덕션에 적합하다. 
+      이러한 경우 어드바이스가 프록시된 객체에 상태를 추가한다.</para>
 
-      <para>It's possible to use a mix of shared and per-instance advice in
-      the same AOP proxy.</para>
+      <para>같은 AOP 프록시에서 공유된 per-instance 어드바이스를 섞어서 사용할 수 
+      있다.</para>
     </section>
 
     <section id="aop-api-advice-types">
-      <title>Advice types in Spring</title>
+      <title>스프링의 어드바이스 타입</title>
 
-      <para>Spring provides several advice types out of the box, and is
-      extensible to support arbitrary advice types. Let us look at the basic
-      concepts and standard advice types.</para>
+      <para>스프링은 여러 가지 독창적인 어드바이스 타입을 제공하고 임의의 어드바이스 타입을 
+      지원하기 위해 확장할 수 있다. 표준 어드바이스 타입과 기본적인 개념을 살펴보자.</para>
 
       <section id="aop-api-advice-around">
         <title>Interception around advice</title>
 
-        <para>The most fundamental advice type in Spring is
-        <emphasis>interception around advice</emphasis>.</para>
+        <para><emphasis>interception around advice</emphasis>가 
+        스프링에서 가장 기본적인 어드바이스 타입이다.</para>
 
-        <para>Spring is compliant with the AOP Alliance interface for around
-        advice using method interception. MethodInterceptors implementing
-        around advice should implement the following interface:</para>
+        <para>스프링은 메서드 가로채기(interception)를 사용하는 around advice에 AOP 
+        Alliance 인터페이스를 따른다. around advice를 구현하는 MethodInterceptor는 
+        다음의 인터페이스를 구현해야 한다.</para>
 
         <programlisting language="java">public interface MethodInterceptor extends Interceptor {
   
     Object invoke(MethodInvocation invocation) throws Throwable;
 }</programlisting>
 
-        <para>The <classname>MethodInvocation</classname> argument to the
-        <methodname>invoke()</methodname> method exposes the method being
-        invoked; the target join point; the AOP proxy; and the arguments to
-        the method. The <methodname>invoke()</methodname> method should return
-        the invocation's result: the return value of the join point.</para>
+        <para><methodname>invoke()</methodname> 메서드의 
+        <classname>MethodInvocation</classname> 아규먼트는 호출되는 메서드, 대상 
+        조인포인트, AOP 프록시, 메서드의 아규먼트를 노출한다. 
+        <methodname>invoke()</methodname> 메서드는 반드시 호출결과인 조인포인트의 
+        반환값을 반환해야 한다.</para>
 
-        <para>A simple <classname>MethodInterceptor</classname> implementation
-        looks as follows:</para>
+        <para>간단한 <classname>MethodInterceptor</classname> 구현체는 다음과 
+        같다.</para>
 
         <programlisting language="java">public class DebugInterceptor implements MethodInterceptor {
 
@@ -357,61 +328,52 @@
     }
 }</programlisting>
 
-        <para>Note the call to the MethodInvocation's
-        <methodname>proceed()</methodname> method. This proceeds down the
-        interceptor chain towards the join point. Most interceptors will
-        invoke this method, and return its return value. However, a
-        MethodInterceptor, like any around advice, can return a different
-        value or throw an exception rather than invoke the proceed method.
-        However, you don't want to do this without good reason!</para>
+        <para>MethodInvocation의 <methodname>proceed()</methodname> 메서드를 
+        호출한다. 이는 조인포인트쪽으로 인터셉터 체인을 따라 진행된다. 대부분의 인터셉터는 이 
+        메서드를 호출하고 그 결과값을 반환할 것이다. 하지만 다른 around advice처럼 
+        MethodInterceptor도 다른 값을 반환하거나 proceed 메서드를 호출하지 않고 예외를 
+        던질 수 있다. 하지만 합당한 이유가 없이는 이렇게 되기를 바라지 않을 것이다!</para>
 
         <note>
-          <para>MethodInterceptors offer interoperability with other AOP
-          Alliance-compliant AOP implementations. The other advice types
-          discussed in the remainder of this section implement common AOP
-          concepts, but in a Spring-specific way. While there is an advantage
-          in using the most specific advice type, stick with MethodInterceptor
-          around advice if you are likely to want to run the aspect in another
-          AOP framework. Note that pointcuts are not currently interoperable
-          between frameworks, and the AOP Alliance does not currently define
-          pointcut interfaces.</para>
+          <para>MethodInterceptor는 다른 AOP Alliance 호환 AOP 구현체와의 
+          상호운용성(interoperability)을 제공한다. 이번 섹션의 남은 부분에서 얘기하는 다른 
+          어드바이스 타입들은 일반적인 AOP 개념을 구현했지만 스프링식으로 구현했다. 가장 구체적인 
+          어드바이스 타입을 사용할 때의 장점이 있지만 다른 AOP 프레임워크에서 관점을 실행하고 싶다면 
+          MethodInterceptor around advice을 사용해라. 현재 포인트컷은 프레임워크간에 
+          상호운용성이 없고 AOP Alliance는 포인트컷 인터페이스를 정의하고 있지 
+          않다.</para>
         </note>
       </section>
 
       <section id="aop-api-advice-before">
         <title>Before advice</title>
 
-        <para>A simpler advice type is a <emphasis role="bold">before
-        advice</emphasis>. This does not need a
-        <literal>MethodInvocation</literal> object, since it will only be
-        called before entering the method.</para>
+        <para>더 간단한 어드바이스 타입은 <emphasis role="bold">before
+        advice</emphasis>이다. 이 어드바이스는 메서드에 진입하기 전에만 호출될 것이므로 
+        <literal>MethodInvocation</literal> 객체가 필요하지 않다.</para>
 
-        <para>The main advantage of a before advice is that there is no need
-        to invoke the <literal>proceed() </literal>method, and therefore no
-        possibility of inadvertently failing to proceed down the interceptor
-        chain.</para>
+        <para>before advice의 가장 큰 장점은 <literal>proceed() </literal> 메서드를 
+        호출할 필요가 없으므로 인터셉터 체인을 따라 진행되는데 우연히라도 실패할 가능성이 
+        없다는 것이다.</para>
 
-        <para>The <literal>MethodBeforeAdvice</literal> interface is shown
-        below. (Spring's API design would allow for field before advice,
-        although the usual objects apply to field interception and it's
-        unlikely that Spring will ever implement it).</para>
+        <para><literal>MethodBeforeAdvice</literal> 인터페이스는 다음에 나와있다. 
+        (일반적인 객체를 필드 인터셉션에 적용하고 스프링이 이를 구현할 것 같지도 않지만 스프링의 
+        API 디자인은 어드바이즈 이전의 필드를 허용할 것이다.)</para>
 
         <programlisting language="java">public interface MethodBeforeAdvice extends BeforeAdvice {
 
     void before(Method m, Object[] args, Object target) throws Throwable;
 }</programlisting>
 
-        <para>Note the return type is <literal>void</literal>. Before advice
-        can insert custom behavior before the join point executes, but cannot
-        change the return value. If a before advice throws an exception, this
-        will abort further execution of the interceptor chain. The exception
-        will propagate back up the interceptor chain. If it is unchecked, or
-        on the signature of the invoked method, it will be passed directly to
-        the client; otherwise it will be wrapped in an unchecked exception by
-        the AOP proxy.</para>
+        <para>반환 타입은 <literal>void</literal>이다. before advice는 조인 포인트를 
+        실행하기 전에 임의의 동작을 추가할 수 있지만 반환값을 바꿀 수는 없다. before advice가 
+        예외를 던지면 인터셉터 체인의 이어진 실행을 중단할 것이다. 예외는 인터셉터 체인으로 전파된다. 
+        예외가 언체크드(unchecked)이면(또는 호출된 메서드의 시그니쳐상에서) 클라이언트에 직접 
+        예외가 전달된다. 예외가 언체크드가 아니라면 AOP 프록시가 언체크드 익셉션으로 감쌀 
+        것이다.</para>
 
-        <para>An example of a before advice in Spring, which counts all method
-        invocations:</para>
+        <para>다음은 모든 메서드 호출 횟수를 세는 스프링의 before advice의 
+        예제다.</para>
 
         <programlisting language="java">public class CountingBeforeAdvice implements MethodBeforeAdvice {
 
@@ -427,43 +389,38 @@
 }</programlisting>
 
         <tip>
-          <para>Before advice can be used with any pointcut.</para>
+          <para>Before advice는 어떤 포인트컷과도 사용할 수 있다.</para>
         </tip>
       </section>
 
       <section id="aop-api-advice-throws">
         <title>Throws advice</title>
 
-        <para><emphasis role="bold">Throws advice</emphasis> is invoked after
-        the return of the join point if the join point threw an exception.
-        Spring offers typed throws advice. Note that this means that the
-        <literal>org.springframework.aop.ThrowsAdvice</literal> interface does
-        not contain any methods: It is a tag interface identifying that the
-        given object implements one or more typed throws advice methods. These
-        should be in the form of:</para>
+        <para><emphasis role="bold">Throws advice</emphasis>는 조인포인트가 예외를 
+        던진 경우 조인포인트가 반환된 후에 호출된다. 즉 
+        <literal>org.springframework.aop.ThrowsAdvice</literal> 인터페이스는 어떤 
+        메서드도 가지고 있지 않다. 이 인터페이스는 하나 이상의 throws advice 메서드를 구현한 
+        주어진 객체를 식별하는 tag 인터페이스이다. 이는 다음 형태가 되어야 한다.</para>
 
         <programlisting language="java">afterThrowing([Method, args, target], subclassOfThrowable) </programlisting>
 
-        <para>Only the last argument is required. The method signatures may
-        have either one or four arguments, depending on whether the advice
-        method is interested in the method and arguments. The following
-        classes are examples of throws advice.</para>
+        <para>마지막 아규먼트만 필수 아규먼트다. 메서드 시그니처는 어드바이스 메서드가 메서드와 
+        아규먼트에 관계되었는 지에 따라 한개나 네개의 아규먼트를 가질 것이다. 다음 클래스들은 
+        throws advice의 예제들이다.</para>
 
-        <para>The advice below is invoked if a
-        <exceptionname>RemoteException</exceptionname> is thrown (including
-        subclasses):</para>
+        <para>다음의 어드바이스는 <exceptionname>RemoteException</exceptionname>가 
+        던져질 때(서브클래스 포함) 호출된다.</para>
 
         <programlisting language="java">public class RemoteThrowsAdvice implements ThrowsAdvice {
 
     public void afterThrowing(RemoteException ex) throws Throwable {
-        <lineannotation>// Do something with remote exception</lineannotation>
+        <lineannotation>// 원격 예외로 무언가를 한다</lineannotation>
     }
 }</programlisting>
 
-        <para>The following advice is invoked if a
-        <exceptionname>ServletException</exceptionname> is thrown. Unlike the
-        above advice, it declares 4 arguments, so that it has access to the
-        invoked method, method arguments and target object:</para>
+        <para><exceptionname>ServletException</exceptionname>가 던져졌을 때 
+        다음의 어드바이스가 호출된다. 위의 어드바이스와는 달리 호출된 메서드, 메서드 아규먼트, 
+        대상 객체에 접근하기 위해서 4개의 아규먼트를 선언한다.</para>
 
         <programlisting language="java">public class ServletThrowsAdviceWithArguments implements ThrowsAdvice {
 
@@ -472,45 +429,41 @@
     }
 }</programlisting>
 
-        <para>The final example illustrates how these two methods could be
-        used in a single class, which handles both
-        <literal>RemoteException</literal> and
-        <literal>ServletException</literal>. Any number of throws advice
-        methods can be combined in a single class.</para>
+        <para>마지막 예제는 하나의 클래스에서 <literal>RemoteException</literal>과 
+        <literal>ServletException</literal>을 다루는 두 메서드를 어떻게 사용할 수 
+        있는지를 설명한다. 하나의 클래스에서 throws advice 메서드를 몇개든 
+        조합할 수 있다.</para>
 
         <programlisting language="java">public static class CombinedThrowsAdvice implements ThrowsAdvice {
 
     public void afterThrowing(RemoteException ex) throws Throwable {
-        // Do something with remote exception
+        // 원격 예외로 무언가를 한다
     }
  
     public void afterThrowing(Method m, Object[] args, Object target, ServletException ex) {
-        // Do something with all arguments
+        // 모든 아규먼트로 무언가를 한다
     }
 }</programlisting>
 
-        <para><emphasis>Note:</emphasis> If a throws-advice method throws an
-        exception itself, it will override the original exception (i.e. change
-        the exception thrown to the user). The overriding exception will
-        typically be a RuntimeException; this is compatible with any method
-        signature. However, if a throws-advice method throws a checked
-        exception, it will have to match the declared exceptions of the target
-        method and is hence to some degree coupled to specific target method
-        signatures. <emphasis>Do not throw an undeclared checked exception
-        that is incompatible with the target method's
-        signature!</emphasis></para>
+        <para><emphasis>Note:</emphasis> throws-advice 메서드 자체가 예외를 던지면 
+        원래의 예외를 오버라이드할 것이다.(예시: 사용자에게 던져진 예외를 변경한다) 오버라이딩된 
+        예외는 일반적으로 RuntimeException이 될 것이다. 이는 어떤 메서드 시그니처와도 호환성을 
+        가진다. 하지만 throws-advice 메서드가 체크드 익셉션을 던지면 대상 메서드에서 선언된 
+        예외와 일치해야 하므로 특성 대상 메서드 시그니처와 약간 커플링이 생긴다. <emphasis>대상 
+        메서드의 시그니처와 맞지 않는 선언되지 않은 체크드 익셉션을 
+        던지지 마라!</emphasis></para>
 
         <tip>
-          <para>Throws advice can be used with any pointcut.</para>
+          <para>Throws advice는 어떤 포인트컷과도 사용할 수 있다.</para>
         </tip>
       </section>
 
       <section id="aop-api-advice-after-returning">
         <title>After Returning advice</title>
 
-        <para>An after returning advice in Spring must implement the
-        <emphasis>org.springframework.aop.AfterReturningAdvice</emphasis>
-        interface, shown below:</para>
+        <para>스프링에서 after returning advice는 다음과 같이 
+        <emphasis>org.springframework.aop.AfterReturningAdvice</emphasis> 
+        인터페이스를 반드시 구현해야 한다.</para>
 
         <programlisting language="java">public interface AfterReturningAdvice extends Advice {
 
@@ -518,12 +471,11 @@
             throws Throwable;
 }</programlisting>
 
-        <para>An after returning advice has access to the return value (which
-        it cannot modify), invoked method, methods arguments and
-        target.</para>
+        <para>after returning advice는 반환값(수정불가), 호출된 메서드, 메서드의 
+        아규먼트, 대상객체에 접근한다.</para>
 
-        <para>The following after returning advice counts all successful
-        method invocations that have not thrown exceptions:</para>
+        <para>다음의 after returning advice는 예외를 던지지 않고 성공적으로 
+        호출된 모든 메서드의 수를 센다.</para>
 
         <programlisting language="java">public class CountingAfterReturningAdvice implements AfterReturningAdvice {
 
@@ -539,12 +491,11 @@
     }
 }</programlisting>
 
-        <para>This advice doesn't change the execution path. If it throws an
-        exception, this will be thrown up the interceptor chain instead of the
-        return value.</para>
+        <para>이 어드바이스는 실행 경로를 변경하지 않는다. 예외를 던질 경우에는 반환값을 반환하지 
+        않고 예외를 인터셉터 체인에 던진다.</para>
 
         <tip>
-          <para>After returning advice can be used with any pointcut.</para>
+          <para>After returning advice는 어떤 포인트컷과도 사용할 수 있다.</para>
         </tip>
       </section>
 
@@ -555,14 +506,13 @@
 
          
 
-        <para>Spring treats introduction advice as a special kind of
-        interception advice.</para>
+        <para>스프링은 인트로덕션 어드바이스를 인터셉션(interception) 어드바이스의 
+        특별한 종류처럼 다룬다.</para>
 
          
 
-        <para>Introduction requires an <literal>IntroductionAdvisor</literal>,
-        and an <literal>IntroductionInterceptor</literal>, implementing the
-        following interface:</para>
+        <para>인트로덕션은 다음의 인터페이스를 구현한<literal>IntroductionAdvisor</literal>와 
+        <literal>IntroductionInterceptor</literal>를 필요로 한다.</para>
 
          
 
@@ -573,19 +523,17 @@
 
          
 
-        <para>The <literal>invoke() </literal>method inherited from the AOP
-        Alliance <literal>MethodInterceptor</literal> interface must implement
-        the introduction: that is, if the invoked method is on an introduced
-        interface, the introduction interceptor is responsible for handling
-        the method call - it cannot invoke
-        <literal>proceed()</literal>.</para>
+        <para>AOP Alliance <literal>MethodInterceptor</literal> 인터페이스에서 
+        상속받은 <literal>invoke() </literal> 메서드는 인트로덕션을 구현해야 한다. 즉, 
+        인트로덕션이 된 인터페이스(introduced interface)에서 메서드가 호출되면 인트로덕션 
+        인터셉터가 메서드 호출을 다루는 책임을 담당한다. 이는 <literal>proceed()</literal>를 
+        호출할 수 없다.</para>
 
          
 
-        <para>Introduction advice cannot be used with any pointcut, as it
-        applies only at class, rather than method, level. You can only use
-        introduction advice with the <literal>IntroductionAdvisor</literal>,
-        which has the following methods:</para>
+        <para>인트로덕션 어드바이스는 메서드가 아닌 클래스에만 적용되기 때문에 모든 포인트컷과 
+        사용할 수 없다. 인트로덕션 어드바이스는 다음의 메서드를 가진 
+        <literal>IntroductionAdvisor</literal>과 함께만 사용할 수 있다.</para>
 
          
 
@@ -603,28 +551,23 @@ public interface IntroductionInfo {
 
          
 
-        <para>There is no <interfacename>MethodMatcher</interfacename>, and
-        hence no <interfacename>Pointcut</interfacename>, associated with
-        introduction advice. Only class filtering is logical.</para>
+        <para>인트로덕션 어드바이스와 연관된 <interfacename>MethodMatcher</interfacename>는 
+        존재하지 않는다.(그러므로 <interfacename>Pointcut</interfacename>도 없다.) 
+        클래스 필터링만이 적합하다.</para>
 
          
 
-        <para>The <literal>getInterfaces()</literal> method returns the
-        interfaces introduced by this advisor.</para>
-
-         The 
+        <para><literal>getInterfaces()</literal> 메서드는 이 어드바이저가 
+        인트로덕션한 인터페이스를 반환한다.</para>
 
         <literal>validateInterfaces()</literal>
+        설정된 <literal>IntroductionInterceptor</literal>로 인트로덕션이 된 인터페이스를 구현할 수 있는지를 확인하기 위해서 <literal>validateInterfaces()</literal> 메서드를 내부적으로 사용한다
 
-         method is used internally to see whether or not the introduced interfaces can be implemented by the configured 
-
-        <literal>IntroductionInterceptor</literal>
 
          . 
 
-        <para>Let's look at a simple example from the Spring test suite. Let's
-        suppose we want to introduce the following interface to one or more
-        objects:</para>
+        <para>스프링 테스트슈트에 있는 간단한 예제를 보자. 다음의 인터페이스를 하나이상의 객체에 
+        인트로덕션하기를 원한다고 가정하자.</para>
 
          
 
@@ -638,62 +581,51 @@ public interface IntroductionInfo {
 
          
 
-        <para>This illustrates a <emphasis role="bold">mixin</emphasis>. We
-        want to be able to cast advised objects to Lockable, whatever their
-        type, and call lock and unlock methods. If we call the lock() method,
-        we want all setter methods to throw a
-        <literal>LockedException</literal>. Thus we can add an aspect that
-        provides the ability to make objects immutable, without them having
-        any knowledge of it: a good example of AOP.</para>
+        <para>이 예제는 <emphasis role="bold">믹스인(mixin)</emphasis>을 설명해 준다. 
+        어드바이즈된 객체의 타입이 무엇이든간에 Lockable로 캐스팅 할 수 있고 lock, unlock 메서드를 
+        호출할 수 있기를 원한다. lock() 메서드를 호출하면 모든 setter 메서드가 
+        <literal>LockedException</literal>를 던져야 한다. 그러므로 객체에 대한 정보가 없이도 
+        객체를 불변(immutable)하게 만들 수 있는 관점을 추가할 수 있다. 이는 AOP의 좋은 
+        예이다.</para>
 
          
 
-        <para>Firstly, we'll need an
-        <literal>IntroductionInterceptor</literal> that does the heavy
-        lifting. In this case, we extend the
-        <literal>org.springframework.aop.support.DelegatingIntroductionInterceptor</literal>
-        convenience class. We could implement IntroductionInterceptor
-        directly, but using
-        <literal>DelegatingIntroductionInterceptor</literal> is best for most
-        cases.</para>
+        <para>첫째로 힘든 일을 수행하는 <literal>IntroductionInterceptor</literal>가 
+        필요하다. 이 경우에는 편리한 
+        <literal>org.springframework.aop.support.DelegatingIntroductionInterceptor</literal> 
+        클래스를 확장한다. 직접 IntroductionInterceptor를 구현할 수도 있지만 대부분의 경우에 
+        <literal>DelegatingIntroductionInterceptor</literal>를 사용하는 것도 
+        최선이다.</para>
 
          
 
-        <para>The <literal>DelegatingIntroductionInterceptor</literal> is
-        designed to delegate an introduction to an actual implementation of
-        the introduced interface(s), concealing the use of interception to do
-        so. The delegate can be set to any object using a constructor
-        argument; the default delegate (when the no-arg constructor is used)
-        is this. Thus in the example below, the delegate is the
-        <literal>LockMixin</literal> subclass of
-        <literal>DelegatingIntroductionInterceptor</literal>. Given a delegate
-        (by default itself), a
-        <literal>DelegatingIntroductionInterceptor</literal> instance looks
-        for all interfaces implemented by the delegate (other than
-        IntroductionInterceptor), and will support introductions against any
-        of them. It's possible for subclasses such as
-        <literal>LockMixin</literal> to call the
-        <literal>suppressInterface(Class intf) </literal>method to suppress
-        interfaces that should not be exposed. However, no matter how many
-        interfaces an <literal>IntroductionInterceptor</literal> is prepared
-        to support, the <literal>IntroductionAdvisor</literal> used will
-        control which interfaces are actually exposed. An introduced interface
-        will conceal any implementation of the same interface by the
-        target.</para>
+        <para><literal>DelegatingIntroductionInterceptor</literal>는 인트로덕션은 
+        인트로덕션된 인터페이스의 실제 구현체로 위임하도록 설계되었고 인터페이스는 이 작업을 하는 
+        인터셉션의 사용을 감추고 있다. 위임은 생성자 아규먼트를 사용해서 어떤 객체에든 설정할 수 있다. 
+        기본 위임은(아규먼트가 없는 생성자를 사용하는 경우) 다음과 같다. 그러므로 아래 예제에서 위임은 
+        <literal>DelegatingIntroductionInterceptor</literal>의 하위클래스 
+        <literal>LockMixin</literal>가 된다. 제공된 위임인(기본값이다) 
+        <literal>DelegatingIntroductionInterceptor</literal> 인스턴스는 
+        위임(IntroductionInterceptor를 제외한)이 구현한 모든 인스턴스를 찾고 찾아낸 인스턴스에 
+        인트로덕션을 지원할 것이다. 이는 노출되지 않아야 하는 차단된(suppress) 인터페이스에 
+        <literal>suppressInterface(Class intf) </literal> 메서드를 호출하는 
+        <literal>LockMixin</literal>같은 하위클래스에도 가능하다. 하지만 얼마나 많은 인터페이스가 
+        지원하기 위해 <literal>IntroductionInterceptor</literal>를 준비하고 
+        <literal>IntroductionAdvisor</literal>를 사용한 얼마나 많은 인터페이스가 실제로 
+        노출할 인터페이스를 제어하는 지는 중요하지 않다. 인트로덕션이 된 인터페이스는 대상객체로 같은 
+        인터페이스의 모든 구현체를 감출 것이다.</para>
 
          
 
-        <para>Thus LockMixin subclasses
-        <literal>DelegatingIntroductionInterceptor</literal> and implements
-        Lockable itself. The superclass automatically picks up that Lockable
-        can be supported for introduction, so we don't need to specify that.
-        We could introduce any number of interfaces in this way.</para>
+        <para>그러므로 LockMixin는 <literal>DelegatingIntroductionInterceptor</literal>의 
+        하위클래스가 되고 Lockable 자체를 구현한다. 인트로덕션에 Lockable이 지원할 수 있는 
+        슈퍼클래스를 자동적으로 선택하기 때문에 슈퍼클래스를 지정할 필요는 없다. 이 방법으로 
+        인터페이스를 몇개든지 도입(introduce)할 수 있다.</para>
 
          
 
-        <para>Note the use of the <literal>locked</literal> instance variable.
-        This effectively adds additional state to that held in the target
-        object.</para>
+        <para><literal>locked</literal> 인스턴스 변수의 사용에 주목해라. 이는 대상객체가 
+        가지는 부가적인 상태를 효과적으로 추가한다.</para>
 
          
 
@@ -726,24 +658,20 @@ public interface IntroductionInfo {
 
          
 
-        <para>Often it isn't necessary to override the <literal>invoke()
-        </literal>method: the
-        <literal>DelegatingIntroductionInterceptor</literal> implementation -
-        which calls the delegate method if the method is introduced, otherwise
-        proceeds towards the join point - is usually sufficient. In the
-        present case, we need to add a check: no setter method can be invoked
-        if in locked mode.</para>
+        <para>때로는 <literal>invoke()</literal> 메서드를 오버라이드할 필요가 없다. 
+        <literal>DelegatingIntroductionInterceptor</literal> 구현체(메서드가 
+        인트로덕션되었을 때 delegate 메서드를 호출하고 그렇지 않으면 조인포인트로 진행된다)로도 
+        보통은 충분하다. 현시점에서는 locked 모드인 경우 호출될 수 있는 setter 메서드가 
+        없는지 확인할 필요가 있다.</para>
 
          
 
-        <para>The introduction advisor required is simple. All it needs to do
-        is hold a distinct <literal>LockMixin</literal> instance, and specify
-        the introduced interfaces - in this case, just
-        <literal>Lockable</literal>. A more complex example might take a
-        reference to the introduction interceptor (which would be defined as a
-        prototype): in this case, there's no configuration relevant for a
-        <literal>LockMixin</literal>, so we simply create it using
-        <literal>new</literal>.</para>
+        <para>인트로덕션 어드바이저에 필요한 것은 간단하다. 개별적인 
+        <literal>LockMixin</literal> 인스턴스를 가지고 인트로덕션이 되는 인터페이스를 지정하는 
+        것이 해야하는 작업의 전부이다. 이 예제의 경우에는 <literal>Lockable</literal> 뿐이다. 
+        더 복잡한 예제에서는 인트로덕션 인터셉터(프로토타입으로 정의되었을 것이다)에 대한 참조를 받을 
+        것이다. 이 경우에 <literal>LockMixin</literal>에 절적한 설정이 없기 때문에 
+        <literal>new</literal>로 생성한다.</para>
 
          
 
@@ -758,22 +686,22 @@ public interface IntroductionInfo {
 
          
 
-        <para>We can apply this advisor very simply: it requires no
-        configuration. (However, it <emphasis>is</emphasis> necessary: It's
-        impossible to use an <literal>IntroductionInterceptor</literal>
-        without an <emphasis>IntroductionAdvisor</emphasis>.) As usual with
-        introductions, the advisor must be per-instance, as it is stateful. We
-        need a different instance of <literal>LockMixinAdvisor</literal>, and
-        hence <literal>LockMixin</literal>, for each advised object. The
-        advisor comprises part of the advised object's state.</para>
+        <para>이 어드바이저를 아주 간단하게 적용할 수 있다. 이 어드바이저는 설정이 필요없다.
+        (하지만 어드바이저는 필수적<emphasis>이다</emphasis>. 
+        <emphasis>IntroductionAdvisor</emphasis>없이는 
+        <literal>IntroductionInterceptor</literal>를 사용할 수 없다.) 어드바이저가 
+        상태를 가지기(stateful) 때문에 인트로덕션과 사용할 때는 언제나 어드바이저는 per-instance가 
+        되어야 한다. 어드바이즈된 각각의 객체마다 개별적인 <literal>LockMixinAdvisor</literal> 
+        인스턴스(그리고 <literal>LockMixin</literal>)가 필요하다. 어드바이저는 어드바이즈된 
+        객체의 상태의 일부분으로 구성된다.</para>
 
          
 
-        <para>We can apply this advisor programmatically, using the
-        <literal>Advised.addAdvisor() </literal>method, or (the recommended
-        way) in XML configuration, like any other advisor. All proxy creation
-        choices discussed below, including "auto proxy creators," correctly
-        handle introductions and stateful mixins.</para>
+        <para>다른 어드바이저처럼 <literal>Advised.addAdvisor() </literal> 메서드를 
+        사용하거나 XML설정(추천하는 방법이다)을 사용해서 이 어드바이저를 프로그래밍적으로 적용할 
+        수도 있다. "auto proxy creators"를 포함해서 아래에서 설명하는 모든 프록시 생성 
+        선택권들(proxy creation choices은 인트로덕션과 상태를 가진(stateful) 믹스인을 
+        제대로 다룬다.</para>
 
          
       </section>
@@ -781,263 +709,222 @@ public interface IntroductionInfo {
   </section>
 
   <section id="aop-api-advisor">
-    <title>Advisor API in Spring</title>
+    <title>스프링의 어드바이저(Advisor) API</title>
 
-    <para>In Spring, an Advisor is an aspect that contains just a single
-    advice object associated with a pointcut expression.</para>
+    <para>스프링에서 어드바이저는 포인트컷 표현식과 연결된 하나의 어드바이스 객체를 가진 
+    관점이다.</para>
 
-    <para>Apart from the special case of introductions, any advisor can be
-    used with any advice.
-    <literal>org.springframework.aop.support.DefaultPointcutAdvisor</literal>
-    is the most commonly used advisor class. For example, it can be used with
-    a <literal>MethodInterceptor</literal>, <literal>BeforeAdvice</literal> or
-    <literal>ThrowsAdvice</literal>.</para>
+    <para>인트로덕션의 특수한 경우를 제외한 모든 어드바이저는 모든 어드바이스와 함게 사용할 수 있다. 
+    <literal>org.springframework.aop.support.DefaultPointcutAdvisor</literal>가 
+    가장 일반적으로 사용하는 어드바이저 클래스다. 예를 들어 이 클래스를 
+    <literal>MethodInterceptor</literal>, <literal>BeforeAdvice</literal>, 
+    <literal>ThrowsAdvice</literal>와 함께 사용할 수 있다.</para>
 
-    <para>It is possible to mix advisor and advice types in Spring in the same
-    AOP proxy. For example, you could use a interception around advice, throws
-    advice and before advice in one proxy configuration: Spring will
-    automatically create the necessary interceptor chain.</para>
+    <para>스프링에서 어드바이저 타입과 어드바이스 타입을 같은 AOP프록시안에 섞을 수 있다. 예를 들어 
+    하나의 프록시 설정안에서 interception around advice, throws advice, before advice를 
+    사용할 수 있다. 스프링은 자동적으로 필수적인 인터셉터 체임을 생성할 것이다.</para>
   </section>
 
   <section id="aop-pfb">
-    <title>Using the ProxyFactoryBean to create AOP proxies</title>
+    <title>AOP 프록시 생성에 ProxyFactoryBean 사용하기</title>
 
-    <para>If you're using the Spring IoC container (an ApplicationContext or
-    BeanFactory) for your business objects - and you should be! - you will
-    want to use one of Spring's AOP FactoryBeans. (Remember that a factory
-    bean introduces a layer of indirection, enabling it to create objects of a
-    different type.)</para>
+    <para>비즈니스 객체에 스프링 IoC 컨테이너(ApplicationContext나 BeanFactory)를 
+    사용한다면(꼭 사용해야 한다!) 스프링의 AOP FactoryBean중의 하나를 사용하고자 할 것이다. 
+    (팩토리빈은 간접계층(layer of indirection)을 도입해서 다른 타입의 객체들을 생성할 수 
+    있도록 한다는 점을 기억해라.)</para>
 
     <note>
-      <para>The Spring 2.0 AOP support also uses factory beans under the
-      covers.</para>
+      <para>스프링 2.0 AOP 지원도 팩토리빈을 사용한다.</para>
     </note>
 
-    <para>The basic way to create an AOP proxy in Spring is to use the
-    <emphasis>org.springframework.aop.framework.ProxyFactoryBean</emphasis>.
-    This gives complete control over the pointcuts and advice that will apply,
-    and their ordering. However, there are simpler options that are preferable
-    if you don't need such control.</para>
+    <para>스프링에서 AOP 프록시를 생성하는 기본적인 방법은 
+    <emphasis>org.springframework.aop.framework.ProxyFactoryBean</emphasis>를 
+    사용하는 것이다. 이 방법으로 적용할 포인트컷과 어드바이스와 이들의 순서를 완전히 제어할 수 있다. 
+    하지만 이러한 제어가 필요하지 않다면 적절한 더 간단한 옵션이 있다.</para>
 
     <section id="aop-pfb-1">
-      <title>Basics</title>
+      <title>기초</title>
 
-      <para>The <literal>ProxyFactoryBean</literal>, like other Spring
-      <literal>FactoryBean</literal> implementations, introduces a level of
-      indirection. If you define a <literal>ProxyFactoryBean</literal> with
-      name <literal>foo</literal>, what objects referencing
-      <literal>foo</literal> see is not the
-      <literal>ProxyFactoryBean</literal> instance itself, but an object
-      created by the <literal>ProxyFactoryBean</literal>'s implementation of
-      the <literal>getObject() </literal>method. This method will create an
-      AOP proxy wrapping a target object.</para>
+      <para>다른 스프링 <literal>FactoryBean</literal> 구현체처럼 
+      <literal>ProxyFactoryBean</literal>은 간접 수준(level of indirection)을 
+      도입한다. <literal>foo</literal>라는 이름으로 <literal>ProxyFactoryBean</literal>를 
+      정의했다면 <literal>foo</literal>를 참조하는 객체들이 보는 것은 
+      <literal>ProxyFactoryBean</literal> 인스턴스 자체가 아니라 
+      <literal>getObject() </literal> 메서드의 <literal>ProxyFactoryBean</literal> 
+      구현체가 생성한 객체다. 이 메서드는 대상 객체를 감싸는 AOP 프록시를 생성할 것이다.</para>
 
-      <para>One of the most important benefits of using a
-      <literal>ProxyFactoryBean</literal> or another IoC-aware class to create
-      AOP proxies, is that it means that advices and pointcuts can also be
-      managed by IoC. This is a powerful feature, enabling certain approaches
-      that are hard to achieve with other AOP frameworks. For example, an
-      advice may itself reference application objects (besides the target,
-      which should be available in any AOP framework), benefiting from all the
-      pluggability provided by Dependency Injection.</para>
+      <para>AOP 프록시를 생성하는데 <literal>ProxyFactoryBean</literal>을 사용하거나 
+      다른 IoC와 관련된 클래스를 사용할 때 IoC가 어드바이스와 포인트컷도 관리할 수 있다는 것이 가장 
+      큰 장점이다. 다른 AOP 프레임워크와 함께 구성하는 여러운 접근을 가능하게 하는 것은 강력한 기능이다. 
+      예를 들어 의존성 주입이 제공하는 플러거블(pluggability) 기능에서 얻은 이점으로 어드바이스 자체가 
+      어플리케이션 객체를 참조할 것이다.(모든 AOP 프레임워크에서 사용가능해야 하는 대상객체이외에)</para>
     </section>
 
     <section id="aop-pfb-2">
-      <title>JavaBean properties</title>
+      <title>JavaBean 프로퍼티</title>
 
-      <para>In common with most <interfacename>FactoryBean</interfacename>
-      implementations provided with Spring, the
-      <classname>ProxyFactoryBean</classname> class is itself a JavaBean. Its
-      properties are used to:</para>
+      <para>스프링이 제공하는 대부분의 <interfacename>FactoryBean</interfacename> 
+      구현체와 마찬가지로 <classname>ProxyFactoryBean</classname> 클래스 자체가 
+      JavaBean이다. 이 클래스의 프로퍼티들은 다음을 할 수 있다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>Specify the target you want to proxy.</para>
+          <para>프록시할 대상을 지정한다.</para>
         </listitem>
 
         <listitem>
-          <para>Specify whether to use CGLIB (see below and also
-          <xref linkend="aop-pfb-proxy-types" />).</para>
+          <para>CGLIB을 사용할 지를 지정한다.(아래의 내용과 
+          <xref linkend="aop-pfb-proxy-types" />를 참고해라.)</para>
         </listitem>
       </itemizedlist>
 
-      <para>Some key properties are inherited from
-      <classname>org.springframework.aop.framework.ProxyConfig</classname>
-      (the superclass for all AOP proxy factories in Spring). These key
-      properties include:</para>
+      <para>몇몇 핵심 프로퍼티는 
+      <classname>org.springframework.aop.framework.ProxyConfig</classname>에서 
+      상속받는다. (스프링에서 모든 AOP 프록시 팩토리들의 수퍼클래스다.) 이 핵심 
+      프로퍼티들은 다음과 같다.</para>
 
       <itemizedlist>
         <listitem>
-          <para><literal>proxyTargetClass</literal>: <literal>true</literal>
-          if the target class is to be proxied, rather than the target class'
-          interfaces. If this property value is set to
-          <literal>true</literal>, then CGLIB proxies will be created (but see
-          also <xref linkend="aop-pfb-proxy-types" />).</para>
+          <para><literal>proxyTargetClass</literal>: 대상 클래스의 인터페이스가 아니라 
+          대상 클래스가 프록시되었다면 <literal>true</literal>이다. 이 프로퍼티 값이 
+          <literal>true</literal>이라면 CGLIB 프록시가 생성될 것이다.(하지만 
+          <xref linkend="aop-pfb-proxy-types" />도 참고해라.)</para>
         </listitem>
 
         <listitem>
-          <para><literal>optimize</literal>: controls whether or not
-          aggressive optimizations are applied to proxies <emphasis>created
-          via CGLIB</emphasis>. One should not blithely use this setting
-          unless one fully understands how the relevant AOP proxy handles
-          optimization. This is currently used only for CGLIB proxies; it has
-          no effect with JDK dynamic proxies.</para>
+          <para><literal>optimize</literal>: <emphasis>CGLIB으로 생성된 
+          프록시</emphasis>에 적극적인 최적화를 적용할 것인지를 제어한다. 적절한 AOP 
+          프록시가 어떻게 최적화를 다루는 지를 완전히 이해하지 못한채로 이 설정을 그냥 사용하지는 
+          말아야 한다. 이 설정은 현재 CGLIB 프록시에만 사용되고 JDK 동적 프록시에서는 아무런 
+          영향이 없다.</para>
         </listitem>
 
         <listitem>
-          <para><literal>frozen</literal>: if a proxy configuration is
-          <literal>frozen</literal>, then changes to the configuration are no
-          longer allowed. This is useful both as a slight optimization and for
-          those cases when you don't want callers to be able to manipulate the
-          proxy (via the <interfacename>Advised</interfacename> interface)
-          after the proxy has been created. The default value of this property
-          is <literal>false</literal>, so changes such as adding additional
-          advice are allowed.</para>
+          <para><literal>frozen</literal>: 프록시설정이 <literal>frozen</literal>되면 
+          더이상 설정을 변경할 수 없다. 이 설정은 사소한 최적화와 프록시가 생성된 후에 콜러(caller)가
+          프록시(<interfacename>Advised</interfacename> 인터페이스를 통해서)를 조작할 수 
+          없게 하는 경우에 유용한다. 이 프로퍼티의 기본값은 <literal>false</literal>이므로 
+          부가적인 어드바이스를 추가하는 것같은 변경작업이 가능하다.</para>
         </listitem>
 
         <listitem>
-          <para><literal>exposeProxy</literal>: determines whether or not the
-          current proxy should be exposed in a
-          <classname>ThreadLocal</classname> so that it can be accessed by the
-          target. If a target needs to obtain the proxy and the
-          <literal>exposeProxy</literal> property is set to
-          <literal>true</literal>, the target can use the
-          <methodname>AopContext.currentProxy()</methodname> method.</para>
+          <para><literal>exposeProxy</literal>: 대상객체가 현재의 프록시에 접근할 수 있도록 
+          현재 프록시를 <classname>ThreadLocal</classname>에 노출해야 하는지를 결정한다. 
+          대상객체가 프록시를 획득해야 하고 <literal>exposeProxy</literal> 프로퍼티가 
+          <literal>true</literal>로 설정되었다면 대상객체는 
+          <methodname>AopContext.currentProxy()</methodname> 메서드를 
+          사용할 수 있다.</para>
         </listitem>
       </itemizedlist>
 
-      <para>Other properties specific to
-      <classname>ProxyFactoryBean</classname> include:</para>
+      <para><classname>ProxyFactoryBean</classname>에 지정하는 
+      다른 프로퍼티들은 다음과 같다.</para>
 
       <itemizedlist>
         <listitem>
-          <para><literal>proxyInterfaces</literal>: array of String interface
-          names. If this isn't supplied, a CGLIB proxy for the target class
-          will be used (but see also <xref linkend="aop-pfb-proxy-types" />).</para>
+          <para><literal>proxyInterfaces</literal>: 문자열 인터페이스 이름의 배열. 
+          이 프로퍼티가 제공되지 않는다면 대상 클래스에 대한 CGLIB 프록시가 사용될 것이다.(하지만 
+          <xref linkend="aop-pfb-proxy-types" />도 참고해라.)</para>
         </listitem>
 
         <listitem>
-          <para><literal>interceptorNames</literal>: String array of
-          <interfacename>Advisor</interfacename>, interceptor or other advice
-          names to apply. Ordering is significant, on a first come-first
-          served basis. That is to say that the first interceptor in the list
-          will be the first to be able to intercept the invocation.</para>
+          <para><literal>interceptorNames</literal>: 적용할 
+          <interfacename>Advisor</interfacename>나 인터셉터, 다른 어드바이스 이름의 
+          문자열 배열. 순서가 중요하므로 처음 나온 것이 먼저 적용된다. 즉, 리스트의 첫 인터셉터가 
+          가장 먼저 호출을 가로챌 수 있다.</para>
 
-          <para>The names are bean names in the current factory, including
-          bean names from ancestor factories. You can't mention bean
-          references here since doing so would result in the
-          <classname>ProxyFactoryBean</classname> ignoring the singleton
-          setting of the advice.</para>
+          <para>이름들은 조상 팩토리의 빈 이름을 포함해서 현재 팩토리의 빈 이름들이다. 여기서 
+          빈 참조를 없는데 그렇게 할 경우 어드바이스의 싱글톤 설정을 무시하는 
+          <classname>ProxyFactoryBean</classname>가 되기 때문이다.</para>
 
-          <para>You can append an interceptor name with an asterisk
-          (<literal>*</literal>). This will result in the application of all
-          advisor beans with names starting with the part before the asterisk
-          to be applied. An example of using this feature can be found in
-          <xref linkend="aop-global-advisors" />.</para>
+          <para>인터셉터 이름을 별표(<literal>*</literal>)로도 추가할 수 있다. 이는 
+          어플리케이션에서 별표 앞부분으로 시작하는 이름을 가진 모든 어드바이저 빈을 적용하게 된다. 
+          이 기능을 사용하는 예제를 <xref linkend="aop-global-advisors" />에서 
+          볼 수 있다.</para>
         </listitem>
 
         <listitem>
-          <para>singleton: whether or not the factory should return a single
-          object, no matter how often the <literal>getObject()</literal>
-          method is called. Several <interfacename>FactoryBean</interfacename>
-          implementations offer such a method. The default value is
-          <literal>true</literal>. If you want to use stateful advice - for
-          example, for stateful mixins - use prototype advices along with a
-          singleton value of <literal>false</literal>.</para>
+          <para>singleton: <literal>getObject()</literal> 메서드를 얼마나 많이 
+          호출했는가에 상관없이 팩토리가 하나의 객체를 반환해야 하는지를 결정한다. 다수의 
+          <interfacename>FactoryBean</interfacename> 구현체가 이러한 메서드를 제공한다. 
+          기본값은 <literal>true</literal>다. 상태를 가진(stateful) 어드바이스를 사용하고자 
+          한다면(예를 들면 상태를 가진 믹스인) singleton 값을 <literal>false</literal>로 
+          하고 프로토타입 어드바이스를 사용해라.</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section id="aop-pfb-proxy-types">
-      <title>JDK- and CGLIB-based proxies</title>
+      <title>JDK기반과 CGLIB기반의 프록시</title>
 
-      <para>This section serves as the definitive documentation on how the
-      <classname>ProxyFactoryBean</classname> chooses to create one of either
-      a JDK- and CGLIB-based proxy for a particular target object (that is to
-      be proxied).</para>
+      <para>이번 섹션에서는 특정 대상객체(프록시 되어야 하는 객체)에 대해서 JDK 기반의 프록시와 
+      CGLIB 기반의 프록시 중 어느 프록시를 생성할 지 <classname>ProxyFactoryBean</classname>가 
+      어떻게 선택하는지에 대한 완전한 문서를 제공한다.</para>
 
       <note>
-        <para>The behavior of the <classname>ProxyFactoryBean</classname> with
-        regard to creating JDK- or CGLIB-based proxies changed between
-        versions 1.2.x and 2.0 of Spring. The
-        <classname>ProxyFactoryBean</classname> now exhibits similar semantics
-        with regard to auto-detecting interfaces as those of the
-        <classname>TransactionProxyFactoryBean</classname> class.</para>
+        <para>JDK기반과 CGLIB기반 프록시를 생성하는 것과 관련된 
+        <classname>ProxyFactoryBean</classname>의 동작은 스프링 버전 1.2.x와 2.0에서 
+        달라졌다. <classname>ProxyFactoryBean</classname>는 이제 
+        <classname>TransactionProxyFactoryBean</classname> 클래스등처럼 자동탐지되는 
+        인터페이스과 관련된 의미와 유사하다.</para>
       </note>
 
-      <para>If the class of a target object that is to be proxied (hereafter
-      simply referred to as the target class) doesn't implement any
-      interfaces, then a CGLIB-based proxy will be created. This is the
-      easiest scenario, because JDK proxies are interface based, and no
-      interfaces means JDK proxying isn't even possible. One simply plugs in
-      the target bean, and specifies the list of interceptors via the
-      <literal>interceptorNames</literal> property. Note that a CGLIB-based
-      proxy will be created even if the <literal>proxyTargetClass</literal>
-      property of the <classname>ProxyFactoryBean</classname> has been set to
-      <literal>false</literal>. (Obviously this makes no sense, and is best
-      removed from the bean definition because it is at best redundant, and at
-      worst confusing.)</para>
+      <para>프록시될 대상 객체의 클래스(이후에는 대상 클래스라고 부른다.)가 어떤 인터페이스도 구현하지 
+      않았다면 CGLIB 기반의 프록시가 생성될 것이다. 이는 JDK 프록시가 인터페이스 기반이라서 인터페이스가 
+      없다는 것은 JDK 프록시를 적용할 수 없다는 의미이므로 가장 쉬운 시나리오다. 다른 시나리오는 대상 
+      객체에 연결하고(plug) <literal>interceptorNames</literal> 프로퍼티로 인터셉터 리스트를 
+      지정하는 것이다. <classname>ProxyFactoryBean</classname>의 
+      <literal>proxyTargetClass</literal> 프로퍼티가 <literal>false</literal>로 
+      설정되었을 때도 CGLIB 기반 프록시가 생성될 것이다. (분명히 이는 말이 안되지만 이것이 중복을 
+      가장 줄여주로 혼란이 적기 때문에 빈 정의에서 제거하는 것이 가장 좋다.)</para>
 
-      <para>If the target class implements one (or more) interfaces, then the
-      type of proxy that is created depends on the configuration of the
-      <classname>ProxyFactoryBean</classname>.</para>
+      <para>대상 클래스가 하나이상의 인터페이스를 구현했다면 생성되는 프록시의 타입은 
+      <classname>ProxyFactoryBean</classname> 설정에 달려있다.</para>
 
-      <para>If the <literal>proxyTargetClass</literal> property of the
-      <classname>ProxyFactoryBean</classname> has been set to
-      <literal>true</literal>, then a CGLIB-based proxy will be created. This
-      makes sense, and is in keeping with the principle of least surprise.
-      Even if the <literal>proxyInterfaces</literal> property of the
-      <classname>ProxyFactoryBean</classname> has been set to one or more
-      fully qualified interface names, the fact that the
-      <literal>proxyTargetClass</literal> property is set to
-      <literal>true</literal> <emphasis>will</emphasis> cause CGLIB-based
-      proxying to be in effect.</para>
+      <para><classname>ProxyFactoryBean</classname>의 
+      <literal>proxyTargetClass</literal> 프로퍼티가 <literal>true</literal>이면 
+      CGLIB기반 프록시가 생성될 것이다. 이는 논리적이고 최소놀람의 원칙(principle of least 
+      surprise)을 유지한다. <classname>ProxyFactoryBean</classname>의 
+      <literal>proxyInterfaces</literal> 프로퍼티가 하나이상의 정규화된 인터페이스 
+      이름으로 설정되고 <literal>proxyTargetClass</literal>가 <literal>true</literal>로 
+      설정되었을 때 조차도 CGLIB 기반의 프록시가 적용될 <emphasis>것이다</emphasis>.</para>
 
-      <para>If the <literal>proxyInterfaces</literal> property of the
-      <classname>ProxyFactoryBean</classname> has been set to one or more
-      fully qualified interface names, then a JDK-based proxy will be created.
-      The created proxy will implement all of the interfaces that were
-      specified in the <literal>proxyInterfaces</literal> property; if the
-      target class happens to implement a whole lot more interfaces than those
-      specified in the <literal>proxyInterfaces</literal> property, that is
-      all well and good but those additional interfaces will not be
-      implemented by the returned proxy.</para>
+      <para><classname>ProxyFactoryBean</classname>의 
+      <literal>proxyInterfaces</literal> 프로퍼티가 하나 이상의 정규화된 인터페이스 이름으로 
+      지정되면 JDK기반 프록시가 생성될 것이다. 생성된 프록시는 <literal>proxyInterfaces</literal> 
+      프로퍼티에 지정된 모든 인터페이스를 구현할 것이다. 대상 클래스가 
+      <literal>proxyInterfaces</literal>에 지정된 것보다 훨씬 더 많은 인터페이스를 구현했다면 
+      문제는 없지만 이러한 부가적인 인터페이스들은 반환되는 프록시는 구현하지 않을 것이다.</para>
 
-      <para>If the <literal>proxyInterfaces</literal> property of the
-      <classname>ProxyFactoryBean</classname> has <emphasis>not</emphasis>
-      been set, but the target class <emphasis>does implement one (or
-      more)</emphasis> interfaces, then the
-      <classname>ProxyFactoryBean</classname> will auto-detect the fact that
-      the target class does actually implement at least one interface, and a
-      JDK-based proxy will be created. The interfaces that are actually
-      proxied will be <emphasis>all</emphasis> of the interfaces that the
-      target class implements; in effect, this is the same as simply supplying
-      a list of each and every interface that the target class implements to
-      the <literal>proxyInterfaces</literal> property. However, it is
-      significantly less work, and less prone to typos.</para>
+      <para><classname>ProxyFactoryBean</classname>의 
+      <literal>proxyInterfaces</literal> 프로퍼티를 설정하지 <emphasis>않았지만</emphasis> 
+      대상 클래스가 <emphasis>하나 이상의</emphasis> 인터페이스를 구현했다면 
+      <classname>ProxyFactoryBean</classname>는 대상 클래스가 실제로 최소 하나의 인터페이스를 
+      구현했는지를 자동탐지해서 JDK기반 프록시를 생성할 것이다. 실제로 프록시되는 인터페이스는 대상 
+      클래스가 구현한 <emphasis>모든</emphasis> 인터페이스이다. 이는 사실상 대상 클래스가 구현하는 
+      각각의 인터페이스 리스트를 <literal>proxyInterfaces</literal> 프로퍼티에 제공한 것과 
+      같다. 하지만 이는 현지히 적게 동작하고 오타가 날 확률이 적다.</para>
     </section>
 
     <section id="aop-api-proxying-intf">
-      <title>Proxying interfaces</title>
+      <title>프록시 인터페이스</title>
 
-      <para>Let's look at a simple example of
-      <classname>ProxyFactoryBean</classname> in action. This example
-      involves:</para>
+      <para>동작하는 <classname>ProxyFactoryBean</classname>의 간단한 예제를 
+      보자. 이 예제는 다음을 포함하고 있다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>A <emphasis>target bean</emphasis> that will be proxied. This
-          is the "personTarget" bean definition in the example below.</para>
+          <para>프록시될 <emphasis>대상 빈</emphasis>. 이 빈은 아래 예제에서 
+          "personTarget" 빈 정의이다.</para>
         </listitem>
 
         <listitem>
-          <para>An Advisor and an Interceptor used to provide advice.</para>
+          <para>어드바이스를 제공하는데 사용한 어드바이저와 인터셉터</para>
         </listitem>
 
         <listitem>
-          <para>An AOP proxy bean definition specifying the target object (the
-          personTarget bean) and the interfaces to proxy, along with the
-          advices to apply.</para>
+          <para>대상 객체(personTarget 빈)을 지정하는 AOP 프록시 빈 정의와 프록시하는 
+          인터페이스와 적용할 어드바이스.</para>
         </listitem>
       </itemizedlist>
 
@@ -1066,45 +953,39 @@ public interface IntroductionInfo {
     &lt;/property&gt;
 &lt;/bean&gt;</programlisting></para>
 
-      <para>Note that the <literal>interceptorNames</literal> property takes a
-      list of String: the bean names of the interceptor or advisors in the
-      current factory. Advisors, interceptors, before, after returning and
-      throws advice objects can be used. The ordering of advisors is
-      significant.</para>
+      <para><literal>interceptorNames</literal> 프로퍼티는 문자열의 리스트를 받는다. 
+      이 리스트는 현재 팩토리의 인터셉터와 어드바이저의 빈 이름들이다. 어드바이저, 인터셉터, 
+      before advice, after returning advice, throws advice 객체를 사용할 수 있다. 
+      어드바이저의 순서는 중요하다.</para>
 
       <note>
-        <para>You might be wondering why the list doesn't hold bean
-        references. The reason for this is that if the ProxyFactoryBean's
-        singleton property is set to false, it must be able to return
-        independent proxy instances. If any of the advisors is itself a
-        prototype, an independent instance would need to be returned, so it's
-        necessary to be able to obtain an instance of the prototype from the
-        factory; holding a reference isn't sufficient.</para>
+        <para>아마도 왜 리스트가 빈 참조를 가지지 않는지 궁금할 것이다. 그 이유는 
+        ProxyFactoryBean의 싱글톤 프로퍼티가 false로 설정되어있드면 개별적인 프록시 인스턴스를 
+        리턴할 수 있어야 하기 때문이다. 어드바이저 중에 그 프로토타입이 있다면 개별적인 인스턴스는 
+        리턴되어야 하므로 팩토리에서 프로토타입의 인스턴스를 반드시 획득할 수 있어야 한다. 레퍼런스를 
+        가지고 있다면 이를 만족시키지 못한다.</para>
       </note>
 
-      <para>The "person" bean definition above can be used in place of a
-      Person implementation, as follows:</para>
+      <para>위의 "person" 빈 정의를 다음과 같이 Person 구현체 대신에 
+      사용할 수 있다.</para>
 
       <programlisting language="java">Person person = (Person) factory.getBean("person");</programlisting>
 
-      <para>Other beans in the same IoC context can express a strongly typed
-      dependency on it, as with an ordinary Java object:</para>
+      <para>같은 IoC 컨텍스트내의 다른 빈들은 보통의 자바 객체처럼 강타입의 의존성을 빈에 
+      나타낼 수 있다.</para>
 
       <para><programlisting language="xml">&lt;bean id="personUser" class="com.mycompany.PersonUser"&gt;
   &lt;property name="person"&gt;&lt;ref local="person"/&gt;&lt;/property&gt;
 &lt;/bean&gt;</programlisting></para>
 
-      <para>The <literal>PersonUser</literal> class in this example would
-      expose a property of type Person. As far as it's concerned, the AOP
-      proxy can be used transparently in place of a "real" person
-      implementation. However, its class would be a dynamic proxy class. It
-      would be possible to cast it to the <literal>Advised</literal> interface
-      (discussed below).</para>
+      <para>이 예제에서 <literal>PersonUser</literal> 클래스는 Person 타입의 프로퍼티를 
+      노출할 것이다. 이에 관한한 AOP 프록시를 "실제" person 구현체대신에 투명하게 사용할 수 있다. 
+      하지만 AOP 프록시의 클래스는 동적 프록시 클래스가 될 것이다. 이 클래스는 
+      <literal>Advised</literal> 인터페이스(아래에서 설명한다)로 캐스팅 될 수 있다.</para>
 
-      <para>It's possible to conceal the distinction between target and proxy
-      using an anonymous <emphasis>inner bean</emphasis>, as follows. Only the
-      <literal>ProxyFactoryBean</literal> definition is different; the advice
-      is included only for completeness:</para>
+      <para>다음과 같은 익명 <emphasis>내부 빈(inner bean)</emphasis>을 사용해서 
+      대상객체와 프록시사이의 구별을 감출 수 있다. <literal>ProxyFactoryBean</literal> 
+      정의만이 다르다. 완전함을 위해서 어드바이스만이 포함된다.</para>
 
       <para><programlisting language="xml">&lt;bean id="myAdvisor" class="com.mycompany.MyAdvisor"&gt;
   &lt;property name="someProperty" value="Custom string property value"/&gt;
@@ -1114,7 +995,7 @@ public interface IntroductionInfo {
 
 &lt;bean id="person" class="org.springframework.aop.framework.ProxyFactoryBean"&gt;
   &lt;property name="proxyInterfaces" value="com.mycompany.Person"/&gt;
-  &lt;!-- Use inner bean, not local reference to target --&gt;
+  &lt;!-- 대상에 대한 로컬 참조말고 내부 빈을 사용해라 --&gt;
   &lt;property name="target"&gt;
     &lt;bean class="com.mycompany.PersonImpl"&gt;
       &lt;property name="name" value="Tony"/&gt;
@@ -1129,71 +1010,61 @@ public interface IntroductionInfo {
   &lt;/property&gt;
 &lt;/bean&gt;</programlisting></para>
 
-      <para>This has the advantage that there's only one object of type
-      <literal>Person</literal>: useful if we want to prevent users of the
-      application context from obtaining a reference to the un-advised object,
-      or need to avoid any ambiguity with Spring IoC
-      <emphasis>autowiring</emphasis>. There's also arguably an advantage in
-      that the ProxyFactoryBean definition is self-contained. However, there
-      are times when being able to obtain the un-advised target from the
-      factory might actually be an <emphasis>advantage</emphasis>: for
-      example, in certain test scenarios.</para>
+      <para>여기에는 <literal>Person</literal> 타입의 객체가 딱 하나만 존재한다는 장점이 있다. 
+      어플리케이션 컨텍스트의 사용자가 어드바이즈되지 않은 객체에 대한 참조를 획득하는 것을 막거나 
+      스프링 IoC의 <emphasis>자동연결(autowiring)</emphasis>의 애매모호함을 피해야할 필요가 
+      있을 경우 유용하다. ProxyFactoryBean 정의가 독립적인데서 오는 확실한 장점도 있다. 하지만 
+      팩토리에서 어드바이즈되지 않은 대상을 획득할 수 있는 것이 실제로 <emphasis>장점</emphasis>이 
+      될 수 있는 경우가 많이 있다. 예를 들면 몇몇 테스트 시나리오가 이러한 경우이다.</para>
     </section>
 
     <section id="aop-api-proxying-class">
-      <title>Proxying classes</title>
+      <title>프록시 클래스</title>
 
-      <para>What if you need to proxy a class, rather than one or more
-      interfaces?</para>
+      <para>하나 이상의 인터페이스가 아니라 클래스를 프록시해야 한다면?</para>
 
-      <para>Imagine that in our example above, there was no
-      <literal>Person</literal> interface: we needed to advise a class called
-      <literal>Person</literal> that didn't implement any business interface.
-      In this case, you can configure Spring to use CGLIB proxying, rather
-      than dynamic proxies. Simply set the <literal>proxyTargetClass</literal>
-      property on the ProxyFactoryBean above to true. While it's best to
-      program to interfaces, rather than classes, the ability to advise
-      classes that don't implement interfaces can be useful when working with
-      legacy code. (In general, Spring isn't prescriptive. While it makes it
-      easy to apply good practices, it avoids forcing a particular
-      approach.)</para>
+      <para>위의 예제를 생각해 보자. 이 예제에는 <literal>Person</literal> 인터페이스가 없다. 
+      그래서 어떤 비즈니스 인터페이스도 구현하지 않은 <literal>Person</literal> 클래스를 
+      어드바이즈해야 한다. 이 경우에 스프링이 동적 프록시 대신 CGLIB 프록시를 사용하도록 설정할 수 
+      있다. 위의 ProxyFactoryBean에서 <literal>proxyTargetClass</literal> 프로퍼티를 
+      true로 설정해라. 클래스보다는 인터페이스를 사용하는 것이 좋지만 인터페이스를 구현하지 않은 
+      클래스를 어드바이스할 수 있는 능력은 레가시코드를 사용해야 하는 경우에 유용할 수 있다. (보통 
+      스프링은 규범적이지 않다. 스프링은 좋은 사례를 적용하기 쉽게 만들면서 특정 접근을 강제하지 
+      않는다.)</para>
 
-      <para>If you want to, you can force the use of CGLIB in any case, even
-      if you do have interfaces.</para>
+      <para>인터페이스를 가진 경우에도 필요하다면 모든 경우에 CGLIB을 사용하도록 강제할 수 
+      있다.</para>
 
-      <para>CGLIB proxying works by generating a subclass of the target class
-      at runtime. Spring configures this generated subclass to delegate method
-      calls to the original target: the subclass is used to implement the
-      <emphasis>Decorator</emphasis> pattern, weaving in the advice.</para>
+      <para>CGLIB 프록시는 런타임시에 대상 클래스의 하위클래스를 생성해서 동작한다. 스프링은 원래 
+      대상에 메서드 호출을 위임하려고 생성한 이 하위클래스를 설정한다. 하위클래스는 어드바이스에서 
+      위빙을 하는 <emphasis>데코레이터</emphasis> 패턴을 구현하는데 사용한다.</para>
 
-      <para>CGLIB proxying should generally be transparent to users. However,
-      there are some issues to consider:</para>
+      <para>CGLIB 프록시는 보통 사용자에게 투명해야 한다. 하지만 고려해야할 이슈가 
+      몇가지 있다.</para>
 
       <itemizedlist>
         <listitem>
-          <para><literal>Final</literal> methods can't be advised, as they
-          can't be overridden.</para>
+          <para><literal>Final</literal> 메서드는 오버라이드할 수 없는 것처럼 
+          어드바이즈할 수도 없다.</para>
         </listitem>
 
         <listitem>
-          <para>You'll need the CGLIB 2 binaries on your classpath; dynamic
-          proxies are available with the JDK.</para>
+          <para>클래스패스에 CGLIB 2 바이너리가 필요할 것이다. 동적 프록시는 JDK에서 
+          사용할 수 있다.</para>
         </listitem>
       </itemizedlist>
 
-      <para>There's little performance difference between CGLIB proxying and
-      dynamic proxies. As of Spring 1.0, dynamic proxies are slightly faster.
-      However, this may change in the future. Performance should not be a
-      decisive consideration in this case.</para>
+      <para>CGLIB 프록시와 동적 프록시 사이에는 약간의 성능차이가 있다. 스프링 1.0에서는 동적 
+      프록시가 약간 더 빠르다. 하지만 차후에는 달라질 것이다. 이 경우에 성능은 결정적인 고려사항은 
+      아니어야 한다.</para>
     </section>
 
     <section id="aop-global-advisors">
-      <title>Using 'global' advisors</title>
+      <title>'전역' 어드바이저 사용하기</title>
 
-      <para>By appending an asterisk to an interceptor name, all advisors with
-      bean names matching the part before the asterisk, will be added to the
-      advisor chain. This can come in handy if you need to add a standard set
-      of 'global' advisors: <programlisting language="xml">
+      <para>인터셉터 이름에 별표를 추가하면 별표앞의 부분과 일치하는 빈 이름을 가진 모든 어드바이저를 
+      어드바이저 체인에 추가할 것이다. 이는 '전역' 어드바이저의 표준 세트에 추가해야하는 경우 쓸모가 
+      있을 수 있다. <programlisting language="xml">
 &lt;bean id="proxy" class="org.springframework.aop.framework.ProxyFactoryBean"&gt;
   &lt;property name="target" ref="service"/&gt;
   &lt;property name="interceptorNames"&gt;
@@ -1210,15 +1081,14 @@ public interface IntroductionInfo {
   </section>
 
   <section id="aop-concise-proxy">
-    <title>Concise proxy definitions</title>
+    <title>간결한 프록시 정의</title>
 
-    <para>Especially when defining transactional proxies, you may end up with
-    many similar proxy definitions. The use of parent and child bean
-    definitions, along with inner bean definitions, can result in much cleaner
-    and more concise proxy definitions.</para>
+    <para>특히 트랜잭션 프록시를 정의하는 경우에 유사한 프록시 정의를 많이 사용할 것이다. 내부 빈 
+    정의와 함께 부모 빈 정의와 자식 빈 정의를 사용하면 프록시 정의를 더 깨끗하고 간결하게 
+    만들 수 있다.</para>
 
-    <para>First a parent, <emphasis>template</emphasis>, bean definition is
-    created for the proxy:</para>
+    <para>먼저 부모, <emphasis>템플릿</emphasis>, 빈 정의를 프록시에 대해서 
+    생성한다.</para>
 
     <para><programlisting language="xml">&lt;bean id="txProxyTemplate" abstract="true"
         class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"&gt;
@@ -1230,20 +1100,18 @@ public interface IntroductionInfo {
   &lt;/property&gt;
 &lt;/bean&gt;</programlisting></para>
 
-    <para>This will never be instantiated itself, so may actually be
-    incomplete. Then each proxy which needs to be created is just a child bean
-    definition, which wraps the target of the proxy as an inner bean
-    definition, since the target will never be used on its own
-    anyway.<programlisting language="xml">&lt;bean id="myService" parent="txProxyTemplate"&gt;
+    <para>이는 스스로 인스턴스화 되지 않을 것이므로 사실 불완전하다. 대상은 어떻게든 고유하게 
+    사용되지는 않을 것이므로 그 다음 생성되어야 하는 각 프록시는 내부 빈 정의로 프록시의 대상을 감싸는 
+    자식 빈 정의이다.<programlisting language="xml">&lt;bean id="myService" parent="txProxyTemplate"&gt;
   &lt;property name="target"&gt;
     &lt;bean class="org.springframework.samples.MyServiceImpl"&gt;
     &lt;/bean&gt;
   &lt;/property&gt;
 &lt;/bean&gt;</programlisting></para>
 
-    <para>It is of course possible to override properties from the parent
-    template, such as in this case, the transaction propagation
-    settings:<programlisting language="xml">&lt;bean id="mySpecialService" parent="txProxyTemplate"&gt;
+    <para>물론 이번 경우처럼 부모 템플릿의 프로퍼티인 트랜잭션 전파(transaction 
+    propagation) 설정을 오버라이드할 수 
+    있다.<programlisting language="xml">&lt;bean id="mySpecialService" parent="txProxyTemplate"&gt;
   &lt;property name="target"&gt;
     &lt;bean class="org.springframework.samples.MySpecialServiceImpl"&gt;
     &lt;/bean&gt;
@@ -1258,64 +1126,58 @@ public interface IntroductionInfo {
   &lt;/property&gt;
 &lt;/bean&gt;</programlisting></para>
 
-    <para>Note that in the example above, we have explicitly marked the parent
-    bean definition as <emphasis>abstract</emphasis> by using the
-    <emphasis>abstract</emphasis> attribute, as described <link
-    linkend="beans-child-bean-definitions">previously</link>, so that it may
-    not actually ever be instantiated. Application contexts (but not simple
-    bean factories) will by default pre-instantiate all singletons. It is
-    therefore important (at least for singleton beans) that if you have a
-    (parent) bean definition which you intend to use only as a template, and
-    this definition specifies a class, you must make sure to set the
-    <emphasis>abstract</emphasis> attribute to <emphasis>true</emphasis>,
-    otherwise the application context will actually try to pre-instantiate
-    it.</para>
+    <para>위의 예제에서 <link linkend="beans-child-bean-definitions">앞에서</link> 
+    설명했던 <emphasis>abstract</emphasis> 속성을 사용해서 부모 빈 정의를 명시적으로 
+    <emphasis>abstract</emphasis>로 표시했다. 그러므로 이 빈 정의는 실제로는 인스턴스화 
+    되지 않는다. 어플리케이션 컨텍스트(하지만 단순한 빈 팩토리는 아니다)는 기본적으로 미리 
+    인스턴스화되어서 모두 싱글톤이다. 그러므로 탬플릿으로만 사용하려는 (부모) 빈 정의가 있다면(그리고 
+    이 정의는 클래스를 지정한다.) <emphasis>abstract</emphasis> 속성을 
+    <emphasis>true</emphasis>로 설정해야하고 그렇지 않으면 어플리케이션 컨텍스트가 실제로 
+    이 빈을 미리 인스턴스화 하려고 시도한다는 점은 중요하다.(최소한 싱글톤 빈에 대해서는)</para>
   </section>
 
   <section id="aop-prog">
-    <title>Creating AOP proxies programmatically with the ProxyFactory</title>
+    <title>ProxyFactory로 AOP 프록시를 프로그래밍적으로 생성하기</title>
 
-    <para>It's easy to create AOP proxies programmatically using Spring. This
-    enables you to use Spring AOP without dependency on Spring IoC.</para>
+    <para>스프링에서 AOP 프록시를 프로그래밍적으로 생성하는 것은 쉽다. 이는 스프링 IoC에 대한 
+    의존성없이 스프링 AOP를 사용할 수 있게 한다.</para>
 
-    <para>The following listing shows creation of a proxy for a target object,
-    with one interceptor and one advisor. The interfaces implemented by the
-    target object will automatically be proxied:</para>
+    <para>다음의 리스트는 하나의 인터셉터와 하나의 어드바이저를 가진 대상 객체에 대한 프록시 생성을 
+    보여준다. 대상객체가 구현한 인터페이스는 자동적으로 프록시될 것이다.</para>
 
     <para><programlisting language="java">ProxyFactory factory = new ProxyFactory(myBusinessInterfaceImpl);
 factory.addAdvice(myMethodInterceptor);
 factory.addAdvisor(myAdvisor);
 MyBusinessInterface tb = (MyBusinessInterface) factory.getProxy();</programlisting></para>
 
-    <para>The first step is to construct an object of type
-    <literal>org.springframework.aop.framework.ProxyFactory</literal>. You can
-    create this with a target object, as in the above example, or specify the
-    interfaces to be proxied in an alternate constructor.</para>
+    <para>첫 단계는 <literal>org.springframework.aop.framework.ProxyFactory</literal> 
+    타입의 객체를 생성하는 것이다. 위의 예제처럼 대상객체와 함께 이를 생성하거나 대체 생성자(alternate 
+    constructor)에서 프록시되는 인터페이스를 지정할 수 있다.</para>
 
-    <para>You can add advices (with interceptors as a specialized kind of advice)
-    and/or advisors, and manipulate them for the life of the ProxyFactory.
-    If you add an IntroductionInterceptionAroundAdvisor, you can cause the proxy
-    to implement additional interfaces.</para>
+    <para>어드바이스(어드바이스의 특수한 종류인 인터셉터와 함께)와 어드바이저를 추가할 수 있고 
+    ProxyFactory가 살아있는 동안 이들을 조작할 수 있다. 
+    IntroductionInterceptionAroundAdvisor를 추가했다면 프록시가 부가적인 인터페이스를 
+    구현하도록 할 수 있다.</para>
 
-    <para>There are also convenience methods on ProxyFactory (inherited from
-    <classname>AdvisedSupport</classname>) which allow you to add other advice
-    types such as before and throws advice. AdvisedSupport is the superclass
-    of both ProxyFactory and ProxyFactoryBean.</para>
+    <para>ProxyFactory(<classname>AdvisedSupport</classname>에서 상속받은)에는 
+    before advice와 throws advice같은 다른 어드바이스 타입을 추가하도록 하는 편리한 
+    메서드도 존재한다. AdvisedSupport는 ProxyFactory와 ProxyFactoryBean의 
+    수퍼클래스이다.</para>
 
     <tip>
-      <para>Integrating AOP proxy creation with the IoC framework is best
-      practice in most applications. We recommend that you externalize
-      configuration from Java code with AOP, as in general.</para>
+      <para>AOP 프록시 생성과 IoC 프레임워크를 통합하는 것은 대부분의 어플리케이션에서 
+      좋은 사용사례이다. 일반적으로 AOP를 가진 자바코드에서 설정을 분리해내는 것을 
+      권장한다.</para>
     </tip>
   </section>
 
   <section id="aop-api-advised">
-    <title>Manipulating advised objects</title>
+    <title>어드바이즈된 객체 조작하기</title>
 
-    <para>However you create AOP proxies, you can manipulate them using the
-    <literal>org.springframework.aop.framework.Advised</literal> interface.
-    Any AOP proxy can be cast to this interface, whichever other interfaces it
-    implements. This interface includes the following methods:</para>
+    <para>AOP 프록시를 생성했더라도 
+    <literal>org.springframework.aop.framework.Advised</literal> 인터페이스를 
+    사용해서 프록시를 조작할 수 있다. 다른 인터페이스가 이 인터페이스를 구현했더라도 모든 AOP프록시는 
+    이 인터페이스로 캐스트할 수 있다. 이 인터페이스는 다음 메서드를 포함하고 있다.</para>
 
     <programlisting language="java">Advisor[] getAdvisors();
 
@@ -1338,115 +1200,100 @@ boolean replaceAdvisor(Advisor a, Advisor b) throws AopConfigException;
 
 boolean isFrozen();</programlisting>
 
-    <para>The <literal>getAdvisors()</literal> method will return an Advisor
-    for every advisor, interceptor or other advice type that has been added to
-    the factory. If you added an Advisor, the returned advisor at this index
-    will be the object that you added. If you added an interceptor or other
-    advice type, Spring will have wrapped this in an advisor with a pointcut
-    that always returns true. Thus if you added a
-    <literal>MethodInterceptor</literal>, the advisor returned for this index
-    will be an <literal>DefaultPointcutAdvisor</literal> returning your
-    <literal>MethodInterceptor</literal> and a pointcut that matches all
-    classes and methods.</para>
+    <para><literal>getAdvisors()</literal> 메서드는 팩토리에 추가된 모든 어드바이저, 
+    인터셉터, 다른 어드바이스 타입에 대해서 Advisor를 반환할 것이다. Advisor를 추가했다면 이 
+    위치에서 반환된 어드바이저는 추가한 객체가 될 것이다. 인터셉터나 다른 어드바이스 타입을 추가했다면 
+    스프링은 항상 true를 반환하는 포인트컷을 가진 어드바이저에서 이를 감쌀것이다. 그러므로 
+    <literal>MethodInterceptor</literal>를 추가했다면 이 위치에서 반환된 어드바이저는 
+    <literal>MethodInterceptor</literal>와 모든 클래스와 메서드와 일치하는 포인트컷을 
+    반환하는 <literal>DefaultPointcutAdvisor</literal>가 될 것이다.</para>
 
-    <para>The <literal>addAdvisor()</literal> methods can be used to add any
-    Advisor. Usually the advisor holding pointcut and advice will be the
-    generic <literal>DefaultPointcutAdvisor</literal>, which can be used with
-    any advice or pointcut (but not for introductions).</para>
+    <para><literal>addAdvisor()</literal> 메서드는 어떤 Advisor라도 추가하는데 사용할 
+    수 있다. 보통은 포인트컷과 어드바이스를 가진 어드바이저는 어떤 어드바이스나 포인트컷(하지만 
+    인트로덕션과는 아니다)과도 사용할 수 있는 일반적인 
+    <literal>DefaultPointcutAdvisor</literal>가 될 것이다.</para>
 
-    <para>By default, it's possible to add or remove advisors or interceptors
-    even once a proxy has been created. The only restriction is that it's
-    impossible to add or remove an introduction advisor, as existing proxies
-    from the factory will not show the interface change. (You can obtain a new
-    proxy from the factory to avoid this problem.)</para>
+    <para>기본적으로 일단 프록시가 생성된 후에도 어드바이저나 인터셉터를 추가하거나 제거할 수 있다. 
+    유일한 제약사항은 팩토리에 존재하는 프록시가 인터페이스 변경을 보지 못하는 것처럼 인트로덕션 
+    어드바이저를 추가하거나 제거할 수 없다. (이 문제를 피하기 위해서 팩토리에서 새로운 프록시를 
+    획득할 수 있다.)</para>
 
-    <para>A simple example of casting an AOP proxy to the
-    <literal>Advised</literal> interface and examining and manipulating its
-    advice:</para>
+    <para>다음은 AOP 프록시를 <literal>Advised</literal> 인터페이스로 캐스팅하고 
+    그 어드바이스를 검사하고 조작하는 간단한 예제이다.</para>
 
     <para><programlisting language="java">Advised advised = (Advised) myObject;
 Advisor[] advisors = advised.getAdvisors();
 int oldAdvisorCount = advisors.length;
 System.out.println(oldAdvisorCount + " advisors");
 
-// Add an advice like an interceptor without a pointcut
-// Will match all proxied methods
-// Can use for interceptors, before, after returning or throws advice
+// 포인트컷없이 인터셉터처럼 어드바이스를 추가해라
+// 프록시된 모든 메서드를 매칭할 것이다
+// 인터셉터, before advice, after returning advice, throws advice에 대해 사용할 수 있다
 advised.addAdvice(new DebugInterceptor());
 
-// Add selective advice using a pointcut
+// 포인트컷을 사용해서 선택적으로 어드바이스를 추가한다
 advised.addAdvisor(new DefaultPointcutAdvisor(mySpecialPointcut, myAdvice));
 
 assertEquals("Added two advisors",
      oldAdvisorCount + 2, advised.getAdvisors().length);</programlisting></para>
 
     <note>
-      <para>It's questionable whether it's advisable (no pun intended) to
-      modify advice on a business object in production, although there are no
-      doubt legitimate usage cases. However, it can be very useful in
-      development: for example, in tests. I have sometimes found it very
-      useful to be able to add test code in the form of an interceptor or
-      other advice, getting inside a method invocation I want to test. (For
-      example, the advice can get inside a transaction created for that
-      method: for example, to run SQL to check that a database was correctly
-      updated, before marking the transaction for roll back.)</para>
+      <para>분명히 정당한 사용이라고 하더라도 프로덕션단계에서 비즈니스 객체의 어드바이스를 수정하는 
+      것이 합당한가에 대해서 의문이 있을 수 있다. 하지만 개발단계에서는 아주 유용할 수 있다. 예를 
+      들면 테스트의 경우이다. 테스트하려는 메서드 호출내부에서 얻은 인터셉터나 다른 어드바이스의 
+      형식으로 테스트 코드를 추가할 수 있다는 것이 아주 유용하다는 것을 종종 발견한다. (예를 들어 
+      어드바이스가 해당 메서드에 대해 생성된 트랜잭션안으로 들어갈 수 있다. 또는 트랜잭션을 롤백하기 
+      이전에 데이터베이스가 제대로 갱신되었는지 검사하는 SQL을 실행할 수 있다.)</para>
     </note>
 
-    <para>Depending on how you created the proxy, you can usually set a
-    <literal>frozen</literal> flag, in which case the
-    <literal>Advised</literal> <literal>isFrozen()</literal> method will
-    return true, and any attempts to modify advice through addition or removal
-    will result in an <literal>AopConfigException</literal>. The ability to
-    freeze the state of an advised object is useful in some cases, for
-    example, to prevent calling code removing a security interceptor. It may
-    also be used in Spring 1.1 to allow aggressive optimization if runtime
-    advice modification is known not to be required.</para>
+    <para>어떻게 프록시를 생성했는가에 따라 <literal>frozen</literal> 플래그를 보통 설정할 
+    수 있다. <literal>frozen</literal> 플래그를 설정한 경우 <literal>Advised</literal> 
+    <literal>isFrozen()</literal> 메서드는 항상 true를 반환할 것이다. 추가나 제거로 어드바이스를 
+    수정하려는 어떤 시도도 <literal>AopConfigException</literal>가 발생할 것이다. 어드바이즈된 
+    객체의 상태를 고정시키는 이 기능은 몇몇 경우에 유용하다. 예를 들면 보안 인터셉터를 제거하는 코드의 
+    호출을 차단할 수 있다. 알려진 런타입 어드바이스 수정이 필요하지 하지 않은 경우 적극적인 최적화를 
+    위해서 스프링 1.1에서도 사용할 수 있다.</para>
   </section>
 
   <section id="aop-autoproxy">
-    <title>Using the "autoproxy" facility</title>
+    <title>"autoproxy" 기능 사용하기</title>
 
-    <para>So far we've considered explicit creation of AOP proxies using a
-    <literal>ProxyFactoryBean</literal> or similar factory bean.</para>
+    <para>지금까지 <literal>ProxyFactoryBean</literal>나 유사한 팩토리빈을 사용해서 
+    명시적으로 프록시를 생성하는 방법을 살펴보았다.</para>
 
-    <para>Spring also allows us to use "autoproxy" bean definitions, which can
-    automatically proxy selected bean definitions. This is built on Spring
-    "bean post processor" infrastructure, which enables modification of any
-    bean definition as the container loads.</para>
+    <para>스프링도 선택한 빈 정의를 자동으로 프록시할 수 있는 "autoproxy" 빈정의를 사용할 수 
+    있게 한다. 이 기능은 컨테이너 로딩처럼 모든 빈 정의를 수정할 수 있는 스프링의 
+    "bean post processor" 인프라에 기반을 두고 있다.</para>
 
-    <para>In this model, you set up some special bean definitions in your XML
-    bean definition file to configure the auto proxy infrastructure. This
-    allows you just to declare the targets eligible for autoproxying: you
-    don't need to use <literal>ProxyFactoryBean</literal>.</para>
+    <para>이 모델에서 자동 프록시 인프라스트럭처를 설정하려고 XML 빈 정의 파일에 몇가지 특수한 빈 
+    정의를 설정했다. 이는 자동프록시에 알맞는 대상을 선언할 수 있게 한다. 
+    <literal>ProxyFactoryBean</literal>를 사용할 필요가 없다.</para>
 
-    <para>There are two ways to do this:</para>
+    <para>이것을 하는 두가지 방법이 있다.</para>
 
     <itemizedlist>
       <listitem>
-        <para>Using an autoproxy creator that refers to specific beans in the
-        current context.</para>
+        <para>현재 컨텍스트에서 특정 빈을 참조하는 autoproxy creator의 사용.</para>
       </listitem>
 
       <listitem>
-        <para>A special case of autoproxy creation that deserves to be
-        considered separately; autoproxy creation driven by source-level
-        metadata attributes.</para>
+        <para>별도로 생각할 수 있는 자동프록시 생성의 특수한 경우. 자동프록시 생성은 
+        소스수준의 메타데이터 속성으로 만들어진다.</para>
       </listitem>
     </itemizedlist>
 
     <section id="aop-autoproxy-choices">
-      <title>Autoproxy bean definitions</title>
+      <title>자동프록시 빈 정의</title>
 
-      <para>The <literal>org.springframework.aop.framework.autoproxy</literal>
-      package provides the following standard autoproxy creators.</para>
+      <para><literal>org.springframework.aop.framework.autoproxy</literal> 
+      패키지는 다음의 표준 자동프록시 생성자(creator)를 제공한다.</para>
 
       <section id="aop-api-autoproxy">
         <title>BeanNameAutoProxyCreator</title>
 
-        <para>The <literal>BeanNameAutoProxyCreator</literal> class is a
-        <literal>BeanPostProcessor</literal> that automatically creates AOP
-        proxies for beans with names matching literal values or
-        wildcards.</para>
+        <para><literal>BeanNameAutoProxyCreator</literal> 클래스는 리터럴 값이나 
+        와일드카드와 일치하는 이름을 가진 빈에 대한 AOP 프록시를 자동으로 생성하는 
+        <literal>BeanPostProcessor</literal>이다.</para>
 
         <para><programlisting language="xml">&lt;bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator"&gt;
   &lt;property name="beanNames" value="jdk*,onlyJdk"/&gt;
@@ -1457,71 +1304,61 @@ assertEquals("Added two advisors",
   &lt;/property&gt;
 &lt;/bean&gt;</programlisting></para>
 
-        <para>As with <literal>ProxyFactoryBean</literal>, there is an
-        <literal>interceptorNames</literal> property rather than a list of
-        interceptors, to allow correct behavior for prototype advisors. Named
-        "interceptors" can be advisors or any advice type.</para>
+        <para><literal>ProxyFactoryBean</literal>가 그렇듯이 프로토타입 어드바이저에 
+        올바른 행위를 하도록 하는 인터셉터의 리스트 대신 <literal>interceptorNames</literal> 
+        프로퍼티가 있다. 지명된 "interceptors"는 어드바이저나 어떤 어드바이스 타입이라도 
+        될 수 있다.</para>
 
-        <para>As with auto proxying in general, the main point of using
-        <literal>BeanNameAutoProxyCreator</literal> is to apply the same
-        configuration consistently to multiple objects, with minimal volume of
-        configuration. It is a popular choice for applying declarative
-        transactions to multiple objects.</para>
+        <para>보통 자동 프록시가 그렇듯이 <literal>BeanNameAutoProxyCreator</literal>를 
+        사용하는 핵심관점은 최소한의 설정으로 여러 객체에 하나의 설정을 일관성있게 적용하려는 것이다. 
+        이는 여러 객체에 선언적 트랜잭선을 적용할 때 선호하는 선택이다.</para>
 
-        <para>Bean definitions whose names match, such as "jdkMyBean" and
-        "onlyJdk" in the above example, are plain old bean definitions with
-        the target class. An AOP proxy will be created automatically by the
-        <literal>BeanNameAutoProxyCreator</literal>. The same advice will be
-        applied to all matching beans. Note that if advisors are used (rather
-        than the interceptor in the above example), the pointcuts may apply
-        differently to different beans.</para>
+        <para>위의 예제에서 "jdkMyBean"와 "onlyJdk"처럼 이름이 일치한 빈 정의는 대상클래스의 
+        평범한 빈 정의(plain old bean definition)이다. 
+        <literal>BeanNameAutoProxyCreator</literal>가 자동적으로 AOP 프록시를 생성할 
+        것이다. 같은 어드바이스가 매칭된 모든 빈에 적용될 것이다. 어드바이저를 사용했다면(위의 예제에서 
+        인터셉터 대신에) 포인트컷은 다른 빈에 다르게 적용될 것이다.</para>
       </section>
 
       <section id="aop-api-autoproxy-default">
         <title>DefaultAdvisorAutoProxyCreator</title>
 
-        <para>A more general and extremely powerful auto proxy creator is
-        <literal>DefaultAdvisorAutoProxyCreator</literal>. This will
-        automagically apply eligible advisors in the current context, without
-        the need to include specific bean names in the autoproxy advisor's
-        bean definition. It offers the same merit of consistent configuration
-        and avoidance of duplication as
-        <literal>BeanNameAutoProxyCreator</literal>.</para>
+        <para><literal>DefaultAdvisorAutoProxyCreator</literal>는 더 일반적이고 
+        아주 강력한 자동 프록시 생성자이다. 이 생성자는 자동프록시 어드바이저의 빈 정의에서 특정 
+        빈 이름을 포함하지 않고도 현재 컨텍스트에서 적합한 어드바이저를 마법처럼(automagically) 
+        적용할 것이다. 이는 일관성있는 설정과 <literal>BeanNameAutoProxyCreator</literal>같은 
+        중복제거의 이점과 같은 이점을 제공한다.</para>
 
-        <para>Using this mechanism involves:</para>
+        <para>이 메카니즘을 사용하는 것은 다음을 포함한다.</para>
 
         <itemizedlist>
           <listitem>
-            <para>Specifying a
-            <literal>DefaultAdvisorAutoProxyCreator</literal> bean
-            definition.</para>
+            <para><literal>DefaultAdvisorAutoProxyCreator</literal> 
+            빈 정의를 지정함.</para>
           </listitem>
 
           <listitem>
-            <para>Specifying any number of Advisors in the same or related
-            contexts. Note that these <emphasis>must</emphasis> be Advisors,
-            not just interceptors or other advices. This is necessary because
-            there must be a pointcut to evaluate, to check the eligibility of
-            each advice to candidate bean definitions.</para>
+            <para>같은 컨텍스트 혹은 관계된 컨텍스트에 다수의 Advisor를 지정함. 이들은 인터셉터나 
+            다른 어드바이스가 아닌 <emphasis>반드시</emphasis> Advisor여야 한다. 후보 빈 
+            정의에 대한 각 어드바이스의 자격을 검사하기 위해 평가할 포인트컷이 있어야 하기 때문에 
+            이 어드바이저는 필수적이다.</para>
           </listitem>
         </itemizedlist>
 
-        <para>The <literal>DefaultAdvisorAutoProxyCreator</literal> will
-        automatically evaluate the pointcut contained in each advisor, to see
-        what (if any) advice it should apply to each business object (such as
-        "businessObject1" and "businessObject2" in the example).</para>
+        <para><literal>DefaultAdvisorAutoProxyCreator</literal>는 각 비즈니스 
+        객체(예제의 "businessObject1"와 "businessObject2"같은)에 어떤 어브다이스를
+        (존재한다면) 적용해야 하는지 알기 위해 각 어드바이저에 있는 포인트컷을 자동적으로 
+        평가할 것이다.</para>
 
-        <para>This means that any number of advisors can be applied
-        automatically to each business object. If no pointcut in any of the
-        advisors matches any method in a business object, the object will not
-        be proxied. As bean definitions are added for new business objects,
-        they will automatically be proxied if necessary.</para>
+        <para>이는 자동으로 각 비즈니스 객체에 다수의 어드바이저를 적용할 수 있다는 말이다. 
+        어느 어드바이저의 포인트컷도 비즈니스 객체의 매서드와 일치하는 것이 없다면 객체는 프록시되지 
+        않을 것이다. 새로운 비즈니스 객체에 빈 정의를 추가했을 때 필요하다면 자동으로 프록시 
+        될 것이다.</para>
 
-        <para>Autoproxying in general has the advantage of making it
-        impossible for callers or dependencies to obtain an un-advised object.
-        Calling getBean("businessObject1") on this ApplicationContext will
-        return an AOP proxy, not the target business object. (The "inner bean"
-        idiom shown earlier also offers this benefit.)</para>
+        <para>보통 자동프록시는 호출자(caller)나 의존성이 어드바이즈되지 않은 객체를 획득할 수 
+        없게 하는 장점이 있다. 이 ApplicationContext에서 getBean("businessObject1")을 
+        호출하면 대상 비즈니스 객체가 아니라 AOP 프록시를 반환할 것이다.(앞에서 나온 
+        "내부 빈(inner bean)"도 이 장점을 제공한다.)</para>
 
         <para><programlisting language="xml">&lt;bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/&gt;
 
@@ -1538,63 +1375,53 @@ assertEquals("Added two advisors",
 &lt;bean id="businessObject2" class="com.mycompany.BusinessObject2"/&gt;
 </programlisting></para>
 
-        <para>The <literal>DefaultAdvisorAutoProxyCreator</literal> is very
-        useful if you want to apply the same advice consistently to many
-        business objects. Once the infrastructure definitions are in place,
-        you can simply add new business objects without including specific
-        proxy configuration. You can also drop in additional aspects very
-        easily - for example, tracing or performance monitoring aspects - with
-        minimal change to configuration.</para>
+        <para>많은 비즈니스 객체에 같은 어드바이스를 일관성있게 적용하려는 경우 
+        <literal>DefaultAdvisorAutoProxyCreator</literal>가 아주 유용하다. 일단 
+        인프라스트럭처 정의가 제 위치에 있다면 구체적인 프록시 설정을 포함하지 않고도 새로운 비즈니스 
+        객체를 쉽게 추가할 수 있다. 부가적인 관점도 설정을 최소한으로 변경하면서 아주 쉽게 추가할 
+        수 있다.(예를 들면 추적하거나 성능을 모니터링하느 관점)</para>
 
-        <para>The DefaultAdvisorAutoProxyCreator offers support for filtering
-        (using a naming convention so that only certain advisors are
-        evaluated, allowing use of multiple, differently configured,
-        AdvisorAutoProxyCreators in the same factory) and ordering. Advisors
-        can implement the <literal>org.springframework.core.Ordered</literal>
-        interface to ensure correct ordering if this is an issue. The
-        TransactionAttributeSourceAdvisor used in the above example has a
-        configurable order value; the default setting is unordered.</para>
+        <para>DefaultAdvisorAutoProxyCreator는 필터링과 정렬을 지원한다. (같은 팩토리의 
+        AdvisorAutoProxyCreator의 특정 어드바이저들만 평가하고 여러 용도로 사용하고 다르게 
+        설정하기 위해 작명 관례를 사용해서) 이슈가 있는 경우에 정렬을 제대로 하기 위해 어드바이저가 
+        <literal>org.springframework.core.Ordered</literal>를 구현할 수 있다. 위의 
+        예제에서 사용한 TransactionAttributeSourceAdvisor에는 설정할 수 있는 order값이 
+        있다. 기본 설정은 정렬하지 않는 것이다.</para>
       </section>
 
       <section id="aop-api-autoproxy-abstract">
         <title>AbstractAdvisorAutoProxyCreator</title>
 
-        <para>This is the superclass of DefaultAdvisorAutoProxyCreator. You
-        can create your own autoproxy creators by subclassing this class, in
-        the unlikely event that advisor definitions offer insufficient
-        customization to the behavior of the framework
-        <literal>DefaultAdvisorAutoProxyCreator</literal>.</para>
+        <para>DefaultAdvisorAutoProxyCreator의 수퍼클래스다. 어드바이저 정의가 프레임워크의 
+        동작을 충분하게 커스터마이징하지 못할 때 이 
+        <literal>DefaultAdvisorAutoProxyCreator</literal> 클래스의 하위클래스를 
+        만들어서 자신만의 오토프록시 생성자(creator)를 만들 수 있다.</para>
       </section>
     </section>
 
     <section id="aop-autoproxy-metadata">
-      <title>Using metadata-driven auto-proxying</title>
+      <title>메타데이터 주도 오토프록시 사용하기</title>
 
-      <para>A particularly important type of autoproxying is driven by
-      metadata. This produces a similar programming model to .NET
-      <literal>ServicedComponents</literal>. Instead of using XML deployment
-      descriptors as in EJB, configuration for transaction management and
-      other enterprise services is held in source-level attributes.</para>
+      <para>오토프록시의 특히 중요한 타입은 메타데이터에 주도된다. 이는 .NET 
+      <literal>ServicedComponents</literal>과 유사한 프로그래밍 모델을 만든다. 
+      EJB에서 처럼 XML 배포 디스크립터를 사용하는 대신에 소스수준의 속성으로 트랜잭션 관리와 
+      다른 엔터프라이즈 서비스에 대한 설정을 유지한다.</para>
 
-      <para>In this case, you use the
-      <literal>DefaultAdvisorAutoProxyCreator</literal>, in combination with
-      Advisors that understand metadata attributes. The metadata specifics are
-      held in the pointcut part of the candidate advisors, rather than in the
-      autoproxy creation class itself.</para>
+      <para>이 경우에 메타데이터 속성을 이해하는 어드바이저와 결합해서 
+      <literal>DefaultAdvisorAutoProxyCreator</literal>를 사용한다. 메타데이터를 
+      오토프록시 생성 클래스 자체가 가지는 대신 후보 어드바이저들의 포인트컷 부분이 메타데이터를 
+      가진다.</para>
 
-      <para>This is really a special case of the
-      <literal>DefaultAdvisorAutoProxyCreator</literal>, but deserves
-      consideration on its own. (The metadata-aware code is in the pointcuts
-      contained in the advisors, not the AOP framework itself.)</para>
+      <para>이는 실제로 <literal>DefaultAdvisorAutoProxyCreator</literal>의 특수한 
+      경우이지만 독립적으로 고려할 만 하다.(메타데이터 친화적인 코드는 AOP 프레임워크 자체가 
+      아니라 어드바이저들의 포인트컷이 담고 있다.)</para>
 
-      <para>The <literal>/attributes</literal> directory of the JPetStore
-      sample application shows the use of attribute-driven autoproxying. In
-      this case, there's no need to use the
-      <literal>TransactionProxyFactoryBean</literal>. Simply defining
-      transactional attributes on business objects is sufficient, because of
-      the use of metadata-aware pointcuts. The bean definitions include the
-      following code, in <literal>/WEB-INF/declarativeServices.xml</literal>.
-      Note that this is generic, and can be used outside the JPetStore:</para>
+      <para>JPetStore 샘플 어플리케이션의 <literal>/attributes</literal> 디렉토리는 
+      속성주도 오토프록시의 사용방법을 보여준다. 이 경우에는 
+      <literal>TransactionProxyFactoryBean</literal>를 사용할 필요가 없다. 메타데이터 
+      친화적인 포인트컷을 사용하기 때문에 비즈니스 객체에서 transactional 속성을 정의하는 것만으로도 
+      충분하다. <literal>/WEB-INF/declarativeServices.xml</literal>의 빈 정의는 다음의 
+      코드를 포함하고 있다. 이는 일반적이고 JPetStore 외부에서도 사용할 수 있다.</para>
 
       <para><programlisting language="xml">&lt;bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/&gt;
 
@@ -1614,28 +1441,22 @@ assertEquals("Added two advisors",
 
 &lt;bean id="attributes" class="org.springframework.metadata.commons.CommonsAttributes"/&gt;</programlisting></para>
 
-      <para>The <literal>DefaultAdvisorAutoProxyCreator</literal> bean
-      definition (the name is not significant, hence it can even be omitted)
-      will pick up all eligible pointcuts in the current application context.
-      In this case, the "transactionAdvisor" bean definition, of type
-      <literal>TransactionAttributeSourceAdvisor</literal>, will apply to
-      classes or methods carrying a transaction attribute. The
-      TransactionAttributeSourceAdvisor depends on a TransactionInterceptor,
-      via constructor dependency. The example resolves this via autowiring.
-      The <literal>AttributesTransactionAttributeSource</literal> depends on
-      an implementation of the
-      <literal>org.springframework.metadata.Attributes</literal> interface. In
-      this fragment, the "attributes" bean satisfies this, using the Jakarta
-      Commons Attributes API to obtain attribute information. (The application
-      code must have been compiled using the Commons Attributes compilation
-      task.)</para>
+      <para><literal>DefaultAdvisorAutoProxyCreator</literal> 빈 정의(이름은 중요하지 
+      않으므로 생략할 수도 있다)는 현재 어플리케이션 컨텍스트에서 적절한 포인트컷을 모두 선택할 것이다. 
+      이 경우에 <literal>TransactionAttributeSourceAdvisor</literal> 타입의 
+      "transactionAdvisor" 빈 정의를 transaction 속성을 가진 클래스나 메서드에 적용할 것이다. 
+      TransactionAttributeSourceAdvisor는 생성자 의존성을 통해서 TransactionInterceptor에 
+      의존한다. 예제는 자동연결(autowiring)로 이 문제를 해결한다. 
+      <literal>AttributesTransactionAttributeSource</literal>는 
+      <literal>org.springframework.metadata.Attributes</literal> 인터페이스의 
+      구현체에 의존한다. 이 부분에서 "attributes" 빈은 속성 정보를 얻기 위해 Jakarta Commons 
+      Attributes API를 사용해서 이를 만족시킨다. (어플리케이션 코드는 반드시 Commons Attributes 
+      컴파일 작업을 사용해서 컴파일되어야 한다.)</para>
 
-      <para>The <literal>/annotation</literal> directory of the JPetStore
-      sample application contains an analogous example for auto-proxying
-      driven by JDK 1.5+ annotations. The following configuration enables
-      automatic detection of Spring's <literal>Transactional</literal>
-      annotation, leading to implicit proxies for beans containing that
-      annotation:</para>
+      <para>JPetStore 샘플 어플리케이션의 <literal>/annotation</literal> 디렉토리에는 
+      JDK 1.5+ 어노테이션을 사용한 오토프록시와 유사한 예제가 있다. 다음 설정은 스프링의 
+      <literal>Transactional</literal> 어노테이션을 자동으로 탐지할 수 있게 해서 해당 
+      어노테이션이 붙은 빈을 암묵적으로 프록시하게 된다.</para>
 
       <para><programlisting language="xml">&lt;bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/&gt;
 
@@ -1651,48 +1472,42 @@ assertEquals("Added two advisors",
   &lt;/property&gt;
 &lt;/bean&gt;</programlisting></para>
 
-      <para>The <literal>TransactionInterceptor</literal> defined here depends
-      on a <literal>PlatformTransactionManager</literal> definition, which is
-      not included in this generic file (although it could be) because it will
-      be specific to the application's transaction requirements (typically
-      JTA, as in this example, or Hibernate, JDO or JDBC):</para>
+      <para>여기서 정의한 <literal>TransactionInterceptor</literal>는 
+      <literal>PlatformTransactionManager</literal> 정의에 의존하고 있다. 
+      <literal>PlatformTransactionManager</literal>는 어플리케이션의 트랜잭션 
+      요구사항(일반적으로는 이 예제처럼 JTA이고 그 외 Hibernate, JDO, JDBC이다.)에 지정될 
+      것이므로 이 일반적인 파일에는 포함되어 있지 않다.(가능하기는 하지만)</para>
 
       <programlisting language="xml">&lt;bean id="transactionManager" 
     class="org.springframework.transaction.jta.JtaTransactionManager"/&gt;</programlisting>
 
       <tip>
-        <para>If you require only declarative transaction management, using
-        these generic XML definitions will result in Spring automatically
-        proxying all classes or methods with transaction attributes. You won't
-        need to work directly with AOP, and the programming model is similar
-        to that of .NET ServicedComponents.</para>
+        <para>선언적인 트랜잭션 관리만 필요한 경우 이러한 일반적인 XML 정의를 사용하면 스프링이 
+        transaction 속성이 있는 모든 클래스와 메서드를 자동으로 프록시할 것이다. AOP로 직접 
+        작업할 필요가 없고 프로그래밍 모델은 .NET ServicedComponents의 프로그래밍 모델과 
+        유사하다.</para>
       </tip>
 
-      <para>This mechanism is extensible. It's possible to do autoproxying
-      based on custom attributes. You need to:</para>
+      <para>이 메카니즘은 확장할 수 있다. 커스텀 속성에 기반해서 오토프록시를 할 수 있다. 
+      이렇게 하려면 다음의 과정이 필요한다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>Define your custom attribute.</para>
+          <para>커스텀 속성을 정의해라.</para>
         </listitem>
 
         <listitem>
-          <para>Specify an Advisor with the necessary advice, including a
-          pointcut that is triggered by the presence of the custom attribute
-          on a class or method. You may be able to use an existing advice,
-          merely implementing a static pointcut that picks up the custom
-          attribute.</para>
+          <para>클래스나 메서드에 커스텀 속성이 있어서 발생하는 포임트컷을 포함해서 필수 
+          어드바이스를 가진 Advisor를 지정해라. 커스텀 속성을 선택하는 정적 포인트컷을 구현한 
+          이미 존재하는 어드바이스를 사용할 수도 있다.</para>
         </listitem>
       </itemizedlist>
 
-      <para>It's possible for such advisors to be unique to each advised class
-      (for example, mixins): they simply need to be defined as prototype,
-      rather than singleton, bean definitions. For example, the
-      <literal>LockMixin</literal> introduction interceptor from the Spring
-      test suite, shown above, could be used in conjunction with an
-      attribute-driven pointcut to target a mixin, as shown here. We use the
-      generic <literal>DefaultPointcutAdvisor</literal>, configured using
-      JavaBean properties:</para>
+      <para>이러한 어드바이저들이 각각의 어드바이즈된 클래스에 유일하도록 할 수 있다.(예를 들면 믹스인) 
+      이 어드바이저들은 싱글톤 대신 프로토타입 빈 정의로 정의되어야 한다. 예를 들어 앞에서 나왔던 스프링 
+      테스트 슈트의 <literal>LockMixin</literal> 인트로덕션 인터셉터를 여기서 보여주듯 믹스인할 
+      속성주도 포인트컷과 결합하는데 사용할 수 있다. JavaBean 프로퍼티로 설정한 일반적인 
+      <literal>DefaultPointcutAdvisor</literal>를 사용한다.</para>
 
       <para><programlisting language="xml">&lt;bean id="lockMixin" class="org.springframework.aop.LockMixin"
     scope="prototype"/&gt;
@@ -1705,64 +1520,57 @@ assertEquals("Added two advisors",
 
 &lt;bean id="anyBean" class="anyclass" ...</programlisting></para>
 
-      <para>If the attribute aware pointcut matches any methods in the
-      <literal>anyBean</literal> or other bean definitions, the mixin will be
-      applied. Note that both <literal>lockMixin</literal> and
-      <literal>lockableAdvisor</literal> definitions are prototypes. The
-      <literal>myAttributeAwarePointcut</literal> pointcut can be a singleton
-      definition, as it doesn't hold state for individual advised
-      objects.</para>
+      <para>속성을 이해하는 포인트컷이 <literal>anyBean</literal>이나 다른 빈 정의의 어떤 
+      메서드와 일치한다면 믹스인이 적용될 것이다. <literal>lockMixin</literal>와 
+      <literal>lockableAdvisor</literal>는 둘다 프로토타입이다. 
+      <literal>myAttributeAwarePointcut</literal> 포인트컷은 어드바이즈된 개별 객체가 
+      상태를 유지하지 않기 때문에 싱글톤 정의가 될 수 있다.</para>
     </section>
   </section>
 
   <section id="aop-targetsource">
-    <title>Using TargetSources</title>
+    <title>TargetSources 사용하기</title>
 
-    <para>Spring offers the concept of a <emphasis>TargetSource</emphasis>,
-    expressed in the <literal>org.springframework.aop.TargetSource</literal>
-    interface. This interface is responsible for returning the "target object"
-    implementing the join point. The <literal>TargetSource</literal>
-    implementation is asked for a target instance each time the AOP proxy
-    handles a method invocation.</para>
+    <para>스프링은 <literal>org.springframework.aop.TargetSource</literal>에 나타난 
+    <emphasis>TargetSource</emphasis>의 개념을 제공한다. 이 인터페이스는 조인포인트를 구현한 
+    "대상 객체"를 반환하는 역할을 한다. <literal>TargetSource</literal> 구현체는 AOP 
+    프록시가 메서드 호출을 다룰 때마다 대상 인스턴스를 요청한다.</para>
 
-    <para>Developers using Spring AOP don't normally need to work directly
-    with TargetSources, but this provides a powerful means of supporting
-    pooling, hot swappable and other sophisticated targets. For example, a
-    pooling TargetSource can return a different target instance for each
-    invocation, using a pool to manage instances.</para>
+    <para>스프링 AOP를 사용하는 개발자들이 TargetSource를 직접 다룰 필요는 보통 없지만 풀링, 
+    핫 스왓, 다른 세련된 대상등을 지원하는 강력한 기능을 제공한다. 예를 들어 풀링 TargetSource는 
+    인스턴스를 관리하는 풀(pool)을 사용해서 호출시마다 다른 대상 인스턴스를 반환할 수 있다.</para>
 
-    <para>If you do not specify a TargetSource, a default implementation is
-    used that wraps a local object. The same target is returned for each
-    invocation (as you would expect).</para>
+    <para>TargetSource를 지정하지 않으면 지역(local) 객체를 감싸는 기본 구현체를 사용한다. 
+    각 호출시마다(기대하는 대로) 같은 객체를 반환한다.</para>
 
-    <para>Let's look at the standard target sources provided with Spring, and
-    how you can use them.</para>
+    <para>스프링이 제공하는 표준 대상 소스(target source)를 살펴보고 어떻게 사용할 수 있는지 
+    알아보자.</para>
 
     <tip>
-      <para>When using a custom target source, your target will usually need
-      to be a prototype rather than a singleton bean definition. This allows
-      Spring to create a new target instance when required.</para>
+      <para>커스텀 대상 소스를 사용하는 경우 대상은 보통 싱글톤 빈 정의가 아니라 
+      프로토타입 빈 정의가 되어야 할 것이다. 이는 요청했을 때 스프링이 새로운 대상 
+      인스턴스를 생성할 수 있게 한다.</para>
     </tip>
 
     <section id="aop-ts-swap">
-      <title>Hot swappable target sources</title>
+      <title>핫 스왑이 가능한 대상 소스</title>
 
-      <para>The
-      <literal>org.springframework.aop.target.HotSwappableTargetSource</literal>
-      exists to allow the target of an AOP proxy to be switched while allowing
-      callers to keep their references to it.</para>
+      <para>호출자(caller)가 AOP 프록시의 대상에 대한 참조를 유지하는 동안 AOP 프록시의 대상을 
+      교체할 수 있도록 
+      <literal>org.springframework.aop.target.HotSwappableTargetSource</literal>가 
+      존재한다.</para>
 
-      <para>Changing the target source's target takes effect immediately. The
-      <literal>HotSwappableTargetSource</literal> is threadsafe.</para>
+      <para>대상 소스의 대상을 변경한 효과는 즉각적으로 일어난다. 
+      <literal>HotSwappableTargetSource</literal>는 쓰레드세이프하다.</para>
 
-      <para>You can change the target via the <literal>swap()</literal> method
-      on HotSwappableTargetSource as follows:</para>
+      <para>다음과 같이 HotSwappableTargetSource의 <literal>swap()</literal>
+      메서드로 대상을 변경할 수 있다.</para>
 
       <para><programlisting language="java">HotSwappableTargetSource swapper = 
     (HotSwappableTargetSource) beanFactory.getBean("swapper");
 Object oldTarget = swapper.swap(newTarget);</programlisting></para>
 
-      <para>The XML definitions required look as follows:</para>
+      <para>필요한 XML 정의는 다음과 같다.</para>
 
       <para><programlisting language="xml">&lt;bean id="initialTarget" class="mycompany.OldTarget"/&gt;
 
@@ -1774,37 +1582,31 @@ Object oldTarget = swapper.swap(newTarget);</programlisting></para>
   &lt;property name="targetSource" ref="swapper"/&gt;
 &lt;/bean&gt;</programlisting></para>
 
-      <para>The above <literal>swap()</literal> call changes the target of the
-      swappable bean. Clients who hold a reference to that bean will be
-      unaware of the change, but will immediately start hitting the new
-      target.</para>
+      <para>위의 <literal>swap()</literal> 호출은 스왑가능한 빈의 대상을 변경한다. 
+      이 빈에 대한 참조를 가진 클라이언트들은 변경을 알아차리지 못하지만 즉시 새로운 대상을 
+      만날 것이다.</para>
 
-      <para>Although this example doesn't add any advice - and it's not
-      necessary to add advice to use a <literal>TargetSource</literal> - of
-      course any <literal>TargetSource</literal> can be used in conjunction
-      with arbitrary advice.</para>
+      <para>이 예제에서는 어떤 어드바이스도 추가하지 않았지만(<literal>TargetSource</literal>를 
+      사용하는데 어드바이스를 추가해야 할 필요는 없다.) 당연히 모든 
+      <literal>TargetSource</literal>는 임의의 어드바이스와 결합해서 사용할 수 있다.</para>
     </section>
 
     <section id="aop-ts-pool">
-      <title>Pooling target sources</title>
+      <title>대상 소스 풀링</title>
 
-      <para>Using a pooling target source provides a similar programming model
-      to stateless session EJBs, in which a pool of identical instances is
-      maintained, with method invocations going to free objects in the
-      pool.</para>
+      <para>대상 소스의 풀링을 사용하면 상태가 없는 세션 EJB와 유사한 프로그래밍 모델을 제공한다. 
+      이 프로그래밍 모델은 동일한 인스턴스의 풀을 유지하고 메서드 호출로 풀에서 객체를 가져온다.</para>
 
-      <para>A crucial difference between Spring pooling and SLSB pooling is
-      that Spring pooling can be applied to any POJO. As with Spring in
-      general, this service can be applied in a non-invasive way.</para>
+      <para>스프링 풀링과 SLSB 풀링사이의 결정적인 차이점은 스프링 풀링은 어떤 POJO라도 적용할 수 
+      있다는 것이다. 보통 스프링이 하듯이 이는 비 침략적인 방법을 적용할 수 있다.</para>
 
-      <para>Spring provides out-of-the-box support for Jakarta Commons Pool
-      1.3, which provides a fairly efficient pooling implementation. You'll
-      need the commons-pool Jar on your application's classpath to use this
-      feature. It's also possible to subclass
-      <literal>org.springframework.aop.target.AbstractPoolingTargetSource</literal>
-      to support any other pooling API.</para>
+      <para>스프링은 상당히 능률적인 풀링 구현체를 제공하는 Jakarta Commons Pool 1.3을 지원한다. 
+      이 기능을 사용하려면 어플리케이션의 클래스패스에 commons-pool Jar가 필요하다. 다른 풀링 API를 
+      지원하기 위해서 
+      <literal>org.springframework.aop.target.AbstractPoolingTargetSource</literal>의 
+      하위클래스를 만드는 것도 가능하다.</para>
 
-      <para>Sample configuration is shown below:</para>
+      <para>다음은 설정 예시이다.</para>
 
       <para><programlisting language="xml">&lt;bean id="businessObjectTarget" class="com.mycompany.MyBusinessObject" 
     scope="prototype"&gt;
@@ -1821,148 +1623,127 @@ Object oldTarget = swapper.swap(newTarget);</programlisting></para>
   &lt;property name="interceptorNames" value="myInterceptor"/&gt;
 &lt;/bean&gt;</programlisting></para>
 
-      <para>Note that the target object - "businessObjectTarget" in the
-      example - <emphasis>must</emphasis> be a prototype. This allows the
-      <literal>PoolingTargetSource</literal> implementation to create new
-      instances of the target to grow the pool as necessary. See the javadoc
-      for <literal>AbstractPoolingTargetSource</literal> and the concrete
-      subclass you wish to use for information about its properties: "maxSize"
-      is the most basic, and always guaranteed to be present.</para>
+      <para>대상 객체(이 예제에서는 "businessObjectTarget")는 <emphasis>반드시</emphasis> 
+      프로토타입이어야 한다. 이는 <literal>PoolingTargetSource</literal> 구현체가 필요에 
+      따라 풀의 크기를 조절하기 위해서 대상의 새로운 인스턴스를 생성할 수 있도록 한다. 
+      <literal>AbstractPoolingTargetSource</literal>의 프로퍼티에 대한 정보는 
+      <literal>AbstractPoolingTargetSource</literal> javadoc과 구현된 하위클래스를 
+      참고해라. 프로피티 중 "maxSize"가 가장 기본적인 프로퍼티이고 항상 존재한다는 것을 
+      보장한다.</para>
 
-      <para>In this case, "myInterceptor" is the name of an interceptor that
-      would need to be defined in the same IoC context. However, it isn't
-      necessary to specify interceptors to use pooling. If you want only
-      pooling, and no other advice, don't set the interceptorNames property at
-      all.</para>
+      <para>이 경우에 "myInterceptor"는 같은 IoC 컨텍스트에서 정의되어야 하는 인터셉터의 이름이다. 
+      하지만 풀링을 사용하려고 인터셉터를 지정할 필요는 없다. 다른 어드바이스는 필요없고 풀링만을 
+      사용하고자 한다면 interceptorNames 프로퍼티를 아예 설정하지 말아라.</para>
 
-      <para>It's possible to configure Spring so as to be able to cast any
-      pooled object to the
-      <literal>org.springframework.aop.target.PoolingConfig</literal>
-      interface, which exposes information about the configuration and current
-      size of the pool through an introduction. You'll need to define an
-      advisor like this:</para>
+      <para>풀에 있는 어떤 객체라도 
+      <literal>org.springframework.aop.target.PoolingConfig</literal> 인터페이스로 
+      캐스팅할 수 있도록 스프링을 설정할 수 있다. 이 인터페이스는 인트로덕션을 통해서 설정과 현재 풀의 
+      크기에 대한 정보를 노출한다. 다음과 같이 어드바이저를 정의해야 한다.</para>
 
       <para><programlisting language="xml">&lt;bean id="poolConfigAdvisor" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"&gt;
   &lt;property name="targetObject" ref="poolTargetSource"/&gt;
   &lt;property name="targetMethod" value="getPoolingConfigMixin"/&gt;
 &lt;/bean&gt;</programlisting></para>
 
-      <para>This advisor is obtained by calling a convenience method on the
-      <literal>AbstractPoolingTargetSource</literal> class, hence the use of
-      MethodInvokingFactoryBean. This advisor's name ("poolConfigAdvisor"
-      here) must be in the list of interceptors names in the ProxyFactoryBean
-      exposing the pooled object.</para>
+      <para><literal>AbstractPoolingTargetSource</literal> 클래스의 편리한 메서드를 
+      호출해서 즉, MethodInvokingFactoryBean를 사용해서 이 어드바이저를 얻어올 수 있다. 
+      이 어드바이저의 이름은(여기서는 "poolConfigAdvisor") 풀에 있는 객체를 노출하는 
+      ProxyFactoryBean의 인터셉터 이름 목록에 있어야 한다.</para>
 
-      <para>The cast will look as follows:</para>
+      <para>캐스팅은 다음과 같을 것이다.</para>
 
       <programlisting language="java">PoolingConfig conf = (PoolingConfig) beanFactory.getBean("businessObject");
 System.out.println("Max pool size is " + conf.getMaxSize());</programlisting>
 
       <note>
-        <para>Pooling stateless service objects is not usually necessary. We
-        don't believe it should be the default choice, as most stateless
-        objects are naturally thread safe, and instance pooling is problematic
-        if resources are cached.</para>
+        <para>보통 상태가 없는 서비스 객체들을 풀링할 필요는 없다. 상태를 갖지 않는 대부분의 객체들은 
+        자연히 쓰레드세이프하기 때문에 풀링하는 것이 기본적인 선택이어야 한다고 생각하지 않고 리소스가 
+        캐싱되는 경우 인스턴스 풀링은 문제의 소지가 있다.</para>
       </note>
 
-      <para>Simpler pooling is available using autoproxying. It's possible to
-      set the TargetSources used by any autoproxy creator.</para>
+      <para>자동프록시를 사용해서 더 간단한 풀링을 사용할 수 있다. 자동프록시 생성자(autoproxy 
+      creator)가 사용하는 TargetSources를 설정할 수 있다.</para>
     </section>
 
     <section id="aop-ts-prototype">
-      <title>Prototype target sources</title>
+      <title>프로토타입 대상 소스</title>
 
-      <para>Setting up a "prototype" target source is similar to a pooling
-      TargetSource. In this case, a new instance of the target will be created
-      on every method invocation. Although the cost of creating a new object
-      isn't high in a modern JVM, the cost of wiring up the new object
-      (satisfying its IoC dependencies) may be more expensive. Thus you
-      shouldn't use this approach without very good reason.</para>
+      <para>"prototype" 대상소스를 설정하는 것은 TargetSource를 풀링하는 것과 비슷하다. 
+      이 경우에 메서드 호출시마다 대상의 새로운 인스턴스를 생성할 것이다. 최신(modern) JVM에서는 
+      새로운 객체를 생성하는 비용이 크지 않지만 새로운 객체를 연결하는 비용은(객체의 IoC 의존성을 
+      만족시키는) 아마 좀 더 비쌀 것이다. 그러므로 타당한 이유가 없다면 이 접근을 사용하지 
+      말아야 한다.</para>
 
-      <para>To do this, you could modify the
-      <literal>poolTargetSource</literal> definition shown above as follows.
-      (I've also changed the name, for clarity.)</para>
+      <para>프로토타입 대상 소스를 설정하기 위해서 위에 나온 <literal>poolTargetSource</literal> 
+      정의를 다음과 같이 수정할 수 있다.(명확함을 위해서 이름도 변경했다.)</para>
 
       <programlisting language="xml">&lt;bean id="prototypeTargetSource" class="org.springframework.aop.target.PrototypeTargetSource"&gt;
   &lt;property name="targetBeanName" ref="businessObjectTarget"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>There's only one property: the name of the target bean.
-      Inheritance is used in the TargetSource implementations to ensure
-      consistent naming. As with the pooling target source, the target bean
-      must be a prototype bean definition.</para>
+      <para>여기에는 대상 빈의 이름을 위한 딱 하나의 프로퍼티만 존재한다. 일관성 있는 작명을 
+      보장하기 위해서 TargetSource 구현체는 상속을 사용한다. 대상 소스를 풀링하는 것처럼 
+      대상 빈은 프로토타입 빈 정의여야 한다.</para>
     </section>
 
     <section id="aop-ts-threadlocal">
-      <title><classname>ThreadLocal</classname> target sources</title>
+      <title><classname>ThreadLocal</classname> 대상 소스</title>
 
-      <para><classname>ThreadLocal</classname> target sources are useful if
-      you need an object to be created for each incoming request (per thread
-      that is). The concept of a <classname>ThreadLocal</classname> provide a
-      JDK-wide facility to transparently store resource alongside a thread.
-      Setting up a <classname>ThreadLocalTargetSource</classname> is pretty
-      much the same as was explained for the other types of target
-      source:</para>
+      <para>요청이 들어올때마다 객체를 생성해야할 때(쓰레드마다) 
+      <classname>ThreadLocal</classname> 대상 소스가 유용하다. 
+      <classname>ThreadLocal</classname>의 개념은 쓰레드에 투명하게 리소스를 저장하는 JDK 
+      범위의 기능을 제공한다. <classname>ThreadLocalTargetSource</classname>을 설정하는 
+      방법은 다른 타입의 대상소스에서 설명한 것과 거의 같다.</para>
 
       <programlisting language="xml">&lt;bean id="threadlocalTargetSource" class="org.springframework.aop.target.ThreadLocalTargetSource"&gt;
   &lt;property name="targetBeanName" value="businessObjectTarget"/&gt;
 &lt;/bean&gt;</programlisting>
 
       <note>
-        <para>ThreadLocals come with serious issues (potentially resulting in
-        memory leaks) when incorrectly using them in a multi-threaded and
-        multi-classloader environments. One should always consider wrapping a
-        threadlocal in some other class and never directly use the
-        <classname>ThreadLocal</classname> itself (except of course in the
-        wrapper class). Also, one should always remember to correctly set and
-        unset (where the latter simply involved a call to
-        <literal>ThreadLocal.set(null)</literal>) the resource local to the
-        thread. Unsetting should be done in any case since not unsetting it
-        might result in problematic behavior. Spring's ThreadLocal support
-        does this for you and should always be considered in favor of using
-        ThreadLocals without other proper handling code.</para>
+        <para>멀티쓰레드 환경이나 멀티-클래스로더 환경에서 ThreadLocal을 잘못 사용할 때 심각한 
+        이슈가 있다.(잠재적으로 메모리 누수가 있을 수 있다.) 항상 다른 클래스에 쓰레드로컬을 감싸고 
+        <classname>ThreadLocal</classname> 자체를 직접 사용하는 않는 것을 고려해야 한다.
+        (물론 랩퍼(wrapper) 클래스는 제외하고) 그리고 쓰레드에 리소스로컬을 제대로 설정하고 
+        설정해제해야 한다.(설정해제는 <literal>ThreadLocal.set(null)</literal>를 호출하는 
+        것을 말한다) 설정해제를 사지 않으면 문제의 소지가 있는 동작이 일어날 수 있으므로 설정해제는 
+        항상 해주어야 한다. 스프링의 ThreadLocal 지원은 개발자를 위해서 이것을 해주고 달리 코드를 
+        적절하게 다루지 않도로 ThreadLocal을 사용하는 것은 항상 생각해야한다.</para>
       </note>
     </section>
   </section>
 
   <section id="aop-extensibility">
-    <title>Defining new <interfacename>Advice</interfacename> types</title>
+    <title>새로운 <interfacename>Advice</interfacename> 타입 정의하기</title>
 
-    <para>Spring AOP is designed to be extensible. While the interception
-    implementation strategy is presently used internally, it is possible to
-    support arbitrary advice types in addition to the out-of-the-box
-    interception around advice, before, throws advice and after returning
-    advice.</para>
+    <para>스프링 AOP는 확장할 수 있도록 설계되었다. 내부적으로 인터셉션 구현체 전략(interception 
+    implementation strategy)을 사용하고 있기 때문에 interception around advice, 
+    before advice, throws advice, after returning advice에 추가로 임의의 어드바이스 
+    타입을 지원하는 것이 가능하다.</para>
 
-    <para>The <literal>org.springframework.aop.framework.adapter</literal>
-    package is an SPI package allowing support for new custom advice types to
-    be added without changing the core framework. The only constraint on a
-    custom <interfacename>Advice</interfacename> type is that it must
-    implement the <interfacename>org.aopalliance.aop.Advice</interfacename>
-    tag interface.</para>
+    <para><literal>org.springframework.aop.framework.adapter</literal> 패키지는 
+    코어 프레임워크를 수정하지 않고 새로운 커스텀 어드바이스 타입을 추가할 수 있도록 하는 SPI 패키지이다. 
+    커스텀 <interfacename>Advice</interfacename> 타입의 유일한 제약사항은 
+    <interfacename>org.aopalliance.aop.Advice</interfacename> 태그 인터페이스를 반드시 
+    구현해야 한다는 것 뿐이다.</para>
 
-    <para>Please refer to the
-    <literal>org.springframework.aop.framework.adapter</literal> package's
-    Javadocs for further information.</para>
+    <para>더 자세한 정보는 <literal>org.springframework.aop.framework.adapter</literal> 
+    패키지의 javadoc을 참고해라.</para>
   </section>
 
   <section id="aop-api-resources">
-    <title>Further resources</title>
+    <title>추가적인 리소스</title>
 
-    <para>Please refer to the Spring sample applications for further examples
-    of Spring AOP:</para>
+    <para>스프링 AOP의 더 많은 예제를 보려면 스프링 샘플 어플리케이션을 참고해라.</para>
 
     <itemizedlist>
       <listitem>
-        <para>The JPetStore's default configuration illustrates the use of the
-        <classname>TransactionProxyFactoryBean</classname> for declarative
-        transaction management.</para>
+        <para>JPetStore의 기본 설정은 선언적인 트랜잭션 관리를 위한 
+        <classname>TransactionProxyFactoryBean</classname>의 사용방법을 설명한다.</para>
       </listitem>
 
       <listitem>
-        <para>The <literal>/attributes</literal> directory of the JPetStore
-        illustrates the use of attribute-driven declarative transaction
-        management.</para>
+        <para>JPetStore의 <literal>/attributes</literal> 디렉토리는 속성주도 선언적인 
+        트랜잭션 관리의 사용방법을 설명한다.</para>
       </listitem>
     </itemizedlist>
   </section>
