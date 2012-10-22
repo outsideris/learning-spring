@@ -2,447 +2,374 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="testing">
-  <title>Testing</title>
+  <title>테스트</title>
 
   <section id="testing-introduction">
-    <title>Introduction to Spring Testing</title>
+    <title>스프링 테스트 소개</title>
 
-    <para>Testing is an integral part of enterprise software development. This
-    chapter focuses on the value-add of the IoC principle to <link
-    linkend="unit-testing">unit testing</link> and on the benefits of the
-    Spring Framework's support for <link
-    linkend="integration-testing">integration testing</link>. <emphasis>(A
-    thorough treatment of testing in the enterprise is beyond the scope of
-    this reference manual.)</emphasis></para>
+    <para>테스팅은 엔터프라이즈 소프트웨어 개발에서 필수적이다. 이번 장에서는 <link
+    linkend="unit-testing">유닛 테스트</link>에 대한 IoC 원리의 부가가치와 <link
+    linkend="integration-testing">통합 테스트</link>의 이점에 집중한다. <emphasis>
+    (엔터프라이즈에서 테스트를 전부 다루는 것은 이 레퍼런스 매뉴얼의 번위를 
+    넘어선다.)</emphasis></para>
   </section>
 
   <section id="unit-testing">
-    <title>Unit Testing</title>
+    <title>유닛 테스트</title>
 
-    <para>Dependency Injection should make your code less dependent on the
-    container than it would be with traditional Java EE development. The POJOs
-    that make up your application should be testable in JUnit or TestNG tests,
-    with objects simply instantiated using the <literal>new</literal>
-    operator, <emphasis>without Spring or any other container</emphasis>. You
-    can use <link linkend="mock-objects">mock objects</link> (in conjunction
-    with other valuable testing techniques) to test your code in isolation. If
-    you follow the architecture recommendations for Spring, the resulting
-    clean layering and componentization of your codebase will facilitate
-    easier unit testing. For example, you can test service layer objects by
-    stubbing or mocking DAO or Repository interfaces, without needing to
-    access persistent data while running unit tests.</para>
+    <para>의존성 주입은 전통적인 자바 EE 개발이 하던 것보다 코드가 컨테이너에 덜 의존적이도록 한다. 
+    어플리케이션을 구성하는 POJO는 <emphasis>스프링이나 다른 컨테이너없이</emphasis> 
+    <literal>new</literal> 오퍼레이터를 사용해서 객체를 간단히 인스턴스화해서 JUnit과 TestNG로 
+    테스트 할 수 있어야 한다. 코드를 독립적으로 테스트할 때 <link linkend="mock-objects">목(mock) 
+    객체</link>를(다른 가치있는 테스트 기법과 함께) 사용할 수 있다. 스프링의 아키텍쳐 권장사항을 따른다면 
+    코드의 계층화(layering)와 컴포넌트화가 깔끔하게 될 것이고 훨씬 쉽게 유닛 테스트를 할 수 있다. 예를 
+    들어 유닛 테스트를 하는 동안 퍼시스턴트 데이터에 접근하지 않고도 DAO나 레파지토리 인터페이스를 
+    스텁(stubbing)하거나 모킹(mocking)해서 서비스 계층의 객체들을 테스트 할 수 있다.</para>
 
-    <para>True unit tests typically run extremely quickly, as there is no
-    runtime infrastructure to set up. Emphasizing true unit tests as part of
-    your development methodology will boost your productivity. You may not
-    need this section of the testing chapter to help you write effective unit
-    tests for your IoC-based applications. For certain unit testing scenarios,
-    however, the Spring Framework provides the following mock objects and
-    testing support classes.</para>
+    <para>실제 유닛테스트는 설정해야 할 런타임 인프라스트럭쳐가 없기 때문에 정말 빠르게 수행된다. 
+    개발 방법론에서 유닛 테스트는 생성성은 아주 높혀줄 것이다. IoC 기반 어플리케이션에서 효율적인 
+    유닛 테스트를 작성하는 데는 테스트 장의 이번 섹션은 별로 도움이 되지 않을 것이다. 하지만 유닛 
+    테스트 시나리오들을 위해서 스프링 프레임워크는 다음의 목 객체와 테스트 지원 클래스를
+    제공한다.</para>
 
     <section id="mock-objects">
-      <title>Mock Objects</title>
+      <title>목 객체</title>
 
       <section id="mock-objects-jndi">
         <title>JNDI</title>
 
-        <para>The <literal>org.springframework.mock.jndi</literal> package
-        contains an implementation of the JNDI SPI, which you can use to set
-        up a simple JNDI environment for test suites or stand-alone
-        applications. If, for example, JDBC <classname>DataSource</classname>s
-        get bound to the same JNDI names in test code as within a Java EE
-        container, you can reuse both application code and configuration in
-        testing scenarios without modification.</para>
+        <para><literal>org.springframework.mock.jndi</literal> 패키지는 테스트 슈트나 
+        독립적인 어플리케이션의 간단한 JNDI 환경을 설정하는데 사용할 수 있는 JNDI SPI 구현체를 
+        포함하고 있다. 예를 들어 JDBC <classname>DataSource</classname>가 자바 EE 
+        컨테이너내에서 처럼 테스트 코드에서 간은 JNDI 이름들에 바인딩된다면 수정없이도 테스트 
+        시나리오에서 어플리케이션 코드와 설정을 모두 재사용할 수 있다.</para>
       </section>
 
       <section id="mock-objects-servlet">
-        <title>Servlet API</title>
+        <title>서블릿 API</title>
 
-        <para>The <literal>org.springframework.mock.web</literal> package
-        contains a comprehensive set of Servlet API mock objects, targeted at
-        usage with Spring's Web MVC framework, which are useful for testing
-        web contexts and controllers. These mock objects are generally more
-        convenient to use than dynamic mock objects such as <ulink
-        url="http://www.easymock.org">EasyMock</ulink> or existing Servlet API
-        mock objects such as <ulink
-        url="http://www.mockobjects.com">MockObjects</ulink>.</para>
+        <para><literal>org.springframework.mock.web</literal> 패키지는 웹 컨텍스트와 
+        컨트롤러를 테스트하는데 유용한 스프링의 웹 MVC 프레임워크와 함께 사용할 수 있는 서블릿 API 목 
+        객체의 광범위한 세트를 포함하고 있다. 이러한 목 객체들은 <ulink 
+        url="http://www.easymock.org">EasyMock</ulink>같은 동적 목 객체들이나 <ulink 
+        url="http://www.mockobjects.com">MockObjects</ulink>같은 이미 존재하는 서블릿 
+        API 목 객체들보다 일반적으로 사용하기가 더 편하다.</para>
       </section>
 
       <section id="mock-objects-portlet">
-        <title>Portlet API</title>
+        <title>포틀릿(Portlet) API</title>
 
-        <para>The <literal>org.springframework.mock.web.portlet</literal>
-        package contains a set of Portlet API mock objects, targeted at usage
-        with Spring's Portlet MVC framework.</para>
+        <para><literal>org.springframework.mock.web.portlet</literal> 패키지는 
+        스프링의 포틀릿 MVC 프레임워크와 사용하도록 만들어진 포틀릿 API 목 객체들의 세트를 
+        포함하고 있다.</para>
       </section>
     </section>
 
     <section id="unit-testing-support-classes">
-      <title>Unit Testing support Classes</title>
+      <title>유닛 테스트를 지원하는 클래스</title>
 
       <section id="unit-testing-utilities">
-        <title>General utilities</title>
+        <title>일반적인 유틸리티</title>
 
-        <para>The <literal>org.springframework.test.util</literal> package
-        contains <classname>ReflectionTestUtils</classname>, which is a
-        collection of reflection-based utility methods. Developers use these
-        methods in unit and integration testing scenarios in which they need
-        to set a non-<literal>public</literal> field or invoke a
-        non-<literal>public</literal> setter method when testing application
-        code involving, for example:</para>
+        <para><literal>org.springframework.test.util</literal> 패키지는 리플렉션기반의 
+        유틸리티 메서드의 컬렉션인 <classname>ReflectionTestUtils</classname>를 포함하고 
+        있다. 개발자들은 어플리케이션 코드를 테스트할 때 <literal>public</literal>이 
+        아닌 필드를 설정하거나 <literal>public</literal>이 아닌 setter 메서드를 호출해야 
+        하는 유닛 테스트나 통합 테스트 시나리오에서 이 메서드들을 사용한다. 다음과 같은 예시들이 
+        있다.</para>
 
         <itemizedlist>
           <listitem>
-            <para>ORM frameworks such as JPA and Hibernate that condone
-            <literal>private</literal> or <literal>protected</literal> field
-            access as opposed to <literal>public</literal> setter methods for
-            properties in a domain entity.</para>
+            <para>도메인 엔티티에서 프로퍼티에 대한 <literal>public</literal> setter 
+            메서드와는 반대로 <literal>private</literal> 필드나 <literal>protected</literal> 
+            필드에 접근하는 JPA나 하이버네이트같은 ORM 프레임워크.</para>
           </listitem>
 
           <listitem>
-            <para>Spring's support for annotations such as
+            <para><literal>private</literal>필드, <literal>protected</literal> 
+            필드, setter 메서드, 설정 메서드에 의존성을 주입하는 
             <interfacename>@Autowired</interfacename>,
-            <interfacename>@Inject</interfacename>, and
-            <interfacename>@Resource,</interfacename> which provides
-            dependency injection for <literal>private</literal> or
-            <literal>protected</literal> fields, setter methods, and
-            configuration methods.</para>
+            <interfacename>@Inject</interfacename>, 
+            <interfacename>@Resource,</interfacename>같은 
+            어노테이션의 스프링 지원</para>
           </listitem>
         </itemizedlist>
       </section>
 
       <section id="unit-testing-spring-mvc">
-        <title>Spring MVC</title>
+        <title>스프링 MVC</title>
 
-        <para>The <literal>org.springframework.test.web</literal> package
-        contains <classname>ModelAndViewAssert</classname>, which you can use
-        in combination with JUnit, TestNG, or any other testing framework for
-        unit tests dealing with Spring MVC <classname>ModelAndView</classname>
-        objects.</para>
+        <para><literal>org.springframework.test.web</literal> 패키지는 
+        <classname>ModelAndViewAssert</classname>를 포함하고 있다. 
+        <classname>ModelAndViewAssert</classname>는 Spring MVC 
+        <classname>ModelAndView</classname> 객체들을 다루는 유닛테스트에 JUnit과 TestNG나 
+        다른 테스트 프레임워크와 함께 사용할 수 있다.</para>
 
         <tip>
-          <title>Unit testing Spring MVC Controllers</title>
+          <title>스프링 MVC 컨트롤러의 유닛 테스트</title>
 
-          <para>To test your Spring MVC <literal>Controller</literal>s, use
-          <classname>ModelAndViewAssert</classname> combined with
-          <literal>MockHttpServletRequest</literal>,
-          <literal>MockHttpSession</literal>, and so on from the <link
-          linkend="mock-objects-servlet"><literal>org.springframework.mock.web</literal></link>
-          package.</para>
+          <para>Spring MVC <literal>Controller</literal>를 테스트하려면 <link
+          linkend="mock-objects-servlet"><literal>org.springframework.mock.web</literal></link> 
+          패키지의 <literal>MockHttpServletRequest</literal>, 
+          <literal>MockHttpSession</literal> 등과 결합해서 
+          <classname>ModelAndViewAssert</classname>를 사용해라.</para>
         </tip>
       </section>
     </section>
   </section>
 
   <section id="integration-testing">
-    <title>Integration Testing</title>
+    <title>통합 테스트</title>
 
     <section id="integration-testing-overview">
-      <title>Overview</title>
+      <title>개요</title>
 
-      <para>It is important to be able to perform some integration testing
-      without requiring deployment to your application server or connecting to
-      other enterprise infrastructure. This will enable you to test things
-      such as:</para>
+      <para>어플리케이션 서버에 배포를 하거나 다른 엔터프라이즈 인프라에 연결하지 않고도 할 수 
+      있는 통합테스트는 중요하다. 이러한 통합테스트는 다음을 테스트 할 수 있게 한다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>The correct wiring of your Spring IoC container
-          contexts.</para>
+          <para>스프링 IoC 컨테이너 컨텍스트의 제대로 된 연결</para>
         </listitem>
 
         <listitem>
-          <para>Data access using JDBC or an ORM tool. This would include such
-          things as the correctness of SQL statements, Hibernate queries, JPA
-          entity mappings, etc.</para>
+          <para>JBDC나 ORM 도구를 사용한 데이터 접근. 이는 SQL문, 하이버네이트 쿼리, JPA 엔티티 
+          맵핑 등의 정확성 테스트를 포함한다.</para>
         </listitem>
       </itemizedlist>
 
-      <para>The Spring Framework provides first-class support for integration
-      testing in the <filename class="libraryfile">spring-test</filename>
-      module. The name of the actual JAR file might include the release
-      version and might also be in the long
-      <filename>org.springframework.test</filename> form, depending on where
-      you get it from (see the <link linkend="dependency-management">section
-      on Dependency Management</link> for an explanation). This library
-      includes the <literal>org.springframework.test</literal> package, which
-      contains valuable classes for integration testing with a Spring
-      container. This testing does not rely on an application server or other
-      deployment environment. Such tests are slower to run than unit tests but
-      much faster than the equivalent Cactus tests or remote tests that rely
-      on deployment to an application server.</para>
+      <para>스프링 프레임워크는 <filename class="libraryfile">spring-test</filename>로 
+      통합테스트를 훌륭하게 지원한다. 실제 JAR 파일의 이름에는 릴리즈 버전을 포함될 것이고 어디서 
+      다운받는가에 따라(자세한 내용은 <link linkend="dependency-management">의존성 관리 
+      부분</link>을 참고해라.) 긴 형식의 <filename>org.springframework.test</filename>도 
+      포함될 것이다. 이 라이브러리는 스프링 컨테이너의 통합테스트에 대한 중요한 클래스들은 담고 있는 
+      <literal>org.springframework.test</literal> 패키지를 포함하고 있다. 이 테스트는 
+      어플리케이션 서버나 다른 배포 환경에 의존하지 않는다. 이러한 테스트는 유닛 테스트보다는 느리지만 
+      동등한 Cactus 테스트나 어플리케이션 서버에 배포해서 테스트 하는 원격 테스트보다는 
+      훨씬 빠르다.</para>
 
-      <para>In Spring 2.5 and later, unit and integration testing support is
-      provided in the form of the annotation-driven <link
-      linkend="testcontext-framework">Spring TestContext Framework</link>. The
-      TestContext framework is agnostic of the actual testing framework in
-      use, thus allowing instrumentation of tests in various environments
-      including JUnit, TestNG, and so on.</para>
+      <para>스프링 2.5부터는 유닛테스트와 통합테스트를 어노테이션 주도 <link
+      linkend="testcontext-framework">Spring TestContext Framework</link>의 
+      형식으로 지원한다. TestContext 프레임워크는 사용하는 실제 테스트 프레임워크와는 관계없이 
+      별도로 동작하므로 JUnit, TestNG 등을 포함한 다양한 환경에서 테스트수단을 제공한다.</para>
 
       <warning>
-        <title>JUnit 3.8 support is deprecated</title>
+        <title>JUnit 3.8 지원은 폐기됨</title>
 
-        <para>As of Spring 3.0, the legacy JUnit 3.8 base class hierarchy
-        (i.e.,
-        <classname>AbstractDependencyInjectionSpringContextTests</classname>,
-        <classname>AbstractTransactionalDataSourceSpringContextTests</classname>,
-        etc.) is officially deprecated and will be removed in a later release.
-        Any test classes based on this code should be migrated to the <link
-        linkend="testcontext-framework">Spring TestContext
-        Framework</link>.</para>
+        <para>스프링 3.0부터 레거시 JUnit 3.8 기반의 클래스 계층(예시 <classname>AbstractDependencyInjectionSpringContextTests</classname>,
+        <classname>AbstractTransactionalDataSourceSpringContextTests</classname> 
+        등등)은 공식적으로 폐기되었고 차후 릴리즈버전에서는 제거될 것이다. 이 클래스들에 기반한 테스트 
+        클래스들은 모두 <link linkend="testcontext-framework">Spring TestContext
+        Framework</link>로 마이그레이션해야 한다.</para>
 
-        <para>As of Spring 3.1, the JUnit 3.8 base classes in the Spring
-        TestContext Framework (i.e.,
-        <classname>AbstractJUnit38SpringContextTests</classname> and
-        <classname>AbstractTransactionalJUnit38SpringContextTests</classname>)
-        and <interfacename>@ExpectedException</interfacename> have been
-        officially deprecated and will be removed in a later release. Any test
-        classes based on this code should be migrated to the JUnit 4 or TestNG
-        support provided by the <link linkend="testcontext-framework">Spring
-        TestContext Framework</link>. Similarly, any test methods annotated
-        with <interfacename>@ExpectedException</interfacename> should be
-        modified to use the built-in support for expected exceptions in JUnit
-        and TestNG.</para>
+        <para>스프링 3.1부터는 Spring TestContext Framework의 JUnit 3.8 기반 클래스들
+        (예시 <classname>AbstractJUnit38SpringContextTests</classname>, 
+        <classname>AbstractTransactionalJUnit38SpringContextTests</classname>)과 
+        <interfacename>@ExpectedException</interfacename>는 공식적으로 폐기되었고 차후 
+        버전에서는 제거될 것이다. 여기에 기반하고 있는 테스트 클래스들은 모두 
+        <link linkend="testcontext-framework">Spring TestContext Framework</link>가 
+        제공하는 JUnit 4나 TestNG 지원으로 마이그레이션해야 한다. 유사하게 
+        <interfacename>@ExpectedException</interfacename> 어노테이션이 붙은 테스트 
+        메서드는 JUnit과 TestNG에서 기대하는 예외에 대한 내장된 지원을 사용하도록 
+        수정해야 한다.</para>
       </warning>
     </section>
 
     <section id="integration-testing-goals">
-      <title>Goals of Integration Testing</title>
+      <title>통합테스트의 목표</title>
 
-      <para>Spring's integration testing support has the following primary
-      goals:</para>
+      <para>스프링의 통합테스트 지원에는 다음의 주요 목표들이 있다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>To manage <link linkend="testing-ctx-management">Spring IoC
-          container caching</link> between test execution.</para>
+          <para>테스트 실행간에 <link linkend="testing-ctx-management">Spring IoC
+          컨테이너 캐싱</link>을 관리하기 위해서</para>
         </listitem>
 
         <listitem>
-          <para>To provide <link linkend="testing-fixture-di">Dependency
-          Injection of test fixture instances</link>.</para>
+          <para><link linkend="testing-fixture-di">테스트 픽스처 인스턴스의 의존성
+          주입</link>을 제공하기 위해서</para>
         </listitem>
 
         <listitem>
-          <para>To provide <link linkend="testing-tx">transaction
-          management</link> appropriate to integration testing.</para>
+          <para>통합 테스트의 적절한 <link linkend="testing-tx">트랜잭션 
+          관리</link>를 제공하기 위해서</para>
         </listitem>
 
         <listitem>
-          <para>To supply <link
-          linkend="testing-support-classes">Spring-specific base
-          classes</link> that assist developers in writing integration
-          tests.</para>
+          <para>통합테스트를 작성하는 개발자들을 지원하는 <link
+          linkend="testing-support-classes">스프링기반 클래스</link>를 
+          제공하려고</para>
         </listitem>
       </itemizedlist>
 
-      <para>The next few sections describe each goal and provide links to
-      implementation and configuration details.</para>
+      <para>다음의 섹션들은 각 목표들을 설명하고 자세한 구현체와 설정에 대한 링크를 
+      제공한다.</para>
 
       <section id="testing-ctx-management">
-        <title>Context management and caching</title>
+        <title>컨텍스트 관리와 캐싱</title>
 
-        <para>The Spring TestContext Framework provides consistent loading of
-        Spring <classname>ApplicationContext</classname>s and caching of those
-        contexts. Support for the caching of loaded contexts is important,
-        because startup time can become an issue — not because of the overhead
-        of Spring itself, but because the objects instantiated by the Spring
-        container take time to instantiate. For example, a project with 50 to
-        100 Hibernate mapping files might take 10 to 20 seconds to load the
-        mapping files, and incurring that cost before running every test in
-        every test fixture leads to slower overall test runs that could reduce
-        productivity.</para>
+        <para>스프링 TestContext 프레임워크는 일관되게 스프링 
+        <classname>ApplicationContext</classname>를 로딩하고 이러한 컨텍스트들을 캐싱한다. 
+        구동시간이 이슈가 될 수 있으므로 로딩된 컨텍스트 캐싱기능은 중요하다. (스프링 자체의 부하가 아니라 
+        스프링 컨테이너가 인스턴스화된 객체들을 인스턴스화하는데 걸리는 시간 때문이다.) 예를 들어 50 ~ 
+        100개의 하이버네이트 매핑파일을 가진 프로젝트는 매핑파일들을 로딩하는데 10 ~ 20초가 걸릴 것이고 
+        각 테스트 픽스처의 각 테스트를 실행하기 전에 비용을 초래해서 전체 테스트 실행을 더 느리게 해서 
+        생산성이 줄어들 수 있다.</para>
 
-        <para>Test classes can provide either an array containing the resource
-        locations of XML configuration metadata — typically in the classpath —
-        or an array containing <interfacename>@Configuration</interfacename>
-        classes that is used to configure the application. These locations or
-        classes are the same as or similar to those specified in
-        <literal>web.xml</literal> or other deployment configuration
-        files.</para>
+        <para>테스트 클래스들은 XML 설정 메타데이터의 리소스 위치(보통은 클래스패스)를 담고 있는 
+        배열이나 어플리케이션을 설정하는데 사용하는 <interfacename>@Configuration</interfacename> 
+        클래스를 담고 있는 배열을 제공할 수 있다. 이러한 경로나 클래스는 
+        <literal>web.xml</literal>이나 다른 배포 설정파일에서 지정한 것과 같거나 
+        비슷하다.</para>
 
-        <para>By default, once loaded, the configured
-        <interfacename>ApplicationContext</interfacename> is reused for each
-        test. Thus the setup cost is incurred only once (per test suite), and
-        subsequent test execution is much faster. In this context, the term
-        <emphasis>test suite</emphasis> means all tests run in the same JVM —
-        for example, all tests run from an Ant or Maven build for a given
-        project or module. In the unlikely case that a test corrupts the
-        application context and requires reloading — for example, by modifying
-        a bean definition or the state of an application object — the
-        TestContext framework can be configured to reload the configuration
-        and rebuild the application context before executing the next
-        test.</para>
+        <para>기본적으로 설정된 <interfacename>ApplicationContext</interfacename>가 
+        일단 로드되면 각 테스트마다 재사용된다. 그러므로 설정비용은 (테스트슈트당) 딱 한번만 발생하고 
+        이어진 테스트 실행은 훨씬 빨라진아. 여기서 <emphasis>테스트 슈트</emphasis>라는 말은 같은 
+        JVM에서 실행되는 모든 테스트를 의미한다. (예를 들어 해당 프로젝트나 모듈을 빌드하는 Ant나 
+        Maven으로 실행하는 모든 테스트) 빈도수는 적지만 어플리케이션 컨텍스트를 깨뜨리는 테스트나 
+        재로딩이 필요한 경우(예를 들어 빈 정의나 어플리케이션 객체의 상태를 수정해서) 다음 테스트를 
+        실행하기 전에 설정을 다시 로딩하고 어플리케이션을 다시 빌드하도록 TestContext 프레임워크를 
+        설정할 수 있다.</para>
 
-        <para>See context management and caching with the <link
-        linkend="testcontext-ctx-management">TestContext
-        framework</link>.</para>
+        <para><link linkend="testcontext-ctx-management">TestContext
+        프레임워크</link>의 컨텍스트 관리와 캐싱을 봐라.</para>
       </section>
 
       <section id="testing-fixture-di">
-        <title>Dependency Injection of test fixtures</title>
+        <title>테스트 픽스처의 의존성 주입</title>
 
-        <para>When the TestContext framework loads your application context,
-        it can optionally configure instances of your test classes via
-        Dependency Injection. This provides a convenient mechanism for setting
-        up test fixtures using preconfigured beans from your application
-        context. A strong benefit here is that you can reuse application
-        contexts across various testing scenarios (e.g., for configuring
-        Spring-managed object graphs, transactional proxies,
-        <classname>DataSource</classname>s, etc.), thus avoiding the need to
-        duplicate complex test fixture set up for individual test
-        cases.</para>
+        <para>TestContext 프레임워크가 어플리케이션 컨텍스트를 로드했을 때 TestContext 
+        프레임워크는 의존성 주입으로 테스트 클래스의 인스턴스를 선택적으로 설정할 수 있다. 이는 
+        어플리케이션 컨텍스트에서 미리 설정된 빈을 사용하는 테스트 픽스처를 설정하는 편리한 메카니즘을 
+        제공한다. 다양한 테스트 시나리오(예시. 스프링이 관리하는 객체 그래프, 트랜잭션 프록시, 
+        <classname>DataSource</classname> 등을 설정하기 위해서)에 걸쳐서 어플리케이션 
+        컨텍스트를 재사용할 수 있다는 큰 장점이 있으므로 각 테스트케이스에 복잡한 테스트 픽스처를 
+        중복해서 설정하지 말아라.</para>
 
-        <para>As an example, consider the scenario where we have a class,
-        <classname>HibernateTitleRepository</classname>, that performs data
-        access logic for a <classname>Title</classname> domain entity. We want
-        to write integration tests that test the following areas:</para>
+        <para>예제와 같이 <classname>Title</classname> 도메인 엔티티에 대한 데이터 접근 
+        로직을 수행하는 <classname>HibernateTitleRepository</classname> 클래스를 가진 
+        시나리오를 생각해 보자. 다음 영역을 테스트하는 통합 테스트를 작성한다고 해보자.</para>
 
         <itemizedlist>
           <listitem>
-            <para>The Spring configuration: basically, is everything related
-            to the configuration of the
-            <classname>HibernateTitleRepository</classname> bean correct and
-            present?</para>
+            <para>스프링 설정: 기본적으로 
+            <classname>HibernateTitleRepository</classname> 빈의 설정과 관련된 
+            모든 것이 제대로 되었고 존재하는가?</para>
           </listitem>
 
           <listitem>
-            <para>The Hibernate mapping file configuration: is everything
-            mapped correctly, and are the correct lazy-loading settings in
-            place?</para>
+            <para>하이버네이트 매핑 파일 설정: 모두 제대로 매핑되었고 지연로딩 설정이 
+            제위치에 있는가?</para>
           </listitem>
 
           <listitem>
-            <para>The logic of the
-            <classname>HibernateTitleRepository</classname>: does the
-            configured instance of this class perform as anticipated?</para>
+            <para><classname>HibernateTitleRepository</classname>의 로직: 
+            이 클래스의 설정된 인스턴스가 예상대로 동작하는가?</para>
           </listitem>
         </itemizedlist>
 
-        <para>See dependency injection of test fixtures with the <link
-        linkend="testcontext-fixture-di">TestContext framework</link>.</para>
+        <para><link linkend="testcontext-fixture-di">TestContext 프레임워크</link>의 
+        테스트 픽스처의 의존성 주입을 봐라.</para>
       </section>
 
       <section id="testing-tx">
-        <title>Transaction management</title>
+        <title>트랜잭션 관리</title>
 
-        <para>One common issue in tests that access a real database is their
-        affect on the state of the persistence store. Even when you're using a
-        development database, changes to the state may affect future tests.
-        Also, many operations — such as inserting or modifying persistent data
-        — cannot be performed (or verified) outside a transaction.</para>
+        <para>실제 데이터베이스에 접근하는 테스트의 공통적인 이슈는 퍼시스턴스 스토어의 상태에 
+        영향을 받는다는 것이다. 개발용 데이터베이스를 사용하더라도 상태가 바뀌면 테스트에 영향을 
+        줄 것이다. 또한 퍼시스턴트 데이터를 추가하거나 수정하는 것 같은 많은 작업은 트랜잭션 
+        밖에서 수행(또는 확인)할 수 없다.</para>
 
-        <para>The TestContext framework addresses this issue. By default, the
-        framework will create and roll back a transaction for each test. You
-        simply write code that can assume the existence of a transaction. If
-        you call transactionally proxied objects in your tests, they will
-        behave correctly, according to their configured transactional
-        semantics. In addition, if test methods delete the contents of
-        selected tables while running within a transaction, the transaction
-        will roll back by default, and the database will return to its state
-        prior to execution of the test. Transactional support is provided to
-        your test class via a
-        <classname>PlatformTransactionManager</classname> bean defined in the
-        test's application context.</para>
+        <para>TestContext 프레임워크는 이 문제를 해결한다. 기본적으로 TestContext 프레임워크는 
+        각 테스트마다 트랜잭션을 만들고 롤백한다. 개발자들은 트랜잭션의 존재를 가정하고 그냥 코드를 
+        작성한다. 테스트에서 프록시된 객체들을 트랜잭션으로 호출하면 설정된 트랜잭션 시맨틱에 따라 제대로 
+        동작할 것이다. 추가적으로 테스트 메서드가 트랜잭션내에서 선택한 테이블의 내용을 지우면 트랜잭션은 
+        기본적으로 롤백을 하고 데이터베이스는 테스트를 수행하기에 앞서 데이터베이스의 상태를 원래대로 돌릴 
+        것이다. 트랜잭션 지원이 테스트의 어플리케이션 컨텍스트에서 정의된 
+        <classname>PlatformTransactionManager</classname> 빈으로 테스트 클래스에 
+        제공된다.</para>
 
-        <para>If you want a transaction to commit — unusual, but occasionally
-        useful when you want a particular test to populate or modify the
-        database — the TestContext framework can be instructed to cause the
-        transaction to commit instead of roll back via the <link
-        linkend="integration-testing-annotations"><interfacename>@TransactionConfiguration</interfacename></link>
-        and <link
-        linkend="integration-testing-annotations"><interfacename>@Rollback</interfacename></link>
-        annotations.</para>
+        <para>트랜잭션을 커밋하고 싶다면(일반적이지는 않지만 특정 테스트가 유지되거나 데이터베이스를 
+        수정하기를 원하는 경우에 유용하다.) <link
+        linkend="integration-testing-annotations"><interfacename>@TransactionConfiguration</interfacename></link>와 <link
+        linkend="integration-testing-annotations"><interfacename>@Rollback</interfacename></link> 어노테이션으로 트랜잭션을 롤백하는 대신에 커밋하도록 TestContext 프레임워크에 
+        지시할 수 있다.</para>
 
-        <para>See transaction management with the <link
-        linkend="testcontext-tx">TestContext framework</link>.</para>
+        <para><link
+        linkend="testcontext-tx">TestContext 프레임워크</link>의 
+        트랜잭션 관리부분을 봐라.</para>
       </section>
 
       <section id="testing-support-classes">
-        <title>Support classes for integration testing</title>
+        <title>통합테스트를 지원하는 클래스</title>
 
-        <para>The Spring TestContext Framework provides several
-        <literal>abstract</literal> support classes that simplify the writing
-        of integration tests. These base test classes provide well-defined
-        hooks into the testing framework as well as convenient instance
-        variables and methods, which enable you to access:</para>
+        <para>스프링 TestContext 프레임워크는 통합테스트 작성을 쉽게 해주는 여러가지 
+        <literal>abstract</literal> 지원 클래스들을 제공한다. 이 기반 테스트 
+        클래스(base test classes)는 개발자가 접근할 수 있는 편리한 인스턴스 변수와 
+        메서드뿐만 아니라 잘 정의된 테스트 프레임워크 훅(hook)을 제공한다.</para>
 
         <itemizedlist>
           <listitem>
-            <para>The <literal>ApplicationContext</literal>, for performing
-            explicit bean lookups or testing the state of the context as a
-            whole.</para>
+            <para>명시적인 빈 검색을 수행하거나 컨텍스트의 상태를 전체적으로 테스트하는 
+            <literal>ApplicationContext</literal></para>
           </listitem>
 
           <listitem>
-            <para>A <classname>SimpleJdbcTemplate</classname>, for executing
-            SQL statements to query the database. Such queries can be used to
-            confirm database state both <emphasis>prior to</emphasis> and
-            <emphasis>after</emphasis> execution of database-related
-            application code, and Spring ensures that such queries run in the
-            scope of the same transaction as the application code. When used
-            in conjunction with an ORM tool, be sure to avoid <link
-            linkend="testcontext-tx-false-positives">false
-            positives</link>.</para>
+            <para>디비를 조회 SQL문을 실행하는 <classname>SimpleJdbcTemplate</classname>. 
+            이러한 쿼리를 데이터베이스와 관련된 어플리케이션 코드를 실행하기 <emphasis>이전</emphasis>과 
+            <emphasis>이후</emphasis>에 데이터베이스의 상태를 확인하는데 사용할 수 있고 스프링이 
+            어플리케이션과 같은 트랜잭션 범위에서 이러한 쿼리를 실행한다는 것을 보장해준다. ORM 도구를 
+            함께 사용하는 경우에는 <link linkend="testcontext-tx-false-positives">false
+            positives</link>를 피해야 한다.</para>
           </listitem>
         </itemizedlist>
 
-        <para>In addition, you may want to create your own custom,
-        application-wide superclass with instance variables and methods
-        specific to your project.</para>
+        <para>추가적으로 프로젝트에 한정된 인스턴스 변수와 메서드를 가진 어플리케이션 범위의 
+        커스텀 슈퍼클래스를 생성하고자 할 수 있다.</para>
 
-        <para>See support classes for the <link
+        <para><link
         linkend="testcontext-support-classes">TestContext
-        framework</link>.</para>
+        프레임워크</link>의 지원 클래스를 참고해라.</para>
       </section>
     </section>
 
     <section id="integration-testing-support-jdbc">
-      <title>JDBC Testing Support</title>
+      <title>JDBC 테스트 지원</title>
 
-      <para>The <literal>org.springframework.test.jdbc</literal> package
-      contains <classname>SimpleJdbcTestUtils</classname>, which is a
-      collection of JDBC related utility functions intended to simplify
-      standard database testing scenarios. <emphasis>Note that <link
-      linkend="testcontext-support-classes-junit4"><classname>AbstractTransactionalJUnit4SpringContextTests</classname></link>
-      and <link
-      linkend="testcontext-support-classes-testng"><classname>AbstractTransactionalTestNGSpringContextTests</classname></link>
-      provide convenience methods which delegate to
-      <classname>SimpleJdbcTestUtils</classname> internally.</emphasis></para>
+      <para><literal>org.springframework.test.jdbc</literal> 패키지는 
+      표준적인 데이터베이스 테스트 시나리오를 간결하게 하는 JDBC 관련 유티리티 함수의 컬렉션인 
+      <classname>SimpleJdbcTestUtils</classname>를 포함하고 있다. <link
+      linkend="testcontext-support-classes-junit4"><classname>AbstractTransactionalJUnit4SpringContextTests</classname></link>와 <link
+      linkend="testcontext-support-classes-testng"><classname>AbstractTransactionalTestNGSpringContextTests</classname></link>는 내부적으로 
+      <classname>SimpleJdbcTestUtils</classname>에 위임하는 
+      편리한 메서드를 제공한다.</para>
     </section>
 
     <section id="integration-testing-annotations">
-      <title>Annotations</title>
+      <title>어노테이션</title>
 
       <section id="integration-testing-annotations-spring">
-        <title>Spring Testing Annotations</title>
+        <title>스프링 테스트 어노테이션</title>
 
-        <para>The Spring Framework provides the following set of
-        <emphasis>Spring-specific</emphasis> annotations that you can use in
-        your unit and integration tests in conjunction with the TestContext
-        framework. Refer to the respective Javadoc for further information,
-        including default attribute values, attribute aliases, and so
-        on.</para>
+        <para>스프링 프레임워크는 유닛테스트와 통합테스트에서 TestContext 프레임워크와 
+        결합해서 사용할 수 있는 <emphasis>스프링에 특화된</emphasis> 어노테이션의 다음 셋을 
+        제공한다. 기본적인 속성값, 속성 별칭 등 더 자세한 정보는 각각의 Javadoc를 참고해라.</para>
 
         <itemizedlist>
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@ContextConfiguration</interfacename></emphasis></para>
 
-            <para>Defines class-level metadata that is used to determine how
-            to load and configure an
-            <interfacename>ApplicationContext</interfacename> for test
-            classes. Specifically,
-            <interfacename>@ContextConfiguration</interfacename> declares
-            <emphasis>either</emphasis> the application context resource
-            <literal>locations</literal> <emphasis>or</emphasis> the
-            <interfacename>@Configuration</interfacename>
-            <varname>classes</varname> (but not both) to load as well as the
-            <interfacename>ContextLoader</interfacename> strategy to use for
-            loading the context. Note, however, that you typically do not need
-            to explicitly configure the loader since the default loader
-            supports either resource <varname>locations</varname> or
-            configuration <varname>classes</varname>.</para>
+            <para>테스트 클래스에 대해 <interfacename>ApplicationContext</interfacename>를 
+            어떻게 로딩하고 어떻게 설정하는지 결정하는 클래스수준의 메타에디터를 정의해라. 특히 
+            <interfacename>@ContextConfiguration</interfacename>는 컨텍스트를 로딩하는데 
+            사용하는 <interfacename>ContextLoader</interfacename> 전략뿐만 아니라 
+            어플리케이션 컨텍스트 리소스 <literal>locations</literal>나 
+            <interfacename>@Configuration</interfacename> <varname>classes</varname> 
+            (하지만 둘 다는 아니다.)를 선언한다. 하지만 기본 로더가 리소스 
+            <varname>locations</varname>나 설정 <varname>classes</varname>를 
+            지원하기 때문에 보통은 명시적으로 로더를 설정할 필요가 없다.</para>
 
             <programlisting language="java"><emphasis role="bold">@ContextConfiguration</emphasis>(<emphasis
                 role="bold">locations</emphasis>="example/test-context.xml", <emphasis
@@ -458,25 +385,22 @@ public class ConfigClassApplicationContextTests {
 }</programlisting>
 
             <note>
-              <para><interfacename>@ContextConfiguration</interfacename>
-              provides support for <emphasis>inheriting</emphasis> resource
-              locations or configuration classes declared by superclasses by
-              default.</para>
+              <para><interfacename>@ContextConfiguration</interfacename>는 
+              기본적으로 수퍼클래스가 선언한 리소스 경로나 설정 클래스를 
+              <emphasis>상속</emphasis>하도록 지원한다.</para>
             </note>
 
-            <para>See <link linkend="testcontext-ctx-management">Context
-            management and caching</link> and Javadoc for examples and further
-            details.</para>
+            <para>더 자세한 내용과 예제는 <link linkend="testcontext-ctx-management">
+            컨텍스트 관리와 캐싱</link>와 Javadoc을 참고해라.</para>
           </listitem>
 
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@ActiveProfiles</interfacename></emphasis></para>
 
-            <para>A class-level annotation that is used to declare which
-            <emphasis>bean definition profiles</emphasis> should be active
-            when loading an <interfacename>ApplicationContext</interfacename>
-            for test classes.</para>
+            <para>테스트 클래스에 대해서 <interfacename>ApplicationContext</interfacename>를 
+            로딩할 때 어떤 <emphasis>빈 정의 프로파일</emphasis>이 활성화되어야 하는 지를 
+            선언하려고 사용하는 클래스 수준의 어노테이션이다.</para>
 
             <programlisting language="java">@ContextConfiguration
 <emphasis role="bold">@ActiveProfiles</emphasis>("dev")
@@ -491,98 +415,90 @@ public class DeveloperIntegrationTests {
 }</programlisting>
 
             <note>
-              <para><interfacename>@ActiveProfiles</interfacename> provides
-              support for <emphasis>inheriting</emphasis> active bean
-              definition profiles declared by superclasses classes by
-              default.</para>
+              <para><interfacename>@ActiveProfiles</interfacename>는 기본적으로 
+              수퍼클래스가 선언한 활성화된 빈 선언 프로파일을 <emphasis>상속</emphasis>하도록 
+              지원한다.</para>
             </note>
 
-            <para>See <link
-            linkend="testcontext-ctx-management-env-profiles">Context
-            configuration with environment profiles</link> and the Javadoc for
-            <interfacename>@ActiveProfiles</interfacename> for examples and
-            further details.</para>
+            <para><interfacename>@ActiveProfiles</interfacename>의 더 자세한 
+            내용과 예제는 <link
+            linkend="testcontext-ctx-management-env-profiles">환경 프로파일을 
+            사용한 컨텍스트 설정</link>와 Javadoc을 참고해라.</para>
           </listitem>
 
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@DirtiesContext</interfacename></emphasis></para>
 
-            <para>Indicates that the underlying Spring
-            <interfacename>ApplicationContext</interfacename> has been
-            <emphasis>dirtied</emphasis> (i.e., modified or corrupted in some
-            manner) during the execution of a test and should be closed,
-            regardless of whether the test passed.
-            <interfacename>@DirtiesContext</interfacename> is supported in the
-            following scenarios:</para>
+            <para>테스트 실행 중에 의존하는 스프링 
+            <interfacename>ApplicationContext</interfacename>가 
+            <emphasis>오염(dirtied)</emphasis>(예시. 어떤 방법으로 수정되거나 오류가 생김)되었고 
+            테스트 통과여부와 상관없이 반드시 닫아야 한다는 것을 나타낸다. 
+            <interfacename>@DirtiesContext</interfacename>는 다음 시나리오에서 
+            지원한다.</para>
 
             <itemizedlist>
               <listitem>
-                <para>After the current test class, when declared on a class
-                with class mode set to <literal>AFTER_CLASS</literal>, which
-                is the default class mode.</para>
+                <para>현재 테스트 클래스 이후 클래스모드가 기본 클래스모드인 
+                <literal>AFTER_CLASS</literal>로 설정된 클래스에 선언한 경우.</para>
               </listitem>
 
               <listitem>
-                <para>After each test method in the current test class, when
-                declared on a class with class mode set to
-                <literal>AFTER_EACH_TEST_METHOD.</literal></para>
+                <para>현재 테스트 클래스에서 각 테스트 메서드 이후 클래스 모드가 
+                <literal>AFTER_EACH_TEST_METHOD.</literal>로 설정된 
+                클래스에 선언한 경우.</para>
               </listitem>
 
               <listitem>
-                <para>After the current test, when declared on a
-                method.</para>
+                <para>현재 테스트 이후 메서드에 선언한 경우.</para>
               </listitem>
             </itemizedlist>
 
-            <para>Use this annotation if a test has modified the context (for
-            example, by replacing a bean definition). Subsequent tests are
-            supplied a new context.</para>
+            <para>테스트가 컨텍스트를 수정한 경우(예를 들어 빈 정의를 교체한 경우) 이 
+            어노테이션을 사용해라. 이어지는 테스트들은 새로운 컨텍스트를 사용한다.</para>
 
-            <para>With JUnit 4.5+ or TestNG you can use
-            <interfacename>@DirtiesContext</interfacename> as both a
-            class-level and method-level annotation within the same test
-            class. In such scenarios, the
-            <interfacename>ApplicationContext</interfacename> is marked as
-            <emphasis>dirty</emphasis> after any such annotated method as well
-            as after the entire class. If the <classname>ClassMode</classname>
-            is set to <literal>AFTER_EACH_TEST_METHOD</literal>, the context
-            is marked dirty after each test method in the class.</para>
+            <para>JUnit 4.5+나 TestNG를 사용할 때는 같은 테스트 클래스내에서 클래스 수준 
+            어노테이션과 메서드 수준 어노테이션으로 모두 <interfacename>@DirtiesContext
+            </interfacename>를 사용할 수 있다. 이러한 시나리오에서 전체 클래스 이후 뿐만 아니라 
+            이러한 어노테이션이 붙은 메서드 이후에 <interfacename>ApplicationContext
+            </interfacename>를 <emphasis>dirty</emphasis>로 표시한다. 
+            <classname>ClassMode</classname>를 
+            <literal>AFTER_EACH_TEST_METHOD</literal>로 설정했으면 클래스의 각 테스트 
+            메서드 이후에 컨텍스트를 dirty로 표시한다.</para>
 
             <programlisting language="java"><emphasis role="bold">@DirtiesContext</emphasis>
 public class ContextDirtyingTests {
-    <lineannotation>// some tests that result in the Spring container being dirtied</lineannotation>
+    <lineannotation>// 스프링 컨테이너가 오염되는 테스트들</lineannotation>
 }</programlisting>
 
             <programlisting language="java"><emphasis role="bold">@DirtiesContext</emphasis>(<emphasis
                 role="bold">classMode</emphasis> = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ContextDirtyingTests {
-    <lineannotation>// some tests that result in the Spring container being dirtied</lineannotation>
+    <lineannotation>// 스프링 컨테이너가 오염되는 테스트들</lineannotation>
 }</programlisting>
 
             <programlisting language="java"><emphasis role="bold">@DirtiesContext</emphasis>
 @Test
 public void testProcessWhichDirtiesAppCtx() {
-    <lineannotation>// some logic that results in the Spring container being dirtied</lineannotation>
+    <lineannotation>// 스프링 컨테이너가 오염되는 테스트들</lineannotation>
 }</programlisting>
 
-            <para>When an application context is marked
-            <emphasis>dirty</emphasis>, it is removed from the testing
-            framework's cache and closed; thus the underlying Spring container
-            is rebuilt for any subsequent test that requires a context with
-            the same set of resource locations.</para>
+            <para>어플리케이션 컨텍스트가 <emphasis>dirty</emphasis>로 표시되면 어플리케이션 
+            컨텍스트는 테스트 프레임워크의 캐시에서 제거되고 종료된다. 그래서 같은 리소스 위치의 
+            세트를 가진 컨텍스트를 필요로 하는 이어진 테스트를 위해서 의존하는 스프링 컨테이너를 
+            재구성한다.</para>
           </listitem>
 
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@TestExecutionListeners</interfacename></emphasis></para>
 
-            <para>Defines class-level metadata for configuring which
-            <interfacename>TestExecutionListener</interfacename>s should be
-            registered with the <classname>TestContextManager</classname>.
-            Typically, <interfacename>@TestExecutionListeners</interfacename>
-            is used in conjunction with
-            <interfacename>@ContextConfiguration</interfacename>.</para>
+            <para><classname>TestContextManager</classname>에 어떤 
+            <interfacename>TestExecutionListener</interfacename>들이 등록되어야 
+            하는지 설정하는 클래스수준의 메타데이터를 정의한다. 보통 
+            <interfacename>@TestExecutionListeners</interfacename>는 
+            <interfacename>@ContextConfiguration</interfacename>와 
+            결합해서 사용한다.</para>
 
             <programlisting language="java">@ContextConfiguration
 <emphasis role="bold">@TestExecutionListeners</emphasis>({CustomTestExecutionListener.class, AnotherTestExecutionListener.class})
@@ -590,27 +506,24 @@ public class CustomTestExecutionListenerTests {
     <lineannotation>// class body...</lineannotation>
 }</programlisting>
 
-            <para><interfacename>@TestExecutionListeners</interfacename>
-            supports <emphasis>inherited</emphasis> listeners by default. See
-            the Javadoc for an example and further details.</para>
+            <para><interfacename>@TestExecutionListeners</interfacename>는 
+            기본적으로 <emphasis>상속받은</emphasis> 리스너를 지원한다. 자세한 내용과 
+            예제는 Javadoc를 참고해라.</para>
           </listitem>
 
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@TransactionConfiguration</interfacename></emphasis></para>
 
-            <para>Defines class-level metadata for configuring transactional
-            tests. Specifically, the bean name of the
-            <interfacename>PlatformTransactionManager</interfacename> that is
-            to be used to drive transactions can be explicitly configured if
-            the bean name of the desired
-            <interfacename>PlatformTransactionManager</interfacename> is not
-            "transactionManager". In addition, you can change the
-            <literal>defaultRollback</literal> flag to
-            <literal>false</literal>. Typically,
-            <interfacename>@TransactionConfiguration</interfacename> is used
-            in conjunction with
-            <interfacename>@ContextConfiguration</interfacename>.</para>
+            <para>트랜잭션이 적용된 테스트를 설정하는 클래스수준의 메타데이터를 정의한다. 특히, 
+            원하는 <interfacename>PlatformTransactionManager</interfacename>의 
+            빈 이름이 "transactionManager"가 아니라면 트랜잭션을 유도하는데 사용하는 
+            <interfacename>PlatformTransactionManager</interfacename>의 빈 이름을 
+            명시적으로 설정할 수 있다. 추가적으로 <literal>defaultRollback</literal> 플래그를 
+            <literal>false</literal>로 변경할 수 있다. 보통 
+            <interfacename>@TransactionConfiguration</interfacename>는 
+            <interfacename>@ContextConfiguration</interfacename>와 결합해서 
+            사용한다.</para>
 
             <programlisting language="java">@ContextConfiguration
 <emphasis role="bold">@TransactionConfiguration</emphasis>(<emphasis
@@ -621,14 +534,12 @@ public class CustomConfiguredTransactionalTests {
 }</programlisting>
 
             <note>
-              <para>If the default conventions are sufficient for your test
-              configuration, you can avoid using
-              <interfacename>@TransactionConfiguration</interfacename>
-              altogether. In other words, if your transaction manager bean is
-              named "transactionManager" and if you want transactions to roll
-              back automatically, there is no need to annotate your test class
-              with
-              <interfacename>@TransactionConfiguration</interfacename>.</para>
+              <para>기본적인 관례로도 테스트 설정이 충분하다면 
+              <interfacename>@TransactionConfiguration</interfacename>을 전혀 
+              사용하지 않을 수 있다. 즉, 트랜잭션 매니저 빈의 이름이 "transactionManager"이고 
+              트랜잭션을 자동으로 롤백하고자 한다면 테스트 클래스에 
+              <interfacename>@TransactionConfiguration</interfacename> 어노테이션을 
+              붙힐 필요가 없다.</para>
             </note>
           </listitem>
 
@@ -636,12 +547,11 @@ public class CustomConfiguredTransactionalTests {
             <para><emphasis
             role="bold"><interfacename>@Rollback</interfacename></emphasis></para>
 
-            <para>Indicates whether the transaction for the annotated test
-            method should be <emphasis>rolled back</emphasis> after the test
-            method has completed. If <literal>true</literal>, the transaction
-            is rolled back; otherwise, the transaction is committed. Use
-            <interfacename>@Rollback</interfacename> to override the default
-            rollback flag configured at the class level.</para>
+            <para>어노테이션이 붙은 메서드가 완료된 후에 트랜잭션을 <emphasis>롤백</emphasis>해야 
+            하는지를 나타낸다. <literal>true</literal>인 경우 트랜잭션을 롤백하고 
+            <literal>false</literal>이면 트랜잭션을 커밋한다. 클래스 수준에서 설정한 기본 롤백 
+            플래그를 오버라이드하기 위해서 <interfacename>@Rollback</interfacename>를 
+            사용해라.</para>
 
             <programlisting language="java"><emphasis role="bold">@Rollback</emphasis>(false)
 @Test
@@ -654,15 +564,14 @@ public void testProcessWithoutRollback() {
             <para><emphasis
             role="bold"><interfacename>@BeforeTransaction</interfacename></emphasis></para>
 
-            <para>Indicates that the annotated <literal>public void</literal>
-            method should be executed <emphasis>before</emphasis> a
-            transaction is started for test methods configured to run within a
-            transaction via the <interfacename>@Transactional</interfacename>
-            annotation.</para>
+            <para><interfacename>@Transactional</interfacename> 어노테이션을 통한 
+            트랜잭션내에서 실행하려고 설정한 테스트 메서드에 트랜잭션을 시작하기 
+            <emphasis>이전에</emphasis> 어노테이션이 붙은 <literal>public void</literal> 
+            메서드를 실행해야 하는지를 나타낸다.</para>
 
             <programlisting language="java"><emphasis role="bold">@BeforeTransaction
 </emphasis>public void beforeTransaction() {
-    <lineannotation>// logic to be executed before a transaction is started</lineannotation>
+    <lineannotation>// 트랜잭션이 시작되기 전에 실행해야 하는 로직</lineannotation>
 }</programlisting>
           </listitem>
 
@@ -670,15 +579,14 @@ public void testProcessWithoutRollback() {
             <para><emphasis
             role="bold"><interfacename>@AfterTransaction</interfacename></emphasis></para>
 
-            <para>Indicates that the annotated <literal>public void</literal>
-            method should be executed <emphasis>after</emphasis> a transaction
-            has ended for test methods configured to run within a transaction
-            via the <interfacename>@Transactional</interfacename>
-            annotation.</para>
+            <para><interfacename>@Transactional</interfacename> 어노테이션을 통한
+            트랜잭션내에서 실행하려고 설정한 테스트 메서드에 트랜잭션이 종료된 
+            <emphasis>이후에</emphasis> 어노테이션이 붙은 <literal>public void</literal>
+            메서드를 실행해야 하는지를 나타낸다.</para>
 
             <programlisting language="java"><emphasis role="bold">@AfterTransaction
 </emphasis>public void afterTransaction() {
-    <lineannotation>// logic to be executed after a transaction has ended</lineannotation>
+    <lineannotation>// 트랜잭션이 종료된 이후에 실행해야 하는 로직</lineannotation>
 }</programlisting>
           </listitem>
 
@@ -686,9 +594,8 @@ public void testProcessWithoutRollback() {
             <para><emphasis
             role="bold"><interfacename>@NotTransactional</interfacename></emphasis></para>
 
-            <para>The presence of this annotation indicates that the annotated
-            test method must <emphasis>not</emphasis> execute in a
-            transactional context.</para>
+            <para>이 어노테이션이 붙은 테스트 메서드는 트랜젝션이 적용된 컨텍스트에서 실행하지 
+            <emphasis>말아야</emphasis> 한다는 것을 나타낸다.</para>
 
             <programlisting language="java"><emphasis role="bold">@NotTransactional</emphasis>
 @Test
@@ -697,33 +604,30 @@ public void testProcessWithoutTransaction() {
 }</programlisting>
 
             <warning>
-              <title>@NotTransactional is deprecated</title>
+              <title>@NotTransactional는 폐기되었다</title>
 
-              <para>As of Spring 3.0,
-              <interfacename>@NotTransactional</interfacename> is deprecated
-              in favor of moving the <emphasis>non-transactional</emphasis>
-              test method to a separate (non-transactional) test class or to a
-              <interfacename>@BeforeTransaction</interfacename> or
-              <interfacename>@AfterTransaction</interfacename> method. As an
-              alternative to annotating an entire class with
-              <interfacename>@Transactional</interfacename>, consider
-              annotating individual methods with
-              <interfacename>@Transactional</interfacename>; doing so allows a
-              mix of transactional and non-transactional methods in the same
-              test class without the need for using
-              <interfacename>@NotTransactional</interfacename>.</para>
+              <para><emphasis>트랜잭션을 적용하지 않는</emphasis> 테스트 메서드는 별도의 
+              (트랜잭션이 적용되지 않은) 테스트 클래스나 
+              <interfacename>@BeforeTransaction</interfacename>, 
+              <interfacename>@AfterTransaction</interfacename> 메서드로 옮겨야 한다는 
+              점에 지지해서 스프링 3.0부터는 <interfacename>@NotTransactional</interfacename>가 
+              폐기되었다. 전체 클래스에 <interfacename>@Transactional</interfacename> 
+              어노테이션을 붙히는 대신에 개별 메서드에 <interfacename>@Transactional</interfacename> 
+              어노테이션을 붙히는 것을 고려해 봐라. 이렇게 하면 
+              <interfacename>@NotTransactional</interfacename>을 사용할 필요가 없이 
+              트랜잭션 메서드와 트랜잭션이 아닌 메서드를 같은 테스트 클래스내에서 섞어서 
+              사용할 수 있다.</para>
             </warning>
           </listitem>
         </itemizedlist>
       </section>
 
       <section id="integration-testing-annotations-standard">
-        <title>Standard Annotation Support</title>
+        <title>표준 어노테이션 지원</title>
 
-        <para>The following annotations are supported with standard semantics
-        for all configurations of the Spring TestContext Framework. Note that
-        these annotations are not specific to tests and can be used anywhere
-        in the Spring Framework.</para>
+        <para>다음 어노테이션들은 스프링 TestContext 프레임워크의 모든 설정에서 표준적인 
+        의미로 지원된다. 이 어노테이션들은 테스트에 한정되지 않고 스프링 프레임워크내 
+        어디서나 사용할 수 있다.</para>
 
         <itemizedlist>
           <listitem>
@@ -739,32 +643,31 @@ public void testProcessWithoutTransaction() {
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@Resource</interfacename></emphasis>
-            (javax.annotation) <emphasis>if JSR-250 is
-            present</emphasis></para>
+            (javax.annotation) <emphasis>JSR-250을 제공했다면</emphasis></para>
           </listitem>
 
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@Inject</interfacename></emphasis>
-            (javax.inject) <emphasis>if JSR-330 is present</emphasis></para>
+            (javax.inject) <emphasis>JSR-330을 제공했다면</emphasis></para>
           </listitem>
 
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@Named</interfacename></emphasis>
-            (javax.inject) <emphasis>if JSR-330 is present</emphasis></para>
+            (javax.inject) <emphasis>JSR-330을 제공했다면</emphasis></para>
           </listitem>
 
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@PersistenceContext</interfacename></emphasis>
-            (javax.persistence) <emphasis>if JPA is present</emphasis></para>
+            (javax.persistence) <emphasis>JPA를 제공했다면</emphasis></para>
           </listitem>
 
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@PersistenceUnit</interfacename></emphasis>
-            (javax.persistence) <emphasis>if JPA is present</emphasis></para>
+            (javax.persistence) <emphasis>JPA를 제공했다면</emphasis></para>
           </listitem>
 
           <listitem>
@@ -780,48 +683,43 @@ public void testProcessWithoutTransaction() {
       </section>
 
       <section id="integration-testing-annotations-junit">
-        <title>Spring JUnit Testing Annotations</title>
+        <title>스프링 JUnit 테스트 어노테이션</title>
 
-        <para>The following annotations are <emphasis>only</emphasis>
-        supported when used in conjunction with the <link
-        linkend="testcontext-junit4-runner">SpringJUnit4ClassRunner</link> or
-        the <link linkend="testcontext-support-classes-junit4">JUnit</link>
-        support classes.</para>
+        <para>다음의 어노테이션들은 <link
+        linkend="testcontext-junit4-runner">SpringJUnit4ClassRunner</link>나 
+        <link linkend="testcontext-support-classes-junit4">JUnit</link> 
+        지원클래스와 함께 사용할 <emphasis>때만</emphasis> 사용할 수 있다.</para>
 
         <itemizedlist>
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@IfProfileValue</interfacename></emphasis></para>
 
-            <para>Indicates that the annotated test is enabled for a specific
-            testing environment. If the configured
-            <classname>ProfileValueSource</classname> returns a matching
-            <literal>value</literal> for the provided <literal>name</literal>,
-            the test is enabled. This annotation can be applied to an entire
-            class or to individual methods. Class-level usage overrides
-            method-level usage.</para>
+            <para>어노테이션이 붙은 테스트가 특정 테스트환경에서 사용가능하게 된다는 것을 
+            나타낸다. <classname>ProfileValueSource</classname>가 제공된 
+            <literal>name</literal>과 일치하는 <literal>value</literal>를 
+            반환하면 테스트는 활성화된다. 이 어노테이션은 전체 클래스나 개별 메서드에 적용할 
+            수 있다. 클래스수준의 적용하면 메서드 수준의 적용한 설정을 덮어쓴다.</para>
 
             <programlisting language="java"><emphasis role="bold">@IfProfileValue</emphasis>(<emphasis
                 role="bold">name</emphasis>="java.vendor", <emphasis
                 role="bold">value</emphasis>="Sun Microsystems Inc.")
 @Test
 public void testProcessWhichRunsOnlyOnSunJvm() {
-    <lineannotation>// some logic that should run only on Java VMs from Sun Microsystems</lineannotation>
+    <lineannotation>// Sun 마이크로시스템즈의 자바 VM에서만 동작하는 로직</lineannotation>
 }</programlisting>
 
-            <para>Alternatively, you can configure
-            <interfacename>@IfProfileValue</interfacename> with a list of
-            <literal>values</literal> (with <emphasis>OR</emphasis> semantics)
-            to achieve TestNG-like support for <emphasis>test
-            groups</emphasis> in a JUnit environment. Consider the following
-            example:</para>
+            <para>대신에 JUnit 환경에서 TestNG형태의 <emphasis>테스트 그룹</emphasis>을 
+            지원하기 위해서 <literal>values</literal> 목록(<emphasis>OR</emphasis>의 
+            의미로)의 <interfacename>@IfProfileValue</interfacename>를 설정할 수 
+            있다. 다음의 예제를 봐라.</para>
 
             <programlisting language="java"><emphasis role="bold">@IfProfileValue</emphasis>(<emphasis
                 role="bold">name</emphasis>="test-groups", <emphasis
                 role="bold">values</emphasis>={"unit-tests", "integration-tests"})
 @Test
 public void testProcessWhichRunsForUnitOrIntegrationTestGroups() {
-    <lineannotation>// some logic that should run only for unit and integration test groups</lineannotation>
+    <lineannotation>// 유닛테스트와 통합테스트 그룹에서만 동작하는 로직</lineannotation>
 }</programlisting>
           </listitem>
 
@@ -829,14 +727,12 @@ public void testProcessWhichRunsForUnitOrIntegrationTestGroups() {
             <para><emphasis
             role="bold"><interfacename>@ProfileValueSourceConfiguration</interfacename></emphasis></para>
 
-            <para>Class-level annotation that specifies what type of
-            <literal>ProfileValueSource</literal> to use when retrieving
-            <emphasis>profile values</emphasis> configured through the
-            <interfacename>@IfProfileValue</interfacename> annotation. If
-            <interfacename>@ProfileValueSourceConfiguration</interfacename> is
-            not declared for a test,
-            <classname>SystemProfileValueSource</classname> is used by
-            default.</para>
+            <para><interfacename>@IfProfileValue</interfacename> 어노테이션으로 
+            설정된 <emphasis>프로파일 값</emphasis>을 획득할 때 어떤 타입의 
+            <literal>ProfileValueSource</literal>를 사용할 지를 지정하는 클래스수준의 
+            어노테이션이다. <interfacename>@ProfileValueSourceConfiguration</interfacename>을 
+            테스트에 선언하지 않았다면 기본값인 
+            <classname>SystemProfileValueSource</classname>를 사용한다.</para>
 
             <programlisting language="java"><emphasis role="bold">@ProfileValueSourceConfiguration</emphasis>(CustomProfileValueSource.class)
 public class CustomProfileValueSourceTests {
@@ -848,48 +744,41 @@ public class CustomProfileValueSourceTests {
             <para><emphasis
             role="bold"><interfacename>@Timed</interfacename></emphasis></para>
 
-            <para>Indicates that the annotated test method must finish
-            execution in a specified time period (in milliseconds). If the
-            text execution time exceeds the specified time period, the test
-            fails.</para>
+            <para>어노테이션이 붙은 테스트 메서드가 반드시 지정된 시간내에(밀리초단위) 실행이 
+            완료되어야 한다는 것을 나타낸다. 테스트 실행시간이 지정된 시간을 넘으면 
+            테스트는 실패한다.</para>
 
-            <para>The time period includes execution of the test method
-            itself, any repetitions of the test (see
-            <interfacename>@Repeat</interfacename>), as well as any
-            <emphasis>set up</emphasis> or <emphasis>tear down</emphasis> of
-            the test fixture.</para>
+            <para>여기서 시간은 테스트 픽스처의 <emphasis>set up</emphasis>이나 
+            <emphasis>tear down</emphasis>, 
+            테스트의 반복(<interfacename>@Repeat</interfacename> 참고), 
+            테스트 메서드 자체의 실행을 포함한다.</para>
 
             <programlisting language="java"><emphasis role="bold">@Timed</emphasis>(millis=1000)
 public void testProcessWithOneSecondTimeout() {
-    <lineannotation>// some logic that should not take longer than 1 second to execute</lineannotation>
+    <lineannotation>// 실행에 1초이상이 걸리지 않는 로직</lineannotation>
 }</programlisting>
 
-            <para>Spring's <interfacename>@Timed</interfacename> annotation
-            has different semantics than JUnit's
-            <interfacename>@Test(timeout=...)</interfacename> support.
-            Specifically, due to the manner in which JUnit handles test
-            execution timeouts (that is, by executing the test method in a
-            separate <classname>Thread</classname>),
-            <interfacename>@Test(timeout=...)</interfacename> applies to
-            <emphasis>each iteration</emphasis> in the case of repetitions and
-            preemptively fails the test if the test takes too long. Spring's
-            <interfacename>@Timed</interfacename>, on the other hand, times
-            the <emphasis>total</emphasis> test execution time (including all
-            repetitions) and does not preemptively fail the test but rather
-            waits for the test to complete before failing.</para>
+            <para>스프링의 <interfacename>@Timed</interfacename> 어노테이션은 JUnit의 
+            <interfacename>@Test(timeout=...)</interfacename>와는 의미가 다르다. 
+            특히 JUnit이 테스트 실행 타임아웃을 다루는 방법때문에 
+            <interfacename>@Test(timeout=...)</interfacename>는 반복(repetitions)의 
+            경우 <emphasis>각 반복(iteration)</emphasis>에 적용해서 테스트가 너무 오래 
+            걸릴때 테스트가 실패하는 것은 막아준다. 반면 스프링의 
+            <interfacename>@Timed</interfacename>의 시간은 테스트를 실행하는 
+            <emphasis>전체</emphasis> 시간이고(모든 반복을 포함해서) 테스트가 실패하는 
+            것을 막아주지 않고 실패전에 테스트가 종료하기를 기대한다.</para>
           </listitem>
 
           <listitem>
             <para><emphasis
             role="bold"><interfacename>@Repeat</interfacename></emphasis></para>
 
-            <para>Indicates that the annotated test method must be executed
-            repeatedly. The number of times that the test method is to be
-            executed is specified in the annotation.</para>
+            <para>이 어노테이션이 붙은 메서드는 반드시 반복적으로 실행되어야 한다는 것을 나타낸다. 
+            테스트 메서드가 실행되는 반복수는 어노테이션에 지정한다.</para>
 
-            <para>The scope of execution to be repeated includes execution of
-            the test method itself as well as any <emphasis>set up</emphasis>
-            or <emphasis>tear down</emphasis> of the test fixture.</para>
+            <para>반복하는 실행의 범위는 테스트 메서드 자체의 실행뿐만 아니라 테스트 픽스처의 
+            <emphasis>set up</emphasis>이나 <emphasis>tear down</emphasis>도 
+            포함한다.</para>
 
             <programlisting language="java"><emphasis role="bold">@Repeat</emphasis>(10)
 @Test
@@ -902,223 +791,189 @@ public void testProcessRepeatedly() {
     </section>
 
     <section id="testcontext-framework">
-      <title>Spring TestContext Framework</title>
+      <title>스프링 TestContext 프레임워크</title>
 
-      <para>The <emphasis>Spring <classname>TestContext</classname>
-      Framework</emphasis> (located in the
-      <literal>org.springframework.test.context</literal> package) provides
-      generic, annotation-driven unit and integration testing support that is
-      agnostic of the testing framework in use, whether JUnit or TestNG. The
-      TestContext framework also places a great deal of importance on
-      <emphasis>convention over configuration</emphasis> with reasonable
-      defaults that can be overridden through annotation-based
-      configuration.</para>
+      <para><emphasis>스프링 <classname>TestContext</classname> 
+      프레임워크</emphasis>(<literal>org.springframework.test.context</literal> 
+      패키지에 있다.) JUnit이나 TestNG같은 사용하는 테스트 프레임워크에 상관없이 일반적이면서 
+      어노테이션 주도의 유닛테스트와 통합테스트를 지원한다. TestContext 프레임워크는 어노테이션 
+      기반 설정이 오버라이드할 수 있는 합당한 기본값으로 <emphasis>설정보다 관례(convention
+      over configuration)</emphasis>의 중요성을 크게 적용했다.</para>
 
-      <para>In addition to generic testing infrastructure, the TestContext
-      framework provides explicit support for JUnit and TestNG in the form of
-      <literal>abstract</literal> support classes. For JUnit, Spring also
-      provides a custom JUnit <interfacename>Runner</interfacename> that
-      allows one to write so called <emphasis>POJO test classes</emphasis>.
-      POJO test classes are not required to extend a particular class
-      hierarchy.</para>
+      <para>일반적인 테스트 인프라스트럭처에 추가적으로 TestContext 프레임워크는 
+      <literal>abstract</literal> 지원 클래스의 형태로 JUnit과 TextNG를 명시적으로 
+      지원한다. JUnit의 경우에는 스프링이 <emphasis>POJO 테스트 클래스</emphasis>를 작성할 
+      수 있도록 하는 JUnit <interfacename>Runner</interfacename>도 제공한다. POJO 
+      테스트 클래스는 특정 클래스 계층을 확장(extend)해야할 필요가 없다.</para>
 
-      <para>The following section provides an overview of the internals of the
-      TestContext framework. If you are only interested in using the framework
-      and not necessarily interested in extending it with your own custom
-      listeners or custom loaders, feel free to go directly to the
-      configuration (<link linkend="testcontext-ctx-management">context
-      management</link>, <link linkend="testcontext-fixture-di">dependency
-      injection</link>, <link linkend="testcontext-tx">transaction
-      management</link>), <link linkend="testcontext-support-classes">support
-      classes</link>, and <link
-      linkend="integration-testing-annotations">annotation support</link>
-      sections.</para>
+      <para>다음 섹션에서는 TestContext 프레임워크의 내부를 살펴본다. TestContext 프레임워크의 
+      사용방법에만 관심있고 커스텀 리스너나 커스텀 로더로 TestContext 프레임워크를 확장하는 방법에는 
+      관심이 없다면 설정(<link linkend="testcontext-ctx-management">컨텍스트 관리</link>, 
+      <link linkend="testcontext-fixture-di">의존성 주입</link>, <link 
+      linkend="testcontext-tx">트랜잭션 관리</link>) <link 
+      linkend="testcontext-support-classes">지원 클래스</link>와 <link
+      linkend="integration-testing-annotations">어노테이션 지원</link> 섹션으로 
+      건너띄워도 무방하다.</para>
 
       <section id="testcontext-key-abstractions">
-        <title>Key abstractions</title>
+        <title>핵심 추상화</title>
 
-        <para>The core of the framework consists of the
-        <classname>TestContext</classname> and
-        <classname>TestContextManager</classname> classes and the
+        <para>TestContext 프레임워크의 코어는 <classname>TestContext</classname>, 
+        <classname>TestContextManager</classname> 클래스와 
         <interfacename>TestExecutionListener</interfacename>,
-        <interfacename>ContextLoader</interfacename>, and
-        <interfacename>SmartContextLoader</interfacename> interfaces. A
-        <classname>TestContextManager</classname> is created on a per-test
-        basis (e.g., for the execution of a single test method in JUnit). The
-        <classname>TestContextManager</classname> in turn manages a
-        <classname>TestContext</classname> that holds the context of the
-        current test. The <classname>TestContextManager</classname> also
-        updates the state of the <classname>TestContext</classname> as the
-        test progresses and delegates to
-        <interfacename>TestExecutionListener</interfacename>s, which
-        instrument the actual test execution by providing dependency
-        injection, managing transactions, and so on. A
-        <interfacename>ContextLoader</interfacename> (or
-        <interfacename>SmartContextLoader</interfacename>) is responsible for
-        loading an <interfacename>ApplicationContext</interfacename> for a
-        given test class. Consult the Javadoc and the Spring test suite for
-        further information and examples of various implementations.</para>
+        <interfacename>ContextLoader</interfacename>, 
+        <interfacename>SmartContextLoader</interfacename> 인터페이스로 이루어져 
+        있다. <classname>TestContextManager</classname>는 테스트마다 생성된다.(예시. 
+        JUnit에서 하나의 테스트 메서드의 실행마다) <classname>TestContextManager</classname>는 
+        결국 현재 테스트의 컨텍스트를 담고 있는 <classname>TestContext</classname>를 관리한다. 
+        <classname>TestContextManager</classname>도 테스트가 의존성 주입 제공, 트랜잭션 
+        관리 등으로 실제 테스트 실행하는 <interfacename>TestExecutionListener</interfacename>로 
+        진행시키거나 위임하자마자 <classname>TestContext</classname>의 상태를 갱신한다. 
+        <interfacename>ContextLoader</interfacename>(또는 
+        <interfacename>SmartContextLoader</interfacename>)는 해당 테스트를 위한 
+        <interfacename>ApplicationContext</interfacename>를 로딩하는 책임을 진다. 
+        다양한 구현체의 예제나 더 자세한 내용은 Javadoc과 스프링 테스트 슈트를 
+        참고해라.</para>
 
         <itemizedlist>
           <listitem>
-            <para><classname>TestContext</classname>: Encapsulates the context
-            in which a test is executed, agnostic of the actual testing
-            framework in use, and provides context management and caching
-            support for the test instance for which it is responsible. The
-            <classname>TestContext</classname> also delegates to a
-            <interfacename>ContextLoader</interfacename> (or
-            <interfacename>SmartContextLoader</interfacename>) to load an
-            <interfacename>ApplicationContext</interfacename> if
-            requested.</para>
+            <para><classname>TestContext</classname>: 사용하는 실제 테스트 프레임워크와 
+            무관하게 테스트가 실행되는 컨텍스트를 은닉화하고 컨텍스트 관리와 테스트 인스턴스에 대한 
+            믿을만한 컨텍스트 관리와 캐싱지원을 제공한다. <classname>TestContext</classname>도 
+            필요한 경우 <interfacename>ApplicationContext</interfacename>를 로드하는 
+            <interfacename>ContextLoader</interfacename>(또는 
+            <interfacename>SmartContextLoader</interfacename>)에 위임한다.</para>
           </listitem>
 
           <listitem>
-            <para><classname>TestContextManager</classname>: The main entry
-            point into the <emphasis>Spring TestContext Framework</emphasis>,
-            which manages a single <classname>TestContext</classname> and
-            signals events to all registered
-            <interfacename>TestExecutionListener</interfacename>s at
-            well-defined test execution points:</para>
+            <para><classname>TestContextManager</classname>: <emphasis>스프링 
+            TestContext 프레임워크</emphasis>의 주요 진입점이다. 단일 
+            <classname>TestContext</classname>와 잘 정의된 테스트 실행시 등록된 모든 
+            <interfacename>TestExecutionListener</interfacename>의 신호(signal) 
+            이벤트를 관리한다.</para>
 
             <itemizedlist>
               <listitem>
-                <para>prior to any <emphasis>before class methods</emphasis>
-                of a particular testing framework</para>
+                <para>특정 테스트 프레임워크의 <emphasis>before class 
+                methods</emphasis> 앞에</para>
               </listitem>
 
               <listitem>
-                <para>test instance preparation</para>
+                <para>테스트 인스턴스 준비</para>
               </listitem>
 
               <listitem>
-                <para>prior to any <emphasis>before methods</emphasis> of a
-                particular testing framework</para>
+                <para>특정 테스트 프레임워크 <emphasis>before methods</emphasis> 
+                앞에</para>
               </listitem>
 
               <listitem>
-                <para>after any <emphasis>after methods</emphasis> of a
-                particular testing framework</para>
+                <para>특정 테스트 프레임워크 <emphasis>after methods</emphasis> 
+                이후에</para>
               </listitem>
 
               <listitem>
-                <para>after any <emphasis>after class methods</emphasis> of a
-                particular testing framework</para>
+                <para>특정 테스트 프레임워크 <emphasis>after class methods</emphasis> 
+                이후에</para>
               </listitem>
             </itemizedlist>
           </listitem>
 
           <listitem>
             <para><interfacename>TestExecutionListener</interfacename>:
-            Defines a <emphasis>listener</emphasis> API for reacting to test
-            execution events published by the
-            <classname>TestContextManager</classname> with which the listener
-            is registered.</para>
+            리스너가 등록된 <classname>TestContextManager</classname>가 배포한 
+            이벤트의 테스트 실행에 반응하는 <emphasis>listener</emphasis> API를 
+            정의한다.</para>
 
-            <para>Spring provides three
-            <interfacename>TestExecutionListener</interfacename>
-            implementations that are configured by default:
-            <classname>DependencyInjectionTestExecutionListener</classname>,
-            <classname>DirtiesContextTestExecutionListener</classname>, and
-            <classname>TransactionalTestExecutionListener</classname>.
-            Respectively, they support dependency injection of the test
-            instance, handling of the
-            <interfacename>@DirtiesContext</interfacename> annotation, and
-            transactional test execution with default rollback
-            semantics.</para>
+            <para>스프링은 기본적으로 설정된 세가지 
+            <interfacename>TestExecutionListener</interfacename> 구현체를 
+            제공한다: <classname>DependencyInjectionTestExecutionListener</classname>,
+            <classname>DirtiesContextTestExecutionListener</classname>, 
+            <classname>TransactionalTestExecutionListener</classname>. 각각 
+            테스트 인스턴스의 의존성 주입, <interfacename>@DirtiesContext</interfacename> 
+            어노테이션의 제어, 롤백이 기본인 트랜잭션을 적용한 테스트 실행을 지원한다.</para>
           </listitem>
 
           <listitem>
-            <para><interfacename>ContextLoader</interfacename>: Strategy
-            interface introduced in Spring 2.5 for loading an
-            <interfacename>ApplicationContext</interfacename> for an
-            integration test managed by the Spring TestContext
-            Framework.</para>
+            <para><interfacename>ContextLoader</interfacename>: 스프링 
+            TestContext 프레임워크가 관리하는 통합 테스트의 
+            <interfacename>ApplicationContext</interfacename>를 로딩하는 
+            Strategy 인터페이스는 스프링 2.5에서 도입되었다.</para>
 
-            <para>As of Spring 3.1, implement
-            <interfacename>SmartContextLoader</interfacename> instead of this
-            interface in order to provide support for configuration classes
-            and active bean definition profiles.</para>
+            <para>스프링 3.1부터는  설정 클래스와 활성화된 빈 정의 프로파일을 지원하기 위해 
+            이 인터페이스 대신 <interfacename>SmartContextLoader</interfacename>를 
+            구현해라.</para>
           </listitem>
 
           <listitem>
-            <para><interfacename>SmartContextLoader</interfacename>: Extension
-            of the <interfacename>ContextLoader</interfacename> interface
-            introduced in Spring 3.1.</para>
+            <para><interfacename>SmartContextLoader</interfacename>: 스프링 
+            3.1에서 도입된 <interfacename>ContextLoader</interfacename> 
+            인터페이스의 확장</para>
 
-            <para>The <interfacename>SmartContextLoader</interfacename> SPI
-            supersedes the <interfacename>ContextLoader</interfacename> SPI
-            that was introduced in Spring 2.5. Specifically, a
-            <interfacename>SmartContextLoader</interfacename> can choose to
-            process either resource <varname>locations</varname> or
-            configuration <varname>classes</varname>. Furthermore, a
-            <interfacename>SmartContextLoader</interfacename> can set active
-            bean definition profiles in the context that it loads.</para>
+            <para><interfacename>SmartContextLoader</interfacename> SPI는 
+            스프링 2.5에서 도입된 <interfacename>ContextLoader</interfacename> 
+            SPI를 대체한다. 특히, <interfacename>SmartContextLoader</interfacename>는 
+            리소스 <varname>locations</varname>나 설정 <varname>classes</varname>를 
+            처리할 지를 선택할 수 있다. 게다가 
+            <interfacename>SmartContextLoader</interfacename>는 로드한 컨텍스트에서 
+            활성화된 빈 정의 프로파일을 설정할 수 있다.</para>
 
-            <para>Spring provides the following out-of-the-box
-            implementations:</para>
+            <para>스프링은 다음의 독창적인(out-of-the-box) 구현체들을 
+            제공한다.</para>
 
             <itemizedlist>
               <listitem>
-                <para><classname>DelegatingSmartContextLoader</classname>: the
-                default loader which delegates internally to an
-                <classname>AnnotationConfigContextLoader</classname> or a
-                <classname>GenericXmlContextLoader</classname> depending
-                either on the configuration declared for the test class or on
-                the presence of default locations or default configuration
-                classes.</para>
+                <para><classname>DelegatingSmartContextLoader</classname>: 테스트 
+                클래스에 대해 선언한 설정이나 기본 위치, 기본 설정 클래스의 존재에 따라 내부적으로 
+                <classname>AnnotationConfigContextLoader</classname>나 
+                <classname>GenericXmlContextLoader</classname>에 위임하는 
+                기본 로더</para>
               </listitem>
 
               <listitem>
                 <para><classname>AnnotationConfigContextLoader</classname>:
-                loads an application context from
-                <interfacename>@Configuration</interfacename> classes.</para>
+                <interfacename>@Configuration</interfacename> 클래스에서 
+                어플리케이션 컨텍스트를 로딩한다.</para>
               </listitem>
 
               <listitem>
-                <para><classname>GenericXmlContextLoader</classname>: loads an
-                application context from XML resource locations.</para>
+                <para><classname>GenericXmlContextLoader</classname>: XML 리소스 
+                위치에서 어플리케이션 컨텍스트를 로딩한다.</para>
               </listitem>
 
               <listitem>
                 <para><classname>GenericPropertiesContextLoader</classname>:
-                loads an application context from Java Properties
-                files.</para>
+                자바 프로퍼티 파일에서 어플리케이션 컨텍스트를 로딩한다.</para>
               </listitem>
             </itemizedlist>
           </listitem>
         </itemizedlist>
 
-        <para>The following sections explain how to configure the
-        <classname>TestContext</classname> framework through annotations and
-        provide working examples of how to write unit and integration tests
-        with the framework.</para>
+        <para>다음 섹션에서는 어노테이션으로 <classname>TestContext</classname> 
+        프레임워크를 어떻게 설정하는 지 설명하고 <classname>TestContext</classname> 
+        프레임워크로 유닛테스트와 통합 테스트를 설정하는 방법의 예제를 볼 것이다.</para>
       </section>
 
       <section id="testcontext-ctx-management">
-        <title>Context management</title>
+        <title>컨텍스트 관리</title>
 
-        <para>Each <classname>TestContext</classname> provides context
-        management and caching support for the test instance it is responsible
-        for. Test instances do not automatically receive access to the
-        configured <classname>ApplicationContext</classname>. However, if a
-        test class implements the
-        <interfacename>ApplicationContextAware</interfacename> interface, a
-        reference to the <classname>ApplicationContext</classname> is supplied
-        to the test instance. Note that
-        <classname>AbstractJUnit4SpringContextTests</classname> and
-        <classname>AbstractTestNGSpringContextTests</classname> implement
-        <interfacename>ApplicationContextAware</interfacename> and therefore
-        provide access to the <classname>ApplicationContext</classname>
-        out-of-the-box.</para>
+        <para>각 <classname>TestContext</classname>는 테스트 인스턴스에 대해 신뢰할 
+        수 있는 컨텍스트 관리와 캐싱지원을 제공한다. 테스트 인스턴스는 설정된 
+        <classname>ApplicationContext</classname>로의 접근이 자동으로 허용되지 않는다. 
+        하지만 테스트 클래스가 <interfacename>ApplicationContextAware</interfacename> 
+        인터페이스를 구현하면 <classname>ApplicationContext</classname>의 참조가 테스트 
+        인스턴스에 제공된다. <classname>AbstractJUnit4SpringContextTests</classname>와 
+        <classname>AbstractTestNGSpringContextTests</classname>가 
+        <interfacename>ApplicationContextAware</interfacename>를 구현했으므로 
+        <classname>ApplicationContext</classname>에 대한 접근을 제공한다.</para>
 
         <tip>
           <title>@Autowired ApplicationContext</title>
 
-          <para>As an alternative to implementing the
-          <interfacename>ApplicationContextAware</interfacename> interface,
-          you can inject the application context for your test class through
-          the <interfacename>@Autowired</interfacename> annotation on either a
-          field or setter method. For example:</para>
+          <para><interfacename>ApplicationContextAware</interfacename> 인터페이스를 
+          구현하는 대신 필드나 setter 메서드에 <interfacename>@Autowired</interfacename> 
+          어노테이션을 붙혀서 테스트 클래스의 어플리케이션 컨텍스트를 주입할 수 있다. 
+          다음 예를 보자.</para>
 
           <programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
@@ -1130,69 +985,56 @@ public class MyTest {
     <lineannotation>// class body...</lineannotation>
 }</programlisting>
 
-          <para>Dependency injection via
-          <interfacename>@Autowired</interfacename> is provided by the
-          <classname>DependencyInjectionTestExecutionListener</classname>
-          which is configured by default (see <xref
-          linkend="testcontext-fixture-di" />).</para>
+          <para><interfacename>@Autowired</interfacename>를 통한 의존성 주입을 
+          기본적으로 설정된 
+          <classname>DependencyInjectionTestExecutionListener</classname>가 
+          제공한다.(<xref
+          linkend="testcontext-fixture-di" />)를 참고해라.)</para>
         </tip>
 
-        <para>Test classes that use the TestContext framework do not need to
-        extend any particular class or implement a specific interface to
-        configure their application context. Instead, configuration is
-        achieved simply by declaring the
-        <interfacename>@ContextConfiguration</interfacename> annotation at the
-        class level. If your test class does not explicitly declare
-        application context resource <literal>locations</literal> or
-        configuration <varname>classes</varname>, the configured
-        <interfacename>ContextLoader</interfacename> determines how to load a
-        context from a default location or default configuration
-        classes.</para>
+        <para>TestContext 프레임워크를 사용하는 테스트 클래스들은 어플리케이션 컨텍스트를 설정하기 
+        위해 어떤 클래스도 상속받을 필요가 없고 특정 인터페이스를 구현할 필요도 없다.  대신 클래스 
+        수준의 <interfacename>@ContextConfiguration</interfacename> 어노테이션을 
+        선언함으로써 설정이 이뤄진다. 테스트 클래스가 어플리케이션 컨텍스트 리소스 
+        <literal>locations</literal>이나 설정 <varname>classes</varname>를 명시적으로 
+        선언하지 않았다면 설정된 <interfacename>ContextLoader</interfacename>가 기본 
+        위치나 기본 설정 클래스에서 어떻게 컨텍스트를 로드할 지 결정한다.</para>
 
-        <para>The following sections explain how to configure an
-        <interfacename>ApplicationContext</interfacename> via XML
-        configuration files or <interfacename>@Configuration</interfacename>
-        classes using Spring's
-        <interfacename>@ContextConfiguration</interfacename>
-        annotation.</para>
+        <para>다음 섹션에서는 <interfacename>ApplicationContext</interfacename>를 
+        XML 설정 파일이나 스프링의 <interfacename>@ContextConfiguration</interfacename> 
+        어노테이션을 사용한 <interfacename>@Configuration</interfacename> 클래스로 
+        어떻게 설정하는지 설명한다. </para>
 
         <section id="testcontext-ctx-management-xml">
-          <title>Context configuration with XML resources</title>
+          <title>XML 리소스를 사용한 컨텍스트 설정</title>
 
-          <para>To load an <interfacename>ApplicationContext</interfacename>
-          for your tests using XML configuration files, annotate your test
-          class with <interfacename>@ContextConfiguration</interfacename> and
-          configure the <literal>locations</literal> attribute with an array
-          that contains the resource locations of XML configuration metadata.
-          A plain path — for example <literal>"context.xml"</literal> — will
-          be treated as a classpath resource that is relative to the package
-          in which the test class is defined. A path starting with a slash is
-          treated as an absolute classpath location, for example
-          <literal>"/org/example/config.xml"</literal>. A path which
-          represents a resource URL (i.e., a path prefixed with
-          <literal>classpath:</literal>, <literal>file:</literal>,
-          <literal>http:</literal>, etc.) will be used <emphasis>as
-          is</emphasis>. Alternatively, you can implement and configure your
-          own custom <interfacename>ContextLoader</interfacename> or
-          <interfacename>SmartContextLoader</interfacename> for advanced use
-          cases.</para>
+          <para>XML 설정파일로 테스트의 <interfacename>ApplicationContext</interfacename>를 
+          로딩하려면 테스트 클래스에 <interfacename>@ContextConfiguration</interfacename> 
+          어노테이션을 붙히고 XML 설정 메타데이터에 리소스 위치를 담고 있는 
+          <literal>locations</literal> 속성을 가진 배열을 설정해라. 이 평범한(plain) 
+          경로(예를 들면 <literal>"context.xml"</literal>같은)는 테스트 클래스를 정의한 
+          패키지의 상대적인 클래스패스 리소스로 다뤄질 것이다. 슬래시로 시작하는 경로는 절대경로 
+          클래스패스 위치로 다룬다. 예를 들어 <literal>"/org/example/config.xml"</literal>같은 
+          것이다. 리소스 URL을 나타내는 경로(<literal>classpath:</literal>, 
+          <literal>file:</literal>, <literal>http:</literal> 등의 접두사가 붙은 경로)는 
+          <emphasis>원래 그대로</emphasis> 사용될 것이다. 대신에 자신만의 커스텀 
+          <interfacename>ContextLoader</interfacename>나 고급 사용을 위해 
+          <interfacename>SmartContextLoader</interfacename>를 구현하거나 
+          설정할 수 있다.</para>
 
           <programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
-<lineannotation>// ApplicationContext will be loaded from "/app-config.xml" and
-// "/test-config.xml" in the root of the classpath</lineannotation>
+<lineannotation>// 어플리케이션 컨텍스트는 클래스패스의 루트의 "/app-config.xml"와
+// "/test-config.xml"에서 로드될 것이다.</lineannotation>
 <emphasis role="bold">@ContextConfiguration(locations={"/app-config.xml", "/test-config.xml"})</emphasis>
 public class MyTest {
     <lineannotation>// class body...</lineannotation>
 }</programlisting>
 
-          <para><interfacename>@ContextConfiguration</interfacename> supports
-          an alias for the <literal>locations</literal> attribute through the
-          standard Java <literal>value</literal> attribute. Thus, if you do
-          not need to configure a custom
-          <interfacename>ContextLoader</interfacename>, you can omit the
-          declaration of the <literal>locations</literal> attribute name and
-          declare the resource locations by using the shorthand format
-          demonstrated in the following example.</para>
+          <para><interfacename>@ContextConfiguration</interfacename>는 표준 자바 
+          <literal>value</literal> 속성으로 <literal>locations</literal> 속성의 별칭을 
+          지원한다. 그러므로 커스텀 <interfacename>ContextLoader</interfacename>를 설정할 
+          필요가 없다면 <literal>locations</literal> 속성명의 선언을 생략하고 다음 예제에 
+          나오는 것처럼 약식으로 리소스 위치를 선언할 수 있다.</para>
 
           <programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
 <emphasis role="bold">@ContextConfiguration({"/app-config.xml", "/test-config.xml"})</emphasis>
@@ -1200,22 +1042,19 @@ public class MyTest {
     <lineannotation>// class body...</lineannotation>
 }</programlisting>
 
-          <para>If you omit both the <varname>locations</varname> and
-          <varname>value</varname> attributes from the
-          <interfacename>@ContextConfiguration</interfacename> annotation, the
-          TestContext framework will attempt to detect a default XML resource
-          location. Specifically,
-          <classname>GenericXmlContextLoader</classname> detects a default
-          location based on the name of the test class. If your class is named
-          <literal>com.example.MyTest</literal>,
-          <classname>GenericXmlContextLoader</classname> loads your
-          application context from
-          <literal>"classpath:/com/example/MyTest-context.xml"</literal>.</para>
+          <para><interfacename>@ContextConfiguration</interfacename> 어노테이션의 
+          <varname>locations</varname>와 <varname>value</varname> 속성을 모두 생략하면 
+          TestContext 프레임워크가 기본 XML 리소스 위치를 찾으려고 시도할 것이다. 특히, 
+          <classname>GenericXmlContextLoader</classname>는 테스트 클래스 이름에 기반해서 
+          기본 위치를 찾는다. 클래스 이름이 <literal>com.example.MyTest</literal>이라면 
+          <classname>GenericXmlContextLoader</classname>는 
+          <literal>"classpath:/com/example/MyTest-context.xml"</literal>에서 
+          어플리케이션 컨텍스트를 로드한다.</para>
 
           <programlisting language="java">package com.example;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-<lineannotation>// ApplicationContext will be loaded from <literal>"classpath:/com/example/MyTest-context.xml"</literal></lineannotation>
+<lineannotation>// ApplicationContext는 <literal>"classpath:/com/example/MyTest-context.xml"</literal>에서 로드될 것이다.</lineannotation>
 <emphasis role="bold">@ContextConfiguration</emphasis>
 public class MyTest {
     <lineannotation>// class body...</lineannotation>
@@ -1223,57 +1062,51 @@ public class MyTest {
         </section>
 
         <section id="testcontext-ctx-management-javaconfig">
-          <title>Context configuration with @Configuration classes</title>
+          <title>@Configuration 클래스를 사용한 컨텍스트 설정</title>
 
-          <para>To load an <interfacename>ApplicationContext</interfacename>
-          for your tests using <interfacename>@Configuration</interfacename>
-          classes (see <xref linkend="beans-java" />), annotate your test
-          class with <interfacename>@ContextConfiguration</interfacename> and
-          configure the <literal>classes</literal> attribute with an array
-          that contains references to configuration classes. Alternatively,
-          you can implement and configure your own custom
-          <interfacename>ContextLoader</interfacename> or
-          <interfacename>SmartContextLoader</interfacename> for advanced use
-          cases.</para>
+          <para><interfacename>@Configuration</interfacename> 클래스(<xref 
+          linkend="beans-java" /> 참고)를 사용해서 테크트의 
+          <interfacename>ApplicationContext</interfacename>를 로드하려면 테스트 
+          클래스에 <interfacename>@ContextConfiguration</interfacename> 어노테이션을 
+          붙히고 설정 클래스에 대한 찹조를 답고 있는 <literal>classes</literal> 속성의 배열을 
+          설정해라. 아니면 자신만의 커스텀 <interfacename>ContextLoader</interfacename>나 
+          고급 사용을 위한 <interfacename>SmartContextLoader</interfacename>를 
+          구현하거나 설정할 수 있다.</para>
 
           <programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
-<lineannotation>// ApplicationContext will be loaded from AppConfig and TestConfig</lineannotation>
+<lineannotation>// ApplicationContext는 AppConfig와 TestConfig에서 로드될 것이다</lineannotation>
 <emphasis role="bold">@ContextConfiguration(classes={AppConfig.class, TestConfig.class})</emphasis>
 public class MyTest {
     <lineannotation>// class body...</lineannotation>
 }</programlisting>
 
-          <para>If you omit the <varname>classes</varname> attribute from the
-          <interfacename>@ContextConfiguration</interfacename> annotation, the
-          TestContext framework will attempt to detect the presence of default
-          configuration classes. Specifically,
-          <classname>AnnotationConfigContextLoader</classname> will detect all
-          static inner classes of the annotated test class that meet the
-          requirements for configuration class implementations as specified in
-          the Javadoc for <interfacename>@Configuration</interfacename>. In
-          the following example, the <classname>OrderServiceTest</classname>
-          class declares a static inner configuration class named
-          <classname>Config</classname> that will be automatically used to
-          load the <interfacename>ApplicationContext</interfacename> for the
-          test class. Note that the name of the configuration class is
-          arbitrary. In addition, a test class can contain more than one
-          static inner configuration class if desired.</para>
+          <para><interfacename>@ContextConfiguration</interfacename> 어노테이션에서 
+          <varname>classes</varname> 속성을 생략하면 TestContext 프레임워크는 기본 설정 
+          클래스의 존재를 찾으려고 시도할 것이다. 특히, 
+          <classname>AnnotationConfigContextLoader</classname>는 
+          <interfacename>@Configuration</interfacename> Javadoc에 나온 것처럼 설정 
+          클래스 구현체의 요구사항을 만족시키는 어노테이션이 붙은 테스트 클래스의 정적 이너클래스를 
+          모두 찾을 것이다. 다음 예제에서 <classname>OrderServiceTest</classname> 클래스는 
+          <classname>Config</classname>라는 정적 이너 설정 클래스를 선언했고 테스트 
+          클래스를 위한 <interfacename>ApplicationContext</interfacename>를 로드하는데 
+          자동으로 사용할 것이다. 설정 클래스의 이름은 임의로 사용할 수 있다. 추가적으로 필요하다면 
+          테스트 클래스는 하나이상의 정적 이너 설정클래스를 포함할 수 있다.</para>
 
           <programlisting language="java">package com.example;
  
 @RunWith(SpringJUnit4ClassRunner.class)
-<lineannotation>// ApplicationContext will be loaded from the static inner Config class</lineannotation>
+<lineannotation>// ApplicationContext는 정적 이너 Config 크래스에서 로드될 것이다.</lineannotation>
 <emphasis role="bold">@ContextConfiguration</emphasis>
 public class OrderServiceTest {
  
     @Configuration
     static class Config {
  
-        <lineannotation>// this bean will be injected into the OrderServiceTest class</lineannotation>
+        <lineannotation>// 이 빈은 OrderServiceTest 클래스로 주입될 것이다</lineannotation>
         @Bean
         public OrderService orderService() {
             OrderService orderService = new OrderServiceImpl();
-            <lineannotation>// set properties, etc.</lineannotation>
+            <lineannotation>// set 프로퍼티 등등.</lineannotation>
             return orderService;
         }
     }
@@ -1283,111 +1116,97 @@ public class OrderServiceTest {
  
     @Test
     public void testOrderService() {
-        <lineannotation>// test the orderService</lineannotation>
+        <lineannotation>// orderService를 테스트한다</lineannotation>
     }
 
 }</programlisting>
         </section>
 
         <section id="testcontext-ctx-management-mixed-config">
-          <title>Mixing XML resources and @Configuration classes</title>
+          <title>XML 리소스와 @Configuration 클래스를 섞어서 사용하기</title>
 
-          <para>It may sometimes be desirable to mix XML resources and
-          <interfacename>@Configuration</interfacename> classes to configure
-          an <interfacename>ApplicationContext</interfacename> for your tests.
-          For example, if you use XML configuration in production, you may
-          decide that you want to use
-          <interfacename>@Configuration</interfacename> classes to configure
-          specific Spring-managed components for your tests, or vice versa. As
-          mentioned in <xref
-          linkend="integration-testing-annotations-spring" /> the TestContext
-          framework does not allow you to declare <emphasis>both</emphasis>
-          via <interfacename>@ContextConfiguration</interfacename>, but this
-          does not mean that you cannot use both.</para>
+          <para>때로는 테스트의 <interfacename>ApplicationContext</interfacename>를 
+          설정할 때 XML 리소스와 <interfacename>@Configuration</interfacename> 클래스를 
+          섞어서 사용하기를 원할 수 있다. 예를 들어 프로덕션 레벨에서는 XML 설정을 사용하고 테스트의 
+          스프링이 관리하는 특정 컴포넌트를 설정할 때는 
+          <interfacename>@Configuration</interfacename> 클래스를 사용하고자 하거나 
+          그 반대로 사용하는 경우이다. <xref
+          linkend="integration-testing-annotations-spring" />에서 얘기했듯이 
+          TestContext 프레임워크는 <interfacename>@ContextConfiguration</interfacename>로 
+          <emphasis>두가지 모두</emphasis>를 선언하게 하지는 않지만 이것이 둘다 사용할 수 
+          없다는 의미는 아니다.</para>
 
-          <para>If you want to use XML <emphasis role="bold">and</emphasis>
-          <interfacename>@Configuration</interfacename> classes to configure
-          your tests, you will have to pick one as the <emphasis>entry
-          point</emphasis>, and that one will have to include or import the
-          other. For example, in XML you can include
-          <interfacename>@Configuration</interfacename> classes via component
-          scanning or define them as normal Spring beans in XML; whereas, in a
-          <interfacename>@Configuration</interfacename> class you can use
-          <interfacename>@ImportResource</interfacename> to import XML
-          configuration files. Note that this behavior is semantically
-          equivalent to how you configure your application in production: in
-          production configuration you will define either a set of XML
-          resource locations or a set of
-          <interfacename>@Configuration</interfacename> classes that your
-          production <interfacename>ApplicationContext</interfacename> will be
-          loaded from, but you still have the freedom to include or import the
-          other type of configuration.</para>
+          <para>테스트 설정에 XML<emphasis role="bold">과</emphasis> 
+          <interfacename>@Configuration</interfacename> 클래스를 사용하려면 
+          <emphasis>진입점</emphasis>으로 하나를 선택하고 진입점이 다른 것을 포함하거나 
+          임포트해야한다. 예를 들어 XML에 컴포넌트 스캔이나 평범한 스프링 빈으로 
+          <interfacename>@Configuration</interfacename> 클래스를 정의해서 
+          <interfacename>@Configuration</interfacename> 클래스들을 포함시킬 수 있다. 
+          반면에, <interfacename>@Configuration</interfacename> 클래스에서는 XML 
+          설정파일을 임포트하기 위해 <interfacename>@ImportResource</interfacename>를 
+          사용할 수 있다. 이 동작은 프로덕션에서 어플리케이션을 구성하는 방법과 의미적으로 동일하다. 
+          프로덕션 설정에서 프로덕션 <interfacename>ApplicationContext</interfacename>가 
+          로딩될 XML 리소스 위치의 세트나 <interfacename>@Configuration</interfacename> 
+          클래스의 세트를 정의할 것이지만 여전히 다른 종류의 설정을 자유롭게 포함하거나 
+          임포트할 수 있다.</para>
         </section>
 
         <section id="testcontext-ctx-management-inheritance">
-          <title>Context configuration inheritance</title>
+          <title>컨텍스트 설정의 상속</title>
 
-          <para><interfacename>@ContextConfiguration</interfacename> supports
-          a boolean <literal>inheritLocations</literal> attribute that denotes
-          whether resource locations or configuration classes declared by
-          superclasses should be <emphasis>inherited</emphasis>. The default
-          value is <literal>true</literal>. This means that an annotated class
-          inherits the resource locations or configuration classes declared by
-          any annotated superclasses. Specifically, the resource locations or
-          configuration classes for an annotated test class are appended to
-          the list of resource locations or configuration classes declared by
-          annotated superclasses. Thus, subclasses have the option of
-          <emphasis>extending</emphasis> the list of resource locations or
-          configuration classes.</para>
+          <para><interfacename>@ContextConfiguration</interfacename>은 
+          <emphasis>상속해야 하는</emphasis> 수퍼클래스가 선언한 리소스 위치나 설정 클래스를 
+          나타내는 <literal>inheritLocations</literal> 불리언 속성을 지원한다. 기본값은 
+          <literal>true</literal>이다. 즉 어노테이션이 붙은 클래스는 어노테이션이 붙은 수퍼클래스가 
+          선언한 리소스 위치나 설정 클래스를 상속받는다. 특히, 어노테이션이 붙은 테스트 클래스를 위한 
+          리소스 위치나 설정 클래스들은 어노테이션이 붙은 수퍼클래스가 선언한 리소스 위치나 설정클래스의 
+          목록에 추가된다. 그러므로 서브클래스들은 리소스 위치나 설정 클래스의 목록을 
+          <emphasis>확장</emphasis>하는 옵션을 가진다.</para>
 
-          <para>If <interfacename>@ContextConfiguration</interfacename>'s
-          <literal>inheritLocations</literal> attribute is set to
-          <literal>false</literal>, the resource locations or configuration
-          classes for the annotated class <emphasis>shadow</emphasis> and
-          effectively replace any resource locations or configuration classes
-          defined by superclasses.</para>
+          <para><interfacename>@ContextConfiguration</interfacename>의 
+          <literal>inheritLocations</literal> 속성을 <literal>false</literal>로 
+          설정하면 어노테이션이 붙은 클래스의 리소스 위치나 설정 클래스들은 
+          <emphasis>가려지고(shadow)</emphasis> 효과적으로 수퍼클래스가 정의한 리소스 
+          위치나 설정 클래스를 교체한다.</para>
 
-          <para>In the following example that uses XML resource locations, the
-          <interfacename>ApplicationContext</interfacename> for
-          <classname>ExtendedTest</classname> will be loaded from
-          <emphasis>"base-config.xml"</emphasis> <emphasis
-          role="bold">and</emphasis>
-          <emphasis>"extended-config.xml"</emphasis>, in that order. Beans
-          defined in <emphasis>"extended-config.xml"</emphasis> may therefore
-          <emphasis>override</emphasis> (i.e., replace) those defined in
-          <emphasis>"base-config.xml"</emphasis>.</para>
+          <para>XML 리소스 위치를 사용하는 다음의 예제에서 
+          <classname>ExtendedTest</classname>의 
+          <interfacename>ApplicationContext</interfacename>는 
+          <emphasis>"base-config.xml"</emphasis><emphasis
+          role="bold">와</emphasis> <emphasis>"extended-config.xml"</emphasis>에서 
+          그 순서대로 로드될 것이다. 그러므로 <emphasis>"extended-config.xml"</emphasis>에서 
+          정의한 빈은 <emphasis>"base-config.xml"</emphasis>에서 정의한 빈으로 
+          <emphasis>오버라이드</emphasis>(또는 교체) 될 것이다.</para>
 
           <programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
-<lineannotation>// ApplicationContext will be loaded from <literal>"/base-config.xml"</literal> in the root of the classpath</lineannotation>
+<lineannotation>// ApplicationContext는 클래스패스 루트의 <literal>"/base-config.xml"</literal>에서 로드될 것이다.</lineannotation>
 <emphasis role="bold">@ContextConfiguration("/base-config.xml")</emphasis>
 public class BaseTest {
     <lineannotation>// class body...</lineannotation>
 }
 
-<lineannotation>// ApplicationContext will be loaded from <literal>"/base-config.xml"</literal> and <literal>"/extended-config.xml"</literal></lineannotation>
-<lineannotation>// in the root of the classpath</lineannotation>
+<lineannotation>// ApplicationContext는 클래스 패스 루트의 <literal>"/base-config.xml"</literal>와 <literal>"/extended-config.xml"</literal>에서 </lineannotation>
+<lineannotation>// 로드될 것이다</lineannotation>
 <emphasis role="bold">@ContextConfiguration("/extended-config.xml")</emphasis>
 public class ExtendedTest extends BaseTest {
     <lineannotation>// class body...</lineannotation>
 }</programlisting>
 
-          <para>Similarly, in the following example that uses configuration
-          classes, the <interfacename>ApplicationContext</interfacename> for
-          <classname>ExtendedTest</classname> will be loaded from the
-          <classname>BaseConfig</classname> <emphasis
-          role="bold">and</emphasis> <classname>ExtendedConfig</classname>
-          configuration classes, in that order. Beans defined in
-          <classname>ExtendedConfig</classname> may therefore override (i.e.,
-          replace) those defined in <classname>BaseConfig</classname>.</para>
+          <para>비슷하게 설정 클래스를 사용하는 다음 예제는 <classname>ExtendedTest</classname>의 
+          <interfacename>ApplicationContext</interfacename>는 
+          <classname>BaseConfig</classname> <emphasis role="bold">와</emphasis> 
+          <classname>ExtendedConfig</classname> 설정 클래스에서 그 순서대로 로드된다. 
+          그러므로 <classname>ExtendedConfig</classname>에서 정의한 빈은 
+          <classname>BaseConfig</classname>에서 정의한 빈으로 오버라이드(교체)된다.</para>
 
           <programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
-<lineannotation>// ApplicationContext will be loaded from BaseConfig</lineannotation>
+<lineannotation>// ApplicationContext는 BaseConfig에서 로드될 것이다</lineannotation>
 <emphasis role="bold">@ContextConfiguration(classes=BaseConfig.class)</emphasis>
 public class BaseTest {
     <lineannotation>// class body...</lineannotation>
 }
 
-<lineannotation>// ApplicationContext will be loaded from BaseConfig and ExtendedConfig</lineannotation>
+<lineannotation>// ApplicationContext는 BaseConfig와 ExtendedConfig에서 로드될 것이다</lineannotation>
 <emphasis role="bold">@ContextConfiguration(classes=ExtendedConfig.class)</emphasis>
 public class ExtendedTest extends BaseTest {
     <lineannotation>// class body...</lineannotation>
@@ -1395,29 +1214,25 @@ public class ExtendedTest extends BaseTest {
         </section>
 
         <section id="testcontext-ctx-management-env-profiles">
-          <title>Context configuration with environment profiles</title>
+          <title>환경 프로파일을 사용하는 컨텍스트 설정</title>
 
-          <para>Spring 3.1 introduces first-class support in the framework for
-          the notion of environments and profiles (a.k.a., <emphasis>bean
-          definition profiles</emphasis>), and integration tests can now be
-          configured to activate particular bean definition profiles for
-          various testing scenarios. This is achieved by annotating a test
-          class with the new <interfacename>@ActiveProfiles</interfacename>
-          annotation and supplying a list of profiles that should be activated
-          when loading the <interfacename>ApplicationContext</interfacename>
-          for the test.</para>
+          <para>스프링 3.1은 환경과 프로파일(또는 <emphasis>빈 정의 프로파일(bean 
+          definition profiles)</emphasis>)의 개념에 대해 프레임워크수준의 최고급 지원을 
+          도입했고 통합 테스트는 이제 다양한 테스트 시나리오에 따라 특정 빈 정의 프로파일을 활성화하도록 
+          설정될 수 있다. 이는 테스트 클래스에 새로운 <interfacename>@ActiveProfiles</interfacename> 
+          어노테이션을 붙히고 테스트의 <interfacename>ApplicationContext</interfacename>를 
+          로드할 때 활성화 되어야 하는 프로파일의 목록을 제공함으로써 이룰 수 있다.</para>
 
           <note>
-            <para><interfacename>@ActiveProfiles</interfacename> may be used
-            with any implementation of the new
-            <interfacename>SmartContextLoader</interfacename> SPI, but
-            <interfacename>@ActiveProfiles</interfacename> is not supported
-            with implementations of the older
-            <interfacename>ContextLoader</interfacename> SPI.</para>
+            <para><interfacename>@ActiveProfiles</interfacename>는 새로운 
+            <interfacename>SmartContextLoader</interfacename> SPI의 어떤 구현체와도 
+            사용할 수 있지만 <interfacename>@ActiveProfiles</interfacename>는 구식 
+            <interfacename>ContextLoader</interfacename> SPI의 구현체는 
+            지원하지 않는다.</para>
           </note>
 
-          <para>Let's take a look at some examples with XML configuration and
-          <interfacename>@Configuration</interfacename> classes.</para>
+          <para>XML 설정과 <interfacename>@Configuration</interfacename> 클래스를 
+          가진 몇가지 예제를 살펴보자.</para>
 
           <programlisting language="xml">&lt;!-- app-config.xml --&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -1459,7 +1274,7 @@ public class ExtendedTest extends BaseTest {
           <programlisting language="java">package com.bank.service;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-// ApplicationContext will be loaded from "classpath:/app-config.xml"
+// ApplicationContext는 "classpath:/app-config.xml"에서 로드된다
 @ContextConfiguration("/app-config.xml")
 @ActiveProfiles("dev")
 public class TransferServiceTest {
@@ -1469,37 +1284,31 @@ public class TransferServiceTest {
 
    @Test
    public void testTransferService() {
-       // test the transferService
+       // transferService를 테스트한다
    }
 }</programlisting>
 
-          <para>When <classname>TransferServiceTest</classname> is run, its
-          <interfacename>ApplicationContext</interfacename> will be loaded
-          from the <filename>app-config.xml</filename> configuration file in
-          the root of the classpath. If you inspect
-          <filename>app-config.xml</filename> you'll notice that the
-          <varname>accountRepository</varname> bean has a dependency on a
-          <varname>dataSource</varname> bean; however,
-          <varname>dataSource</varname> is not defined as a top-level bean.
-          Instead, <varname>dataSource</varname> is defined twice: once in the
-          <emphasis>production</emphasis> profile and once in the
-          <emphasis>dev</emphasis> profile.</para>
+          <para><classname>TransferServiceTest</classname>를 실행할 때 
+          <classname>TransferServiceTest</classname>의 
+          <interfacename>ApplicationContext</interfacename>는 클래스패스 루트의 
+          <filename>app-config.xml</filename> 설정 파일에서 로드될 것이다. 
+          <filename>app-config.xml</filename>를 검사하면 <varname>accountRepository</varname> 
+          빈이 <varname>dataSource</varname> 빈에 의존성을 가진다는 것을 알아차릴 것이다. 
+          하지만 <varname>dataSource</varname>는 최상위 빈으로 정의되지 않았다. 대신, 
+          <varname>dataSource</varname>는 두번 정의됐다. 한번은 
+          <emphasis>production</emphasis> 프로파일이고 한번은 
+          <emphasis>dev</emphasis> 프로파일이다.</para>
 
-          <para>By annotating <classname>TransferServiceTest</classname> with
-          <interfacename>@ActiveProfiles("dev")</interfacename> we instruct
-          the Spring TestContext Framework to load the
-          <interfacename>ApplicationContext</interfacename> with the active
-          profiles set to <literal>{"dev"}</literal>. As a result, an embedded
-          database will be created, and the
-          <varname>accountRepository</varname> bean will be wired with a
-          reference to the development
-          <interfacename>DataSource</interfacename>. And that's likely what we
-          want in an integration test.</para>
+          <para><classname>TransferServiceTest</classname>에 
+          <interfacename>@ActiveProfiles("dev")</interfacename> 어노테이션을 붙혀서 
+          스프링 TestContext 프레임워크가 현재 프로파일을 <literal>{"dev"}</literal>로 
+          설정해서 <interfacename>ApplicationContext</interfacename>를 로드하도록 한다. 
+          그 결과 내장된 데이터베이스를 생성하고 <varname>accountRepository</varname> 빈을 개발 
+          <interfacename>DataSource</interfacename>에 대한 참조와 연결할 것이다. 이것이 
+          통합테스트에서 하려고 하는 것이다.</para>
 
-          <para>The following code listings demonstrate how to implement the
-          same configuration and integration test but using
-          <interfacename>@Configuration</interfacename> classes instead of
-          XML.</para>
+          <para>다음 코드 목록은 XML 대신 <interfacename>@Configuration</interfacename> 
+          클래스를 사용해서 어떻게 같은 설정과 통합테스트를 구현하는지 보여준다.</para>
 
           <programlisting language="java">@Configuration
 @Profile("dev")
@@ -1565,224 +1374,187 @@ public class TransferServiceTest {
 
    @Test
    public void testTransferService() {
-       // test the transferService
+       // transferService를 테스트한다
    }
 }</programlisting>
 
-          <para>In this variation, we have split the XML configuration into
-          three independent <interfacename>@Configuration</interfacename>
-          classes:</para>
+          <para>이번 변경에서는 XML 설정을 3개의 독립적인 
+          <interfacename>@Configuration</interfacename> 클래스로 분리했다.</para>
 
           <itemizedlist>
             <listitem>
-              <para><classname>TransferServiceConfig</classname>: acquires a
-              <varname>dataSource</varname> via dependency injection using
-              <interfacename>@Autowired</interfacename></para>
+              <para><classname>TransferServiceConfig</classname>: 
+              <interfacename>@Autowired</interfacename>를 사용한 의존성 주입으로 
+              <varname>dataSource</varname>를 얻는다.</para>
             </listitem>
 
             <listitem>
-              <para><classname>StandaloneDataConfig</classname>: defines a
-              <varname>dataSource</varname> for an embedded database suitable
-              for developer tests</para>
+              <para><classname>StandaloneDataConfig</classname>: 개발자 테스트에 
+              적합한 내장 데이터베이스의 <varname>dataSource</varname>를 정의한다.</para>
             </listitem>
 
             <listitem>
-              <para><classname>JndiDataConfig</classname>: defines a
-              <varname>dataSource</varname> that is retrieved from JNDI in a
-              production environment</para>
+              <para><classname>JndiDataConfig</classname>: 프로덕션 환경의 JNDI에서 
+              획득한 <varname>dataSource</varname>를 정의한다.</para>
             </listitem>
           </itemizedlist>
 
-          <para>As with the XML-based configuration example, we still annotate
-          <classname>TransferServiceTest</classname> with
-          <interfacename>@ActiveProfiles("dev")</interfacename>, but this time
-          we specify all three configuration classes via the
-          <interfacename>@ContextConfiguration </interfacename>annotation. The
-          body of the test class itself remains completely unchanged.</para>
+          <para>XML에 기반한 설정 예제처럼 <classname>TransferServiceTest</classname>에 
+          여전히 <interfacename>@ActiveProfiles("dev")</interfacename> 어노테이션을 붙혔다. 
+          하지만 이번에는 <interfacename>@ContextConfiguration </interfacename>어노테이션으로 
+          3개의 설정 클래스를 모두 지정했다. 테스트 클래스 자체의 바디는 전혀 변경하지 않고 
+          놔두었다.</para>
 
           <!-- TODO Consider documenting inheritance for active profiles. -->
         </section>
 
         <section id="testcontext-ctx-management-caching">
-          <title>Context caching</title>
+          <title>컨텍스트 캐싱</title>
 
-          <para>Once the TestContext framework loads an
-          <interfacename>ApplicationContext</interfacename> for a test, that
-          context will be cached and reused for <emphasis
-          role="bold">all</emphasis> subsequent tests that declare the same
-          unique context configuration within the same test suite. To
-          understand how caching works, it is important to understand what is
-          meant by <emphasis>unique</emphasis> and <emphasis>test
-          suite</emphasis>.</para>
+          <para>TestContext 프레임워크가 테스트에 대한 
+          <interfacename>ApplicationContext</interfacename>를 일단 로드하면 이 
+          컨텍스트는 캐싱될 것이고 같은 테스트슈트(test suite)내에서 유일한(unique) 컨텍스트 
+          설정을 같이 선언한 이어진 <emphasis role="bold">모든</emphasis> 테스트에서 재사용할 
+          것이다. 캐싱이 어떻게 동작하는지 이해하려면 <emphasis>유일하다(unique)</emphasis>와 
+          <emphasis>테스트슈트(test suite)</emphasis>의 의미를 이해하는 것이 
+          중요하다.</para>
 
-          <para>An <interfacename>ApplicationContext</interfacename> can be
-          <emphasis>uniquely</emphasis> identified by the combination of
-          configuration parameters that are used to load it. Consequently, the
-          unique combination of configuration parameters are used to generate
-          a <emphasis>key</emphasis> under which the context is cached. The
-          TestContext framework uses the following configuration parameters to
-          build the context cache key:</para>
+          <para><interfacename>ApplicationContext</interfacename>를 어플리케이션 
+          컨텍스트를 로드할 때 사용한 설정 파라미터들의 조합으로 <emphasis>유일하게</emphasis> 
+          구분할 수 있다. 따라서 설정 파라미터들의 유일한 조합을 캐싱된 컨텍스트의 키를 생성하는데 
+          사용한다. TestContext 프레임워크는 컨텍스트 캐시 키를 구성할 때 다음의 설정 
+          파라미터들을 사용한다.</para>
 
           <itemizedlist>
             <listitem>
-              <para><varname>locations</varname> <emphasis>(from
-              @ContextConfiguration)</emphasis></para>
+              <para><varname>locations</varname> <emphasis>(
+              @ContextConfiguration에서)</emphasis></para>
             </listitem>
 
             <listitem>
-              <para><varname>classes</varname> <emphasis>(from
-              @ContextConfiguration)</emphasis></para>
+              <para><varname>classes</varname> <emphasis>(
+              @ContextConfiguration에서)</emphasis></para>
             </listitem>
 
             <listitem>
-              <para><varname>contextLoader</varname> <emphasis>(from
-              @ContextConfiguration)</emphasis></para>
+              <para><varname>contextLoader</varname> <emphasis>(
+              @ContextConfiguration에서)</emphasis></para>
             </listitem>
 
             <listitem>
-              <para><varname>activeProfiles</varname> <emphasis>(from
-              @ActiveProfiles)</emphasis></para>
+              <para><varname>activeProfiles</varname> <emphasis>(
+              @ActiveProfiles에서)</emphasis></para>
             </listitem>
           </itemizedlist>
 
-          <para>For example, if <classname>TestClassA</classname> specifies
-          <literal>{"app-config.xml", "test-config.xml"}</literal> for the
-          <varname>locations</varname> (or <varname>value</varname>) attribute
-          of <interfacename>@ContextConfiguration</interfacename>, the
-          TestContext framework will load the corresponding
-          <interfacename>ApplicationContext</interfacename> and store it in a
-          <varname>static</varname> context cache under a key that is based
-          solely on those locations. So if <classname>TestClassB</classname>
-          also defines <literal>{"app-config.xml",
-          "test-config.xml"}</literal> for its locations (either explicitly or
-          implicitly through inheritance) and does not define a different
-          <interfacename>ContextLoader</interfacename> or different active
-          profiles, then the same
-          <interfacename>ApplicationContext</interfacename> will be shared by
-          both test classes. This means that the setup cost for loading an
-          application context is incurred only once (per test suite), and
-          subsequent test execution is much faster.</para>
+          <para>예를 들어, <classname>TestClassA</classname>가 
+          <interfacename>@ContextConfiguration</interfacename>의 
+          <varname>locations</varname> (또는 <varname>value</varname>) 속성에 
+          <literal>{"app-config.xml", "test-config.xml"}</literal>를 지정했다면 
+          TestContext 프레임워크가 대응되는 <interfacename>ApplicationContext</interfacename>를 
+          로드하고 이러한 위치(location)에 단독으로 기반하는 키 아래있는 <varname>static</varname> 
+          컨텍스트 캐시에 이 <interfacename>ApplicationContext</interfacename>를 저장한다. 
+          그래서 <classname>TestClassB</classname>도 위치(location)에 
+          <literal>{"app-config.xml", "test-config.xml"}</literal>를 정의하고 다른 
+          <interfacename>ContextLoader</interfacename>나 다른 활성화된 프로파일을 정의하지 
+          않았다면 두 테스트 클래스가 같은 <interfacename>ApplicationContext</interfacename>를 
+          공유할 것이다. 즉, 어플리케이션 컨텍스트를 로딩하는 설정 비용은 딱 한번만 발생하고(테스트슈트마다) 
+          이어지는 테스트 실행은 훨씬 더 빨라진다.</para>
 
           <note>
-            <title>Test suites and forked processes</title>
+            <title>테스트 슈트와 포크된(forked) 프로세스</title>
 
-            <para>The Spring TestContext framework stores application contexts
-            in a <emphasis>static</emphasis> cache. This means that the
-            context is literally stored in a <varname>static</varname>
-            variable. In other words, if tests execute in separate processes
-            the static cache will be cleared between each test execution, and
-            this will effectively disable the caching mechanism.</para>
+            <para>스프링 TestContext 프레임워크는 <emphasis>static</emphasis> 캐시에 
+            어플리케이션 컨텍스트를 저장한다. 이 말은 컨텍스트가 <varname>static</varname> 
+            변수에 리터럴하게 저자오딘다는 의미이다. 다시 말하자면 분리된 프로세스에서 테스트를 실행할 
+            때 정적 캐시는 각 테스트 실행간에 비워질 것이고 이는 효율적으로 캐싱 메카니즘을 
+            사용안하도록 한다.</para>
 
-            <para>To benefit from the caching mechanism, all tests must run
-            within the same process or test suite. This can be achieved by
-            executing all tests as a group within an IDE. Similarly, when
-            executing tests with a build framework such as Ant or Maven it is
-            important to make sure that the build framework does not
-            <emphasis>fork</emphasis> between tests. For example, if the
-            <ulink
-            url="http://maven.apache.org/plugins/maven-surefire-plugin/test-mojo.html#forkMode">forkMode</ulink>
-            for the Maven Surefire plug-in is set to <literal>always</literal>
-            or <literal>pertest</literal>, the TestContext framework will not
-            be able to cache application contexts between test classes and the
-            build process will run significantly slower as a result.</para>
+            <para>캐싱 메카니즘의 이득을 얻으려면 모든 테스트가 같은 프로세스나 같은 테스트슈트에서 
+            돌아가야 한다. 이는 IDE에서 하나의 그룹으로 모든 테스트를 실행해서 이룰 수 있다. 유사하게 
+            Ant나 Maven같은 빌드 프레임워크로 테스트를 실행할 때 빌드 프레임워크가 테스트들 사이에서 
+            <emphasis>포크(fork)</emphasis>하지 않도록 하는 것이 중요하다. 예를 들어 Maven 
+            Surefire 플러그인에서 <ulink
+            url="http://maven.apache.org/plugins/maven-surefire-plugin/test-mojo.html#forkMode">forkMode</ulink>를 
+            <literal>always</literal>나 <literal>pertest</literal>로 설정하면 
+            TestContext 프레임워크는 테스트 클래스들 사이에서 어플리케이션 컨텍스트를 캐시할 수 없게 
+            되어 빌드 과정이 현저하게 느려질 것이다.</para>
           </note>
 
-          <para>In the unlikely case that a test corrupts the application
-          context and requires reloading — for example, by modifying a bean
-          definition or the state of an application object — you can annotate
-          your test class or test method with
-          <interfacename>@DirtiesContext</interfacename> (see the discussion
-          of <interfacename>@DirtiesContext</interfacename> in <xref
-          linkend="integration-testing-annotations-spring" />). This instructs
-          Spring to remove the context from the cache and rebuild the
-          application context before executing the next test. Note that
-          support for the <interfacename>@DirtiesContext</interfacename>
-          annotation is provided by the
-          <classname>DirtiesContextTestExecutionListener</classname> which is
-          enabled by default.</para>
+          <para>테스트가 어플리케이션 컨텍스트를 망가뜨려서 리로딩을 해야 하는 흔치않은 경우에(예를 
+          들어 빈 정의나 어플리케이션 객체의 상태를 수정해서) 테스트 클래스나 테스트 메서드에 
+          <interfacename>@DirtiesContext</interfacename> 어노테이션을 붙힐 수 있다. 
+          (<xref linkend="integration-testing-annotations-spring" />에서 
+          <interfacename>@DirtiesContext</interfacename>에 관한 논의를 참고해라.) 
+          이 어노테이션은 스프링이 캐시에서 컨텍스트를 제거하고 다음 테스트를 실행하기 전에 어플리케이션 
+          컨텍스트를 다시 구성하도록 지시한다. <interfacename>@DirtiesContext</interfacename>에 
+          대한 지원은 기본적으로 사용가능한 
+          <classname>DirtiesContextTestExecutionListener</classname>에서 제공한다.</para>
         </section>
       </section>
 
       <section id="testcontext-fixture-di">
-        <title>Dependency injection of test fixtures</title>
+        <title>테스트 픽스처의 의존성 주입</title>
 
-        <para>When you use the
-        <classname>DependencyInjectionTestExecutionListener</classname> —
-        which is configured by default — the dependencies of your test
-        instances are <emphasis>injected</emphasis> from beans in the
-        application context that you configured with
-        <interfacename>@ContextConfiguration</interfacename>. You may use
-        setter injection, field injection, or both, depending on which
-        annotations you choose and whether you place them on setter methods or
-        fields. For consistency with the annotation support introduced in
-        Spring 2.5 and 3.0, you can use Spring's
-        <interfacename>@Autowired</interfacename> annotation or the
-        <interfacename>@Inject</interfacename> annotation from JSR 300.</para>
+        <para>기본적으로 설정되는 <classname>DependencyInjectionTestExecutionListener</classname>를 
+        사용할 때 테스트 인스턴스의 의존성을 <interfacename>@ContextConfiguration</interfacename>로 
+        설정한 어플리케이션 컨텍스트의 빈에서 <emphasis>주입한다</emphasis>. setter 메서드나 
+        필드에 어떤 어노테이션을 붙히는 지에 따라 setter 주입이나 필드 주입, 또는 둘다를 사용할 것이다. 
+        스프링 2.5와 3.0에서 도입된 어노테이션 지원의 일관성을 위해서 스프링의 
+        <interfacename>@Autowired</interfacename> 어노테이션이나 JSR 330의 
+        <interfacename>@Inject</interfacename>를 사용할 수 있다.</para>
 
         <tip>
-          <para>The TestContext framework does not instrument the manner in
-          which a test instance is instantiated. Thus the use of
-          <interfacename>@Autowired</interfacename> or
-          <interfacename>@Inject</interfacename> for constructors has no
-          effect for test classes.</para>
+          <para>TestContext 프레임워크는 테스트 인스턴스를 인스턴스하는 방법으로 구성하지 
+          않는다. 그러므로 생성자에 <interfacename>@Autowired</interfacename>나 
+          <interfacename>@Inject</interfacename>를 사용해서 테스트 클래스에는 
+          효과가 없다.</para>
         </tip>
 
-        <para>Because <interfacename>@Autowired</interfacename> is used to
-        perform <link linkend="beans-factory-autowire"><emphasis>autowiring by
-        type</emphasis></link>, if you have multiple bean definitions of the
-        same type, you cannot rely on this approach for those particular
-        beans. In that case, you can use
-        <interfacename>@Autowired</interfacename> in conjunction with
-        <interfacename>@Qualifier</interfacename>. As of Spring 3.0 you may
-        also choose to use <interfacename>@Inject</interfacename> in
-        conjunction with <interfacename>@Named</interfacename>. Alternatively,
-        if your test class has access to its
-        <classname>ApplicationContext</classname>, you can perform an explicit
-        lookup by using (for example) a call to
-        <methodname>applicationContext.getBean("titleRepository")</methodname>.</para>
+        <para><interfacename>@Autowired</interfacename>는 
+        <link linkend="beans-factory-autowire"><emphasis>타입으로 자동연결</emphasis></link>하기 
+        때문에 같은 타입의 빈 정의를 여러 개 가지고 있다면 이러한 빈들에는 이 접근을 사용할 수 없다. 
+        이러한 경우에는 <interfacename>@Qualifier</interfacename>와 
+        <interfacename>@Autowired</interfacename>를 함께 사용할 수 있다. 스프링 3.0에서는 
+        <interfacename>@Inject</interfacename>를 <interfacename>@Named</interfacename>와 
+        함께 사용할 수도 있다. 아니면 테스트 클래스가 자신의 <classname>ApplicationContext</classname>에 
+        접근한다면 (예를 들어)
+        <methodname>applicationContext.getBean("titleRepository")</methodname>를 
+        호출해서 명시적으로 검색할 수 있다.</para>
 
-        <para>If you do not want dependency injection applied to your test
-        instances, simply do not annotate fields or setter methods with
-        <interfacename>@Autowired</interfacename> or
-        <interfacename>@Inject</interfacename>. Alternatively, you can disable
-        dependency injection altogether by explicitly configuring your class
-        with <interfacename>@TestExecutionListeners</interfacename> and
-        omitting
-        <literal>DependencyInjectionTestExecutionListener.class</literal> from
-        the list of listeners.</para>
+        <para>테스트 인스턴스에 의존성 주입을 하고 싶지 않다면 그냥 필드나 setter 메서드에 
+        <interfacename>@Autowired</interfacename>나 
+        <interfacename>@Inject</interfacename> 어노테이션을 붙히지 말아라. 아니면 
+        명시적으로 클래스를 <interfacename>@TestExecutionListeners</interfacename>로 
+        설정하고 리스너 목록에서 <literal>DependencyInjectionTestExecutionListener.class</literal>를 
+        생략해서 의존성 주입은 전혀 사용하지 않게 할 수 있다.</para>
 
-        <para>Consider the scenario of testing a
-        <classname>HibernateTitleRepository</classname> class, as outlined in
-        the <link linkend="integration-testing-goals">Goals</link> section.
-        The next two code listings demonstrate the use of
-        <interfacename>@Autowired</interfacename> on fields and setter
-        methods. The application context configuration is presented after all
-        sample code listings.</para>
+        <para><link linkend="integration-testing-goals">목표</link> 섹션에서 간략히 
+        설명했듯이 <classname>HibernateTitleRepository</classname> 클래스를 테스트하는 
+        시나리오를 생각해 보자. 다음의 두 코드는 필드와 setter 메서드에 
+        <interfacename>@Autowired</interfacename>를 사용하는 방법을 보여준다. 
+        어플리케이션 컨텍스트 설정은 모든 샘플코드 뒤에 나와있다.</para>
 
         <note>
-          <para>The dependency injection behavior in the following code
-          listings is not specific to JUnit. The same DI techniques can be
-          used in conjunction with any testing framework.</para>
+          <para>다음 코드목록에서 의존성 주입을 JUnit으로 지정하지 않았다. 동일한 DI 기술을 
+          어떤 테스트 프레임워크와도 사용할 수 있다.</para>
 
-          <para>The following examples make calls to static assertion methods
-          such as <literal>assertNotNull()</literal> but without prepending
-          the call with <literal>Assert</literal>. In such cases, assume that
-          the method was properly imported through an <literal>import
-          static</literal> declaration that is not shown in the
-          example.</para>
+          <para>다음의 예제들은 <literal>Assert</literal>를 앞에 붙히지 않고 
+          <literal>assertNotNull()</literal>같은 정적 단언문 메서드를 호출한다. 이러한 
+          호출은 예제에는 나와있지 않지만 <literal>import static</literal> 선언으로 해당 
+          메서드들이 제대로 임포트되었다고 가정한 것이다.</para>
         </note>
 
-        <para>The first code listing shows a JUnit-based implementation of the
-        test class that uses <interfacename>@Autowired</interfacename> for
-        field injection.</para>
+        <para>첫 예제코드는 필드 주입으로 <interfacename>@Autowired</interfacename>를 
+        사용한 테스트 클래스의 JUnit 기반 구현체를 보여준다.</para>
 
         <programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
-<lineannotation>// specifies the Spring configuration to load for this test fixture</lineannotation>
+<lineannotation>// 이 테스트 픽스처를 로드하도록 스프링 설정을 지정한다</lineannotation>
 <emphasis role="bold">@ContextConfiguration("repository-config.xml")</emphasis>
 public class HibernateTitleRepositoryTests {
 
-    <lineannotation>// this instance will be dependency injected <emphasis
-              role="bold">by type</emphasis></lineannotation>
+    <lineannotation>// 이 인스턴스는 <emphasis role="bold">타입으로</emphasis> 
+    의존성 주입될 것이다.</lineannotation>
     <emphasis role="bold">@Autowired</emphasis>    
     private HibernateTitleRepository titleRepository;
 
@@ -1793,17 +1565,17 @@ public class HibernateTitleRepositoryTests {
     }
 }</programlisting>
 
-        <para>Alternatively, you can configure the class to use
-        <interfacename>@Autowired</interfacename> for setter injection as seen
-        below.</para>
+        <para>아니면 아래에서 보듯이 setter 주입으로 
+        <interfacename>@Autowired</interfacename>를 사용하도록 클래스를 
+        설정할 수 있다.</para>
 
         <programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
-<lineannotation>// specifies the Spring configuration to load for this test fixture</lineannotation>
+<lineannotation>// 이 테스트 픽스처를 로드하도록 스프링 설정을 지정한다</lineannotation>
 <emphasis role="bold">@ContextConfiguration("repository-config.xml")</emphasis>
 public class HibernateTitleRepositoryTests {
 
-    <lineannotation>// this instance will be dependency injected <emphasis
-              role="bold">by type</emphasis></lineannotation>
+    <lineannotation>// 이 인스턴스는 <emphasis role="bold">타입으로</emphasis> 
+    의존성 주입될 것이다.</lineannotation>
     private HibernateTitleRepository titleRepository;
 
     <emphasis role="bold">@Autowired</emphasis>
@@ -1818,10 +1590,9 @@ public class HibernateTitleRepositoryTests {
     }
 }</programlisting>
 
-        <para>The preceding code listings use the same XML context file
-        referenced by the <interfacename>@ContextConfiguration</interfacename>
-        annotation (that is, <literal>repository-config.xml</literal>), which
-        looks like this:</para>
+        <para>앞의 코드들은 <interfacename>@ContextConfiguration</interfacename> 
+        어노테이션으로 참조되는 다음과 같은 같은 XML 컨텍스트 파일을 사용한다.(즉 
+        <literal>repository-config.xml</literal>이다.)</para>
 
         <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans" 
@@ -1829,7 +1600,7 @@ public class HibernateTitleRepositoryTests {
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"&gt;
 
-    <lineannotation>&lt;!-- this bean will be injected into the <classname>HibernateTitleRepositoryTests</classname> class --&gt;</lineannotation>
+    <lineannotation>&lt;!-- 이 빈은 <classname>HibernateTitleRepositoryTests</classname> 클래스로 주입된다 --&gt;</lineannotation>
     &lt;bean id="<emphasis role="bold">titleRepository</emphasis>" class="<emphasis
             role="bold">com.foo.repository.hibernate.HibernateTitleRepository</emphasis>"&gt;
         &lt;property name="sessionFactory" ref="sessionFactory"/&gt;
@@ -1837,21 +1608,19 @@ public class HibernateTitleRepositoryTests {
     
     &lt;bean id="sessionFactory"
             class="org.springframework.orm.hibernate3.LocalSessionFactoryBean"&gt;
-        <lineannotation>&lt;!-- configuration elided for brevity --&gt;</lineannotation>
+        <lineannotation>&lt;!-- 간결함을 위해 설정을 생략했다 --&gt;</lineannotation>
     &lt;/bean&gt;
 
 &lt;/beans&gt;</programlisting>
 
         <note>
-          <para>If you are extending from a Spring-provided test base class
-          that happens to use <interfacename>@Autowired</interfacename> on one
-          of its setter methods, you might have multiple beans of the affected
-          type defined in your application context: for example, multiple
-          <interfacename>DataSource</interfacename> beans. In such a case, you
-          can override the setter method and use the
-          <interfacename>@Qualifier</interfacename> annotation to indicate a
-          specific target bean as follows, but make sure to delegate to the
-          overridden method in the superclass as well.</para>
+          <para>setter 메서드에 <interfacename>@Autowired</interfacename>를 사용해서 
+          스프링이 제공하는 테스트 기반 클래스를 확장한다면 영향을 받는 어플리케이션 컨텍스트에 정의한 
+          타입의 여러가지 빈을 가질 것이다. 예를 들어 여러 
+          <interfacename>DataSource</interfacename> 빈이다. 이러한 경우 setter 메서드를 
+          오버라이드 할 수 있고 다음과 같이 지정한 대상 빈을 나타내기 위해 
+          <interfacename>@Qualifier</interfacename> 어노테이션을 사용할 수 있지만 
+          수퍼클래스의 오버라이드된 메서드에 위임하도록 해야한다.</para>
 
           <programlisting language="java"><lineannotation>// ...</lineannotation>
 
@@ -1863,89 +1632,74 @@ public class HibernateTitleRepositoryTests {
 
 <lineannotation>// ...</lineannotation></programlisting>
 
-          <para>The specified qualifier value indicates the specific
-          <interfacename>DataSource</interfacename> bean to inject, narrowing
-          the set of type matches to a specific bean. Its value is matched
-          against <literal>&lt;qualifier&gt;</literal> declarations within the
-          corresponding <literal>&lt;bean&gt;</literal> definitions. The bean
-          name is used as a fallback qualifier value, so you may effectively
-          also point to a specific bean by name there (as shown above,
-          assuming that "myDataSource" is the bean id).</para>
+          <para><interfacename>DataSource</interfacename> 빈을 나타내서 지정한 빈과 일치하는 
+          타입의 세트로 제한한다. 제한자의 값은 대응되는 <literal>&lt;bean&gt;</literal> 
+          정의내의 <literal>&lt;qualifier&gt;</literal> 선언과 일치한다. 빈 이름을 제한자 
+          값의 대비책(fallback)으로 사용하므로 효과적으로 이름으로 특정빈을 가르킬 수도 있다.(위에서 
+          보았듯이 "myDataSource"가 빈 id라고 가정한다.)</para>
         </note>
       </section>
 
       <section id="testcontext-tx">
-        <title>Transaction management</title>
+        <title>트랜잭션 관리</title>
 
-        <para>In the TestContext framework, transactions are managed by the
-        <classname>TransactionalTestExecutionListener</classname>. Note that
-        <classname>TransactionalTestExecutionListener</classname> is
-        configured by default, even if you do not explicitly declare
-        <interfacename>@TestExecutionListeners</interfacename> on your test
-        class. To enable support for transactions, however, you must provide a
-        <classname>PlatformTransactionManager</classname> bean in the
-        application context loaded by
-        <interfacename>@ContextConfiguration</interfacename> semantics. In
-        addition, you must declare
-        <interfacename>@Transactional</interfacename> either at the class or
-        method level for your tests.</para>
+        <para>TestContext 프레임워크에서 트랜잭션은 
+        <classname>TransactionalTestExecutionListener</classname>가 관리한다. 테스트 
+        클래스에 명시적으로 <interfacename>@TestExecutionListeners</interfacename>를 
+        선언하지 않더라도 <classname>TransactionalTestExecutionListener</classname>은 
+        기본적으로 설정된다. 하지만 트랜잭션 지원을 활성화하려면 
+        <interfacename>@ContextConfiguration</interfacename>의 의미로 로드하는 
+        어플리케이션 컨텍스트에 <classname>PlatformTransactionManager</classname>를 
+        제공해야 한다. 추가적으로 테스크 클래스에 클래스 수준 혹은 메서드 수준 
+        <interfacename>@Transactional</interfacename>를 선언해야 한다.</para>
 
-        <para>For class-level transaction configuration (i.e., setting the
-        bean name for the transaction manager and the default rollback flag),
-        see the <interfacename>@TransactionConfiguration</interfacename> entry
-        in the <link linkend="integration-testing-annotations">annotation
-        support</link> section.</para>
+        <para>클래스 수준의 트랜잭션 설정은(예시. 트랜잭션 관리자와 기본 롤백 플래그에 빈 이름을 
+        설정) <link linkend="integration-testing-annotations">어노테이션 지원</link> 
+        섹션의 <interfacename>@TransactionConfiguration</interfacename> 부분을 
+        봐라.</para>
 
-        <para>If transactions are not enabled for the entire test class, you
-        can annotate methods explicitly with
-        <interfacename>@Transactional</interfacename>. To control whether a
-        transaction should commit for a particular test method, you can use
-        the <interfacename>@Rollback</interfacename> annotation to override
-        the class-level default rollback setting.</para>
+        <para>트랜잭션을 테스트 클래스 전체에 적용하지 않으면 메서드에 명시적으로 
+        <interfacename>@Transactional</interfacename> 어노테이션을 붙힐 수 없다. 
+        특정 테스트 메서드는 커밋이 되도록 트랜잭션을 제어하려면 클래스 수준의 기본 롤백 설정을 
+        오버라이드하도록 <interfacename>@Rollback</interfacename> 어노테이션을 
+        사용할 수 있다.</para>
 
-        <para><emphasis><link
+        <para><emphasis>클래스 수준의 트랜잭션 지원을 위해서 <link
         linkend="testcontext-support-classes-junit4"><classname>AbstractTransactionalJUnit4SpringContextTests</classname></link>
-        and <link
-        linkend="testcontext-support-classes-testng"><classname>AbstractTransactionalTestNGSpringContextTests</classname></link>
-        are preconfigured for transactional support at the class level.
-        </emphasis></para>
+        와 <link
+        linkend="testcontext-support-classes-testng"><classname>AbstractTransactionalTestNGSpringContextTests</classname></link>가 
+        미리 설정된다.</emphasis></para>
 
-        <para>Occasionally you need to execute certain code before or after a
-        transactional test method but outside the transactional context, for
-        example, to verify the initial database state prior to execution of
-        your test or to verify expected transactional commit behavior after
-        test execution (if the test was configured not to roll back the
-        transaction).
-        <classname>TransactionalTestExecutionListener</classname> supports the
-        <interfacename>@BeforeTransaction</interfacename> and
-        <interfacename>@AfterTransaction</interfacename> annotations exactly
-        for such scenarios. Simply annotate any <literal>public void</literal>
-        method in your test class with one of these annotations, and the
-        <classname>TransactionalTestExecutionListener</classname> ensures that
-        your <emphasis>before transaction method</emphasis> or <emphasis>after
-        transaction method</emphasis> is executed at the appropriate
-        time.</para>
+        <para>때때로 트랜잭션이 적용된 컨텍스트 밖에서 트랜잭션이 적용된 테스트 메서드 이전이나 이후에 
+        특정 코드를 실행해야할 필요가 있다. 예를 들면 테스트 실행에 앞서 초기 데이터베이스의 상태를 
+        확인하거나 테스트 실행 이후에 예상한 트랜잭션 커밋 작업(테스트가 트랜잭션을 롤백하도록 설정하지 
+        않았다면)을 확인하는 등이다.
+        <classname>TransactionalTestExecutionListener</classname>는 정확히 이러한 
+        시나리오를 위해서 <interfacename>@BeforeTransaction</interfacename>와 
+        <interfacename>@AfterTransaction</interfacename>를 지원한다. 테스트 클래스의 어떤 
+        <literal>public void</literal> 메서드라도 그냥 이러한 어노테이션 중에 하나를 붙히면 
+        <classname>TransactionalTestExecutionListener</classname>가 절적한 시기에 
+        <emphasis>before transaction method</emphasis>나 
+        <emphasis>after transaction method</emphasis>의 실행을 보장한다.</para>
 
         <tip>
-          <para>Any <emphasis>before methods</emphasis> (such as methods
-          annotated with JUnit's <interfacename>@Before</interfacename>) and
-          any <emphasis>after methods</emphasis> (such as methods annotated
-          with JUnit's <interfacename>@After</interfacename>) are executed
-          <emphasis role="bold">within</emphasis> a transaction. In addition,
-          methods annotated with
-          <interfacename>@BeforeTransaction</interfacename> or
-          <interfacename>@AfterTransaction</interfacename> are naturally not
-          executed for tests annotated with
-          <interfacename>@NotTransactional</interfacename>. However,
-          <interfacename>@NotTransactional</interfacename> is deprecated as of
-          Spring 3.0.</para>
+          <para>모든 <emphasis>before methods</emphasis>(JUnit의 
+          <interfacename>@Before</interfacename> 어노테이션이 붙은 메서드처럼)와 
+          <emphasis>after methods</emphasis>(JUnit의 
+          <interfacename>@After</interfacename> 어노테이션이 붙은 메서드처럼)는 
+          트랜잭션<emphasis role="bold">내에서</emphasis> 실행된다. 추가적으로 
+          <interfacename>@BeforeTransaction</interfacename>나 
+          <interfacename>@AfterTransaction</interfacename> 어노테이션이 붙은 메서드들은 
+          <interfacename>@NotTransactional</interfacename> 어노테이션이 붙은 테스트에는 
+          자연스럽게 실행하지 않는다. 하지만 
+          <interfacename>@NotTransactional</interfacename>는 스프링 3.0부터는 
+          폐기되었다.</para>
         </tip>
 
-        <para>The following JUnit-based example displays a fictitious
-        integration testing scenario highlighting several transaction-related
-        annotations. Consult the <link
-        linkend="integration-testing-annotations">annotation support</link>
-        section for further information and configuration examples.</para>
+        <para>다음의 JUnit 기반 예제는 트랜잭션과 관련된 여러 어노테이션을 강조하는 가상의 통합 
+        테스트 시나리오를 보여준다. 더 자세한 내용과 설정 예제는 <link
+        linkend="integration-testing-annotations">어노테이션 지원</link> 섹션을 
+        참고해라.</para>
 
         <programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
@@ -1955,29 +1709,29 @@ public class FictitiousTransactionalTest {
 
     <emphasis role="bold">@BeforeTransaction</emphasis>
     public void verifyInitialDatabaseState() {
-        <lineannotation>// logic to verify the initial state before a transaction is started</lineannotation>
+        <lineannotation>// 트랜잭셩을 시작하기 전에 초기상태를 검증하는 로직</lineannotation>
     }
 
     @Before
     public void setUpTestDataWithinTransaction() {
-        <lineannotation>// set up test data within the transaction</lineannotation>
+        <lineannotation>// 트랜잭션내에서 테스트 데이터 구성</lineannotation>
     }
 
     @Test
-    <lineannotation>// overrides the class-level defaultRollback setting</lineannotation>
+    <lineannotation>// 클래스수준의 defaultRollback 설정을 오버라이드한다</lineannotation>
     <emphasis role="bold">@Rollback(true)</emphasis>
     public void modifyDatabaseWithinTransaction() {
-        <lineannotation>// logic which uses the test data and modifies database state</lineannotation>
+        <lineannotation>// 테스트 데이터를 사용하고 데이터베이스의 상태를 수정하는 로직</lineannotation>
     }
 
     @After
     public void tearDownWithinTransaction() {
-        <lineannotation>// execute "tear down" logic within the transaction</lineannotation>
+        <lineannotation>// 트랜잭션내의 "tear down" 로직을 실행한다</lineannotation>
     }
 
     <emphasis role="bold">@AfterTransaction</emphasis>
     public void verifyFinalDatabaseState() {
-        <lineannotation>// logic to verify the final state after transaction has rolled back</lineannotation>
+        <lineannotation>// 트랜잭션이 롤백된 후에 최종 상태를 검증하는 로직</lineannotation>
     }
 
 }</programlisting>
@@ -1985,36 +1739,33 @@ public class FictitiousTransactionalTest {
         <anchor id="testcontext-tx-false-positives" />
 
         <note>
-          <title>Avoid false positives when testing ORM code</title>
+          <title>ORM 코드를 테스트할 때 false positive 피하기</title>
 
-          <para>When you test application code that manipulates the state of
-          the Hibernate session, make sure to <emphasis>flush</emphasis> the
-          underlying session within test methods that execute that code.
-          Failing to flush the underlying session can produce <emphasis>false
-          positives</emphasis>: your test may pass, but the same code throws
-          an exception in a live, production environment. In the following
-          Hibernate-based example test case, one method demonstrates a false
-          positive, and the other method correctly exposes the results of
-          flushing the session. Note that this applies to JPA and any other
-          ORM frameworks that maintain an in-memory <emphasis>unit of
-          work</emphasis>.</para>
+          <para>하이버네이트 세션의 상태를 조작하는 어플리케이션 코드를 테스트할 때 해당 코드를 
+          실행하는 테스트 메서드내에서 의존하는 세션을 <emphasis>플러시(flush)</emphasis>하도록 
+          해야한다. 기반 세션을 플러시하는 것이 실패하면 <emphasis>false positive</emphasis>
+          (역주: 오류가 아닌데 오류라고 판단하는 경우를 의미한다)가 된다. 테스트는 통과할 것이지만 동일한 
+          코드가 프로덕션 환경에서는 예외를 던질 것이다. 다음의 하이버네이트 기반 예제 테스트 케이스에서 
+          한 메서드는 false positive를 보여주고 다른 메서드는 세션 플러시의 결과를 제대로 노출한다. 
+          이는 내장 메모리(in-memory) <emphasis>작업의 단위</emphasis>를 유지하는 JPA와 다른 
+          ORM 프레임워크에도 적용된다.</para>
 
           <programlisting language="java"><lineannotation>// ...</lineannotation>
 
 @Autowired
 private SessionFactory sessionFactory;
 
-@Test // no expected exception!
+@Test // 예상되는 예외는 없다!
 public void falsePositive() {
     updateEntityInHibernateSession();
-    // False positive: an exception will be thrown once the session is
-    // finally flushed (i.e., in production code)
+    // False positive: 예외가 던져지고 세션을 결국 플러시 될 것이다.
+    // (예: 프로덕션 모드에서)
 }
 
 @Test(expected = GenericJDBCException.class)
 public void updateWithSessionFlush() {
     updateEntityInHibernateSession();
-    // Manual flush is required to avoid false positive in test
+    // 테스트에서 false positive를 피하려면 수동으로 플러시해야 한다
     sessionFactory.getCurrentSession().flush();
 }
 
@@ -2023,106 +1774,91 @@ public void updateWithSessionFlush() {
       </section>
 
       <section id="testcontext-support-classes">
-        <title>TestContext support classes</title>
+        <title>TestContext 지원 클래스</title>
 
         <section id="testcontext-support-classes-junit4">
-          <title>JUnit support classes</title>
+          <title>JUnit 지원 클래스</title>
 
-          <para>The <literal>org.springframework.test.context.junit4</literal>
-          package provides support classes for JUnit 4.5+ based test
-          cases.</para>
+          <para><literal>org.springframework.test.context.junit4</literal> 패키지는 
+          JUnit 4.5+ 기반 테스트 케이스를 지원하는 클래스를 제공한다.</para>
 
           <itemizedlist>
             <listitem>
               <para><classname>AbstractJUnit4SpringContextTests</classname>:
-              Abstract base test class that integrates the <emphasis>Spring
-              TestContext Framework</emphasis> with explicit
-              <classname>ApplicationContext</classname> testing support in a
-              JUnit 4.5+ environment.</para>
+              JUnit 4.5+ 환경에서 명백한 <classname>ApplicationContext</classname> 
+              테스트 지원과 <emphasis>Spring TestContext Framework</emphasis>와 
+              통합된 추상 기반(base) 테스트 클래스</para>
 
-              <para>When you extend
-              <classname>AbstractJUnit4SpringContextTests</classname>, you can
-              access the following <literal>protected</literal> instance
-              variable:</para>
+              <para><classname>AbstractJUnit4SpringContextTests</classname>를 
+              확장할 때 다음의 <literal>protected</literal> 인스턴스 변수에 
+              접근할 수 있다.</para>
 
               <itemizedlist>
                 <listitem>
-                  <para><literal>applicationContext</literal>: Use this
-                  variable to perform explicit bean lookups or to test the
-                  state of the context as a whole.</para>
+                  <para><literal>applicationContext</literal>: 명시적인 빈 
+                  검색을 수행하거나 컨텍스트의 상태를 전체적으로 테스트할 때 이 변수를 
+                  사용해라.</para>
                 </listitem>
               </itemizedlist>
             </listitem>
 
             <listitem>
               <para><classname>AbstractTransactionalJUnit4SpringContextTests</classname>:
-              Abstract <emphasis>transactional</emphasis> extension of
-              <classname>AbstractJUnit4SpringContextTests</classname> that
-              also adds some convenience functionality for JDBC access.
-              Expects a <classname>javax.sql.DataSource</classname> bean and a
-              <interfacename>PlatformTransactionManager</interfacename> bean
-              to be defined in the <classname>ApplicationContext</classname>.
-              When you extend
-              <classname>AbstractTransactionalJUnit4SpringContextTests</classname>
-              you can access the following <literal>protected</literal>
-              instance variables:</para>
+              JDBC 접근에 다소 편리한 기능도 추가하는 
+              <classname>AbstractJUnit4SpringContextTests</classname>의 추상 
+              <emphasis>transactional</emphasis> 확장. <classname>javax.sql.DataSource</classname> 
+              빈과 <interfacename>PlatformTransactionManager</interfacename>이 
+              <classname>ApplicationContext</classname>에 정의될 것이다.
+              <classname>AbstractTransactionalJUnit4SpringContextTests</classname>를 
+              확장할 때 다음의 <literal>protected</literal> 인스턴스 변수에 접근할 수 
+              있다.</para>
 
               <itemizedlist>
                 <listitem>
-                  <para><literal>applicationContext</literal>: Inherited from
-                  the <classname>AbstractJUnit4SpringContextTests</classname>
-                  superclass. Use this variable to perform explicit bean
-                  lookups or to test the state of the context as a
-                  whole.</para>
+                  <para><literal>applicationContext</literal>: 
+                  <classname>AbstractJUnit4SpringContextTests</classname> 
+                  수퍼클래스를 상속받았다. 명시적인 빈 검색을 수행하거나 컨텍스트의 상태를 
+                  전체적으로 테스트할 때 이 변수를 사용해라.</para>
                 </listitem>
 
                 <listitem>
-                  <para><literal>simpleJdbcTemplate</literal>: Use this
-                  variable to execute SQL statements to query the database.
-                  Such queries can be used to confirm database state both
-                  <emphasis>prior to</emphasis> and <emphasis>after</emphasis>
-                  execution of database-related application code, and Spring
-                  ensures that such queries run in the scope of the same
-                  transaction as the application code. When used in
-                  conjunction with an ORM tool, be sure to avoid <link
-                  linkend="testcontext-tx-false-positives">false
-                  positives</link>.</para>
+                  <para><literal>simpleJdbcTemplate</literal>: 디비 쿼리를 하는 
+                  SQL 문을 실행할 때 이 변수를 사용해라. 이러한 쿼리는 데이터베이스와 관련된 
+                  어플리케이션 코드를 실행하기 <emphasis>이전</emphasis>과 
+                  <emphasis>이후</emphasis> 모두에 데이터베이스 상태를 확인하는데 사용할 
+                  수 있고 스프링이 이러한 쿼리가 어플리케이션 코드와 같은 트랜잭션의 범위로 
+                  실행된다는 것을 보장해준다. ORM 도구와 함께 사용할 때는 <link
+                  linkend="testcontext-tx-false-positives">false positives</link>를 
+                  피해야 한다.</para>
                 </listitem>
               </itemizedlist>
             </listitem>
           </itemizedlist>
 
           <tip>
-            <para>These classes are a convenience for extension. If you do not
-            want your test classes to be tied to a Spring-specific class
-            hierarchy — for example, if you want to directly extend the class
-            you are testing — you can configure your own custom test classes
-            by using
+            <para>이러한 클래스들은 확장하기 쉽다. 스프링에 특화된 클래스 계층(예를 들어 테스트하는 
+            클래스를 직접 확장하고자 한다면)에 묶인 테스트 클래스를 원하지 않는다면 
             <interfacename>@RunWith(SpringJUnit4ClassRunner.class)</interfacename>,
             <interfacename>@ContextConfiguration</interfacename>,
-            <interfacename>@TestExecutionListeners</interfacename>, and so
-            on.</para>
+            <interfacename>@TestExecutionListeners</interfacename> 등을 사용해서 
+            자신만의 커스텀 테스트 클래스를 설정할 수 있다.</para>
           </tip>
         </section>
 
         <section id="testcontext-junit4-runner">
           <title>Spring JUnit Runner</title>
 
-          <para>The <emphasis>Spring TestContext Framework</emphasis> offers
-          full integration with JUnit 4.5+ through a custom runner (tested on
-          JUnit 4.5 – 4.9). By annotating test classes with
-          <literal>@RunWith(SpringJUnit4ClassRunner.class)</literal>,
-          developers can implement standard JUnit-based unit and integration
-          tests and simultaneously reap the benefits of the TestContext
-          framework such as support for loading application contexts,
-          dependency injection of test instances, transactional test method
-          execution, and so on. The following code listing displays the
-          minimal requirements for configuring a test class to run with the
-          custom Spring Runner.
-          <interfacename>@TestExecutionListeners</interfacename> is configured
-          with an empty list in order to disable the default listeners, which
-          otherwise would require an ApplicationContext to be configured
-          through <interfacename>@ContextConfiguration</interfacename>.</para>
+          <para><emphasis>Spring TestContext Framework</emphasis>는 커스텀 러너
+          (JUnit 4.5 – 4.9에서 테스트되었다)로 JUnit 4.5+와 완전한 통합을 제공한다. 개발자들이 
+          테스트 클래스에 <literal>@RunWith(SpringJUnit4ClassRunner.class)</literal> 
+          어노테이션을 붙혀서 JUnit에 기반한 유닛테스트와 통합테스트를 구현할 수 있고 동시에 어플리케이션 
+          컨텍스트 로딩, 테스트 인스턴스의 의존성 주입, 테스트 메서드 실행의 트랜잭션 적용 등의 TestContext 
+          프레임워크의 이점을 얻을 수 있다. 다음의 코드 목록은 테스트 클래스를 커스텀 스프링 러너로 실행하도록 
+          설정하기 위한 최소 요구사항을 보여준다. 
+          <interfacename>@TestExecutionListeners</interfacename>는 기본 리스너를 
+          사용안하도록 비어있는 리스트로 설정했다.비어있는 리스트로 설정하지 않으면 ApplicationContext를 
+          <interfacename>@ContextConfiguration</interfacename>로 설정해야 
+          한다.</para>
 
           <programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({})
@@ -2130,103 +1866,91 @@ public class SimpleTest {
 
     @Test
     public void testMethod() {
-        <lineannotation>// execute test logic...</lineannotation>
+        <lineannotation>// 테스트 로직 실행...</lineannotation>
     }
 }</programlisting>
         </section>
 
         <section id="testcontext-support-classes-testng">
-          <title>TestNG support classes</title>
+          <title>TestNG 지원 클래스</title>
 
-          <para>The <literal>org.springframework.test.context.testng</literal>
-          package provides support classes for TestNG based test cases.</para>
+          <para><literal>org.springframework.test.context.testng</literal> 패키지는
+          TestNG 기반의 테스트 클래스를 지원하는 클래스를 제공한다.</para>
 
           <itemizedlist>
             <listitem>
               <para><classname>AbstractTestNGSpringContextTests</classname>:
-              Abstract base test class that integrates the <emphasis>Spring
-              TestContext Framework</emphasis> with explicit
-              <classname>ApplicationContext</classname> testing support in a
-              TestNG environment.</para>
+              TestNG 환경에서 명시적인 <classname>ApplicationContext</classname> 
+              테스트 지원과 함께 <emphasis>Spring TestContext Framework</emphasis>와 
+              통합하는 추상 기반(base) 테스트 클래스.</para>
 
-              <para>When you extend
-              <classname>AbstractTestNGSpringContextTests</classname>, you can
-              access the following <literal>protected</literal> instance
-              variable:</para>
+              <para><classname>AbstractTestNGSpringContextTests</classname>를 
+              확장할 때 다음의 <literal>protected</literal> 인스턴스 변수에 접근할 
+              수 있다.</para>
 
               <itemizedlist>
                 <listitem>
-                  <para><literal>applicationContext</literal>: Use this
-                  variable to perform explicit bean lookups or to test the
-                  state of the context as a whole.</para>
+                  <para><literal>applicationContext</literal>: 명시적인 빈 검색을 
+                  수행하거나 컨텍스트의 상태를 전체적으로 테스트할 때 이 변수를 사용해라.</para>
                 </listitem>
               </itemizedlist>
             </listitem>
 
             <listitem>
               <para><classname>AbstractTransactionalTestNGSpringContextTests</classname>:
-              Abstract <emphasis>transactional</emphasis> extension of
-              <classname>AbstractTestNGSpringContextTests</classname> that
-              adds some convenience functionality for JDBC access. Expects a
-              <classname>javax.sql.DataSource</classname> bean and a
-              <interfacename>PlatformTransactionManager</interfacename> bean
-              to be defined in the <classname>ApplicationContext</classname>.
-              When you extend
-              <classname>AbstractTransactionalTestNGSpringContextTests</classname>,
-              you can access the following <literal>protected</literal>
-              instance variables:</para>
+              JDBC 접근을 위한 다소 편리한 기능을 추가한 
+              <classname>AbstractTestNGSpringContextTests</classname>의 추상 
+              <emphasis>transactional</emphasis> 확장이다. 
+              <classname>javax.sql.DataSource</classname> 빈과 
+              <interfacename>PlatformTransactionManager</interfacename>이 
+              <classname>ApplicationContext</classname>에 정의될 것이다. 
+              <classname>AbstractTransactionalTestNGSpringContextTests</classname>를 
+              확장할 때 다음의 <literal>protected</literal> 인스턴스 변수에 접근할 수 있다.</para>
 
               <itemizedlist>
                 <listitem>
-                  <para><literal>applicationContext</literal>: Inherited from
-                  the <classname>AbstractTestNGSpringContextTests</classname>
-                  superclass. Use this variable to perform explicit bean
-                  lookups or to test the state of the context as a
-                  whole.</para>
+                  <para><literal>applicationContext</literal>: 
+                  <classname>AbstractTestNGSpringContextTests</classname> 
+                  수퍼클래스를 상속받는다. 명시적인 빈 검색을 수행하거나 컨텍스트의 상태를 전체적으로 
+                  테스트할 때 이 변수를 사용해라.</para>
                 </listitem>
 
                 <listitem>
-                  <para><literal>simpleJdbcTemplate</literal>: Use this
-                  variable to execute SQL statements to query the database.
-                  Such queries can be used to confirm database state both
-                  <emphasis>prior to</emphasis> and <emphasis>after</emphasis>
-                  execution of database-related application code, and Spring
-                  ensures that such queries run in the scope of the same
-                  transaction as the application code. When used in
-                  conjunction with an ORM tool, be sure to avoid <link
+                  <para><literal>simpleJdbcTemplate</literal>: 데이터베이스 
+                  쿼리를 하는 SQL 문을 실행하려면 이 변수를 사용해라. 이러한 쿼리는 데이터베이스와 
+                  관련된 어플리케이션 코드의 실행 <emphasis>이전</emphasis>과 
+                  <emphasis>이후</emphasis> 모두에 데이터베이스 상태를 확인하는 데 사용할 수 
+                  있고 스프링이 이러한 쿼리가 어플리케이션 코드와 같은 트랜잭션의 범위로 실행된다는 
+                  것을 보장한다. ORM 도구와 함게 사용할 때는 <link
                   linkend="testcontext-tx-false-positives">false
-                  positives</link>.</para>
+                  positives</link>를 피하도록 해야한다.</para>
                 </listitem>
               </itemizedlist>
             </listitem>
           </itemizedlist>
 
           <tip>
-            <para>These classes are a convenience for extension. If you do not
-            want your test classes to be tied to a Spring-specific class
-            hierarchy — for example, if you want to directly extend the class
-            you are testing — you can configure your own custom test classes
-            by using <interfacename>@ContextConfiguration</interfacename>,
-            <interfacename>@TestExecutionListeners</interfacename>, and so on,
-            and by manually instrumenting your test class with a
-            <classname>TestContextManager</classname>. See the source code of
-            <classname>AbstractTestNGSpringContextTests</classname> for an
-            example of how to instrument your test class.</para>
+            <para>이러한 클래스들은 확장하기 쉽다. 테스트 클래스가 스프링에 특화된 클래스 계층에 
+            묶이길 원하지 않는다면(예를 들어 테스트하는 클래스를 직접 확장하고자 한다면) 
+            <interfacename>@ContextConfiguration</interfacename>,
+            <interfacename>@TestExecutionListeners</interfacename> 등을 사용하거나 
+            수동으로 테스트 클래스를 <classname>TestContextManager</classname>로 구성해서 
+            자신만의 커스텀 테스트 클래스를 설정할 수 있다. 어떻게 테스트 클래스를 구성하는지에 대한 예제는 
+            <classname>AbstractTestNGSpringContextTests</classname>의 소스코드를 
+            참고해라.</para>
           </tip>
         </section>
       </section>
     </section>
 
     <section id="testing-examples-petclinic">
-      <title>PetClinic Example</title>
+      <title>PetClinic 예제</title>
 
-      <para>The PetClinic application, available from the <link
-      linkend="new-in-3.0-samples">samples repository</link>, illustrates
-      several features of the <emphasis>Spring TestContext
-      Framework</emphasis> in a JUnit 4.5+ environment. Most test
-      functionality is included in the
-      <classname>AbstractClinicTests</classname>, for which a partial listing
-      is shown below:</para>
+      <para><link linkend="new-in-3.0-samples">샘플 저장소</link>에 있는 PetClinic 
+      어플리케이션은 JUnit 4.5+ 환경에서 <emphasis>Spring TestContext 
+      Framework</emphasis>의 여러가지 기능을 설명한다. 대부분의 테스트 기능은 
+      <classname>AbstractClinicTests</classname>에 포함되어 있고 일부 기능이 
+      다음 목록에 나와있다.</para>
 
       <programlisting language="java">import static org.junit.Assert.assertEquals;
 <lineannotation>// import ...</lineannotation>
@@ -2256,167 +1980,140 @@ public abstract class AbstractClinicTests <emphasis role="bold">extends Abstract
 
       <itemizedlist>
         <listitem>
-          <para>This test case extends the
-          <classname>AbstractTransactionalJUnit4SpringContextTests</classname>
-          class, from which it inherits configuration for Dependency Injection
-          (through the
-          <classname>DependencyInjectionTestExecutionListener</classname>) and
-          transactional behavior (through the
-          <classname>TransactionalTestExecutionListener</classname>).</para>
+          <para>이 테스트 케이스는 
+          <classname>AbstractTransactionalJUnit4SpringContextTests</classname> 
+          클래스를 확장한다. 의존성 주입
+          (<classname>DependencyInjectionTestExecutionListener</classname>를 통해서)과 
+          트랜잭션 동작(<classname>TransactionalTestExecutionListener</classname>를 
+          통해서)을 위해서 설정을 상속받는다.</para>
         </listitem>
 
         <listitem>
-          <para>The <literal>clinic</literal> instance variable — the
-          application object being tested — is set by Dependency Injection
-          through <interfacename>@Autowired</interfacename> semantics.</para>
+          <para><literal>clinic</literal> 인스턴스 변수(어플리케이션 객체는 테스트되었다.)는 
+          <interfacename>@Autowired</interfacename>를 통해 의존성 주입으로 설정된다.</para>
         </listitem>
 
         <listitem>
-          <para>The <methodname>testGetVets()</methodname> method illustrates
-          how you can use the inherited
-          <methodname>countRowsInTable()</methodname> method to easily verify
-          the number of rows in a given table, thus verifying correct behavior
-          of the application code being tested. This allows for stronger tests
-          and lessens dependency on the exact test data. For example, you can
-          add additional rows in the database without breaking tests.</para>
+          <para><methodname>testGetVets()</methodname> 메서드는 주어진 테이블의 열(row) 
+          갯수를 쉽게 검증해서 어플리케이션 코드의 올바른 동작을 검증하는 상속받은 
+          <methodname>countRowsInTable()</methodname> 메서드를 어떻게 사용할 수 있는지 
+          설명한다. 이를 통해 테스트는 더 강력해지고 정확한 테스트 데이터에 대한 의존성은 줄어든다. 
+          예를 들어 테스트를 깨뜨리지 않고 데이터베이스의 추가적인 열을 추가할 수 있다.</para>
         </listitem>
 
         <listitem>
-          <para>Like many integration tests that use a database, most of the
-          tests in <classname>AbstractClinicTests</classname> depend on a
-          minimum amount of data already in the database before the test cases
-          run. Alternatively, you might choose to populate the database within
-          the test fixture set up of your test cases — again, within the same
-          transaction as the tests.</para>
+          <para>데이터베이스를 사용하는 수많은 통합 테스트처럼 
+          <classname>AbstractClinicTests</classname>의 테스트 대부분은 테스트 케이스 
+          실행 이전에 이미 데이터베이스에 있는 데이터의 최소 양에 의존한다. 아니면 테스트 클래스의 
+          테스트 픽스처 구성과정에서 데이터베이스의 존재하는 데이터를 선택할 수 있다.(다시 말하지만 
+          테스트와 같은 트랜잭션에 있다.)</para>
         </listitem>
       </itemizedlist>
 
-      <para>The PetClinic application supports three data access technologies:
-      JDBC, Hibernate, and JPA. By declaring
-      <interfacename>@ContextConfiguration</interfacename> without any
-      specific resource locations, the
-      <classname>AbstractClinicTests</classname> class will have its
-      application context loaded from the default location,
-      <literal>AbstractClinicTests-context.xml</literal>, which declares a
-      common <classname>DataSource</classname>. Subclasses specify additional
-      context locations that must declare a
-      <interfacename>PlatformTransactionManager</interfacename> and a concrete
-      implementation of <interfacename>Clinic</interfacename>.</para>
+      <para>PetClinic 어플리케이션은 JDBC, Hibernate, JPA의 세가지 데이터 접근 기술을 
+      지원한다. 리소스 위치를 지정하지 않고 <interfacename>@ContextConfiguration</interfacename>를 
+      선언함으로써 <classname>AbstractClinicTests</classname>는 기본 위치인 
+      <literal>AbstractClinicTests-context.xml</literal>에서 로드한 어플리케이션 
+      컨텍스트를 가질 것이다. <literal>AbstractClinicTests-context.xml</literal>는 
+      공통 <classname>DataSource</classname>를 선언한다. 서브클래스들은 
+      <interfacename>PlatformTransactionManager</interfacename>와 
+      <interfacename>Clinic</interfacename>의 구현체를 반드시 선언하는 
+      부가적인 컨텍스트 위치를 지정한다.</para>
 
-      <para>For example, the Hibernate implementation of the PetClinic tests
-      contains the following implementation. For this example,
-      <classname>HibernateClinicTests</classname> does not contain a single
-      line of code: we only need to declare
-      <interfacename>@ContextConfiguration</interfacename>, and the tests are
-      inherited from <classname>AbstractClinicTests</classname>. Because
-      <interfacename>@ContextConfiguration</interfacename> is declared without
-      any specific resource locations, the <emphasis>Spring TestContext
-      Framework</emphasis> loads an application context from all the beans
-      defined in <literal>AbstractClinicTests-context.xml</literal> (i.e., the
-      inherited locations) and
-      <literal>HibernateClinicTests-context.xml</literal>, with
-      <literal>HibernateClinicTests-context.xml</literal> possibly overriding
-      beans defined in
-      <literal>AbstractClinicTests-context.xml</literal>.</para>
+      <para>예를 들어 PetClinic 테스트의 하이버네이트 구현체는 다음의 구현체를 가진다. 이 예제에서 
+      <classname>HibernateClinicTests</classname>는 한 줄의 코드도 가지고 있지 않다. 
+      <interfacename>@ContextConfiguration</interfacename>만 선언하고 테스트들은 
+      <classname>AbstractClinicTests</classname>를 상속받는다. 
+      <interfacename>@ContextConfiguration</interfacename>를 어떤 리소스 위치도 지정하지 
+      않고 선언했기 때문에 <emphasis>스프링 TestContext 프레임워크</emphasis>는 
+      <literal>AbstractClinicTests-context.xml</literal>(예시, 상속받은 위치)와 
+      <literal>HibernateClinicTests-context.xml</literal>에 정의된 모든 빈에서 
+      어플리케이션 컨텍스트를 로드한다. <literal>HibernateClinicTests-context.xml</literal>는 
+      <literal>AbstractClinicTests-context.xml</literal>에 정의한 빈을 오버라이드 
+      할 수 있다.</para>
 
       <programlisting language="java"><emphasis role="bold">@ContextConfiguration</emphasis>
 public class HibernateClinicTests extends AbstractClinicTests { }
 </programlisting>
 
-      <para>In a large-scale application, the Spring configuration is often
-      split across multiple files. Consequently, configuration locations are
-      typically specified in a common base class for all application-specific
-      integration tests. Such a base class may also add useful instance
-      variables — populated by Dependency Injection, naturally — such as a
-      <classname>SessionFactory</classname> in the case of an application
-      using Hibernate.</para>
+      <para>대규모 어플리케이션에서 스프링 설정은 종종 여러 파일로 나뉜다. 따라서 설정 위치는 모든 
+      어플리케이션에 한정된 통합 테스트의 공통 기반 클래스에 보통 지정한다. 이러한 기반 클래스는 
+      하이버네이트를 사용하는 어플리케이션의 경우 <classname>SessionFactory</classname>같은 
+      유용한 인스턴스 변수(자연히 의존성 주입으로 존재한다.)를 추가할 수도 있다.</para>
 
-      <para>As far as possible, you should have exactly the same Spring
-      configuration files in your integration tests as in the deployed
-      environment. One likely point of difference concerns database connection
-      pooling and transaction infrastructure. If you are deploying to a
-      full-blown application server, you will probably use its connection pool
-      (available through JNDI) and JTA implementation. Thus in production you
-      will use a <classname>JndiObjectFactoryBean</classname> or
-      <literal>&lt;jee:jndi-lookup&gt;</literal> for the
-      <classname>DataSource</classname> and
-      <classname>JtaTransactionManager</classname>. JNDI and JTA will not be
-      available in out-of-container integration tests, so you should use a
-      combination like the Commons DBCP <classname>BasicDataSource</classname>
-      and <classname>DataSourceTransactionManager</classname> or
-      <classname>HibernateTransactionManager</classname> for them. You can
-      factor out this variant behavior into a single XML file, having the
-      choice between application server and a 'local' configuration separated
-      from all other configuration, which will not vary between the test and
-      production environments. In addition, it is advisable to use properties
-      files for connection settings. See the PetClinic application for an
-      example.</para>
+      <para>가능한한 통합테스트에서 배포된 환경과 정확히 같은 스프링 설정을 가져야 한다. 다를 수도 있는  
+      부분은 데이터베이스 연결 풀링과 트랜잭션 인프라에 관련된 것들이다. 완전한 어플리케이션 서버에 
+      배포한다면 아마도 어플리케이션 서버의 연결풀(JNDI로 사용가능한)과 JTA 구현체를 사용할 것이다. 
+      그러므로 프로덕션에서는 <classname>DataSource</classname>와 
+      <classname>JtaTransactionManager</classname>에 
+      <classname>JndiObjectFactoryBean</classname>나 
+      <literal>&lt;jee:jndi-lookup&gt;</literal>를 사용할 것이다. JNDI와 JTA는 통합테스트 
+      컨테이너 밖에서는 사용할 수 없으므로 이를 위해서는 Commons DBCP 
+      <classname>BasicDataSource</classname>와 
+      <classname>DataSourceTransactionManager</classname> 또는 
+      <classname>HibernateTransactionManager</classname> 같은 조합을 사용해야 한다. 테스트와 
+      프로덕션 환경사이에 다르지 않은 설정들과 분리한 어플리케이션 서버설정과 '로컬' 설정사이에 선택할 수 있는 
+      하나의 XML 파일에 이 다양한 동작을 넣을 수 있다. 추가적으로 연결 설정에 프로퍼티 파일을 사용하는 것은 
+      바람직하다. 예제는 PetClinic 어플리케이션을 참고해라.</para>
     </section>
   </section>
 
   <section id="testing-resources">
-    <title>Further Resources</title>
+    <title>추가 자료</title>
 
-    <para>Consult the following resources for more information about
-    testing:</para>
+    <para>테스트에 관한 더 자세한 정보는 다음의 자료들을 참고해라.</para>
 
     <itemizedlist>
       <listitem>
         <para><ulink url="http://www.junit.org/">JUnit</ulink>:
-        <quote><emphasis>A programmer-oriented testing framework for
-        Java</emphasis></quote>. Used by the Spring Framework in its test
-        suite.</para>
+        <quote><emphasis>프로그래머 지향 자바 테스트 프레임워크</emphasis></quote>. 
+        스프링 프레임워크가 테스트 슈트에 사용하고 있다.</para>
       </listitem>
 
       <listitem>
-        <para><ulink url="http://testng.org/">TestNG</ulink>: A testing
-        framework inspired by JUnit with added support for Java 5 annotations,
-        test groups, data-driven testing, distributed testing, etc.</para>
+        <para><ulink url="http://testng.org/">TestNG</ulink>: JUnit에서 영감을 받아 
+        자바 5 어노테이션, 테스트 그룹, 데이터 주도 테스트, 분산 테스트등을 추가한 테스트 
+        프레임워크</para>
       </listitem>
 
       <listitem>
         <para><ulink
-        url="http://www.mockobjects.com/">MockObjects.com</ulink>: Web site
-        dedicated to mock objects, a technique for improving the design of
-        code within test-driven development.</para>
+        url="http://www.mockobjects.com/">MockObjects.com</ulink>: 테스트 주도 
+        개발에서 코드의 설계를 향상시키는 기술인 목 객체를 위한 웹 사이트.</para>
       </listitem>
 
       <listitem>
-        <para><ulink url="http://en.wikipedia.org/wiki/Mock_Object">"Mock
-        Objects"</ulink>: Article in Wikipedia.</para>
+        <para><ulink url="http://en.wikipedia.org/wiki/Mock_Object">"목 
+        객체"</ulink>: 위키피디아의 글.</para>
       </listitem>
 
       <listitem>
-        <para><ulink url="http://www.easymock.org/">EasyMock</ulink>: Java
-        library <quote><emphasis>that provides Mock Objects for interfaces
-        (and objects through the class extension) by generating them on the
-        fly using Java's proxy mechanism.</emphasis></quote> Used by the
-        Spring Framework in its test suite.</para>
+        <para><ulink url="http://www.easymock.org/">EasyMock</ulink>: 
+        <quote><emphasis>자바의 프록시 메카니즘을 사용해서 인터페이스에 대한 목 객체를 
+        생성해서 제공하는 </emphasis></quote>자바 라이브러리. 스프링 프레임워크가 
+        테스트 슈트에 사용하고 있다.</para>
       </listitem>
 
       <listitem>
-        <para><ulink url="http://www.jmock.org/">JMock</ulink>: Library that
-        supports test-driven development of Java code with mock
-        objects.</para>
+        <para><ulink url="http://www.jmock.org/">JMock</ulink>: 목 객체로 
+        자바 코드의 테스트 주도 개발을 지원하는 라이브러리</para>
       </listitem>
 
       <listitem>
-        <para><ulink url="http://mockito.org/">Mockito</ulink>: Java mock
-        library based on the <ulink
-        url="http://xunitpatterns.com/Test%20Spy.html">test spy</ulink>
-        pattern.</para>
+        <para><ulink url="http://mockito.org/">Mockito</ulink>: <ulink
+        url="http://xunitpatterns.com/Test%20Spy.html">테스트 스파이</ulink> 
+        패턴에 기반한 자바 목 라이브러리</para>
       </listitem>
 
       <listitem>
         <para><ulink url="http://dbunit.sourceforge.net/">DbUnit</ulink>:
-        JUnit extension (also usable with Ant and Maven) targeted for
-        database-driven projects that, among other things, puts your database
-        into a known state between test runs.</para>
+        테스트 실행간에 알고 있는 상태를 데이터베이스에 두는(다른 것들도 있지만) 데이터베이스 주도 
+        프로젝트를 대상으로 하는 JUnit 익스텐션(Ant와 메이븐과도 사용할 수 있다.)</para>
       </listitem>
 
       <listitem>
         <para><ulink url="http://grinder.sourceforge.net/">Grinder</ulink>:
-        Java load testing framework.</para>
+        자바 부하 테스트 프레임워크.</para>
       </listitem>
     </itemizedlist>
   </section>
