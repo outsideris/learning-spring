@@ -2059,7 +2059,7 @@ public class HibernateClinicTests extends AbstractClinicTests { }
   </section>
 
   <section id="testing-resources">
-    <title>추가 자료</title>
+    <title>관련 자료</title>
 
     <para>테스트에 관한 더 자세한 정보는 다음의 자료들을 참고해라.</para>
 

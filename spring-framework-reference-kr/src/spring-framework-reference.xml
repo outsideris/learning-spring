@@ -309,17 +309,14 @@
   </part>
 
   <part id="spring-data-tier">
-    <title>Data Access</title>
+    <title>데이터 접근</title>
 
     <partintro id="spring-data-tier-intro">
-      <para>This part of the reference documentation is concerned with data
-      access and the interaction between the data access layer and the
-      business or service layer.</para>
+      <para>레퍼런스 문제에서 이번 파트는 데이터 접근과 데이터접근 계층과 비즈니스 계층이나 서비스 
+      계층간의 데이터 상호작용에 관한 것이다.</para>
 
-      <para>Spring's comprehensive transaction management support is covered
-      in some detail, followed by thorough coverage of the various data access
-      frameworks and technologies that the Spring Framework integrates
-      with.</para>
+      <para>스프링의 광범위한 트랜잭션 관리 지원은 스프링 프레임워크와 통합되는 여러가지 데이터 접근 
+      프레임웍이나 기술의 영역까지 다룬다.</para>
 
       <itemizedlist>
         <listitem>
