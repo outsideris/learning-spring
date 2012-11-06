@@ -2,60 +2,43 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="dao">
-  <title>DAO support</title>
+  <title>DAO 지원</title>
 
   <section id="dao-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>The Data Access Object (DAO) support in Spring is aimed at making it
-    easy to work with data access technologies like JDBC, Hibernate, JPA or
-    JDO in a consistent way. This allows one to switch between the
-    aforementioned persistence technologies fairly easily and it also allows
-    one to code without worrying about catching exceptions that are specific
-    to each technology.</para>
+    <para>스프링의 Data Access Object (DAO) 지원은 JDBC, Hibernate, JPA, JDO같은 데이터 
+    접근 기술과 관련된 작업을 일관된 방법으로 쉽게 할 수 있게 도와준다. DAO 지원은 앞서 언급한 퍼시스턴스 
+    기술을 꽤 쉽게 해주고 각 기술에 특화된 익셉션 처리에 대해 걱정하지 않고 코드를 짤 수 있게 
+    해준다.</para>
   </section>
 
   <section id="dao-exceptions">
-    <title>Consistent exception hierarchy</title>
+    <title>일관된 예외 계층</title>
 
-    <para>Spring provides a convenient translation from technology-specific
-    exceptions like <classname>SQLException</classname> to its own exception
-    class hierarchy with the <classname>DataAccessException</classname> as the
-    root exception. These exceptions wrap the original exception so there is
-    never any risk that one might lose any information as to what might have
-    gone wrong.</para>
+    <para>스프링은 <classname>SQLException</classname>처럼 기술에 특화된 예외를 루트 
+    익셉션처럼 <classname>DataAccessException</classname>의 스프링 예외계층으로 편리하게 
+    변환한다. 이러한 예외는 원래의 예외를 감싸므로 잘못되거나 정보를 잃어버릴 위험이 절대 없다.</para>
 
-    <para>In addition to JDBC exceptions, Spring can also wrap
-    Hibernate-specific exceptions, converting them from proprietary, checked
-    exceptions (in the case of versions of Hibernate prior to Hibernate 3.0),
-    to a set of focused runtime exceptions (the same is true for JDO and JPA
-    exceptions). This allows one to handle most persistence exceptions, which
-    are non-recoverable, only in the appropriate layers, without having
-    annoying boilerplate catch-and-throw blocks and exception declarations in
-    one's DAOs. (One can still trap and handle exceptions anywhere one needs
-    to though.) As mentioned above, JDBC exceptions (including
-    database-specific dialects) are also converted to the same hierarchy,
-    meaning that one can perform some operations with JDBC within a consistent
-    programming model.</para>
+    <para>JDBC 예외에 추가적으로 스프링은 소유자로부터 변환해서 하이버네이트에 특화된 예외와 체크드 
+    익셉션(하이버네이트 3.0 이전의 버전인 경우)을 관심있는(focused) 런타임 예외(JDO와 JPA 예외에도 
+    마찬가지다.)의 세트로 감쌀 수 있다. 이는 복구할 수 없고 적합한 계층에서만 존재하고 보일러플레이트 
+    catch-throw 블락을 귀찮음없으면서 DAO에 선언된 예외인 대부분의 퍼시스턴스 예외를 처리하게 해준다. 
+    (여전히 필요한 곳에서는 예외를 처리할 수 있다.) 앞에서 얘기했듯이 JDBC 예외(데이터베이스에 특화된 
+    방언을 포함해서)도 같은 계층 즉 일관된 프로그래밍 모델에서 JDBC로 작업을 수행할 수 있는 
+    계층으로 변환할 수 있다.</para>
 
-    <para>The above holds true for the various template classes in Springs
-    support for various ORM frameworks. If one uses the interceptor-based
-    classes then the application must care about handling
-    <classname>HibernateExceptions</classname> and
-    <classname>JDOExceptions</classname> itself, preferably via delegating to
-    <classname>SessionFactoryUtils</classname>'
-    <methodname>convertHibernateAccessException(..)</methodname> or
-    <methodname>convertJdoAccessException()</methodname> methods respectively.
-    These methods convert the exceptions to ones that are compatible with the
-    exceptions in the <literal>org.springframework.dao</literal> exception
-    hierarchy. As <classname>JDOExceptions</classname> are unchecked, they can
-    simply get thrown too, sacrificing generic DAO abstraction in terms of
-    exceptions though.</para>
+    <para>스프링의 다양한 템플릿 클래스는 다양한 ORM 프레임워크를 지원한다. 인터셉터 기반의 클래스를 
+    사용한다면 어플리케이션은 되도록이면 <classname>SessionFactoryUtils</classname>의 
+    <methodname>convertHibernateAccessException(..)</methodname>나 
+    <methodname>convertJdoAccessException()</methodname>에 각각 위임해서 
+    <classname>HibernateExceptions</classname>와 <classname>JDOExceptions</classname> 
+    자체를 다루는 데 신경써야 한다. 이 메서드들은 예외를 <literal>org.springframework.dao</literal> 
+    예외 계층의 예외와 호환되도록 변환한다. <classname>JDOExceptions</classname>가 언체크드면 
+    예외와 관련된 용어로 제너릭 DAO 추상화를 희생시켜서 그냥 던질 수 있다.</para>
 
-    <para>The exception hierarchy that Spring provides can be seen below.
-    (Please note that the class hierarchy detailed in the image shows only a
-    subset of the entire <classname>DataAccessException</classname>
-    hierarchy.)</para>
+    <para>스프링이 제공하는 예외 계층은 아래에서 볼 수 있다. (이미지의 클래스 계층은 전체 
+    <classname>DataAccessException</classname> 계층의 서브세트만 보여준다.)</para>
 
     <mediaobject>
       <imageobject>
@@ -65,14 +48,11 @@
   </section>
 
   <section id="dao-annotations">
-    <title>Annotations used for configuring DAO or Repository classes</title>
+    <title>DAO나 리파지토리 클래스 설정에 사용하는 어노테이션</title>
 
-    <para>The best way to guarantee that your Data Access Objects (DAOs) or
-    repositories provide exception translation is to use the
-    <interfacename>@Repository</interfacename> annotation. This annotation
-    also allows the component scanning support to find and configure your DAOs
-    and repositories without having to provide XML configuration entries for
-    them.</para>
+    <para>데이터 접근 객체(DAO)나 리파지토리가 예외 변환을 제공한다는 것을 보장하는 가장 좋은 방법은 
+    <interfacename>@Repository</interfacename> 어노테이션을 사용하는 것이다. 이 어노테이션은 
+    컨포넌트 스캔이 XML 설정없이도 DAO와 리파지토리를 찾고 설정하도록 해준다.</para>
 
     <programlisting language="java"><emphasis role="bold">@Repository</emphasis>
 public class SomeMovieFinder implements MovieFinder {
@@ -81,16 +61,14 @@ public class SomeMovieFinder implements MovieFinder {
 
 }</programlisting>
 
-    <para>Any DAO or repository implementation will need to access to a
-    persistence resource, depending on the persistence technology used; for
-    example, a JDBC-based repository will need access to a JDBC
-    <interfacename>DataSource</interfacename>; a JPA-based repository will need
-    access to an <interfacename>EntityManager</interfacename>. The easiest way
-    to accomplish this is to have this resource dependency injected using one of
-    the <interfacename>@Autowired,</interfacename>, <interfacename>@Inject</interfacename>,
-    <interfacename>@Resource</interfacename> or
-    <interfacename>@PersistenceContext</interfacename> annotations. Here is an
-    example for a JPA repository:</para>
+    <para>모든 DAO와 리파지토리 구현체는 사용하는 퍼시스턴스 기술에 따라 퍼시스턴스 리소스에 
+    접근해야할 필요가 있을 것이다. 예를 들어 JDBC 기반 리파지토리는 JDBC 
+    <interfacename>DataSource</interfacename>에 접근할 것이고 JPA 기반 리파지토리는 
+    <interfacename>EntityManager</interfacename>에 접근해야 할 것이다. 이렇게 하는 
+    가장 쉬운 방법은 <interfacename>@Autowired,</interfacename>, 
+    <interfacename>@Inject</interfacename>, <interfacename>@Resource</interfacename>, 
+    <interfacename>@PersistenceContext</interfacename> 어노테이션 중에 하나를 사용해서 
+    해당 리소스를 의존성 주입하는 것이다. 다음은 JPA 리파지토리의 예제이다.</para>
 
     <programlisting language="java">@Repository
 public class JpaMovieFinder implements MovieFinder {
@@ -102,8 +80,7 @@ public class JpaMovieFinder implements MovieFinder {
 
 }</programlisting>
 
-    <para>If you are using the classic Hibernate APIs than you can inject the
-    SessionFactory:</para>
+    <para>전형적인 하이버네이트 API를 사용한다면 SessionFactory를 주입할 수 있다.</para>
 
     <programlisting language="java">@Repository
 public class HibernateMovieFinder implements MovieFinder {
@@ -119,12 +96,10 @@ public class HibernateMovieFinder implements MovieFinder {
 
 }</programlisting>
 
-    <para>Last example we will show here is for typical JDBC support. You
-    would have the <classname>DataSource</classname> injected into an
-    initialization method where you would create a
-    <classname>JdbcTemplate</classname> and other data access support classes
-    like <classname>SimpleJdbcCall</classname> etc using this
-    <classname>DataSource</classname>.</para>
+    <para>이번 장에서 보여줄 마지막 예제는 대표적인 JDBC 지원이다. 
+    <classname>DataSource</classname>를 사용하는 <classname>SimpleJdbcCall</classname> 
+    등과 같은 데이터 접근 지원 클래스나 <classname>JdbcTemplate</classname>를 생성하하는 곳에 
+    초기화 메서드에 이 <classname>DataSource</classname>를 주입할 것이다.</para>
 
     <programlisting language="java">@Repository
 public class JdbcMovieFinder implements MovieFinder {
@@ -141,9 +116,8 @@ public class JdbcMovieFinder implements MovieFinder {
 }</programlisting>
 
     <note>
-      <para>Please see the specific coverage of each persistence technology
-      for details on how to configure the application context to take
-      advantage of these annotations.</para>
+      <para>이러한 어노테이션의 이점을 취하기 위해 어플리케이션 컨텍스트를 설정하는 방법은 
+      각 퍼시스턴스 기술의 해당하는 부분을 참고하길 바란다.</para>
     </note>
 
     <para></para>
