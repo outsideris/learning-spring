@@ -2,198 +2,151 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="orm">
-  <title>Object Relational Mapping (ORM) Data Access</title>
+  <title>객체 관계 매핑 (ORM) 데이터 접근</title>
 
   <section id="orm-introduction">
-    <title>Introduction to ORM with Spring</title>
+    <title>스프링의 ORM 소개</title>
 
-    <para>The Spring Framework supports integration
-    with Hibernate, Java Persistence API (JPA), Java Data Objects (JDO) and
-    iBATIS SQL Maps for resource management, data access object (DAO)
-    implementations, and transaction strategies. For example, for Hibernate
-    there is first-class support with several convenient IoC features that
-    address many typical Hibernate integration issues. You can configure
-    all of the supported features for O/R (object relational) mapping tools through
-    Dependency Injection. They can participate in Spring's resource
-    and transaction management, and they comply with Spring's generic
-    transaction and DAO exception hierarchies. The recommended integration
-    style is to code DAOs against plain Hibernate, JPA, and JDO APIs. The
-    older style of using Spring's DAO templates is no longer recommended;
-    however, coverage of this style can be found in the <xref
-    linkend="classic-spring-orm" /> in the appendices.</para>
+    <para>스프링 프레임워크는 리소스관리, 데이터접근 객체 (DAO)의 구현체, 트랜잭션 전략에
+    Hibernate, Java Persistence API (JPA), Java Data Objects (JDO), iBATIS
+    SQL 맵의 통합을 지원한다. 예를 들어 여러 가지 하이버네이트 통합 이슈들을 다루는 여러 가지 편리한
+    IoC 기능으로 하이버네이트를 훌륭하게 지원한다. 의존성 주입으로 O/R (객체-관계) 매핑 도구를
+    지원하는 모든 기능을 설정할 수 있다. 이러한 기능들은 스프링의 리소스 관리와 트랜잭션 관리에 참여할
+    수 있고 스프링의 일반적인 트랜잭션과 DAO 예외 계층을 따른다. 권장하는 통합방식은 평범한 하이버네이트,
+    JPA, JDO API로 DAO를 작성하는 것이다. 스프링의 DAO 템플릿을 사용하는 과거의 방식은 더이상
+    권장하지 않는다. 하지만 이 방식을 부록의 <xref linkend="classic-spring-orm" />에서
+    찾아볼 수 있다.</para>
 
-    <para>Spring adds significant enhancements to the ORM layer of your choice
-    when you create data access applications. You can leverage as much of the
-    integration support as you wish, and you should compare this integration
-    effort with the cost and risk of building a similar infrastructure
-    in-house. You can use much of the ORM support as you would a library,
-    regardless of technology, because everything is designed as a set of
-    reusable JavaBeans. ORM in a Spring IoC container facilitates
-    configuration and deployment. Thus most examples in this section show
-    configuration inside a Spring container.</para>
+    <para>데이터 접근 어플리케이션을 작성할 때 스프링은 선택한 ORM 계층을 상당히 개선한다. 원하는 만큼
+    통합지원을 사용할 수 있고 유사한 인하우스(in-house) 인프라스트럭처를 구성하는 비용과 위험을 이 통합에
+    드는 노력과 비교해 봐야한다. 모든 것이 재사용가능한 JavaBean으로 설계되었으므로 기술에 관계없이 ORM
+    지원 라이브러리를 사용할 수 있다. 스프링 IOC 컨테이너의 ORM은 설정과 배포를 쉽게 한다. 그러므로 이번
+    섹션 대부분의 예제는 스프링 컨테이너내부에서의 설정을 보여준다.</para>
 
-    <para>Benefits of using the Spring Framework to create your ORM DAOs
-    include:</para>
+    <para>ORM DAO를 작성할 때 스프링 프레임워크를 사용하는 장점은 다음과 같다.</para>
 
     <itemizedlist>
       <listitem>
-        <para><emphasis>Easier testing.</emphasis> Spring's IoC approach makes
-        it easy to swap the implementations and configuration locations of
-        Hibernate <interfacename>SessionFactory</interfacename> instances,
-        JDBC <interfacename>DataSource</interfacename> instances, transaction
-        managers, and mapped object implementations (if needed). <!--I changed *mappes* to *mapped*; is that what you mean? Also, clarify whether *if needed* refers only to that or to the rest as well 
-TR: OK. Refers only to mapped object implementations-->This in turn makes it
-        much easier to test each piece of persistence-related code in
-        isolation.<!--deleted redundancy; sentence already refers to isolating each piece of code. TR: OK. moved isolation to the end--></para>
+        <para><emphasis>테스트를 쉽게 한다.</emphasis> 스프링의 IoC 접근방법은 하이버네이트
+        <interfacename>SessionFactory</interfacename> 인스턴스, JDBC
+        <interfacename>DataSource</interfacename> 인스턴스, 트랜잭션 매니저, (필요하다면)매핑된
+        객체구현체의 구현체와 설정위치를 쉽게 바꿀 수 있게 한다. <!--I changed *mappes* to *mapped*; is that what you mean? Also, clarify whether *if needed* refers only to that or to the rest as well
+TR: OK. Refers only to mapped object implementations-->이는 퍼시스턴스와 관계된 코드를
+        각각 독립적으로 쉽게 테스트할 수 있게 한다.<!--deleted redundancy; sentence already refers to isolating each piece of code. TR: OK. moved isolation to the end--></para>
       </listitem>
 
       <listitem>
-        <para><emphasis>Common data access exceptions.</emphasis> Spring can
-        wrap exceptions from your ORM tool, converting them from proprietary
-        (potentially checked) exceptions to a common runtime
-        DataAccessException hierarchy. This feature allows you to handle most
-        persistence exceptions, which are non-recoverable, only in the
-        appropriate layers, without annoying boilerplate catches, throws, and
-        exception declarations. You can still trap and handle exceptions as
-        necessary. Remember that JDBC exceptions (including DB-specific
-        dialects) are also converted to the same hierarchy, meaning that you
-        can perform some operations with JDBC within a consistent programming
-        model.</para>
+        <para><emphasis>공통적인 데이터 접근 예외.</emphasis> 스프링은 ORM도구의 예외를 감싸서
+        소유자의 예외(아다고 체크드 예외)를 공통적인 런타임 DataAccessException 계층으로 변환한다.
+        이 기능은 불편하게 catches, throws, exception 선언을 매번 하지 않고도 적절한 계층해서만
+        복구할 수 없는 대부분의 퍼시스턴스 예외를 다룰 수 있게 한다. 여전히 필요에 따라 예외를 잡아서
+        처리할 수 있다. JDBC 예외(DB에 특화된 방언들을 포함해서)도 같은 계층으로 변환된다는 점을
+        기억해라. 이는 일관된 프로그래밍 모델내에서 JDBC로 하는 직업할수 있다는 것을 의미한다.</para>
       </listitem>
 
       <listitem>
-        <para><emphasis>General resource management.</emphasis> Spring
-        application contexts can handle the location and configuration of
-        Hibernate <interfacename>SessionFactory</interfacename> instances, JPA
-        <interfacename>EntityManagerFactory</interfacename> instances, JDBC
-        <interfacename>DataSource</interfacename> instances, iBATIS SQL Maps
-        configuration objects, and other related resources. This makes these
-        values easy to manage and change. Spring offers efficient, easy, and
-        safe handling of persistence resources. For example, related code that
-        uses Hibernate generally needs to use the same Hibernate
-        <interfacename>Session</interfacename> to ensure efficiency and proper
-        transaction handling. Spring makes it easy to create and bind a
-        <interfacename>Session</interfacename> to the current thread
-        transparently, <!--This bullet and next refer to template wrapper class. Is this referring to using Spring DAO templates, whichis no longer recommend--><!--ed? If so, it's confusing to discuss it as an option. Sends a mixed message. If not, explain what you mean by *template* wrapper class. 
-TR: REVISED, PLS REVIEW. Good point, removed coverage of template wrapper.-->by
-        exposing a current <interfacename>Session</interfacename> through the
-        Hibernate <interfacename>SessionFactory</interfacename>. Thus Spring
-        solves many chronic problems of typical Hibernate usage, for any local
-        or JTA transaction environment.</para>
+        <para><emphasis>일반적인 리소스 관리.</emphasis> 스프링 어플리케이션 컨텍스트는
+        하이버네이트 <interfacename>SessionFactory</interfacename> 인스턴스, JPA
+        <interfacename>EntityManagerFactory</interfacename> 인스턴스, JDBC
+        <interfacename>DataSource</interfacename> 인스턴스, iBATIS SQL 맵 설정 객체와
+        그외 관련된 리소스들의 위치와 설정을 다룰 수 있다. 이 기능은 이러한 값들을 쉽게 관리하고 바꿀
+        수 있게 한다. 스프링은 퍼시스턴스 리소스를 효율적이고 쉽고 안전하게 다루도록 해준다. 예를 들어
+        하이버네이트를 사용하는 코드는 일반적으로 효율성과 적절한 트랜잭션 처리를 보장하도록 같은 하이버네이트
+        <interfacename>Session</interfacename>을 사용해야 한다. 스프링은 하이버네이트
+        <interfacename>SessionFactory</interfacename>로 현재의
+        <interfacename>Session</interfacename>을 노출함으로써 투명하게 현재 쓰레드에
+        <interfacename>Session</interfacename>을 쉽게 생성해서 바인딩할 수 있게 해준다.<!--This bullet and next refer to template wrapper class. Is this referring to using Spring DAO templates, whichis no longer recommend--><!--ed? If so, it's confusing to discuss it as an option. Sends a mixed message. If not, explain what you mean by *template* wrapper class.
+TR: REVISED, PLS REVIEW. Good point, removed coverage of template wrapper.-->
+        그러므로 일반적으로 로컬이나 JTA 트랜잭션 환경에서 하이버네이트를 사용할 때의 만성적인
+        많은 문제들을 스프링이 해결한다.</para>
       </listitem>
 
       <listitem>
-        <para><emphasis>Integrated transaction management.</emphasis> You can
-        wrap your ORM code with a declarative, aspect-oriented programming
-        (AOP) style method interceptor either through the
-        <interfacename>@Transactional</interfacename> annotation or by
-        explicitly configuring the transaction AOP advice in an XML
-        configuration file. In both cases, transaction semantics and exception
-        handling (rollback, and so on) are handled for you. As discussed
-        below, in <!--Instead of *below*, provide link to section. TR: OK--><link
-        linkend="orm-resource-mngmnt">Resource and transaction
-        management</link>, you can also swap various transaction managers,
-        without affecting your ORM-related code. For example, you can swap
-        between local transactions and JTA, with the same full services (such
-        as declarative transactions) available in both scenarios.
-        Additionally, JDBC-related code can fully integrate transactionally
-        with the code you use to do ORM. This is useful for data access that
-        is not suitable for ORM, such as batch processing and BLOB streaming,
-        which still need <!--if both batch processing and BLOB streaming need to share common transactions w/ ORM, then change *needs* to *to need*. If --><!--it refers only to BLOB streaming, say *the latter of which still needs to share...* TR: OK. Chnaged to *to need*-->to
-        share common transactions with ORM operations.</para>
+        <para><emphasis>통합된 트랜잭션 관리.</emphasis>
+        <interfacename>@Transactional</interfacename> 어노테이션을 사용하거나 XML
+        설정파일에 트랜잭션 AOP 어드바이스를 명시적으로 설정함으로써 선언적이면서 관점지향 프로그래밍(AOP)
+        방식의 메서드 인터셉터로 ORM 코드를 감쌀 수 있다. 두 경우 모두에서 트랜잭션의 의미와
+        예외처리(롤백 등)를 개발자 대신 다뤄준다. 아래의 <link linkend="orm-resource-mngmnt">리소스와
+        트랜잭션 관리</link>에서 설명하는 것처럼 ORM과 관련된 코드에 영향을 주지 않고 다양한 트랜잭션
+        관리자를 바꿔치기 할 수도 있다. 예를 들어 두가지 시나리오 모두에서 사용할 수 있는 동일한 전체
+        서비스(선언적인 트랜잭션같은)에서 로컬 트랜잭션과 JTA를 바꿔치기 할 수 있다. 게다가 JDBC와
+        관계된 코드를 트랜잭션을 적용해서 ORM을 사용하는 코드와 완전히 통합할 수 있다. 이는 ORM 작업과
+        공통된 트랜잭션을 공유다는데 여전히 필요한 배치작업이나 BLOB 스트리밍같은 ORM에 맞지 않은
+        데이터접근에 유용하다.<!--if both batch processing and BLOB streaming need to share common transactions w/ ORM, then change *needs* to *to need*. If --><!--it refers only to BLOB streaming, say *the latter of which still needs to share...* TR: OK. Chnaged to *to need*--></para>
       </listitem>
     </itemizedlist>
 
-    <para><!--The PetClinic sample in the Spring distribution offers alternative DAO implementations and application context configurations for JDBC, 
-Hibernate, and JPA. PetClinic is a working sample application that illustrates the use of Hibernate and JPA in a Spring web application. 
+    <para><!--The PetClinic sample in the Spring distribution offers alternative DAO implementations and application context configurations for JDBC,
+Hibernate, and JPA. PetClinic is a working sample application that illustrates the use of Hibernate and JPA in a Spring web application.
 It also leverages declarative transaction demarcation with different transaction strategies.
 
 Beyond the samples shipped with Spring, vendors provide a variety of Spring-based ORM samples.  --><!--Name vendors, link to them? TR: WILL ADDRESS LATER. We need to point to the current samples which aren't completed yet. --><emphasis>TODO:
-    provide links to current samples</emphasis></para>
+    현재 샘플에 링크 제공하기</emphasis></para>
   </section>
 
   <section id="orm-general">
-    <title>General ORM integration considerations</title>
+    <title>일반적인 ORM 통합에 고려해야할 사항들</title>
 
-    <para>This section highlights considerations that apply to all ORM
-    technologies. The <xref linkend="orm-hibernate" /> section provides more
-    details and also show these features and configurations in a concrete
-    context.</para>
+    <para>이번 섹션에서는 모든 ORM 기술을 적용할 때의 고려사항을 설명한다.
+    <xref linkend="orm-hibernate" /> 섹션에서 더 자세한 내용을 제공하고 고정된(concrete)
+    컨텍스트에서의 이러한 기능과 설정도 보여준다.</para>
 
-    <para>The major goal of Spring's ORM integration is clear application
-    layering, with any data access and transaction technology, and for loose
-    coupling of application objects. No more business service dependencies on
-    the data access or transaction strategy, no more hard-coded resource
-    lookups, no more hard-to-replace singletons, no more custom service
-    registries. One simple and consistent approach to wiring up application
-    objects, keeping them as reusable and free from container dependencies as
-    possible. All the individual data access features are usable on their own
-    but integrate nicely with Spring's application context concept, providing
-    XML-based configuration and cross-referencing of plain JavaBean instances
-    that need not be Spring-aware. In a typical Spring application, many
-    important objects are JavaBeans: data access templates, data access
-    objects, transaction managers, business services that use the data access
-    objects and transaction managers, web view resolvers, web controllers that
-    use the business services,and so on.</para>
+    <para>스프링 ORM 통합의 주요 목표는 어떤 데이터접근 기술이나 트랜잭션 기술에서도 어플리케이션
+    객체와 커플링하지 않고 깔끔하게 어플리케이션을 계층화하는 것이다. 더이상 비즈니스 서비스가 데이터
+    접근전략이나 트랜잭션 전략에 의존하지 않고 더이상 하드코딩된 리소스 검색을 사용하지 않고 더이상 직접
+    싱글톤을 교체하지 않고 더이상 커스텀 서비스를 등록하지 않는다. 어플리케이션 객체들을 연결하는 간단하고
+    일관된 하나의 접근방법은 이 객체들을 재사용가능하고 가능한한 컨테이너 의존성에서 자유롭게 유지하는 것이다.
+    XML에 기반한 설정과 스프링에 의존하지 않는 평범한 JavaBean 인스턴스의 상호참조를 제공하면서 개별적인
+    모든 데이터 접근 기능은 스프링의 어플리케이션 컨텍스트의 개념과 잘 통합해서 사용할 수 있다. 전형적인
+    스프링 어플리케이션에서 중요한 객체들의 대다수는 JavaBean이다: 데이터접근 템플릿, 데이터접근 객체,
+    트랜잭션 관리자, 데이터접근 객체와 트랜잭션 관리자를 사용하는 비즈니스 서비스, 웹뷰 리졸버, 비즈니스
+    서비스를 사용하는 웹 컨트롤러 등이다.</para>
 
     <section id="orm-resource-mngmnt">
-      <title>Resource and transaction management</title>
+      <title>리소스 관리와 트랜잭션 관리</title>
 
-      <para>Typical business applications are cluttered with repetitive
-      resource management code. Many projects try to invent their own
-      solutions, sometimes sacrificing proper handling of failures for
-      programming convenience. Spring advocates simple solutions for proper
-      resource handling, namely IoC through templating<!--same question as before re templates. Does preceding refer to Spring templates that in beginning you say you no longer recommend? 
-TR: OK AS IS. The template for JDBC is still recommended--> in the case of
-      JDBC and applying AOP interceptors for the ORM technologies.</para>
+      <para>전형적인 비즈니스 어플리케이션들은 반복적인 리소스관리 코드로 엉망이 된다. 많은
+      프로젝트들이 자신만의 해결책을 만들려고 시도하고 때로는 프로그래밍이 편리하도록 적절한
+      실패처리를 희생하기도 한다. 스프링은 JDBC를 사용하는 경우와 ORM 기술에 AOP 인터셉터를
+      적용하는 경우에 적절한 리소스 처리 즉, 템플릿을 통한 IoC로 간단한 해결책을 지지한다.<!--same question as before re templates. Does preceding refer to Spring templates that in beginning you say you no longer recommend?
+TR: OK AS IS. The template for JDBC is still recommended--></para>
 
-      <para>The infrastructure provides proper resource handling and
-      appropriate conversion of specific API exceptions to an unchecked
-      infrastructure exception hierarchy. <!--What do you mean by *cares for*? I substituted *provides*. Should it be *implements*? TR: OK-->Spring
-      introduces a DAO exception hierarchy, applicable to any data access
-      strategy. For direct JDBC, the <classname>JdbcTemplate</classname> class
-      mentioned in a previous section provides connection handling and proper
-      conversion of <classname>SQLException</classname> to the
-      <classname>DataAccessException</classname> hierarchy, including
-      translation of database-specific SQL error codes to meaningful exception
-      classes. For ORM technologies, see the next section for how to get the
-      same exception translation benefits.</para>
+      <para>인프라스트럭처가 리소스를 적절히 처리하고 특정 API 예외를 언체크드 인프라스트럭처
+      예외 계층으로 적절히 변환한다. <!--What do you mean by *cares for*? I substituted *provides*. Should it be *implements*? TR: OK-->
+      스프링은 어떤 데디터접근 전략에도 적용할 수 있는 DAO 예외 계층을 적용했다. JDBC를 직접 사용할
+      때 앞의 섹션에서 얘기한 <classname>JdbcTemplate</classname> 클래스는 커넥션을 관리하고
+      <classname>SQLException</classname>을 <classname>DataAccessException</classname>
+      계층으로(데이터베이스에 특화된 SQL 오류코드를 의미있는 예외클래스로 변환하는 것을 포함해서) 변환한다.
+      ORM 기술을 사용할 때는 동일한 예외 변환의 이점을 어떻게 얻는지 다음 섹션에서 볼 것이다.</para>
 
-      <para>When it comes to transaction management, the
-      <classname>JdbcTemplate</classname> class hooks in to the Spring
-      transaction support and supports both JTA and JDBC transactions, through
-      respective Spring transaction managers. For the supported ORM
-      technologies Spring offers Hibernate, JPA and JDO support through the
-      Hibernate, JPA, and JDO transaction managers as well as JTA support. For
-      details on transaction support, see the <xref linkend="transaction" />
-      chapter.</para>
+      <para>트랜잭션 관리에 대해서 <classname>JdbcTemplate</classname> 클래스는 스프링
+      트랜잭션 지원을 따르고 JTA와 JDBC 트랜잭션을 각각의 스프링 트랜잭션 관리자를 통해서 모두 지원한다.
+      ORM 기술과 관련해서 스프링은 JTA 지원만큼이나 하이버네이트, JPA, JDO 트랜잭션 관리자로 하이버네이트,
+      JPA, JDO를 지원한다. 트랜잭션 지원에 대한 자세한 내용은
+      <xref linkend="transaction" />장을 참고해라.</para>
     </section>
 
     <section id="orm-exception-translation">
-      <title>Exception translation</title>
+      <title>예외 변환(translation)</title>
 
-      <para>When you use Hibernate, JPA, or JDO in a DAO, you must decide how
-      to handle the persistence technology's native exception classes. The DAO
-      throws a subclass of a <classname>HibernateException</classname>,
-      <classname>PersistenceException</classname> or
-      <interfacename>JDOException</interfacename> depending on the technology.
-      These exceptions are all run-time exceptions and do not have to be
-      declared or caught. You may also have to deal with
-      <classname>IllegalArgumentException</classname> and
-      <classname>IllegalStateException</classname>. This means that callers
-      can only treat exceptions as generally fatal, unless they want to depend
-      on the persistence technology's own exception structure. Catching
-      specific causes such as an optimistic locking failure is not possible
-      without tying the caller to the implementation strategy. This trade off
-      might be acceptable to applications that are strongly ORM-based and/or
-      do not need any special exception treatment. However, Spring enables
-      exception translation to be applied transparently through the
-      <interfacename>@Repository</interfacename> annotation:</para>
+      <para>DAO에서 하이버네이트, JAP, JDO를 사용할 때는 반드시 퍼시스턴스 기술의 네이티브
+      예외클래스들을 어떻게 다룰 것인지 결정해야 한다. DAO는 기술에 따라
+      <classname>HibernateException</classname>,
+      <classname>PersistenceException</classname>,
+      <interfacename>JDOException</interfacename>의 하위 클래스를 던진다. 이러한 예외들은
+      모두 런타임 예외이고 선언하지 않거나 잡지(caught) 않아야 한다.
+      <classname>IllegalArgumentException</classname>와
+      <classname>IllegalStateException</classname>도 다루어야 한다. 즉 호출자(caller)는
+      퍼시스턴스 기술 자체의 예외 구조에 의존하지 않고 예외들을 일번적으로 치명적인 것으로만 다룰 수 있다.
+      호출자가 구현전략에 묶이지 않고는 낙관적인 작금(locking) 실패같은 특정 원인을 잡는 것은 불가능하다.
+      이 트래이드오프는 어플리케이션이 상당히 ORM기반이거나 특별한 예외처리가 필요없다면 수긍할만할 것이다.
+      하지만 스프링은 <interfacename>@Repository</interfacename> 어노테이션으로 예외 변환을
+      투명하게 적용할 수 있게 했다.</para>
 
       <programlisting language="java">@Repository
 public class ProductDaoImpl implements ProductDao {
 
-    <lineannotation>// class body here...</lineannotation>
+    <lineannotation>// 클래스 바디...</lineannotation>
 
 }</programlisting>
 
@@ -206,53 +159,41 @@ public class ProductDaoImpl implements ProductDao {
 
 &lt;/beans&gt;</programlisting>
 
-      <para>The postprocessor automatically looks for all exception
-      translators (implementations of the
-      <interfacename>PersistenceExceptionTranslator</interfacename> interface)
-      and advises all beans marked with the
-      <interfacename>@Repository</interfacename> annotation so that the
-      discovered translators can intercept and apply the appropriate
-      translation on the thrown exceptions.</para>
+      <para>postprocessor는 자동으로 모든 예외변환자(exception translators)를
+      검색하고(<interfacename>PersistenceExceptionTranslator</interfacename>
+      인터페이스의 구현체) 찾아낸 변환자가 던져진 예외를 가로채서 적절히 변화하도록
+      <interfacename>@Repository</interfacename> 어노테이션이 붙은 모든 빈을
+      어드바이즈한다.</para>
 
-      <para>In summary: you can implement DAOs based on the plain persistence
-      technology's API and annotations, while still benefiting from
-      Spring-managed transactions, dependency injection, and transparent
-      exception conversion (if desired) to Spring's custom exception
-      hierarchies.</para>
+      <para>요약하자면 스프링이 관리하는 트랜잭션, 의존성 주입, (원한다면)스프링 커스텀 예외계층으로의
+      투명한 예외 변환의 이점을 가지면서 평범한 퍼시스턴스 기술의 API와 어노테이션에 기반해서
+      DAO를 구현할 수 있다.</para>
     </section>
   </section>
 
   <section id="orm-hibernate">
-    <title>Hibernate</title>
+    <title>하이버네이트(Hibernate)</title>
 
-    <para>We will start with a coverage of <ulink
-    url="http://www.hibernate.org/">Hibernate 3</ulink> in a Spring
-    environment, using it to demonstrate the approach that Spring takes
-    towards integrating O/R mappers. This section will cover many issues in
-    detail and show different variations of DAO implementations and
-    transaction demarcation. Most of these patterns can be directly translated
-    to all other supported ORM tools. The following sections in this chapter
-    will then cover the other ORM technologies, showing briefer examples
-    there.</para>
+    <para>스프링환경에서 <ulink url="http://www.hibernate.org/">Hibernate 3</ulink>를
+    사용해서 스프링이 O/R 매퍼를 통합하는 접근방법을 보여줄 것이다. 이 섹션은 많은 이슈들을 자세히 다루고
+    여러가지 다양한 DAO 구현체와 트랜잭션 경계를 보여줄 것이다. 이러한 방식은 지원하는 다른 모든 ORM
+    모두에도 바로 적용할 수 있다. 이 장에서 이어지는 섹션에서는 다른 ORM 기술들을 다루고 핵심
+    예제들을 보여줄 것이다.</para>
 
-    <para><note><para>As of Spring 3.0, Spring requires Hibernate 3.2 or later.</para></note></para>
+    <para><note><para>스프링 3.0부터는 하이버네이트 3.2 이상의 버전이 필요하다.</para></note></para>
 
     <section id="orm-session-factory-setup">
-      <title><interfacename>SessionFactory</interfacename> setup in a Spring
-      container</title>
+      <title>스프링 컨테이너의 <interfacename>SessionFactory</interfacename> 설정</title>
 
-      <para>To avoid tying application objects to hard-coded resource lookups,
-      you can define resources such as a JDBC
-      <interfacename>DataSource</interfacename> or a Hibernate
-      <interfacename>SessionFactory</interfacename> as beans in the Spring
-      container. Application objects that need to access resources receive
-      references to such predefined instances through bean references, as
-      illustrated in the DAO definition in the next section.</para>
+      <para>어플리케이션 객체가 하드코딩된 리소스 검색에 묶이는 것을 피하려면 JDBC
+      <interfacename>DataSource</interfacename>나  하이버네이트
+      <interfacename>SessionFactory</interfacename>같은 리소스를 스프링 컨테이너의
+      빈으로 정의할 수 있다. 리소스에 접근해야 하는 어플리케이션 객체들은 다음 섹션의 DAO 정의에서
+      보여주듯이 빈 레퍼런스로 미리 정의한 인스턴스에 대한 참조를 받는다.</para>
 
-      <para>The following excerpt from an XML application context definition
-      shows how to set up a JDBC <classname>DataSource</classname> and a
-      Hibernate <interfacename>SessionFactory</interfacename> on top of
-      it:</para>
+      <para>XML 어플리케이션 컨텍스트 정의에서 인용한 다음 코드는 JDBC
+      <classname>DataSource</classname>와 Hibernate
+      <interfacename>SessionFactory</interfacename>를 설정하는 방법을 보여준다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -279,10 +220,9 @@ public class ProductDaoImpl implements ProductDao {
 
 &lt;/beans&gt;</programlisting>
 
-      <para>Switching from a local Jakarta Commons DBCP
-      <classname>BasicDataSource</classname> to a JNDI-located
-      <interfacename>DataSource</interfacename> (usually managed by an
-      application server) is just a matter of configuration:</para>
+      <para>로컬 Jakarta Commons DBCP <classname>BasicDataSource</classname>를
+      JNDI에 있는 <interfacename>DataSource</interfacename>(보통 어플리케이션 서버가
+      관리하는)로 바꾸는 것은 단지 설정의 문제이다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -290,23 +230,21 @@ public class ProductDaoImpl implements ProductDao {
 
 &lt;/beans&gt;</programlisting>
 
-      <para>You can also access a JNDI-located
-      <interfacename>SessionFactory</interfacename>, using Spring's
-      <classname>JndiObjectFactoryBean</classname> /
-      <literal>&lt;jee:jndi-lookup&gt;</literal> to retrieve and expose it.
-      However, that is typically not common outside of an EJB context.</para>
+      <para>JNDI에 위치한 <interfacename>SessionFactory</interfacename>를 획득해서
+      노출하는 스프링의 <classname>JndiObjectFactoryBean</classname> /
+      <literal>&lt;jee:jndi-lookup&gt;</literal>을 사용해서 JNDI에 위치한
+      <interfacename>SessionFactory</interfacename>에 접근할 수도 있다. 하지만
+      대체적으로 EJB 컨텍스트의 외부에서 일반적인 방식은 않다.</para>
     </section>
 
     <section id="orm-hibernate-straight">
-      <title>Implementing DAOs based on plain Hibernate 3 API</title>
+      <title>평범한 하이버네이트 3 API에 기반해서 DAO 구현하기</title>
 
-      <para>Hibernate 3 has a feature called contextual sessions, wherein
-      Hibernate itself manages one current
-      <interfacename>Session</interfacename> per transaction. This is roughly
-      equivalent to Spring's synchronization of one Hibernate
-      <interfacename>Session</interfacename> per transaction. A corresponding
-      DAO implementation resembles the following example, based on the plain
-      Hibernate API:</para>
+      <para>하이버네이트 3는 하이버네이트가 직접 트랜잭션마다 하나의
+      <interfacename>Session</interfacename>을 관리하는 문맥상의 세션(contextual
+      sessions)이라는 기능을 가진다. 이는 대략적으로는 트랜잭션마다 하나의 하이버네이트
+      <interfacename>Session</interfacename>에 대한 스프링의 동기화와 동일하다. 이에 맞는
+      DAO 구현체는 평범한 하이버네이트 API에 기반한 다음에 예제와 유사하다.</para>
 
       <programlisting language="java">public class ProductDaoImpl implements ProductDao {
 
@@ -324,22 +262,18 @@ public class ProductDaoImpl implements ProductDao {
     }
 }</programlisting>
 
-      <para>This style is similar to that of the Hibernate reference
-      documentation and examples, except for holding the
-      <interfacename>SessionFactory</interfacename> in an instance variable.
-      We strongly recommend such an instance-based setup over the old-school
-      <literal>static</literal> <classname>HibernateUtil</classname> class
-      from Hibernate's CaveatEmptor sample application. (In general, do not
-      keep any resources in <literal>static</literal> variables unless
-      <emphasis>absolutely</emphasis> necessary.)</para>
+      <para>이 방식은 인스턴스 변수에 <interfacename>SessionFactory</interfacename>를
+      가지고 있는 것을 빼면 하이버네이트 레퍼런스문서와 예제에 있는 것과 유사하다. 하이버네이스
+      CaveatEmptor 예제 어플리케이션의 오래된 <literal>static</literal>
+      <classname>HibernateUtil</classname> 클래스보다 이러한 인스턴스 기반의 설정을 훨씬
+      더 추천한다.(일반적으로 <emphasis>절대적으로</emphasis> 필요한게 아니라면
+      <literal>static</literal> 변수에 어떤 리소스도 가지지 말아야 한다.)</para>
 
-      <para>The above DAO follows the dependency injection pattern: it fits
-      nicely into a Spring IoC container, just as it would if coded against
-      Spring's <classname>HibernateTemplate</classname>. Of course, such a DAO
-      can also be set up in plain Java (for example, in unit tests). Simply
-      instantiate it and call <methodname>setSessionFactory(..)</methodname>
-      with the desired factory reference. As a Spring bean definition, the DAO
-      would resemble the following:</para>
+      <para>위의 DAO는 의존성 주입 패턴을 따른다. 스프링의
+      <classname>HibernateTemplate</classname>로 코딩했다면 DAO는 스프링 IoC 컨테이너에
+      아주 잘 맞다. 물론 DAO는 평범한 자바로도 설정할 수 있다. (예를 들면 유닛테스트) 그냥 DAO를
+      인스턴스화하고 원하는 팩토리의 참조로 <methodname>setSessionFactory(..)</methodname>를
+      호출해라. 스프링의 빈 정의처럼 DAO는 다음과 같을 것이다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -349,63 +283,52 @@ public class ProductDaoImpl implements ProductDao {
 
 &lt;/beans&gt;</programlisting>
 
-      <para>The main advantage of this DAO style is that it depends on
-      Hibernate API only; no import of any Spring class is required. This is
-      of course appealing from a non-invasiveness perspective, and will no
-      doubt feel more natural to Hibernate developers.</para>
+      <para>이 DAO 방식의 가장 큰 이점은 DAO가 하이버네이트 API에만 의존한다는 것이다. 어떤
+      스프링 클래스도 임포트하지 않아도 된다. 물론 이는 비침투적인 관점에서 매력적이고 하이버네이트
+      개발자들이 훨씬 자연스럽게 느낄 것이다.</para>
 
-      <para>However, the DAO throws plain
-      <classname>HibernateException</classname> (which is unchecked, so does
-      not have to be declared or caught), which means that callers can only
-      treat exceptions as generally fatal - unless they want to depend on
-      Hibernate's own exception hierarchy. Catching specific causes such as an
-      optimistic locking failure is not possible without tying the caller to
-      the implementation strategy. This trade off might be acceptable to
-      applications that are strongly Hibernate-based and/or do not need any
-      special exception treatment.</para>
+      <para>하지만 DAO는 평범한 <classname>HibernateException</classname>(언체크드이므로
+      선언하거나 잡지(caught) 말아야 한다.)를 던진다. 그래서 하이버네이트의 예외 계층에 의존하지
+      않는다면 호출자가 일반적으로 치명적인 오류로만 예외를 다룰 수 있다. 호출자와 구현 전략이 묶이지
+      않는 한 낙관적인 작금(locking) 실패같은 특정 원인을 잡는 것은 불가능하다. 이 트레이드오프는
+      이 트래이드오프는 어플리케이션이 크게 하이버네이트 기반이거나 특별한 예외처리가 필요없다면
+      수긍할만할 것이다.</para>
 
-      <para>Fortunately, Spring's
-      <classname>LocalSessionFactoryBean</classname> supports Hibernate's
-      <methodname>SessionFactory.getCurrentSession()</methodname> method for
-      any Spring transaction strategy, returning the current Spring-managed
-      transactional <interfacename>Session</interfacename> even with
-      <classname>HibernateTransactionManager</classname>. Of course, the
-      standard behavior of that method remains the return of the current
-      <interfacename>Session</interfacename> associated with the ongoing JTA
-      transaction, if any. This behavior applies regardless of whether you are
-      using Spring's <classname>JtaTransactionManager</classname>, EJB
-      container managed transactions (CMTs), or JTA.</para>
+      <para>다행히도 스프링의 <classname>LocalSessionFactoryBean</classname>이 어떤
+      스프링 트랜잭션 전략에서도 하이버네이트의
+      <methodname>SessionFactory.getCurrentSession()</methodname> 메서드를 지원해서
+      현재 스프링이 관리하는 트랜잭션이 적용된 <interfacename>Session</interfacename>을
+      <classname>HibernateTransactionManager</classname>와 함께 반환한다. 물론
+      <methodname>SessionFactory.getCurrentSession()</methodname> 메서드의 표준동작은
+      진행중인 JTA 트랜잭션(존재한다면)과 관련된 현재 <interfacename>Session</interfacename>을
+      반환하는 메서드인채로 남아있다. 이 동작은 스프링의
+      <classname>JtaTransactionManager</classname>를 사용하든지 EJB 컨테이터가 관리하는
+      트랜잭션 (CMT)를 사용하든지 JTA를 사용하든지에 관계없이 적용된다.</para>
 
-      <para>In summary: you can implement DAOs based on the plain Hibernate 3
-      API, while still being able to participate in Spring-managed
-      transactions.</para>
+      <para>요약하면 스프링이 관리하는 트랜잭션에 여전히 참여할 수 있으면서 평범한
+      하이버네이트 3 API에 기반한 DAO를 구현할 수 있다.</para>
     </section>
 
     <section id="orm-hibernate-tx-declarative">
-      <title>Declarative transaction demarcation</title>
+      <title>선언적인 트랜잭션 경계</title>
 
-      <para>We recommend that you use Spring's declarative transaction
-      support, which enables you to replace explicit transaction demarcation
-      API calls in your Java code with an AOP transaction interceptor. This
-      transaction interceptor can be configured in a Spring container using
-      either Java annotations or XML.<!--Reword last part of preceding sentence to clarify *what* is *using Java annotations or XML*. Are you using Java annotations or XML to replace--><!--explicit transaction demarcation API calls, etc. OR are you saying the Spring container is using these? 
-TR: REVISED, PLS REVIEW.-->This declarative transaction capability allows you
-      to keep business services free of repetitive transaction demarcation
-      code and to focus on adding business logic, which is the real value of
-      your application.</para>
+      <para>스프링의 선언적인 트랜잭션 지원을 사용하기를 권장한다. 스프링의 선언적인 트랜잭션 지원으로
+      AOP 트랜잭션 인터셉터를 가진 자바코드에서 명백한 트랜잭션 경계 API 호출을 교체할 수 있다. 이
+      트랜잭션 인터셉터는 자바 어노테이션이나 XML을 사용해서 스프링 컨테이너에서 설정할 수 있다.<!--Reword last part of preceding sentence to clarify *what* is *using Java annotations or XML*. Are you using Java annotations or XML to replace--><!--explicit transaction demarcation API calls, etc. OR are you saying the Spring container is using these?
+TR: REVISED, PLS REVIEW.-->이 선언적인 트랜잭션 기능으로 비즈니스 서비스가 반복적인 트랜잭션 경계
+      코드에서 자유롭게 해서 어플리케이션의 실제 가치인 비즈니스 로직을 추가하는데 집중할 수 있게
+      한다.</para>
 
       <note>
-        <para>Prior to continuing, you are <emphasis>strongly</emphasis>
-        encouraged to read <xref linkend="transaction-declarative" /> if you
-        have not done so.</para>
+        <para>계속 읽기 전에 <xref linkend="transaction-declarative" />를 읽어보기를
+        <emphasis>강력히</emphasis> 권장한다. </para>
       </note>
 
-      <para>Furthermore, transaction semantics like propagation behavior and
-      isolation level can be changed in a configuration file and do not affect
-      the business service implementations.<!--give context to example; what is it showing, what is its purpose? TR: REVISED, PLS REVIEW. Added some context.--></para>
+      <para>게다가 전파 동작과 격리수준같은 트랜잭션의 의미는 설정파일에서 바꿀 수 있고 비즈니스
+      서비스 구현체에는 영향을 끼치지 않는다.<!--give context to example; what is it showing, what is its purpose? TR: REVISED, PLS REVIEW. Added some context.--></para>
 
-      <para>The following example shows how you can configure an AOP
-      transaction interceptor, using XML, for a simple service class:</para>
+      <para>다음 예제는 XML을 사용해서 간단한 서비스 클래스에 AOP 트랜잭션 인터셉터를
+      설정하는 방법을 보여준다.</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -413,22 +336,22 @@ TR: REVISED, PLS REVIEW.-->This declarative transaction capability allows you
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/tx 
+       http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-       http://www.springframework.org/schema/aop 
+       http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"&gt;
 
-  <lineannotation>&lt;!-- <interfacename>SessionFactory</interfacename>, <interfacename>DataSource</interfacename>, etc. omitted --&gt;</lineannotation>
+  <lineannotation>&lt;!-- <interfacename>SessionFactory</interfacename>, <interfacename>DataSource</interfacename>등은 생략한다 --&gt;</lineannotation>
 
-  &lt;bean id="transactionManager" 
+  &lt;bean id="transactionManager"
             class="org.springframework.orm.hibernate3.HibernateTransactionManager"&gt;
     &lt;property name="sessionFactory" ref="sessionFactory"/&gt;
   &lt;/bean&gt;
-  
+
   &lt;aop:config&gt;
-    &lt;aop:pointcut id="productServiceMethods" 
+    &lt;aop:pointcut id="productServiceMethods"
             expression="execution(* product.ProductService.*(..))"/&gt;
     &lt;aop:advisor advice-ref="txAdvice" pointcut-ref="productServiceMethods"/&gt;
   &lt;/aop:config&gt;
@@ -447,7 +370,7 @@ TR: REVISED, PLS REVIEW.-->This declarative transaction capability allows you
 
 &lt;/beans&gt;</programlisting>
 
-      <para>This is the service class that is advised:</para>
+      <para>다음은 어드바이즈된 서비스 클래스다.</para>
 
       <programlisting language="java">public class ProductServiceImpl implements ProductService {
 
@@ -457,20 +380,18 @@ TR: REVISED, PLS REVIEW.-->This declarative transaction capability allows you
         this.productDao = productDao;
     }
 
-    <lineannotation>// notice the absence of transaction demarcation code in this method</lineannotation>
-    <lineannotation>// Spring's declarative transaction infrastructure will be demarcating</lineannotation>
-    <lineannotation>// transactions on your behalf </lineannotation>
+    <lineannotation>// 이 메서드에는 트랜잭션 경계 코드가 빠져있다</lineannotation>
+    <lineannotation>// 스프링의 선언적인 트랜잭션 인프라스트럭쳐가 개발자를 위해서 트랜잭션 경계를 정한다</lineannotation>
     public void increasePriceOfAllProductsInCategory(final String category) {
         List productsToChange = this.productDao.loadProductsByCategory(category);
         <lineannotation>// ...</lineannotation>
     }
 }</programlisting>
 
-      <para>We also show an attribute-support based configuration, in the
-      following example. <!--I added *in the following example*; is this correct? Relate example below to the one that follows it. TR: OK-->You
-      annotate the service layer with @Transactional annotations and instruct
-      the Spring container to find these annotations and provide transactional
-      semantics for these annotated methods.</para>
+      <para>다음 예제에서는 속성-지원(attribute-support)에 기반한 설정도 보여주고
+      있다. <!--I added *in the following example*; is this correct? Relate example below to the one that follows it. TR: OK-->
+      서비스 계층에 @Transactional 어노테이션을 붙혀서 스프링 컨테이너가 이러한 어노테이션을 찾아서
+      어노테이션이 붙은 메서드들에 트랜잭션의 의미를 적용하도록 한다.</para>
 
       <programlisting language="java">public class ProductServiceImpl implements ProductService {
 
@@ -493,12 +414,9 @@ TR: REVISED, PLS REVIEW.-->This declarative transaction capability allows you
 
 }</programlisting>
 
-      <para>As you can see from the following configuration example, the
-      configuration is much simplified, compared to the XML example above,
-      while still providing the same functionality driven by the annotations
-      in the service layer code. All you need to provide is the
-      TransactionManager implementation and a "&lt;tx:annotation-driven/&gt;"
-      entry.<!--What does preceding example show, what's its relation to this example? TR: REVISED, PLS REVIEW.--></para>
+      <para>다음 예제 설정에서 볼 수 있듯이 앞의 XML 예제와 비교해서 설정이 훨씬 간단해졌고
+      서비스계층 코드의 어노테이션이 주도해서 같은 기능을 제공한다. TransactionManager 구현체와
+      "&lt;tx:annotation-driven/&gt;" 엔트리가 제공해야 하는 내용의 전부이다.<!--What does preceding example show, what's its relation to this example? TR: REVISED, PLS REVIEW.--></para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -506,20 +424,20 @@ TR: REVISED, PLS REVIEW.-->This declarative transaction capability allows you
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/tx 
+       http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-       http://www.springframework.org/schema/aop 
+       http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"&gt;
 
-  <lineannotation>&lt;!-- <interfacename>SessionFactory</interfacename>, <interfacename>DataSource</interfacename>, etc. omitted --&gt;</lineannotation>
+  <lineannotation>&lt;!-- <interfacename>SessionFactory</interfacename>, <interfacename>DataSource</interfacename>등은 생략한다 --&gt;</lineannotation>
 
   &lt;bean id="transactionManager"
             class="org.springframework.orm.hibernate3.HibernateTransactionManager"&gt;
     &lt;property name="sessionFactory" ref="sessionFactory"/&gt;
   &lt;/bean&gt;
-  
+
   &lt;tx:annotation-driven/&gt;
 
   &lt;bean id="myProductService" class="product.SimpleProductService"&gt;
@@ -530,20 +448,16 @@ TR: REVISED, PLS REVIEW.-->This declarative transaction capability allows you
     </section>
 
     <section id="orm-hibernate-tx-programmatic">
-      <title>Programmatic transaction demarcation</title>
+      <title>프로그래밍적인 트랜잭션 경계</title>
 
-      <para>You can demarcate transactions in a higher level of the
-      application, on top of such lower-level data access services spanning
-      any number of operations. Nor do restrictions exist on the
-      implementation of the surrounding business service; it just needs a
-      Spring <classname>PlatformTransactionManager</classname>. Again, the
-      latter can come from anywhere, but preferably as a bean reference
-      through a <methodname>setTransactionManager(..)</methodname> method,
-      just as the <classname>productDAO</classname> should be set by a
-      <methodname>setProductDao(..)</methodname> method. The following
-      snippets show a transaction manager and a business service definition in
-      a Spring application context, and an example for a business method
-      implementation:</para>
+      <para>어플리케이션의 더 높은 수준(다수에 작업에 걸쳐있는 저수준의 데이터 접근 서비스 상위에)에서
+      트랜잭션의 경계를 정할 수 있다. 비즈니스 서비스 환경에 대한 구현체에 제약은 전혀 없다. 단지 스프링
+      <classname>PlatformTransactionManager</classname>가 필요하다. 다시 말하자면
+      <classname>PlatformTransactionManager</classname>는 어디에나 올 수 있지만
+      <classname>productDAO</classname>를 <methodname>setProductDao(..)</methodname>로
+      설정해야 하는 것처럼 <methodname>setTransactionManager(..)</methodname> 메서드를
+      통한 빈 참조가 낫다. 다음 코드는 스프링 어플리케이션 컨텍스트의 트랜잭션 관리자와 비즈니스 서비스
+      정의를 보여주고 비즈니스 메서드 구현체에 대한 예제를 보여준다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -576,57 +490,46 @@ TR: REVISED, PLS REVIEW.-->This declarative transaction capability allows you
 
                 public void doInTransactionWithoutResult(TransactionStatus status) {
                     List productsToChange = this.productDao.loadProductsByCategory(category);
-                    <lineannotation>// do the price increase...</lineannotation>
+                    <lineannotation>// price를 증가시킨다...</lineannotation>
                 }
             }
         );
     }
 }</programlisting>
 
-      <para>Spring's <classname>TransactionInterceptor</classname> allows any
-      checked application exception to be thrown with the callback code, while
-      <classname>TransactionTemplate</classname> is restricted to unchecked
-      exceptions within the callback.
-      <classname>TransactionTemplate</classname> triggers a rollback in case
-      of an unchecked application exception, or if the transaction is marked
-      rollback-only by the application (via
-      <classname>TransactionStatus</classname>).
-      <classname>TransactionInterceptor</classname> behaves the same way by
-      default but allows configurable rollback policies per method.</para>
+      <para>스프링의 <classname>TransactionInterceptor</classname>는 어떤 체크드
+      어플리케이션 예외라도 콜백코드와 함게 던져지도록 하고 <classname>TransactionTemplate</classname>는
+      콜백내의 언체크드 예외로만 제한된다. <classname>TransactionTemplate</classname>는
+      언체크드 어플리케이션 예외가 생기거나 어플리케이션이 롤백전용(rollback-only)으로 트랜잭션으로
+      표시한(<classname>TransactionStatus</classname>를 통해서) 경우 롤백을 실행한다.
+      기본적으로 <classname>TransactionInterceptor</classname>도 같은 방식으로 동작하지만
+      메서드마다 롤백 정책을 설정할 수 있다.</para>
     </section>
 
     <section id="orm-hibernate-tx-strategies">
-      <title>Transaction management strategies</title>
+      <title>트랜잭션 관리 전략</title>
 
-      <para>Both <classname>TransactionTemplate</classname> and
-      <classname>TransactionInterceptor</classname> delegate the actual
-      transaction handling to a
-      <classname>PlatformTransactionManager</classname> instance, which can be
-      a <classname>HibernateTransactionManager</classname> (for a single
-      Hibernate <interfacename>SessionFactory</interfacename>, using a
-      <classname>ThreadLocal</classname>
-      <interfacename>Session</interfacename> under the hood) or a
-      <classname>JtaTransactionManager</classname> (delegating to the JTA
-      subsystem of the container) for Hibernate applications. You can even use
-      a custom <classname>PlatformTransactionManager</classname>
-      implementation. Switching from native Hibernate transaction management
-      to JTA, such as when facing distributed transaction requirements for
-      certain deployments of your application, is just a matter of
-      configuration. Simply replace the Hibernate transaction manager with
-      Spring's JTA transaction implementation. Both transaction demarcation
-      and data access code will work without changes, because they just use
-      the generic transaction management APIs.</para>
+      <para><classname>TransactionTemplate</classname>와
+      <classname>TransactionInterceptor</classname> 둘 다 실제 트랜잭션 처리를
+      <classname>PlatformTransactionManager</classname> 인스턴스에 위임한다.
+      <classname>PlatformTransactionManager</classname>는 하이버네이트 어플리케이션에서
+      <classname>HibernateTransactionManager</classname>(내부에서
+      <classname>ThreadLocal</classname> <interfacename>Session</interfacename>를
+      사용하는 하나의 하이버네이트 <interfacename>SessionFactory</interfacename>에 대해서)이거나
+      <classname>JtaTransactionManager</classname>(컨테이너의 JTA 하위시스템에 위임하는)가
+      될 수 있다. 커스텀 <classname>PlatformTransactionManager</classname> 구현체를 사용할
+      수도 있다. 어플리케이션의 특정 배포에서 분산 트랜잭션 요구사항이 필요한 경우에서처럼 네이티브 하이버네이트
+      트랜잭션 관리에서 JTA로 전환하는 것은 설정만으로 가능하다 그냥 하이버네이트 트랜잭션 메니저를 스프링의
+      JTA 트랜잭션 구현체로 교체해라. 트랜잭션 경계와 데이터접근 코드는 일반적인 트랜잭션 관리 API를 사용할
+      것이므로 변경없이 모두 동작할 것이다.</para>
 
-      <para>For distributed transactions across multiple Hibernate session
-      factories, simply combine <classname>JtaTransactionManager</classname>
-      as a transaction strategy with multiple
-      <classname>LocalSessionFactoryBean</classname> definitions. Each DAO
-      then gets one specific <interfacename>SessionFactory</interfacename>
-      reference passed into its corresponding bean property. If all underlying
-      JDBC data sources are transactional container ones, a business service
-      can demarcate transactions across any number of DAOs and any number of
-      session factories without special regard, as long as it is using
-      <classname>JtaTransactionManager</classname> as the strategy.</para>
+      <para>여러 하이버네이트 세션 팩토리들 사이에 분산된 트랜잭션에서는 트랜잭션 전략인
+      <classname>JtaTransactionManager</classname>를 여러
+      <classname>LocalSessionFactoryBean</classname> 정의와 합친다. 그러면 각 DAO는
+      하나의 특정 <interfacename>SessionFactory</interfacename> 참조를 DAO의 대응되는
+      빈 프로퍼티로 얻는다. 의존하는 모든 JDBC 데이터소스가 트랜잭션이 적용된 컨테이너의 데이터소스라면
+      전략으로 <classname>JtaTransactionManager</classname>를 사용하는 한 특별히 신경쓰지
+      않고 비즈니스 서비스는 다수의 DAO와 다수의 세션 팩토리에 걸친 트랜잭션의 경계를 나눌 수 있다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -696,222 +599,183 @@ TR: REVISED, PLS REVIEW.-->This declarative transaction capability allows you
 
 &lt;/beans&gt;</programlisting>
 
-      <para>Both <classname>HibernateTransactionManager</classname> and
-      <classname>JtaTransactionManager</classname> allow for proper JVM-level
-      cache handling with Hibernate, without container-specific transaction
-      manager lookup or a JCA connector (if you are not using EJB to initiate
-      transactions).<!--Is it clear that the parenthetical phrase applies to only *JCA connector* or does it apply to *without transaction manager lookup* also?
+      <para><classname>HibernateTransactionManager</classname>와
+      <classname>JtaTransactionManager</classname>는 둘 다 컨테이너에 특화된
+      트랜잭션 관리자 검색이나 JCA 커넥터없이 하이버네이트로 JVM 수준의 적절히 캐치 처리를
+      할 수 있다.<!--Is it clear that the parenthetical phrase applies to only *JCA connector* or does it apply to *without transaction manager lookup* also?
 TR: OK. Reads OK to me, it applies to both. --></para>
 
-      <para><classname>HibernateTransactionManager</classname> can export the
-      Hibernate JDBC <interfacename>Connection</interfacename> to plain JDBC
-      access code, for a specific <interfacename>DataSource</interfacename>.
-      This capability allows for high-level transaction demarcation with mixed
-      Hibernate and JDBC data access completely without JTA, if you are
-      accessing only one database.
-      <classname>HibernateTransactionManager</classname> automatically exposes
-      the Hibernate transaction as a JDBC transaction if you have set up the
-      passed-in <interfacename>SessionFactory</interfacename> with a
-      <interfacename>DataSource</interfacename> through the
-      <classname>dataSource</classname> property of the
-      <classname>LocalSessionFactoryBean</classname> class. Alternatively, you
-      can specify explicitly the <interfacename>DataSource</interfacename> for
-      which the transactions are supposed to be exposed through the
-      <classname>dataSource</classname> property of the
-      <classname>HibernateTransactionManager</classname> class.</para>
+      <para><classname>HibernateTransactionManager</classname>는 특정
+      <interfacename>DataSource</interfacename>에 대한 하이버네이트 JDBC
+      <interfacename>Connection</interfacename>을 평범한 JDBC 접근 코드로 내보낼 수 있다.
+      이 기능은 데이터베이스를 하나만 사용하고 있다면 하이버네이트와 JDBC 데이터접근을 섞어서 사용하면서
+      JTA없이 고수준의 트랜잭션 경계를 가능하게 한다. <classname>LocalSessionFactoryBean</classname>
+      클래스의 <classname>dataSource</classname> 프로프터로
+      <interfacename>DataSource</interfacename>를 가진
+      <interfacename>SessionFactory</interfacename>를 설정했다면
+      <classname>HibernateTransactionManager</classname>는 자동으로 하이버네이트 트랜잭션을
+      JDBC 트랜잭션으로 노출한다. 다른 방법으로는
+      <classname>HibernateTransactionManager</classname> 클래스의
+      <classname>dataSource</classname> 프로퍼티를 통해서 노출되도록 트랜잭션이 적용된
+      <interfacename>DataSource</interfacename>를 명시적으로 지정할 수 있다.</para>
     </section>
 
     <section id="orm-hibernate-resources">
-      <title>Comparing container-managed and locally defined resources<!--I've revised to better communicate the point of the section, which I think has to do with --><!--comparing spring's local support for transactions as opposed to container support. Revise as necessary. 
+      <title>컨테이너가 관리하는 리소스와 로컬에 정의한 리소스 비교<!--I've revised to better communicate the point of the section, which I think has to do with --><!--comparing spring's local support for transactions as opposed to container support. Revise as necessary.
 TR: REVISED, PLS REVIEW. Changed to heading *resources* since it technically could be more than transactions i.e. caching--></title>
 
-      <para>You can switch between a container-managed JNDI
-      <interfacename>SessionFactory</interfacename><!--Clarify whether JNDI SessionFactory refers to container resources; I'm not sure what's being compared. 
-TR: REVISED, PLS REVIEW. Clarified by addin container-managed.--> and a
-      locally defined one, without having to change a single line of
-      application code. Whether to keep resource definitions in the container
-      or locally within the application is mainly a matter of the transaction
-      strategy that you use. Compared to a Spring-defined local
-      <interfacename>SessionFactory</interfacename>, a manually registered
-      JNDI <interfacename>SessionFactory</interfacename> does not provide any
-      benefits. Deploying a <interfacename>SessionFactory</interfacename>
-      through Hibernate's JCA connector provides the added value of
-      participating in the Java EE server's management infrastructure, but
-      does not add actual value beyond that.</para>
+      <para>코드는 단 한줄도 바꾸지 않고 컨테이너가 관리하는 JNDI <interfacename>SessionFactory</interfacename><!--Clarify whether JNDI SessionFactory refers to container resources; I'm not sure what's being compared.
+TR: REVISED, PLS REVIEW. Clarified by addin container-managed.-->
+      와 로컬 정의한 <interfacename>SessionFactory</interfacename>간에 전환을 할 수 있다.
+      컨테이너에 리소스 정의를 유지할 것인지 어플리케이션의 로컬로 리소스 정의를 유지할 것인지는 주로
+      사용하는 트랜잭션 전략에 달려있다. 스프링이 정의한 로컬
+      <interfacename>SessionFactory</interfacename>과 비교해서 수동으로 등록한 JNDI
+      <interfacename>SessionFactory</interfacename>는 어떤 장점도 제공하지 않는다.
+      하이버네이트의 JCA 커텍터를 통한 <interfacename>SessionFactory</interfacename> 배포는
+      자바 EE 서버의 관리 인프라스트럭처에 참여하는 장점이 있지만 그 이상의 실제적인 가치를 주지는
+      않는다.</para>
 
-      <para>Spring's transaction support is not bound to a container.
-      Configured with any strategy other than JTA, transaction support also
-      works in a stand-alone or test environment. Especially in the typical
-      case of single-database transactions, Spring's single-resource local
-      transaction support <!--I wrote *stand-alone transaction support*; if not correct, specify what you mean by *this*. 
-TR: REVISED, PLS REVIEW. Changed to single-resource local transaction support.-->is
-      a lightweight and powerful alternative to JTA. When you use local EJB
-      stateless session beans to drive transactions, you depend both on an EJB
-      container and JTA, even if you access only a single database, and only
-      use stateless session beans to provide declarative transactions through
-      container-managed transactions. <!--Does the next sentence refer to Spring or non-Spring? Clarify. I'm not sure whether the point of this paragraph and preceding is clear. 
-TR: REVISED, PLS REVIEW. It's not very clear. I've revised it. It refers to non-Spring programmatic use of JTA.-->Also,
-      direct use of JTA programmatically requires a Java EE environment as
-      well. JTA does not involve only container dependencies in terms of JTA
-      itself and of JNDI <interfacename>DataSource</interfacename> instances.
-      For non-Spring, JTA-driven Hibernate transactions, you have to use the
-      Hibernate JCA connector, or extra Hibernate transaction code with the
-      <interfacename>TransactionManagerLookup</interfacename> configured for
-      proper JVM-level caching.</para>
+      <para>스프링의 트랜잭션 지원은 컨테이너에 의존하지 않는다. JTA외에 다른 전략으로 설정한
+      트랜잭션 지원도 독립적인 환경이나 테스트환경에서 동작한다. 특히 단일 데이터베이스 트랜잭션을
+      사용하는 대표적인 경우에 스프링의 단일 리소스 로컬 트랜잭션 지원은 <!--I wrote *stand-alone transaction support*; if not correct, specify what you mean by *this*.
+TR: REVISED, PLS REVIEW. Changed to single-resource local transaction support.-->
+      JTA의 가볍고 강력한 대안이다. 트랜잭션을 유도하려고 로컬 EJB의 상태가 없는 세션 빈을 사용하는
+      경우 하나의 데이터베이스만 사용하고 컨테이너가 관리하는 트랜잭션을 통해 선언적인 트랜잭션을 제공하는데만
+      상태가 없는 세션 빈을 사용하더라도 EJB 컨테이너와 JTA에 모두 의존한다. <!--Does the next sentence refer to Spring or non-Spring? Clarify. I'm not sure whether the point of this paragraph and preceding is clear.
+TR: REVISED, PLS REVIEW. It's not very clear. I've revised it. It refers to non-Spring programmatic use of JTA.-->
+      또한, JTA를 프로그래밍적으로 직접 사용하려면 Java EE 환경이 필요하다. JTA는 JTA 자체와
+      JNDI <interfacename>DataSource</interfacename> 인스턴스와 관련된 컨테이너 의존성만
+      포함하지 않는다. 스프링이 아니면서 JTA 주도적인 하이버네이트 트랜잭션에서는 하이버네이트 JCA 커넥터를
+      사용하거나 적절한 JVM 수준의 캐싱으로 설정된
+      <interfacename>TransactionManagerLookup</interfacename>로 추가적인 하이버네이트
+      트랜잭션 코드를 사용해야 한다.</para>
 
-      <para>Spring-driven transactions can work as well with a locally defined
-      Hibernate <interfacename>SessionFactory</interfacename> as they do with
-      a local JDBC <interfacename>DataSource </interfacename>if they are
-      accessing a single database. Thus you only have to use Spring's JTA
-      transaction strategy when you have distributed transaction requirements.
-      A JCA connector requires container-specific deployment steps, and
-      obviously JCA support in the first place. This configuration requires
-      more work than deploying a simple web application with local resource
-      definitions and Spring-driven transactions. Also, you often need the
-      Enterprise Edition of your container if you are using, for example,
-      WebLogic Express, which does not provide JCA. A Spring application with
-      local resources and transactions spanning one single database works in
-      any Java EE web container (without JTA, JCA, or EJB) such as Tomcat,
-      Resin, or even plain Jetty. Additionally, you can easily reuse such a
-      middle tier in desktop applications or test suites.</para>
+      <para>하나의 데이터베이스만 접근한다면 스프링이 주도하는 트랜잭션은 로컬 JDBC
+      <interfacename>DataSource </interfacename>를 사용하듯이 로컬에 정의한 Hibernate
+      <interfacename>SessionFactory</interfacename>와도 잘 동작할 수 있다. 그러므로 분산
+      트랜잭션이 필요하다면 스프링의 JTA 트랜잭션 전략만 사용해야 한다. JCA 커넥터는 컨테이너에 특화된
+      배포과정을 필요로 하고 당연히 JCA는 지원해야 한다. 로컬 리소스 정의와 스프링이 주도하는 트랜잭션을
+      가진 간단한 웹 어플리케이션을 배포하는 것보다는 이 설정이 더 많은 작업을 필요로 한다. JCA를 제공하지
+      않는 WebLogic Express를 사용한다면 컨테이너의 엔터프라이즈 에디션도 필요할 것이다. 로컬 리소스와
+      하나의 데이터베이스에 걸친 트랜잭션이 있는 스프링 어플리케이션은 톰캣, 레진(Resin), 제티(Jetty)같은
+      Java EE 웹 컨테이너(JTA, JCA, EJB없이)에서 잘 동작한다. 추가적으로 데스트탑 어플리케이션이나
+      테스트 슈트에서 미들티어(middle tier)같은 것을 쉽게 재사용할 수 있다.</para>
 
-      <para>All things considered, if you do not use EJBs, stick with local
-      <interfacename>SessionFactory</interfacename> setup and Spring's
-      <classname>HibernateTransactionManager</classname> or
-      <classname>JtaTransactionManager</classname>. You get all of the
-      benefits, including proper transactional JVM-level caching and
-      distributed transactions, without the inconvenience of container
-      deployment. JNDI registration of a Hibernate
-      <interfacename>SessionFactory</interfacename> through the JCA connector
-      only adds value when used in conjunction with EJBs.</para>
+      <para>EJB를 사용하지 않는다면 모든 것을 고려해서 로컬
+      <interfacename>SessionFactory</interfacename>와 스프링의
+      <classname>HibernateTransactionManager</classname>나
+      <classname>JtaTransactionManager</classname>를 사용한다. 불판한 컨테이너 배포없이
+      JVM 수준의 트랜잭션이 적용된 적절한 캐싱과 분산 트랜잭션같은 모든 이점을 얻게 된다. JCA
+      커넥터를 통한 하이버네이트 <interfacename>SessionFactory</interfacename>의 JNDI
+      등록은 EJB와 함께 사용할 때만 추가적인 가치를 준다.</para>
     </section>
 
     <section id="orm-hibernate-invalid-jdbc-access-error">
-      <title>Spurious application server warnings with Hibernate</title>
+      <title>하이버네이트의 잘못된(spurious) 어플리케이션 서버 경고</title>
 
-      <para>In some JTA environments with very strict
-      <interfacename>XADataSource</interfacename> implementations -- currently
-      only some WebLogic Server and WebSphere versions -- when Hibernate is
-      configured without regard to the JTA
-      <interfacename>PlatformTransactionManager</interfacename> object for
-      that environment, it is possible for spurious warning or exceptions to
-      show up in the application server log. These warnings or exceptions
-      indicate that the connection being accessed is no longer valid, or JDBC
-      access is no longer valid, possibly because the transaction is no longer
-      active. As an example, here is an actual exception from WebLogic:</para>
+      <para>아주 엄격한 <interfacename>XADataSource</interfacename> 구현체가 있는 몇몇
+      JTA 환경에서(현재는 WebLogic 서버와 WebSphere의 일부 버전에서만) 이 환경에 대한 JTA
+      <interfacename>PlatformTransactionManager</interfacename> 객체와 관련된 것 없이
+      하이버네이트를 설정했을 때 어플리케이션 서버 로그에 잘못된 경고나 예외가 나타날 수 있다. 이러한
+      경고나 예외는 트랜잭션이 더이상 활성화상태가 아니기 때문에 접근한 연결이 더이상 유효하지 않거나
+      JDBC 접근이 더이상 유용하지 않다고 나타낼 수 있다. 다음은 WebLogic의 실제 예외에 대한
+      예시이다.</para>
 
       <programlisting>java.sql.SQLException: The transaction is no longer active - status: 'Committed'.
    No further JDBC access is allowed within this transaction.</programlisting>
 
-      <para>You resolve this warning by simply making Hibernate aware of the
-      JTA <interfacename>PlatformTransactionManager</interfacename> instance,
-      to which it will synchronize (along with Spring). You have two options
-      for doing this:</para>
+      <para>하이버네이트를 인식하고 (스프링과 일치하도록) 동기화할 JTA
+      <interfacename>PlatformTransactionManager</interfacename> 인스턴스를 만들어서
+      이 경고를 해결한다. 이 처리를 하는데는 두가지 선택사항이 있다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>If in your application context you are already directly
-          obtaining the JTA
-          <interfacename>PlatformTransactionManager</interfacename> object
-          (presumably from JNDI through
-          <literal>JndiObjectFactoryBean/<literal>&lt;jee:jndi-lookup&gt;</literal></literal>)
-          and feeding it, for example, to Spring's
-          <classname>JtaTransactionManager</classname>, then the easiest way
-          is to specify a reference to the bean defining this JTA
-          <interfacename>PlatformTransactionManager</interfacename>
-          instance<!--Replace *this* with exactly what *this* refes to--> as
-          the value of the <property>jtaTransactionManager</property> property
-          for <classname>LocalSessionFactoryBean.</classname> Spring then makes
-          the object available to Hibernate.</para>
+          <para>예를 들어 어플리케이션 컨텍스트에서 JTA
+          <interfacename>PlatformTransactionManager</interfacename> 객체를 이미 직접
+          획득했고 이 객체를 스프링의 <classname>JtaTransactionManager</classname>에
+          제공하는 경우 가장 쉬운 방법은 이 JTA
+          <interfacename>PlatformTransactionManager</interfacename> 인스턴스를<!--Replace *this* with exactly what *this* refes to-->
+          <classname>LocalSessionFactoryBean.</classname>의
+          <property>jtaTransactionManager</property> 프로퍼티의 값으로 정의하는 빈의 참조를
+          지정하는 것이다. 그러면 스프링이 이 객체를 하이버네이트가 이용할 수 있게 한다.</para>
         </listitem>
 
         <listitem>
-          <para>More likely you do not already have the JTA
-          <interfacename>PlatformTransactionManager</interfacename> instance,
-          because Spring's <classname>JtaTransactionManager</classname> can
-          find it itself. <!--Re preceding sentence, if this is the case, then why would you need to do what first bullet describes? 
-TR: OK AS IS. This is very container dependent, and either case is possible.-->Thus
-          you need to configure Hibernate to look up JTA
-          <interfacename>PlatformTransactionManager</interfacename> directly.
-          You do this by configuring an application server- specific
-          <literal>TransactionManagerLookup</literal> class in the Hibernate
-          configuration, as described in the Hibernate manual.</para>
+          <para>스프링의 <classname>JtaTransactionManager</classname>가 JTA
+          <interfacename>PlatformTransactionManager</interfacename> 인스턴스를
+          직접 찾을 수 있기 때문에 아마 JTA
+          <interfacename>PlatformTransactionManager</interfacename> 인스턴스를
+          이미 가지고 있는 경우는 드물 것이다.  <!--Re preceding sentence, if this is the case, then why would you need to do what first bullet describes?
+TR: OK AS IS. This is very container dependent, and either case is possible.-->
+          그러므로 하이버네이트가 JTA <interfacename>PlatformTransactionManager</interfacename>를
+          직접 검색하도록 설정해야 한다. 하이버네이트 메뉴얼에 나와있듯이 하이버네이트 설정에
+          어프리케이션 서버에 특화된 <literal>TransactionManagerLookup</literal>
+          클래스를 설정해서 이 설정을 할 수 있다.</para>
         </listitem>
       </itemizedlist>
 
-      <para>The remainder of this section describes the sequence of events
-      that occur with and without Hibernate's awareness of the JTA
-      <interfacename>PlatformTransactionManager</interfacename>.</para>
+      <para>이 섹션의 남은 부분에서는 하이버네이트가 JTA
+      <interfacename>PlatformTransactionManager</interfacename>를 인식하거나
+      인식하지 않고 발생하는 이벤트의 순서를 설명한다.</para>
 
-      <para>When Hibernate is not configured with any awareness of the JTA
-      <interfacename>PlatformTransactionManager</interfacename>, the following
-      events occur when a JTA transaction commits:</para>
+      <para>하이버네이트를 JTA <interfacename>PlatformTransactionManager</interfacename>를
+      인식하도록 설정하지 않았을 경우 JTA 트랜잭션을 커밋할 때 다음 이벤트들이 발생한다.</para>
 
       <orderedlist>
         <listitem>
-          <para>The JTA transaction commits.</para>
+          <para>JTA 트랜잭션을 커밋한다.</para>
         </listitem>
 
         <listitem>
-          <para>Spring's <classname>JtaTransactionManager</classname> is
-          synchronized to the JTA transaction, so it is called back through an
-          <emphasis>afterCompletion</emphasis> callback by the JTA transaction
-          manager.</para>
+          <para>스프링의 <classname>JtaTransactionManager</classname>를 JTA 트랜잭션과
+          동기화해서 JTA 트랜잭션 관리자가 <emphasis>afterCompletion</emphasis> 콜백으로
+          다시 트랜잭션을 호출한다.</para>
         </listitem>
 
         <listitem>
-          <para>Among other activities, this synchronization<!--Identify *this*. TR: REVISED, PLS REVIEW. Added "synchronization"--> can
-          trigger a callback by Spring to Hibernate, through Hibernate's
-          <literal>afterTransactionCompletion</literal> callback <!--Preceding line, is *afterTransactionCompletion* callback the same as *afterCompletion* callback in step 2? If so, revise so --><!--there is no redundancy, or at least refer to the two callbacks in the same way. 
-TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletion*) and the other is Hibernate's (*afterTransactionCompletion*)-->(used
-          to clear the Hibernate cache), followed by an explicit
-          <literal>close()</literal> call on the Hibernate Session, which
-          causes Hibernate to attempt to <literal>close()</literal> the JDBC
-          Connection.</para>
+          <para>다른 활동중에 이 동기화는<!--Identify *this*. TR: REVISED, PLS REVIEW. Added "synchronization"-->
+          하이버네이트 <literal>afterTransactionCompletion</literal> 콜백<!--Preceding line, is *afterTransactionCompletion* callback the same as *afterCompletion* callback in step 2? If so, revise so --><!--there is no redundancy, or at least refer to the two callbacks in the same way.
+TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletion*) and the other is Hibernate's (*afterTransactionCompletion*)-->(하이버네이트의
+          캐시를 초기화하는데 사용하는)으로 스프링의 콜백을 하이버네이트로 발생시킬 수 있다. 이어서
+          하이버네이트 세션에서 명시적으로 <literal>close()</literal>를 호출해서 하이버네이트가
+          JDBC 연결을 <literal>close()</literal>하도록 할 수 있다.</para>
         </listitem>
 
         <listitem>
-          <para>In some environments, this
-          <methodname>Connection.close()</methodname> call then triggers the
-          warning or error, as the application server no longer considers the
-          <interfacename>Connection</interfacename> usable at all, because the
-          transaction has already been committed.</para>
+          <para>몇몇 환경에서는 어플리케이션 서버가 <interfacename>Connection</interfacename>을
+          더이상 사용할 수 없다고 간주해서 트랜잭션은 이미 커밋되었기 때문에 이
+          <methodname>Connection.close()</methodname>를 호출하면 경고나 오류가 발생한다. </para>
         </listitem>
       </orderedlist>
 
-      <para>When Hibernate is configured with awareness of the JTA
-      <interfacename>PlatformTransactionManager</interfacename>, the following
-      events occur when a JTA transaction commits:</para>
+      <para>JTA <interfacename>PlatformTransactionManager</interfacename>를 인식하도록
+      하이버네이트를 설정했을 때 JTA 트랜잭션을 커밋하면 다음의 이벤트가 발생한다.</para>
 
       <orderedlist>
         <listitem>
-          <para>the JTA transaction is ready to commit.</para>
+          <para>JTA 트랜잭션이 커밋할 준비를 한다.</para>
         </listitem>
 
         <listitem>
-          <para>Spring's <classname>JtaTransactionManager</classname> is
-          synchronized to the JTA transaction, so the transaction is called
-          back through a <emphasis>beforeCompletion</emphasis> callback by the
-          JTA transaction manager.</para>
+          <para>스프링의 <classname>JtaTransactionManager</classname>는 JTA 트랜잭션과
+          동기화하므로 JTA 트랜잭션 관리자가 <emphasis>beforeCompletion</emphasis>
+          콜백으로 해당 트랜잭션을 다시 호출한다.</para>
         </listitem>
 
         <listitem>
-          <para>Spring is aware that Hibernate itself is synchronized to the
-          JTA transaction, and behaves differently than in the previous
-          scenario. Assuming the Hibernate
-          <interfacename>Session</interfacename> needs to be closed at all,
-          Spring will close it now.</para>
+          <para>스프링은 하이버네이트가 직접 JTA 트랜잭션과 동기화했다는 것을 인지하고 앞의
+          시나리오와는 다르게 동작한다. 하이버네이트 <interfacename>Session</interfacename>을
+          완전히 닫아야 한다고 가정하면 스프링을 바로 닫을 것이다.</para>
         </listitem>
 
         <listitem>
-          <para>The JTA transaction commits.</para>
+          <para>JTA 트랜잭션을 커밋한다.</para>
         </listitem>
 
         <listitem>
-          <para>Hibernate is synchronized to the JTA transaction, so the
-          transaction is called back through an
-          <emphasis>afterCompletion</emphasis> callback by the JTA transaction
-          manager, and can properly clear its cache.</para>
+          <para>하이버네이트는 JTA 트랜잭션과 동기화하기 때문에 JTA 트랜잭션 관리자가
+          <emphasis>afterCompletion</emphasis> 콜백으로 해당 트랜잭션을 다시
+          호출하고 캐시를 적절하게 초기화할 수 있다.</para>
         </listitem>
       </orderedlist>
     </section>
@@ -920,20 +784,18 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
   <section id="orm-jdo">
     <title>JDO</title>
 
-    <para>Spring supports the standard JDO 2.0 and 2.1 APIs as data access
-    strategy, following the same style as the Hibernate support. The
-    corresponding integration classes reside in the
-    <literal>org.springframework.orm.jdo</literal> package.</para>
+    <para>스프링은 데이터 접근 전략으로 하이버네이트 지원과 같은 방식으로 표준 JDO 2.0과 2.0
+    API를 지원한다. 이 통합 클래스들은 <literal>org.springframework.orm.jdo</literal>
+    패키지에 있다.</para>
 
     <section id="orm-jdo-setup">
       <title><interfacename>PersistenceManagerFactory</interfacename>
-      setup</title>
+      설정</title>
 
-      <para>Spring provides a
-      <classname>LocalPersistenceManagerFactoryBean</classname> class that
-      allows you to define a local JDO
-      <interfacename>PersistenceManagerFactory</interfacename> within a Spring
-      application context:</para>
+      <para>스프링은 스프링 어플리케이션 컨텍스트내에서 로컬 JDO
+      <interfacename>PersistenceManagerFactory</interfacename>를 정의할 수 있도록
+      <classname>LocalPersistenceManagerFactoryBean</classname> 클래스를
+      제공한다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -943,22 +805,17 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
 
 &lt;/beans&gt;</programlisting>
 
-      <para>Alternatively, you can set up a
-      <interfacename>PersistenceManagerFactory</interfacename> through direct
-      instantiation of a
-      <interfacename>PersistenceManagerFactory</interfacename> implementation
-      class. A JDO <interfacename>PersistenceManagerFactory</interfacename>
-      implementation class follows the JavaBeans pattern, just like a JDBC
-      <interfacename>DataSource</interfacename> implementation class, which is
-      a natural fit for a configuration that uses Spring. This setup style
-      usually supports a Spring-defined JDBC
-      <interfacename>DataSource</interfacename>, passed into the
-      <classname>connectionFactory</classname> property. For example, for the
-      open source JDO implementation DataNucleus (formerly JPOX) (<ulink
-      url="http://www.datanucleus.org/">http://www.datanucleus.org/</ulink>),
-      this is the XML configuration of the
-      <interfacename>PersistenceManagerFactory</interfacename>
-      implementation:<!--complete the intro sentence; what does this example show? What is its purpose? TR: REVISED, PLS REVIEW.--></para>
+      <para>아니면 <interfacename>PersistenceManagerFactory</interfacename>
+      구현클래스를 직접 인스턴스화해서 <interfacename>PersistenceManagerFactory</interfacename>를
+      설정할 수 있다. JDO <interfacename>PersistenceManagerFactory</interfacename>
+      구현 클래스는 JDBC <interfacename>DataSource</interfacename> 구현클래스처럼 스프링을
+      사용하는 설정에 자연스럽게 어울리는 JavaBeans 패턴을 따른다. 이 설정방식은 일반적으로 스프링이
+      정의하고 <classname>connectionFactory</classname> 프로퍼티로 전달되는 JDBC
+      <interfacename>DataSource</interfacename>를 지원한다. 예를 들어 다음은 오픈소스
+      JDO 구현체인 DataNucleus(이전의 JPOX)(<ulink
+      url="http://www.datanucleus.org/">http://www.datanucleus.org/</ulink>)에
+      대한 <interfacename>PersistenceManagerFactory</interfacename> 구현체의 XML
+      설정이다.<!--complete the intro sentence; what does this example show? What is its purpose? TR: REVISED, PLS REVIEW.--></para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -976,28 +833,24 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
 
 &lt;/beans&gt;</programlisting>
 
-      <para>You can also set up JDO
-      <interfacename>PersistenceManagerFactory</interfacename> in the JNDI
-      environment of a Java EE application server, usually through the JCA
-      connector provided by the particular JDO implementation. Spring's
-      standard <literal>JndiObjectFactoryBean /
-      <literal>&lt;jee:jndi-lookup&gt;</literal></literal> can be used to
-      retrieve and expose such a
-      <interfacename>PersistenceManagerFactory</interfacename>. However,
-      outside an EJB context, no real benefit exists in holding the
-      <interfacename>PersistenceManagerFactory</interfacename> in JNDI: only
-      choose such a setup for a good reason. See <xref
-      linkend="orm-hibernate-resources" /> for a discussion; the arguments
-      there apply to JDO as well.</para>
+      <para>Java EE 어플리케이션 서버의 JNDI 환경에서 JDO
+      <interfacename>PersistenceManagerFactory</interfacename>를 설정할 수도 있다.
+      이는 일반적으로 특정 JDO 구현체가 제공하는 JCA 커넥터로 이루어진다.
+      <interfacename>PersistenceManagerFactory</interfacename> 등을 획득하고 노출하는데
+      스프링의 표준  <literal>JndiObjectFactoryBean /
+      <literal>&lt;jee:jndi-lookup&gt;</literal></literal>를 사용할 수 있다. 하지만
+      EJB 컨텍스트 외부에서는 JNDI에 <interfacename>PersistenceManagerFactory</interfacename>를
+      가지고 있어서 생기는 실제적인 장점은 전혀 없다. 합리적인 이유가 있을 때만 이러한 설정을 사용해라.
+      이 논쟁에 대한 내용은 <xref linkend="orm-hibernate-resources" />를 참고해라. 여기서
+      나오는 논의는 JDO에도 적용된다.</para>
     </section>
 
     <section id="orm-jdo-daos-straight">
-      <title>Implementing DAOs based on the plain JDO API</title>
+      <title>평범한 JDO API에 기반한 DAO 구현하기</title>
 
-      <para>DAOs can also be written directly against plain JDO API, without
-      any Spring dependencies, by using an injected
-      <interfacename>PersistenceManagerFactory</interfacename>. The following
-      is an example of a corresponding DAO implementation:</para>
+      <para>DAO도 스프링에 대한 어떤 의존성을 갖지 않고 주입한
+      <interfacename>PersistenceManagerFactory</interfacename>로  평범한 JDO
+      API를 직접 사용해서 작성할 수 있다. 다음은 이에 대한 DAO 구현체의 예제이다.</para>
 
       <programlisting language="java">public class ProductDaoImpl implements ProductDao {
 
@@ -1011,7 +864,7 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
         PersistenceManager pm = this.persistenceManagerFactory.getPersistenceManager();
         try {
             Query query = pm.newQuery(Product.class, "category = pCategory");
-            query.declareParameters("String pCategory"); 
+            query.declareParameters("String pCategory");
             return query.execute(category);
         }
         finally {
@@ -1020,9 +873,8 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
     }
 }</programlisting>
 
-      <para>Because the above DAO follows the dependency injection pattern, it
-      fits nicely into a Spring container, just as it would if coded against
-      Spring's <classname>JdoTemplate</classname>:</para>
+      <para>위의 DAO가 의존성 주입패턴을 따르기 때문에 스프링의 <classname>JdoTemplate</classname>로
+      코드를 작성한 것처럼 스프링 컨테이너와 궁합이 잘 맞는다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -1032,14 +884,12 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
 
 &lt;/beans&gt;</programlisting>
 
-      <para>The main problem with such DAOs is that they always get a new
-      <interfacename>PersistenceManager</interfacename> from the factory. To
-      access a Spring-managed transactional
-      <interfacename>PersistenceManager</interfacename>, define a
-      <classname>TransactionAwarePersistenceManagerFactoryProxy</classname>
-      (as included in Spring) in front of your target
-      <interfacename>PersistenceManagerFactory</interfacename>, then passing a
-      reference to that proxy into your DAOs as in the following example:<!--Revise to clarify *what* is passing the proxy into DAOs? How does that relate to rest of the sentence? TR: REVISED, PLS REVIEW.--></para>
+      <para>팩토리에서 항상 새로운 <interfacename>PersistenceManager</interfacename>를
+      얻는다는 것이 이러한 DAO와 관련된 주요 문제점이다. 스프링이 관리하는 트랜잭션이 적용된
+      <interfacename>PersistenceManager</interfacename>에 접근하려면 대상
+      <interfacename>PersistenceManagerFactory</interfacename> 앞에
+      <classname>TransactionAwarePersistenceManagerFactoryProxy</classname>를
+      정의하고 이 프록시에 대한 참조를 다음 예제처럼 DAO에 전달해라.<!--Revise to clarify *what* is passing the proxy into DAOs? How does that relate to rest of the sentence? TR: REVISED, PLS REVIEW.--></para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -1054,22 +904,19 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
 
 &lt;/beans&gt;</programlisting>
 
-      <para>Your data access code will receive a transactional
-      <interfacename>PersistenceManager</interfacename> (if any) from the
+      <para>데이터 접근 코드는 호출한
       <methodname>PersistenceManagerFactory.getPersistenceManager()</methodname>
-      method that it calls. The latter method call goes through the proxy,
-      which first checks for a current transactional
-      <interfacename>PersistenceManager</interfacename> before getting a new
-      one from the factory. Any <methodname>close()</methodname> calls on the
-      <interfacename>PersistenceManager</interfacename> are ignored in case of
-      a transactional
-      <interfacename>PersistenceManager</interfacename>.</para>
+      메서드에서 (존재한다면) 트랜잭션이 적용된 <interfacename>PersistenceManager</interfacename>를
+      얻을 것이다. 이 메서드 호출이 프록시를 통해서 이뤄져서 팩토리에서 새로운
+      <interfacename>PersistenceManager</interfacename> 얻기 전에 현재 사용중인 트랜잭션이
+      적용된 <interfacename>PersistenceManager</interfacename>를 먼저 확인한다. 트랜잭션이
+      적용된 <interfacename>PersistenceManager</interfacename>에서는
+      <interfacename>PersistenceManager</interfacename>의 모든
+      <methodname>close()</methodname> 호출을 무시한다.</para>
 
-      <para>If your data access code always runs within an active transaction
-      (or at least within active transaction synchronization), it is safe to
-      omit the <methodname>PersistenceManager.close()</methodname> call and
-      thus the entire <literal>finally</literal> block, which you might do to
-      keep your DAO implementations concise:</para>
+      <para>데이터 접근코드가 항상 활성화된 트랜잭션내에서(또는 최소한 활성화된 트랜잭션 동기화내에서)
+      <methodname>PersistenceManager.close()</methodname> 호출을 생략해도 안전하므로 DAO
+      구현체에서 가지고 있어야 하는 전체 <literal>finally</literal> 블럭이 간결해진다.</para>
 
       <programlisting language="java">public class ProductDaoImpl implements ProductDao {
 
@@ -1082,15 +929,14 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
     public Collection loadProductsByCategory(String category) {
         PersistenceManager pm = this.persistenceManagerFactory.getPersistenceManager();
         Query query = pm.newQuery(Product.class, "category = pCategory");
-        query.declareParameters("String pCategory"); 
+        query.declareParameters("String pCategory");
         return query.execute(category);
     }
 }</programlisting>
 
-      <para>With such DAOs that rely on active transactions, it is recommended
-      that you enforce active transactions through turning off
-      <classname>TransactionAwarePersistenceManagerFactoryProxy</classname>'s
-      <classname>allowCreate</classname> flag:</para>
+      <para>활성화된 트랜잭션에 기반한 DAO에서는 활성화된 트랜잭션이
+      <classname>TransactionAwarePersistenceManagerFactoryProxy</classname>의
+      <classname>allowCreate</classname> 플래그를 끄도록 하는 것을 권장한다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -1106,41 +952,33 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
 
 &lt;/beans&gt;</programlisting>
 
-      <para>The main advantage of this DAO style is that it depends on JDO API
-      only; no import of any Spring class is required. This is of course
-      appealing from a non-invasiveness perspective, and might feel more
-      natural to JDO developers.</para>
+      <para>이 DAO 방식의 가장 큰 장점은 JDO API에만 의존한다는 것이다. 어떤 스프링 클래스도
+      임포트할 필요가 없다. 물론 이는 비침투적인 방법이고 JDO 개발자들도 자연스럽게 느낄 것이다.</para>
 
-      <para>However, the DAO throws plain
-      <exceptionname>JDOException</exceptionname> (which is unchecked, so does
-      not have to be declared or caught), which means that callers can only
-      treat exceptions as fatal, unless you want to depend on JDO's own
-      exception structure. Catching specific causes such as an optimistic
-      locking failure is not possible without tying the caller to the
-      implementation strategy. This trade off might be acceptable to
-      applications that are strongly JDO-based and/or do not need any special
-      exception treatment.</para>
+      <para>하지만 DAO는 평범한 <exceptionname>JDOException</exceptionname>(언체크드
+      예외이므로 선언하거나 잡지 않아야 한다.)를 던지므로 JDO 자체의 예외 구조에 의존하기를 원하지 않는한
+      호출자들은 예외를 치명적인 오류(fatal)로만 다뤄야한다. 호출자가 구현전략에 묶이지 않고는 낙관적인
+      작금(locking) 실패같은 특정 원인을 잡는 것은 불가능하다. 이 트래이드오프는 어플리케이션이 상당히
+      JDO 기반이거나 특별한 예외처리가 필요없다면 수긍할만할 것이다.</para>
 
-      <para>In summary, you can DAOs based on the plain JDO API, and they can
-      still participate in Spring-managed transactions. This strategy might
-      appeal to you if you are already familiar with JDO. However, such DAOs
-      throw plain <exceptionname>JDOException</exceptionname>, and you would
-      have to convert explicitly to Spring's
-      <exceptionname>DataAccessException</exceptionname> (if desired).</para>
+      <para>요약하자면 평범한 JDO API에 기반해서 DAO를 작성할 수 있고 이 DAO는 여전히 스프링이
+      관리하는 트랜잭션에 참여할 수 있다. 이미 JDO에 익숙하다면 이 전략이 맘에 들 것이다. 하지만 평범한
+      <exceptionname>JDOException</exceptionname>를 던지는 DAO에서는 스프링의
+      <exceptionname>DataAccessException</exceptionname>로 명시적인 변환을
+      해야한다.(원한다면)</para>
     </section>
 
     <section id="orm-jdo-tx">
-      <title>Transaction management</title>
+      <title>트랜잭션 관리</title>
 
       <note>
-        <para>You are <emphasis>strongly</emphasis> encouraged to read <xref
-        linkend="transaction-declarative" /> if you have not done so, to get a
-        more detailed coverage of Spring's declarative transaction
-        support.</para>
+        <para>아직 읽어보지 않았다면 <xref linkend="transaction-declarative" />를
+        읽어보기를 <emphasis>강력히</emphasis> 권장한다. 스프링의 선언적인 트랜잭션 지원의
+        자세한 내용을 알 수 있을 것이다.</para>
       </note>
 
-      <para>To execute service operations within transactions, you can use
-      Spring's common declarative transaction facilities. For example:</para>
+      <para>트랜잭션내에서 서비스 작업을 실행하려고 스프링의 일반적인 선언적 트랜잭션 기능을
+      사용할 수 있다. 예를 들면 다음과 같다.</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans
@@ -1149,11 +987,11 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
         xmlns:aop="http://www.springframework.org/schema/aop"
         xmlns:tx="http://www.springframework.org/schema/tx"
         xsi:schemaLocation="
-   http://www.springframework.org/schema/beans 
+   http://www.springframework.org/schema/beans
    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-   http://www.springframework.org/schema/tx 
+   http://www.springframework.org/schema/tx
    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-   http://www.springframework.org/schema/aop 
+   http://www.springframework.org/schema/aop
    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"&gt;
 
   &lt;bean id="myTxManager" class="org.springframework.orm.jdo.JdoTransactionManager"&gt;
@@ -1180,109 +1018,92 @@ TR: OK AS IS. Two different callback methhods - one is Spring's (*afterCompletio
 
 &lt;/beans&gt;</programlisting>
 
-      <para>JDO requires an active transaction to modify a persistent object.
-      The non-transactional flush concept does not exist in JDO, in contrast
-      to Hibernate. For this reason, you need to set up the chosen JDO
-      implementation for a specific environment. Specifically, you need to set
-      it up explicitly for JTA synchronization, to detect an active JTA
-      transaction itself. This is not necessary for local transactions as
-      performed by Spring's <classname>JdoTransactionManager</classname>, but
-      it is necessary to participate in JTA transactions, whether driven by
-      Spring's <classname>JtaTransactionManager</classname> or by EJB CMT and
-      plain JTA.</para>
+      <para>JDO가 퍼시스턴트 객체를 수정하려면 활성화된 트랜잭션이 필요하다. 하이버네이트와는 다르게
+      JDO에서는 트랜잭션이 아닌 플러시(flush) 개념은 존재하지 않는다. 이 때문에 선택한 JDO 구현체를
+      특정 환경에 대해 설정해야 한다. 특히 활성화된 JTA 트랜잭션 자체를 탐지하려고 JTA 동기화를 명시적으로
+      설정해야 한다. 이는 스프링의 <classname>JdoTransactionManager</classname>가 수행하듯이
+      로컬 트랜잭션에서는 필수사항이 아니지만 스프링의 <classname>JtaTransactionManager</classname>가
+      주도하든지 EJB CMT와 평범한 JTA가 주도하든지 간에 JTA 트랜잭션에 참여하려면 필요하다.</para>
 
-      <para><classname>JdoTransactionManager</classname> is capable of
-      exposing a JDO transaction to JDBC access code that accesses the same
-      JDBC <interfacename>DataSource</interfacename>, provided that the
-      registered <classname>JdoDialect</classname> supports retrieval of the
-      underlying JDBC <interfacename>Connection</interfacename>. This is the
-      case for JDBC-based JDO 2.0 implementations by default.</para>
+      <para><classname>JdoTransactionManager</classname>는 같은 JDBC
+      <interfacename>DataSource</interfacename>에 접근하는 JDBC 접근 코드에 JDO
+      트랜잭션을 노출할 수 있다. 그래서 등록된 <classname>JdoDialect</classname>가 의존하는
+      JDBC <interfacename>Connection</interfacename>의 획득을 지원한다. 이는 기본적으로
+      JDBC에 기반한 JDO 2.0 구현체에 해당하는 경우이다.</para>
     </section>
 
     <section id="orm-jdo-dialect">
       <title><interfacename>JdoDialect</interfacename></title>
 
-      <para>As an advanced feature, both <classname>JdoTemplate</classname>
-      and <classname>JdoTransactionManager</classname> support a custom
-      <interfacename>JdoDialect</interfacename> that can be passed into the
-      <code>jdoDialect</code> bean property. In this scenario, the DAOs will
-      not receive a <interfacename>PersistenceManagerFactory</interfacename>
-      reference but rather a full <classname>JdoTemplate</classname> instance
-      (for example, passed into the <literal>jdoTemplate</literal>
-      property of <classname>JdoDaoSupport</classname>). Using a
-      <interfacename>JdoDialect</interfacename> implementation, you can enable
-      advanced features supported by Spring, usually in a vendor-specific
-      manner:</para>
+      <para>고급 기능으로 <classname>JdoTemplate</classname>와
+      <classname>JdoTransactionManager</classname> 둘 다 <code>jdoDialect</code>
+      빈 프로퍼티에 전달할 수 있는 커스텀 <interfacename>JdoDialect</interfacename>를 지원한다.
+      이 시나리오에서는 DAO가 <interfacename>PersistenceManagerFactory</interfacename>
+      참조를 받지 않고 대신 전체 <classname>JdoTemplate</classname> 인스턴스(예를 들어
+      <classname>JdoDaoSupport</classname>의 <literal>jdoTemplate</literal> 프로퍼티에
+      전달된다.)를 얻는다. <interfacename>JdoDialect</interfacename> 구현체를 사용하는 경우
+      일반적으로 벤더에 특화된 방법으로 스프링이 지원하는 고급 기능을 사용할 수 있다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>Applying specific transaction semantics such as custom
-          isolation level or transaction timeout</para>
+          <para>커스텀 격리수준이나 트랜잭션 타임아웃같은 특쟁 트랜잭션의 의미를
+          적용한다</para>
         </listitem>
 
         <listitem>
-          <para>Retrieving the transactional JDBC
-          <interfacename>Connection</interfacename> for exposure to JDBC-based
-          DAOs</para>
+          <para>JDBC에 기반한 DAO에 노출하기 위한 트랜잭션이 적용된 JDBC
+          <interfacename>Connection</interfacename>의 획득</para>
         </listitem>
 
         <listitem>
-          <para>Applying query timeouts, which are automatically calculated
-          from Spring-managed transaction timeouts</para>
+          <para>스프링이 관리하는 트랜잭션 타임아웃에서 자동으로 계산한 쿼리 타임아웃의 적용</para>
         </listitem>
 
         <listitem>
-          <para>Eagerly flushing a
-          <interfacename>PersistenceManager,</interfacename> to make
-          transactional changes visible to JDBC-based data access code</para>
+          <para>트랜잭션상의 변경사항이 JDBC에 기반한 데이터 접근코드에 보이도록
+          <interfacename>PersistenceManager</interfacename>의 플러싱
+          시도(eagerly flushing)</para>
         </listitem>
 
         <listitem>
-          <para>Advanced translation of <literal>JDOExceptions</literal> to
-          Spring <literal>DataAccessExceptions</literal></para>
+          <para>스프링 <literal>DataAccessExceptions</literal>로
+          <literal>JDOExceptions</literal>의 고급 변환</para>
         </listitem>
       </itemizedlist>
 
-      <para>See the <classname>JdoDialect</classname> Javadoc for more details
-      on its operations and how to use them within Spring's JDO
-      support.</para>
+      <para>이에 대한 작업과 스프링의 JDO 지원내에서 사용하는 방법에 대한 자세한 내용은
+      <classname>JdoDialect</classname> Javadoc를 참고해라.</para>
     </section>
   </section>
 
   <section id="orm-jpa">
     <title>JPA</title>
 
-    <para>The Spring JPA, available under the
-    <literal>org.springframework.orm.jpa</literal> package, offers
-    comprehensive support for the <ulink
+    <para><literal>org.springframework.orm.jpa</literal> 패키지에 있는 스프링 JPA는
+    하이버네이트나 JDO를 통합한 것과 유사한 방법으로 추가적인 기능을 제공하는 의존 구현체와 함께 <ulink
     url="http://java.sun.com/developer/technicalArticles/J2EE/jpa/index.html">Java
-    Persistence API</ulink> in a similar manner to the integration with
-    Hibernate or JDO, while being aware of the underlying implementation in
-    order to provide additional features.</para>
+    Persistence API</ulink>를 지원한다.</para>
 
     <section id="orm-jpa-setup">
-      <title>Three options for JPA setup in a Spring environment</title>
+      <title>스프링 환경에서 JPA 설정에 대한 세가지 옵션</title>
 
-      <para>The Spring JPA support offers three ways of setting up the JPA
-      <interfacename>EntityManagerFactory</interfacename> that will be used by
-      the application to obtain an entity manager.<!--Define and give purpose of JPA EntityManagerFactory. TR: REVISED, PLS REVIEW.--></para>
+      <para>스프링 JPA 지원은 엔티티 매니저를 얻으려고 어플리케이션이 사용할 JPA
+      <interfacename>EntityManagerFactory</interfacename>를 설정하는
+      세가지 방법은 제공한다.<!--Define and give purpose of JPA EntityManagerFactory. TR: REVISED, PLS REVIEW.--></para>
 
       <section id="orm-jpa-setup-lemfb">
         <title><classname>LocalEntityManagerFactoryBean</classname></title>
 
         <note>
-          <para>Only use this option in simple deployment environments such as
-          stand-alone applications and integration tests.</para>
+          <para>독립적인 어플리케이션이나 통합 테스트처럼 간단한 배포 환경에서만
+          이 방법을 사용한다.</para>
         </note>
 
-        <para>The <classname>LocalEntityManagerFactoryBean</classname> creates
-        an <interfacename>EntityManagerFactory</interfacename> suitable for
-        simple deployment environments where the application uses only JPA for
-        data access. <!--Note says use option only for stand-alone apps and testing; does that conflict with preceding line re data access? 
-TR: REVISED, PLS REVIEW.-->The factory bean uses the JPA
-        <interfacename>PersistenceProvider</interfacename> autodetection
-        mechanism (according to JPA's Java SE bootstrapping) and, in most
-        cases, requires you to specify only the persistence unit name:</para>
+        <para><classname>LocalEntityManagerFactoryBean</classname>는 데이터 접근을 할 때 JPA만 사용하는 어플리케이션의 간단한 배포 환경에 적합한 <interfacename>EntityManagerFactory</interfacename>를 생성한다. <!--Note says use option only for stand-alone apps and testing; does that conflict with preceding line re data access?
+TR: REVISED, PLS REVIEW.-->팩토리 빈은 JPA
+        <interfacename>PersistenceProvider</interfacename> 자동탐지 메카니즘(JPA의
+        Java SE 부트스트래핑(bootstrapping)에 따르면)을 사용하고 대부분의 경우에는 퍼시스턴스
+        유닛 이름만 지정하면 된다.</para>
 
         <programlisting language="xml">&lt;beans&gt;
 
@@ -1292,31 +1113,25 @@ TR: REVISED, PLS REVIEW.-->The factory bean uses the JPA
 
 &lt;/beans&gt;</programlisting>
 
-        <para>This form of JPA deployment is the simplest and the most
-        limited. You cannot refer <!--cannot link *what* to an existing datasource? TR: REVISED, PLS REVIEW.-->to
-        an existing JDBC <interfacename>DataSource</interfacename> bean
-        definition and no support for global transactions exists. Furthermore,
-        weaving (byte-code transformation) of persistent classes is
-        provider-specific, often requiring a specific JVM agent to specified
-        on startup. This option is sufficient only for stand-alone
-        applications and test environments, for which the JPA specification is
-        designed.</para>
+        <para>이 JPA 배포 형식은 가장 간단하고 가장 제한적이다. 이미 존재하는 JDBC
+        <interfacename>DataSource</interfacename> 빈 정의를 참조할 수 없고 <!--cannot link *what* to an existing datasource? TR: REVISED, PLS REVIEW.-->
+        기존에 존재하는 전역 트랜잭션을 지원하지 않는다. 게다가 퍼시스턴스 클래스의
+        위빙(바이트코드 변환)은 프로바이더의 특화되어 있고 때로는 구동할 때 특정 JVM 에이전트를
+        지정해야 한다. 이 방법은 JPA 스펙의 설계상 독립적인 어플리케이션과 테스트 환경에만 알맞다.</para>
       </section>
 
       <section id="orm-jpa-setup-jndi">
-        <title>Obtaining an <classname>EntityManagerFactory</classname> from
-        JNDI</title>
+        <title>JNDI에서 <classname>EntityManagerFactory</classname>
+        획득하기</title>
 
         <note>
-          <para>Use this option when deploying to a Java EE 5 server. Check
-          your server's documentation on how to deploy a custom JPA provider
-          into your server, allowing for a different provider than the
-          server's default.</para>
+          <para>Java EE 5 서버에 배포할 때 이 방법을 사용해라. 서버의 기본 프로바이더가 아닌
+          다른 프로바이더를 위해 사용하는 서버에 커스텀 JPA 프로바이더를 배포하는 방법은 서버의
+          문서를 확인해 봐라.</para>
         </note>
 
-        <para>Obtaining an <interfacename>EntityManagerFactory</interfacename>
-        from JNDI (for example in a Java EE 5 environment), is simply a matter
-        of changing the XML configuration:</para>
+        <para>JNDI에서 <interfacename>EntityManagerFactory</interfacename>를
+        획득하려면(예를 들면 Java EE 5 환경에서) XML 설정만 변경하면 된다.</para>
 
         <programlisting language="xml">&lt;beans&gt;
 
@@ -1324,70 +1139,59 @@ TR: REVISED, PLS REVIEW.-->The factory bean uses the JPA
 
 &lt;/beans&gt;</programlisting>
 
-        <para>This action assumes standard Java EE 5 bootstrapping: the Java
-        EE server autodetects persistence units (in effect,
-        <literal>META-INF/persistence.xml</literal> files in application jars)
-        and <literal>persistence-unit-ref</literal> entries in the Java EE
-        deployment descriptor (for example, <literal>web.xml</literal>) and
-        defines environment naming context locations for those persistence
-        units.</para>
+        <para>이 동작은 표준 자바 EE 5 부트스트래핑을 가정한다. 자바 EE 서버는 자바 EE 배포
+        디스크립터(예를 들면 <literal>web.xml</literal>)에서 퍼시스턴스 유닛(실제로는
+        어플리케이션 jar의 <literal>META-INF/persistence.xml</literal> 파일들)과
+        <literal>persistence-unit-ref</literal> 엔트리를 자동으로 탐지하고 이러한
+        퍼시스턴스 유닛들의 컨텍스트 위치에 이름을 짓는 환경을 정의한다.</para>
 
-        <para>In such a scenario, the entire persistence unit deployment,
-        including the weaving (byte-code transformation) of persistent
-        classes, is up to the Java EE server. The JDBC
-        <interfacename>DataSource</interfacename> is defined through a JNDI
-        location in the <literal>META-INF/persistence.xml</literal> file;
-        EntityManager transactions are integrated with the server's JTA
-        subsystem. Spring merely uses the obtained
-        <interfacename>EntityManagerFactory</interfacename>, passing it on to
-        application objects through dependency injection, and managing
-        transactions for the persistence unit,<!--identify *it* TR: REVISED, PLS REVIEW. Added *persistence unit*-->
-        typically through <classname>JtaTransactionManager</classname>.</para>
+        <para>이러한 시나리오에서 퍼시스턴트 클래스의 위빙(바이트코드 변환)을 포함한 전체 퍼시스턴스
+        유닛 배포는 Java EE 서버에 달려있다. JDBC <interfacename>DataSource</interfacename>는
+        <literal>META-INF/persistence.xml</literal> 파일의 JNDI 위치로 정의한다.
+        EntityManager 트랜잭션은 서버의 JTA 하위시스템과 통합된다. 스프링은 획득한
+        <interfacename>EntityManagerFactory</interfacename>를 그냥 사용하고
+        <interfacename>EntityManagerFactory</interfacename>를 의존성 주입으로
+        어플리케이션 객체들에 전달하고 퍼시스턴스 유닛을 위해 트랜잭션을 관리한다.<!--identify *it* TR: REVISED, PLS REVIEW. Added *persistence unit*-->
+        (보통 <classname>JtaTransactionManager</classname>를 통해서)</para>
 
-        <para>If multiple persistence units are used in the same application,
-        the bean names of such JNDI-retrieved persistence units should match
-        the persistence unit names that the application uses to refer to them,
-        for example, in <literal>@PersistenceUnit</literal> and
-        <literal>@PersistenceContext</literal> annotations.</para>
+        <para>같은 어플리케이션에서 어려 퍼시스턴스 유닛을 사용한다면 JNDI로 획득한 퍼시스턴스
+        유닛들의 빈 이름은 예를 들어 <literal>@PersistenceUnit</literal>와
+        <literal>@PersistenceContext</literal> 어노테이션에서 어플리케이션이 참조하기 위해
+        사용하는 퍼시스턴스 유닛 이름과 일치해야 한다.</para>
       </section>
 
       <section id="orm-jpa-setup-lcemfb">
         <title><classname>LocalContainerEntityManagerFactoryBean</classname></title>
 
         <note>
-          <para>Use this option for full JPA capabilities in a Spring-based
-          application environment. This includes web containers such as Tomcat
-          as well as stand-alone applications and integration tests with
-          sophisticated persistence requirements.</para>
+          <para>스프링에 기반하는 어플리케이션 환경에서 전체 JPA 기능을 사용하려면 이 방법을 사용해라.
+          이 방법은 복잡한 퍼시스턴스가 필요한 독립적인 어플리케이션과 통합 테스트뿐만 아니라 톰캣같은
+          웹 컨테이너에서도 사용할 수 있다.</para>
         </note>
 
-        <para>The
-        <classname>LocalContainerEntityManagerFactoryBean</classname> gives
-        full control over <interfacename>EntityManagerFactory</interfacename>
-        configuration and is appropriate for environments where fine-grained
-        customization is required. The
-        <classname>LocalContainerEntityManagerFactoryBean</classname> creates
-        a <interfacename>PersistenceUnitInfo</interfacename> instance based
-        on the <literal>persistence.xml</literal> file, the supplied
-        <literal>dataSourceLookup</literal> strategy, and the specified
-        <literal>loadTimeWeaver</literal>. It is thus possible to work with
-        custom data sources outside of JNDI and to control the weaving
-        process. The following example shows a typical bean definition for a
-        <interfacename>LocalContainerEntityManagerFactoryBean</interfacename>:<!--The following examples shows what? What's its purpose? TR: REVISED, PLS REVIEW.--></para>
+        <para><classname>LocalContainerEntityManagerFactoryBean</classname>으로
+        <interfacename>EntityManagerFactory</interfacename> 설정을 완전히 제어할 수 있고
+        세밀한 커스터마이징이 필요한 환경에 알맞다.
+        <classname>LocalContainerEntityManagerFactoryBean</classname>는
+        <literal>persistence.xml</literal> 파일, 제공된 <literal>dataSourceLookup</literal>
+        전략, 지정한 <literal>loadTimeWeaver</literal>에 기반한
+        <interfacename>PersistenceUnitInfo</interfacename> 인스턴스를 생성한다. 그러므로
+        JNDI 외부에서 커스텀 데이터소스로 작업하는 것이 가능하고 위빙 접근을 제어할 수 있다. 다음 예제는
+        <interfacename>LocalContainerEntityManagerFactoryBean</interfacename>의
+        대표적인 빈 정의를 보여준다.<!--The following examples shows what? What's its purpose? TR: REVISED, PLS REVIEW.--></para>
 
         <programlisting language="xml">&lt;beans&gt;
-        
+
  &lt;bean id="myEmf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"&gt;
   &lt;property name="dataSource" ref="someDataSource"/&gt;
   &lt;property name="loadTimeWeaver"&gt;
     &lt;bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver"/&gt;
   &lt;/property&gt;
  &lt;/bean&gt;
- 
+
 &lt;/beans&gt;</programlisting>
 
-        <para>The following example shows a typical
-        <literal>persistence.xml</literal> file:</para>
+        <para>다음 예제는 대표적인 <literal>persistence.xml</literal> 파일이다.</para>
 
         <programlisting language="xml">&lt;persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0"&gt;
 
@@ -1399,91 +1203,79 @@ TR: REVISED, PLS REVIEW.-->The factory bean uses the JPA
 &lt;/persistence&gt;</programlisting>
 
         <note>
-          <para>The <code>exclude-unlisted-classes</code> element always
-          indicates that <emphasis>no</emphasis> scanning for annotated entity
-          classes is supposed to occur, in order to support the
-          <code>&lt;exclude-unlisted-classes/&gt;</code> shortcut. This is in
-          line with the JPA specification, which suggests that shortcut, but
-          unfortunately is in conflict with the JPA XSD, which implies
-          <code>false</code> for that shortcut. Consequently,
+          <para><code>exclude-unlisted-classes</code> 요소는
+          <code>&lt;exclude-unlisted-classes/&gt;</code> 숏컷을 제공하려고 어노테이션이
+          붙은 엔티티 클래스에 대한 스캐닝을 하지 <emphasis>않는다는</emphasis> 것을 항상
+          나타낸다. JPA 명세서에서 이 숏컷을 제안하고 있지만 안타깝게도 이 숏컷의
+          <code>false</code>를 의미하는 JPA XSD와 충돌한다. 따라서
           <code>&lt;exclude-unlisted-classes&gt; false
-          &lt;/exclude-unlisted-classes/&gt;</code> is not supported. Simply
-          omit the <code>exclude-unlisted-classes</code> element if you want
-          entity class scanning to occur.</para>
+          &lt;/exclude-unlisted-classes/&gt;</code>는 지원하지 않는다. 엔테티 클래스에
+          대한 스캐닝이 이뤄지길 원한다면 <code>exclude-unlisted-classes</code> 요소를
+          그냥 생략해라.</para>
         </note>
 
-        <para>Using the
-        <classname>LocalContainerEntityManagerFactoryBean</classname> is the
-        most powerful JPA setup option, allowing for flexible local
-        configuration within the application. It supports links to an existing
-        JDBC <interfacename>DataSource</interfacename>, supports both local
-        and global transactions, and so on. However, it also imposes
-        requirements on the runtime environment, such as the availability <!--Clarify: first says it imposes *requirements* but says such as *the availability* of a weaving-capable Classloader. Revise to say--><!--whether you are *required* to use this when persistence provider demands byte-code transformation. i.e. what is the *requirement* here? 
-TR: OK AS IS. The requirement is to provide the classloader for the runtime environment, if necessary - this is configured outside of Spring.-->of
-        a weaving-capable class loader if the persistence provider demands
-        byte-code transformation.</para>
+        <para><classname>LocalContainerEntityManagerFactoryBean</classname>의
+        사용하는 것이 어플리케이션내에서 유연한 로컬 설정을 가능하게 하는 가장 강력한 JPA 설정 방법이다.
+        존재하는 JDBC JDBC <interfacename>DataSource</interfacename>로의 연결을 지원하고
+        로컬 트랜잭션과 전역 트랜잭션 등을 지원한다. 하지만 런타임 환경에서 퍼시스턴스 프로바이더가
+        바이트코드 변환을 필요로한다면 위빙이 가능한 클래스 로더를 사용할 수 있어야 하는 조건같은 <!--Clarify: first says it imposes *requirements* but says such as *the availability* of a weaving-capable Classloader. Revise to say--><!--whether you are *required* to use this when persistence provider demands byte-code transformation. i.e. what is the *requirement* here?
+TR: OK AS IS. The requirement is to provide the classloader for the runtime environment, if necessary - this is configured outside of Spring.-->
+        요구사항도 강제한다.</para>
 
-        <para>This option may conflict with the built-in JPA capabilities of a
-        Java EE 5 server. In a full Java EE 5 environment, consider obtaining
-        your <interfacename>EntityManagerFactory</interfacename> from JNDI.
-        Alternatively, specify a custom
-        <classname>persistenceXmlLocation</classname> on your
-        <classname>LocalContainerEntityManagerFactoryBean</classname>
-        definition, for example, META-INF/my-persistence.xml, and only include
-        a descriptor with that name in your application jar files. Because the
-        Java EE 5 server only looks for default
-        <literal>META-INF/persistence.xml</literal> files, it ignores such
-        custom persistence units and hence avoid conflicts with a
-        Spring-driven JPA setup upfront. (This applies to Resin 3.1, for
-        example.)</para>
+        <para>이 방법은 Java EE 5 서버에 내장된 JPA 기능과 충돌할 것이다. 완전한 Java EE 5
+        환경에서는 JNDI에서 <interfacename>EntityManagerFactory</interfacename>를 얻는
+        것을 고려해 봐라. 아니면 예를 들어 META-INF/my-persistence.xml같은
+        <classname>LocalContainerEntityManagerFactoryBean</classname>에 커스텀
+        <classname>persistenceXmlLocation</classname>를 지정하고 어플리케이션 jar 파일들에
+        해당 이름을 가진 디스크립터만 포함해라. Java EE 5 서버가 기본
+        <literal>META-INF/persistence.xml</literal> 파일들만 찾기 때문에 커스텀 퍼시스턴스
+        유닛들은 무시해서 스프링이 주도하는 JPA 설정과의 충돌을 피한다.(예를 들어 이는 Resin 3.1에
+        적용된다.)</para>
 
         <sidebar>
-          <title>When is load-time weaving required?</title>
+          <title>로드타임 위빙은 언제 필요한가?</title>
 
-          <para>Not all JPA providers require a JVM agent ; Hibernate is an
-          example of one that does not. If your provider does not require an
-          agent or you have other alternatives, such as applying enhancements
-          at build time through a custom compiler or an ant task, the
-          load-time weaver <emphasis role="bold">should not</emphasis> be
-          used.</para>
+          <para>모든 JPA 프로바이더가 JVM 에이전트를 필요로 하는 것은 아니다. 하이버네이트가
+          그 중 하나이다. 프로바이더나 에이전트를 필요로 하지 않거나 에이전트를 대신할 다른 것(커스텀
+          컴파일러나 ant 태스크를 통해 빌드시에 강화(enhancements)하는 등의)이 있다면 로드타임 위버를
+          사용하지 <emphasis role="bold">말아야 한다</emphasis>.</para>
         </sidebar>
 
-        <para>The <interfacename>LoadTimeWeaver</interfacename> interface is a
-        Spring-provided class that allows JPA
-        <interfacename>ClassTransformer</interfacename> instances to be
-        plugged in a specific manner, depending whether the environment is a
-        web container or application server. <!--Preceding: is this what you mean? Avoid slashes (web container/application server); slashes mean different things depending on context.--><!--Revise if necessary. TR: OK.-->
-        Hooking <literal>ClassTransformers</literal> through a Java 5 <ulink
-        url="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/instrument/package-summary.html">agent</ulink>
-        typically is not efficient. The agents work against the
-        <emphasis>entire virtual machine</emphasis> and inspect
-        <emphasis>every</emphasis> class that is loaded, which is usually
-        undesirable in a production server environment.</para>
+        <para><interfacename>LoadTimeWeaver</interfacename> 인터페이스는 스프링이
+        제공하는 클래스로 웹 컨테이너 환경인지 어플리케이션 서버 환경인지에 따른 방법으로 JPA
+        <interfacename>ClassTransformer</interfacename> 인스턴스를 플러그인할 수
+        있도록 한다. <!--Preceding: is this what you mean? Avoid slashes (web container/application server); slashes mean different things depending on context.--><!--Revise if necessary. TR: OK.-->
+        자바 5 <ulink
+        url="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/instrument/package-summary.html">에이전트</ulink>
+        로 <literal>ClassTransformers</literal>를 후킹(hooking)을 하는 것은 보통 효율적이지
+        않다. 에이전트는 <emphasis>전체 가상머신</emphasis>에서 동작하고 로딩된 클래스를
+        <emphasis>모두</emphasis> 검사하는데 이는 프로덕션 서버 환경에서는 보통 원치 않는
+        것이다.</para>
 
-        <para>Spring provides a number of
-        <interfacename>LoadTimeWeaver</interfacename> implementations for
-        various environments, allowing
-        <interfacename>ClassTransformer</interfacename> instances to be
-        applied only <emphasis>per class loader</emphasis> and not per
-        VM.</para>
+        <para>스프링은 다양한 환경에 대한 다수의 <interfacename>LoadTimeWeaver</interfacename>
+        구현체를 제공해서 VM에 대해서가 아니라 <emphasis>클래스 로더별로만</emphasis>
+        <interfacename>ClassTransformer</interfacename> 인스턴스를 적용할 수
+        있도록 한다.</para>
 
-        <para>Refer to <xref linkend="aop-aj-ltw-spring" /> in the AOP chapter for more insight regarding the 
-        <interfacename>LoadTimeWeaver</interfacename> implementations and their setup, either generic or customized to 
-        various platforms (such as Tomcat, WebLogic, OC4J, GlassFish, Resin and JBoss).</para>
-		
-		
-		<para>As described in the aforementioned section, you can configure a context-wide <interfacename>LoadTimeWeaver</interfacename>
-		using the  <literal>context:load-time-weaver</literal> configuration element. (This has been available since Spring 2.5.)
-		Such a global weaver is picked up by all JPA <classname>LocalContainerEntityManagerFactoryBeans</classname>
-        automatically. This is the preferred way of setting up a load-time weaver, delivering autodetection of the platform 
-        (WebLogic, OC4J, GlassFish, Tomcat, Resin, JBoss or VM agent) and automatic propagation of the weaver to all weaver-aware beans:</para>
-		
+        <para><interfacename>LoadTimeWeaver</interfacename> 구현체와 설정(제너릭이나
+        여러 플랫폼(톰캣, 웹로직, OC4J, 글래스피시, 레신, JBoss등)에 커스터마이징하는 방법)에 대한
+        자세한 내용은 <xref linkend="aop-aj-ltw-spring" />의 AOP 부분을 참고해라.</para>
+
+
+		<para>앞의 섹션에서 설명했듯이 <literal>context:load-time-weaver</literal> 설정요소를 사용해서
+    컨텍스트 범위의 <interfacename>LoadTimeWeaver</interfacename>를 설정할 수 있다. (이는 스프링
+    2.5부터 사용할 수 있다.)
+    모든 JPA <classname>LocalContainerEntityManagerFactoryBeans</classname>는 자동적으로 이러한
+        전역 위버(weaver)를 선택한다. 이 방법이 로드타임 위버를 설정할 때 선호하는 방법으로 플랫폼(웹로직, OC4J,
+        글래스피시, 톰캣, 레신, JBoss, VM 에이전트)의 자동 탐지와 위버를 인식한 모든 빈에 위버의
+        자동전파(propagation)를 제공한다.</para>
+
 		<programlisting language="xml">&lt;context:load-time-weaver/&gt;
 &lt;bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"&gt;
     ...
 &lt;/bean&gt;</programlisting>
-		
-		<para> However, if needed, one can manually specify a dedicated weaver through the <literal>loadTimeWeaver</literal> property:</para> 
+
+		<para> 하지만 필요하다면 <literal>loadTimeWeaver</literal> 프로퍼티로 전용 위버를 수동으로 지정할 수 있다.</para>
 
         <programlisting language="xml">&lt;bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"&gt;
   &lt;property name="loadTimeWeaver"&gt;
@@ -1491,36 +1283,31 @@ TR: OK AS IS. The requirement is to provide the classloader for the runtime envi
   &lt;/property&gt;
 &lt;/bean&gt;</programlisting>
 
-          <para>No matter how the LTW is configured, using this technique, JPA applications relying on
-          instrumentation can run in the target platform (ex: Tomcat) without needing an agent. 
-          This is important especially when the hosting applications rely on different JPA implementations 
-          because the JPA transformers are applied only at class loader level and thus are
-          isolated from each other.</para>
+          <para>어떤 방법으로 LTW를 설정하는지에 관계없이 이 기법을 사용해서 인스트루멘테이션(instrumentation)에 기반한
+          JPA 어플리케이션을 에이전트가 필요없이 대상 플랫폼(예: 톰캣)에서 실행할 수 있다. 이는 JPA 변환자(transformer)가
+          클래스로더 수준에만 적용되무로 각각 격리되기 때문에 호스팅하는 어플리케이션이 여러 JPA 구현체에 의존하고 있는 경우
+          특히 중요하다.</para>
 
-		<!-- 
+		<!--
 		  <note>
             <para>If you use TopLink Essentials as a JPA provider under
             Tomcat, place the toplink-essentials JAR under
             <emphasis>$CATALINA_HOME</emphasis>/shared/lib folder instead of
-            inside your war.--><!--Revise: *instead of placing the JAR under your WAR*, OR *instead of placing WAR under $CATALINA_HOME/etc*? 
+            inside your war.--><!--Revise: *instead of placing the JAR under your WAR*, OR *instead of placing WAR under $CATALINA_HOME/etc*?
 TR: REVISED, PLS REVIEW. Should be *inside your war*. --><!-- </para>
           </note>
 		 -->
       </section>
 
       <section id="orm-jpa-multiple-pu">
-        <title>Dealing with multiple persistence units</title>
+        <title>여러 퍼시스턴스 유닛 다루기</title>
 
-        <para>For applications that rely on multiple persistence units
-        locations, stored in various JARS in the classpath, for example,
-        Spring offers the
-        <interfacename>PersistenceUnitManager</interfacename> to act as a
-        central repository and to avoid the persistence units discovery
-        process, which can be expensive. The default implementation allows
-        multiple locations to be specified that are parsed and later retrieved
-        through the persistence unit name. (By default, the classpath is
-        searched for <filename>META-INF/persistence.xml</filename>
-        files.)</para>
+        <para>예를 들어 클래스패스에 다양한 JARS가 저장되어 있는 여러 퍼시스턴스 유닛 위치에
+        의존하는 어플리케이션에서 스프링은 <interfacename>PersistenceUnitManager</interfacename>가
+        중앙 레파지토리처럼 동작하고 상당한 비용이 들 수 있는 퍼시스턴스 유닛 탐색과정을 피하게 한다.
+        기본 구현체는 파싱하고 나중에 퍼시스턴스 유닛이름으로 획득하는 여러가지 위치를 지정할 수 있게
+        한다. (기본적으로 클래스패스는 <filename>META-INF/persistence.xml</filename>
+        파일을 검색한다.)</para>
 
         <programlisting language="xml">&lt;bean id="pum" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager"&gt;
   &lt;property name="persistenceXmlLocations"&gt;
@@ -1536,7 +1323,7 @@ TR: REVISED, PLS REVIEW. Should be *inside your war*. --><!-- </para>
     &lt;entry key="remoteDataSource" value-ref="remote-db"/&gt;
    &lt;/map&gt;
   &lt;/property&gt;
-  <lineannotation>&lt;!-- if no datasource is specified, use this one --&gt;</lineannotation>
+  <lineannotation>&lt;!-- 데이터소스를 지정하지 않으면 이것을 사용한다 --&gt;</lineannotation>
   &lt;property name="defaultDataSource" ref="remoteDataSource"/&gt;
 &lt;/bean&gt;
 
@@ -1545,48 +1332,41 @@ TR: REVISED, PLS REVIEW. Should be *inside your war*. --><!-- </para>
   &lt;property name="persistenceUnitName" value="myCustomUnit"/&gt;
 &lt;/bean&gt;</programlisting>
 
-        <para>The default implementation allows customization of the
-        <interfacename>PersistenceUnitInfo</interfacename> instances,<!--What is *infos*? information? Clarify. TR: REVISED, PLS REVIEW.-->
-        before they are fed to the JPA provider, declaratively through its
-        <!--through what's properties? JPA provider's? TR: OK AS IS. It's the PersistenceUnitManager default implementation's properties-->properties,
-        which affect <emphasis>all</emphasis> hosted units, or
-        programmatically, through the
-        <interfacename>PersistenceUnitPostProcessor</interfacename>, which
-        allows persistence unit selection. If no
-        <interfacename>PersistenceUnitManager</interfacename> is specified,
-        one is created and used internally by
-        <classname>LocalContainerEntityManagerFactoryBean</classname>.</para>
+        <para>기본 구현체는 <interfacename>PersistenceUnitInfo</interfacename>
+        인스턴스를<!--What is *infos*? information? Clarify. TR: REVISED, PLS REVIEW.-->
+        JPA 프로바이더에 제공하기 전에 커스터마이징할 수 있게 한다. 이는
+        <emphasis>모든</emphasis> 호스팅된 유닛에 영향을 주는 프로퍼티들을
+        <!--through what's properties? JPA provider's? TR: OK AS IS. It's the PersistenceUnitManager default implementation's properties-->
+        사용해서 선언적으로 하거나 퍼시스턴스 유닛을 선택할 수 있는
+        <interfacename>PersistenceUnitPostProcessor</interfacename>로 프로그래밍적으로
+        할 수 있다. <interfacename>PersistenceUnitManager</interfacename>를 지정하지
+        않았다면 새로 생성해서 <classname>LocalContainerEntityManagerFactoryBean</classname>가
+        내부적으로 사용한다.</para>
       </section>
     </section>
 
     <section id="orm-jpa-straight">
-      <title>Implementing DAOs based on plain JPA</title>
+      <title>평범한 JPA에 기반한 DAO 구현하기</title>
 
       <note>
-        <para>Although <interfacename>EntityManagerFactory</interfacename>
-        instances are thread-safe,
-        <interfacename>EntityManager</interfacename> instances are not. The
-        injected JPA <interfacename>EntityManager</interfacename> behaves like
-        an <interfacename>EntityManager</interfacename> fetched from an
-        application server's JNDI environment, as defined by the JPA
-        specification. It delegates all calls to the current transactional
-        <interfacename>EntityManager</interfacename>, if any; otherwise, it
-        falls back to a newly created
-        <interfacename>EntityManager</interfacename> per operation, in effect
-        making its usage thread-safe.<!--Seems contradictory. First sentence says EntityManager instances are not thread-safe; last sentence refers to use--><!--of EntityManager as thread-safe. TR: REVISED, PLS REVIEW.--></para>
+        <para><interfacename>EntityManagerFactory</interfacename> 인스턴스는 스레드
+        세이프하지만 <interfacename>EntityManager</interfacename>는 그렇지 않다. 주입한
+        JPA <interfacename>EntityManager</interfacename>는 JPA 명세서에 정의된 대로
+        어플리케이션의 JNDI 환경에서 가져온 <interfacename>EntityManager</interfacename>처럼
+        동작한다. 모든 호출을 (존재한다면)현재의 트랜잭션이 적용된
+        <interfacename>EntityManager</interfacename>로 위임한다. 존재하지 않는다면 작업마다
+        <interfacename>EntityManager</interfacename>를 새로 생성해서 폴백(fall back)을
+        수행해서 사실상 스레드 세이프하게 만든다.<!--Seems contradictory. First sentence says EntityManager instances are not thread-safe; last sentence refers to use--><!--of EntityManager as thread-safe. TR: REVISED, PLS REVIEW.--></para>
       </note>
 
-      <para>It is possible to write code against the plain JPA without any
-      Spring dependencies, by using an injected
-      <interfacename>EntityManagerFactory</interfacename> or
-      <interfacename>EntityManager</interfacename>. Spring can understand
-      <interfacename>@PersistenceUnit</interfacename> and
-      <interfacename>@PersistenceContext</interfacename> annotations both at
-      field and method level if a
-      <classname>PersistenceAnnotationBeanPostProcessor</classname> is
-      enabled. A plain JPA DAO implementation using the
-      <interfacename>@PersistenceUnit</interfacename> annotation <!--corresponding to what? TR: REVISED, PLS REVIEW.-->might
-      look like this:</para>
+      <para>스프링에 대한 의존성은 전혀 두지 않고 주입된
+      <interfacename>EntityManagerFactory</interfacename>나
+      <interfacename>EntityManager</interfacename>를 사용해서 평범한 JPA로 코드를 작성할
+      수 있다. <classname>PersistenceAnnotationBeanPostProcessor</classname>가
+      활성화되어 있다면 스프링은 필드 수준과 메서드 수준에서 <interfacename>@PersistenceUnit</interfacename>과
+      <interfacename>@PersistenceContext</interfacename> 어노테이션을 둘 다 이해할 수
+      있다. <interfacename>@PersistenceUnit</interfacename> 어노테이션을 <!--corresponding to what? TR: REVISED, PLS REVIEW.-->
+      사용하는 평범한 JPA DAO 구현체는 다음과 같을 것이다.</para>
 
       <programlisting language="java">public class ProductDaoImpl implements ProductDao {
 
@@ -1612,45 +1392,39 @@ TR: REVISED, PLS REVIEW. Should be *inside your war*. --><!-- </para>
     }
 }</programlisting>
 
-      <para>The DAO above has no dependency on Spring and still fits nicely
-      into a Spring application context. Moreover, the DAO takes advantage of
-      annotations to require the injection of the default
-      <interfacename>EntityManagerFactory</interfacename>:</para>
+      <para>위의 DAO는 스프링에 대한 의존성이 없으면서도 여전히 스프링 어플리케이션 컨텍스트에
+      잘 어울린다. 더욱이 DAO는 기본 <interfacename>EntityManagerFactory</interfacename>의
+      주입을 필요로하는 어노테이션의 장점을 취한다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
-  <lineannotation>&lt;!-- bean post-processor for JPA annotations --&gt;</lineannotation>
+  <lineannotation>&lt;!-- JPA 어노테이션의 빈 후처리자(bean post-processor) --&gt;</lineannotation>
   &lt;bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/&gt;
 
   &lt;bean id="myProductDao" class="product.ProductDaoImpl"/&gt;
 
 &lt;/beans&gt;</programlisting>
 
-      <para>As an alternative to defining a
-      <classname>PersistenceAnnotationBeanPostProcessor</classname>
-      explicitly, consider using the Spring
-      <literal>context:annotation-config</literal> XML element in your
-      application context configuration. Doing so automatically registers all
-      Spring standard post-processors for annotation-based configuration,
-      including <classname>CommonAnnotationBeanPostProcessor</classname> and
-      so on.</para>
+      <para>명시적으로 <classname>PersistenceAnnotationBeanPostProcessor</classname>
+      정의하는 대신에 어플리케이션 컨텍스트 설정에 스프링 <literal>context:annotation-config</literal>
+      XML 요소를 사용하는 것을 고려해 봐라. 이렇게 하면
+      <classname>CommonAnnotationBeanPostProcessor</classname> 등을 포함한 어노테이션기반의
+      설정에 대한 스프링의 모든 표준 후처리자(post-processor)를 자동으로 등록한다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
-  <lineannotation>&lt;!-- post-processors for all standard config annotations --&gt;</lineannotation>
+  <lineannotation>&lt;!-- 모든 표준 설정 어노테이션의 후처리자 --&gt;</lineannotation>
   &lt;context:annotation-config/&gt;
 
   &lt;bean id="myProductDao" class="product.ProductDaoImpl"/&gt;
 
 &lt;/beans&gt;</programlisting>
 
-      <para>The main problem with such a DAO is that it always creates a new
-      <interfacename>EntityManager</interfacename> through the factory. You
-      can avoid this by requesting a transactional
-      <interfacename>EntityManager</interfacename> (also called "shared
-      EntityManager" because it is a shared, thread-safe proxy for the actual
-      transactional EntityManager) to be injected instead of the
-      factory:</para>
+      <para>이러한 DAO의 가장 큰 문제점은 팩토리로 항상 새로운
+      <interfacename>EntityManager</interfacename>를 생성한다는 것이다. 팩토리 대신에
+      주입해야하는 트랜잭션이 적용된 <interfacename>EntityManager</interfacename>를(실제
+      트랜잭션이 적용된 EntityManager에 대한 공유되고 스레드 세이프한 프록시이기 때문에 "공유된(shared)
+      EntityManager"라고도 부른다) 요청해서 이 문제를 피할 수 있다.</para>
 
       <programlisting language="java">public class ProductDaoImpl implements ProductDao {
 
@@ -1660,69 +1434,58 @@ TR: REVISED, PLS REVIEW. Should be *inside your war*. --><!-- </para>
     public Collection loadProductsByCategory(String category) {
        Query query = em.createQuery("from Product as p where p.category = :category");
        query.setParameter("category", category);
-       return query.getResultList(); 
+       return query.getResultList();
     }
 }</programlisting>
 
-      <para>The <literal>@PersistenceContext</literal> annotation has an
-      optional attribute <literal>type</literal>, which defaults to
-      <literal>PersistenceContextType.TRANSACTION</literal>. This default is
-      what you need to receive a shared EntityManager proxy. The alternative,
-      <literal>PersistenceContextType.EXTENDED</literal>, is a completely
-      different affair: This results in a so-called extended EntityManager,
-      which is <emphasis>not thread-safe</emphasis> and hence must not be used
-      in a concurrently accessed component such as a Spring-managed singleton
-      bean. Extended EntityManagers are only supposed to be used in stateful
-      components that, for example, reside in a session, with the lifecycle of
-      the EntityManager not tied to a current transaction but rather being
-      completely up to the application.</para>
+      <para><literal>@PersistenceContext</literal> 어노테이션은 기본값이
+      <literal>PersistenceContextType.TRANSACTION</literal>인 선택적인 속성값
+      <literal>type</literal>을 가진다. 이 기본값은 공유된 EntityManager 프록시를 받는데
+      필요하다. 다른 값인 <literal>PersistenceContextType.EXTENDED</literal>는 완전히
+      다른 것이다. 이는 소위 확장된 EntityManager가 되어 <emphasis>스레드세이프하지 않으므로</emphasis>
+      스프링이 관리하는 싱글톤 빈처럼 동시에 접근하게 되는 컴포넌트에서는 사용하지 말아야 한다. 확장된
+      EntityManager는 상태를 가진 컴포넌트에서만 사용하도록 만들어졌다. 예를 들면 현재 트랜잭션에
+      묶인 것이 아니라 어플리케이션에 완전히 묶인 EntityManager의 생명주기를 가진 세션에 존재하는
+      상태를 가진 컴포넌트들이다.</para>
 
       <sidebar>
-        <title>Method- and field-level Injection</title>
+        <title>메서드 수준의 주입과 필드수준의 주입</title>
 
-        <para>Annotations that indicate dependency injections (such as
-        <literal>@PersistenceUnit</literal> and
-        <literal>@PersistenceContext</literal>) can be applied on field or
-        methods inside a class, hence the expressions <emphasis>method-level
-        injection</emphasis> and <emphasis>field-level injection</emphasis>.
-        Field-level annotations are concise and easier to use while
-        method-level allows for further processing of the injected dependency.
-        In both cases the member visibility (public, protected, private) does
-        not matter.</para>
+        <para>의존성 주입(<literal>@PersistenceUnit</literal>과
+        <literal>@PersistenceContext</literal>같은)을 나타내는 어노테이션들은 클래스 내부의
+        필드나 메서드에도 적용할 수 있으므로 <emphasis>메서드 수준(method-level)의 주입</emphasis>과
+        <emphasis>필드수준(field-level)의 주입</emphasis>이라고 부른다. 필드수준의 어노테이션들은
+        간결하고 사용하운 반면 메서드 수준의 어노테이션들은 주입된 의존성에 추가적인 처리를 할 수 있게
+        한다. 두 가지 모두에서 멤버 가시성(public, protected, private)은 중요치 않다.</para>
 
-        <para>What about class-level annotations?</para>
+        <para>클래스수준의 어노테이션들은 어떤가?</para>
 
-        <para>On the Java EE 5 platform, they are used for dependency
-        declaration and not for resource injection.</para>
+        <para>Java EE 5 플랫폼에서 클래스 수준의 어노테이션들은 의존성 선언에 사용하고
+        리소스 주입에는 사용하지 않는다.</para>
       </sidebar>
 
-      <para>The injected <interfacename>EntityManager</interfacename> is
-      Spring-managed (aware of the ongoing transaction). It is important to
-      note that even though the new DAO implementation uses method level
-      injection of an <interfacename>EntityManager</interfacename> instead of
-      an <interfacename>EntityManagerFactory</interfacename>, no change is
-      required in the application context XML due to annotation usage.<!--I changed *prefers* to *works better with*. Revise if needed, but an impl. doesn't *prefer*. Also *what* is due to annotation usage; what does--><!--this refer to? TR: REVISED, PLS REVIEW.--></para>
+      <para>주입된 <interfacename>EntityManager</interfacename>는 스프링이
+      관리(진행중인 트랜잭션을 인식하는)한다. 새로운 DAO 구현체가
+      <interfacename>EntityManagerFactory</interfacename> 대신
+      <interfacename>EntityManager</interfacename>의 메서드 수준 주입을 사용할때
+      조차도 어노테이션의 사용때문에 어플리케이션 컨텍스트 XML을 변경할 필요는 없다는 점이 중요하다.<!--I changed *prefers* to *works better with*. Revise if needed, but an impl. doesn't *prefer*. Also *what* is due to annotation usage; what does--><!--this refer to? TR: REVISED, PLS REVIEW.--></para>
 
-      <para>The main advantage of this DAO style is that it only depends on
-      Java Persistence API; no import of any Spring class is required.
-      Moreover, as the JPA annotations are understood, the injections are
-      applied automatically by the Spring container. This is appealing from a
-      non-invasiveness perspective, and might feel more natural to JPA
-      developers.</para>
+      <para>이 DAO 방식의 가장 큰 장점은 Java 퍼시스턴스 API에만 의존한다는 것이다. 어떤
+      스프링 클래스도 임포트할 필요가 없다. 게다가 JPA 어노테이션을 이해하기 때문에 스프링 컨테이너가
+      자동으로 주입을 적용한다. 이는 비침투적이고 JPA 개발자들이 더 자연스럽게 느낄 것이다.</para>
     </section>
 
     <section id="orm-jpa-tx">
-      <title>Transaction Management</title>
+      <title>트랜잭션 관리</title>
 
       <note>
-        <para>You are <emphasis>strongly</emphasis> encouraged to read <xref
-        linkend="transaction-declarative" /> if you have not done so, to get a
-        more detailed coverage of Spring's declarative transaction
-        support.</para>
+        <para>스프링의 선언적인 트랜잭션 지원의 자세한 내용을 알고싶다면 (아직 읽어보지 않았다면)
+        <xref linkend="transaction-declarative" />를 읽어보기를
+        <emphasis>강력히</emphasis> 권한다.</para>
       </note>
 
-      <para>To execute service operations within transactions, you can use
-      Spring's common declarative transaction facilities. For example:</para>
+      <para>트랜잭션 내에서 서비스작업을 실행하려면 스프링의 공통 선언적인 트랜잭션 기능을
+      사용할 수 있다. 예를 들면 다음과 같다.</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -1730,11 +1493,11 @@ TR: REVISED, PLS REVIEW. Should be *inside your war*. --><!-- </para>
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/tx 
+       http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-       http://www.springframework.org/schema/aop 
+       http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"&gt;
 
   &lt;bean id="myTxManager" class="org.springframework.orm.jpa.JpaTransactionManager"&gt;
@@ -1744,7 +1507,7 @@ TR: REVISED, PLS REVIEW. Should be *inside your war*. --><!-- </para>
   &lt;bean id="myProductService" class="product.ProductServiceImpl"&gt;
     &lt;property name="productDao" ref="myProductDao"/&gt;
   &lt;/bean&gt;
-  
+
   &lt;aop:config&gt;
     &lt;aop:pointcut id="productServiceMethods" expression="execution(* product.ProductService.*(..))"/&gt;
     &lt;aop:advisor advice-ref="txAdvice" pointcut-ref="productServiceMethods"/&gt;
@@ -1760,105 +1523,92 @@ TR: REVISED, PLS REVIEW. Should be *inside your war*. --><!-- </para>
 
 &lt;/beans&gt;</programlisting>
 
-      <para>Spring JPA allows a configured
-      <classname>JpaTransactionManager</classname> to expose a JPA transaction
-      to JDBC access code that accesses the same JDBC
-      <interfacename>DataSource</interfacename>, provided that the registered
-      <interfacename>JpaDialect</interfacename> supports retrieval of the
-      underlying JDBC <interfacename>Connection</interfacename>. Out of the
-      box, Spring provides dialects for the Toplink, Hibernate and OpenJPA JPA
-      implementations. See the next section for details on the
-      <interfacename>JpaDialect</interfacename> mechanism.</para>
+      <para>스프링 JPA는 같은 JDBC <interfacename>DataSource</interfacename>에 접근하는
+      JDBC 접근코드에 JPA 트랜잭션을 노출하려고 설정된 <classname>JpaTransactionManager</classname>를
+      허용해서 의존하는 JDBC <interfacename>Connection</interfacename>의 획득을 지원하는 등록된
+      <interfacename>JpaDialect</interfacename>를 제공한다. 스프링은 Toplink, Hibernate,
+      OpenJPA JPA의 방언을 제공한다. <interfacename>JpaDialect</interfacename> 메카니즘에
+      대한 자세한 내용은 다음 섹션에서 살펴볼 것이다.</para>
     </section>
 
     <section id="orm-jpa-dialect">
       <title><interfacename>JpaDialect</interfacename></title>
 
-      <para>As an advanced feature <classname>JpaTemplate</classname>,
-      <classname>JpaTransactionManager</classname> and subclasses of
-      <classname>AbstractEntityManagerFactoryBean</classname> support a custom
-      <interfacename>JpaDialect</interfacename>, to be passed into the
-      <property>jpaDialect</property> bean property. In such a scenario, the
-      DAOs do not receive an
-      <interfacename>EntityManagerFactory</interfacename> reference but rather
-      a full <classname>JpaTemplate</classname> instance (for example,
-      passed<!--Clarify *what* is passed? Reword this for example phrase. TR: OK AS-->
-      into the <property>jpaTemplate</property> property<classname> of
-      JpaDaoSupport</classname>). A <interfacename>JpaDialect</interfacename>
-      implementation can enable some advanced features supported by Spring,
-      usually in a vendor-specific manner:</para>
+      <para><classname>JpaTemplate</classname>의 고급 기능처럼
+      <classname>JpaTransactionManager</classname>와
+      <classname>AbstractEntityManagerFactoryBean</classname>의 하위클래스들은
+      <property>jpaDialect</property> 빈 프로퍼티에 전달되는 커스텀
+      <interfacename>JpaDialect</interfacename>를 지원한다. 이러한 시나리오에서 DAO는
+      <interfacename>EntityManagerFactory</interfacename>의 참조를 받는 것이 아니라
+      전체 <classname>JpaTemplate</classname> 인스턴스를(예를 들어
+      <classname>JpaDaoSupport</classname>의 <property>jpaTemplate</property>
+      프로퍼티에 전달<!--Clarify *what* is passed? Reword this for example phrase. TR: OK AS-->
+      된다.) 받는다. <interfacename>JpaDialect</interfacename> 구현체는 일반적으로는
+      벤더에 특화된 방법으로 스프링이 지원하는 몇몇 고급 기능들을 활성화할 수 있다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>Applying specific transaction semantics such as custom
-          isolation level or transaction timeout)</para>
+          <para>커스텀 격리수준이나 트랜잭션 타임아웃같은 특정 트랜잭션 의미를
+          적용한다.</para>
         </listitem>
 
         <listitem>
-          <para>Retrieving the transactional JDBC
-          <interfacename>Connection</interfacename> for exposure to JDBC-based
-          DAOs)</para>
+          <para>JDBC에 기반한 DAO에 노출하기 위한 트랜잭션이 적용된 JDBC
+          <interfacename>Connection</interfacename>의 획득</para>
         </listitem>
 
         <listitem>
-          <para>Advanced translation of
-          <literal>PersistenceExceptions</literal> to Spring
-          <literal>DataAccessExceptions</literal></para>
+          <para><literal>PersistenceExceptions</literal>를 스프링의
+          <literal>DataAccessExceptions</literal>로의 변환</para>
         </listitem>
       </itemizedlist>
 
-      <para>This is particularly valuable for special transaction semantics
-      and for advanced translation of exception. The default implementation
-      used (<classname>DefaultJpaDialect</classname>) does not provide any
-      special capabilities and if the above features are required, you have to
-      specify the appropriate dialect.</para>
+      <para>특수한 트랜잭션 의미와 예외의 고급변환에 특히 가치가 있다. 사용한 기본 구현체
+      (<classname>DefaultJpaDialect</classname>)는 어떤 특수한 기능도 제공하지 않는다.
+      위의 기능이 필요하다면 적절한 방언(dialect)을 지정해야 한다.</para>
 
-      <para>See the <interfacename>JpaDialect</interfacename> Javadoc for more
-      details of its operations and how they are used within Spring's JPA
-      support.</para>
+      <para><interfacename>JpaDialect</interfacename>의 작업과
+      <interfacename>JpaDialect</interfacename> Javadoc가 스프링의 JPA 지원내에서 어떻게
+      사용되는지 알고 싶다면 <interfacename>JpaDialect</interfacename> Javadoc을
+      참고해라.</para>
     </section>
   </section>
 
   <section id="orm-ibatis">
-    <title>iBATIS SQL Maps</title>
+    <title>iBATIS SQL 맵</title>
 
-    <para>The iBATIS support in the Spring Framework much resembles the JDBC
-    support in that it supports the same template style programming, and as
-    with JDBC and other ORM technologies, the iBATIS support works with
-    Spring's exception hierarchy and lets you enjoy Spring's IoC
-    features.</para>
+    <para>스프링 프레임워크의 iBATIS 지원은 스프링의 JDBC 지원과 아주 비슷하다. JDBC와 다른 ORM
+    기술에서 같은 템플릿 방식의 프로그래밍을 지원한다. iBATIS 지원은 스프링의 예외 계층과 동작하고
+    스프링의 IoC 기능을 사용할 수 있게 한다.</para>
 
-    <para>Transaction management can be handled through Spring's standard
-    facilities. No special transaction strategies are necessary for iBATIS,
-    because no special transactional resource involved other than a JDBC
-    <interfacename>Connection</interfacename>. Hence, Spring's standard JDBC
-    <classname>DataSourceTransactionManager</classname> or
-    <classname>JtaTransactionManager</classname> are perfectly
-    sufficient.</para>
+    <para>스프링의 표준 시설(facilities)로 트랜잭션 관리할 수 있다. JDBC
+    <interfacename>Connection</interfacename>외에 특별한 트랜잭션 리소스가 없기 때문에
+    iBATIS를 위한 특수한 트랜잭션 전략은 필요치 않다. 따라서 스프링의 표준 JDBC
+    <classname>DataSourceTransactionManager</classname>나
+    <classname>JtaTransactionManager</classname>로도 완전히 충분하다.</para>
 
     <note>
-      <para>Spring supports iBATIS 2.x. The iBATIS 1.x support classes are no
-      longer provided.<!--directed where? TR: REVISED, PLS REVIEW.--></para>
+      <para>스프링은 iBATIS 2.x를 지원한다. iBATIS 1.x 지원 클래스들은 더이상 제공하지
+      않는다.<!--directed where? TR: REVISED, PLS REVIEW.--></para>
     </note>
 
     <section id="orm-ibatis-setup">
-      <title>Setting up the <classname>SqlMapClient</classname></title>
+      <title><classname>SqlMapClient</classname> 설정하기</title>
 
-      <para>Using iBATIS SQL Maps involves creating SqlMap configuration files
-      containing statements and result maps. Spring takes care of loading
-      those using the <classname>SqlMapClientFactoryBean</classname>. For the
-      examples we will be using the following <classname>Account</classname>
-      class:</para>
+      <para>iBATIS SQL Map을 사용한다는 것은 스테이트먼트와 리절트맵을 포하함 SqlMap 설정 파일을
+      생성하는 것을 포함한다. <classname>SqlMapClientFactoryBean</classname>를 사용해서
+      스프링이 이러한 것들을 로딩하는 것을 담당한다. 예를 들어 다음의 <classname>Account</classname>
+      클래스를 사용할 것이다.</para>
 
       <programlisting language="xml">public class Account {
 
     private String name;
-    private String email; 
+    private String email;
 
     public String getName() {
         return this.name;
     }
- 
+
     public void setName(String name) {
         this.name = name;
     }
@@ -1872,11 +1622,10 @@ TR: REVISED, PLS REVIEW. Should be *inside your war*. --><!-- </para>
     }
 }</programlisting>
 
-      <para>To map this <classname>Account</classname> class<!--*previous account class*:Identify the account class and the section you're talking about 
+      <para>이 <classname>Account</classname> 클래스를 iBATIS 2.x에 매핑하려면<!--*previous account class*:Identify the account class and the section you're talking about
 TR: REVISED, PLS REVIEW. The Account class was part of the iBATIS 1.0 examples that were dropped a long time ago. No one has complained.
-Makes you wonder if anyone actually reads thes docs :)--> with iBATIS 2.x we
-      need to create the following SQL map
-      <filename>Account.xml</filename>:</para>
+Makes you wonder if anyone actually reads thes docs :)-->
+      다음의 SQL 맵 <filename>Account.xml</filename>를 생성해야 한다.</para>
 
       <programlisting language="xml">&lt;sqlMap namespace="Account"&gt;
 
@@ -1897,7 +1646,7 @@ Makes you wonder if anyone actually reads thes docs :)--> with iBATIS 2.x we
 
 &lt;/sqlMap&gt;</programlisting>
 
-      <para>The configuration file for iBATIS 2 looks like this:</para>
+      <para>iBATIS 2에 대한 설정파일은 다음과 같을 것이다.</para>
 
       <programlisting language="xml">&lt;sqlMapConfig&gt;
 
@@ -1905,16 +1654,14 @@ Makes you wonder if anyone actually reads thes docs :)--> with iBATIS 2.x we
 
 &lt;/sqlMapConfig&gt;</programlisting>
 
-      <para>Remember that iBATIS loads resources from the class path, so be
-      sure to add the<filename>Account.xml</filename> file to the class
-      path.</para>
+      <para>iBATIS가 클래스패스에서 리소스를 로딩하기 때문에 <filename>Account.xml</filename>
+      파일을 클래스패스에 두어야 한다는 것을 잊지 말아라.</para>
 
-      <para>We can use the <classname>SqlMapClientFactoryBean</classname> in
-      the Spring container. Note that with iBATIS SQL Maps 2.x, the JDBC
-      <interfacename>DataSource</interfacename> is usually specified on the
-      <classname>SqlMapClientFactoryBean</classname>, which enables lazy
-      loading. This is the configuration needed for these bean
-      definitions:<!--Need intro to this example; what's its purpose? TR: REVISED, PLS REVIEW.--></para>
+      <para>스프링 컨테이너에서 <classname>SqlMapClientFactoryBean</classname>를
+      사용할 수 있다. iBATIS SQL Map 2.x에서 JDBC
+      <interfacename>DataSource</interfacename>는 지연 로딩을 활성화하는
+      <classname>SqlMapClientFactoryBean</classname>에서 보통 지정한다. 다음은 이러한
+      빈 정의에 필요할 설정이다.<!--Need intro to this example; what's its purpose? TR: REVISED, PLS REVIEW.--></para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -1934,12 +1681,12 @@ Makes you wonder if anyone actually reads thes docs :)--> with iBATIS 2.x we
     </section>
 
     <section id="orm-ibatis-template">
-      <title>Using <classname>SqlMapClientTemplate</classname> and
-      <classname>SqlMapClientDaoSupport</classname></title>
+      <title><classname>SqlMapClientTemplate</classname>와
+      <classname>SqlMapClientDaoSupport</classname> 사용하기</title>
 
-      <para>The <classname>SqlMapClientDaoSupport</classname> class offers a
-      supporting class similar to the <classname>SqlMapDaoSupport</classname>.
-      We extend it to implement our DAO:</para>
+      <para><classname>SqlMapClientDaoSupport</classname> 클래스는
+      <classname>SqlMapDaoSupport</classname>와 유사한 지원 클래스를 제공한다.
+      DAO를 구현할 때 이 클래스를 확장한다.</para>
 
       <programlisting language="java">public class SqlMapAccountDao extends SqlMapClientDaoSupport implements AccountDao {
 
@@ -1952,11 +1699,10 @@ Makes you wonder if anyone actually reads thes docs :)--> with iBATIS 2.x we
     }
 }</programlisting>
 
-      <para>In the DAO, we use the pre-configured
-      <classname>SqlMapClientTemplate</classname> to execute the queries,
-      after setting up the <literal>SqlMapAccountDao</literal> in the
-      application context and wiring it with our
-      <literal>SqlMapClient</literal> instance:</para>
+      <para>DAO에서 쿼리를 실행하는 데 어플리케이션 컨텍스트의 <literal>SqlMapAccountDao</literal>를
+      설정하고 <literal>SqlMapAccountDao</literal>를 <literal>SqlMapClient</literal>
+      인스턴스와 연결한 후에 미리 설정된 <classname>SqlMapClientTemplate</classname>를
+      사용한다.</para>
 
       <programlisting language="xml">&lt;beans&gt;
 
@@ -1966,16 +1712,15 @@ Makes you wonder if anyone actually reads thes docs :)--> with iBATIS 2.x we
 
 &lt;/beans&gt;</programlisting>
 
-      <para>An <classname>SqlMapTemplate</classname> instance can also be
-      created manually, passing in the <literal>SqlMapClient</literal> as
-      constructor argument. The <literal>SqlMapClientDaoSupport</literal> base
-      class simply preinitializes a
-      <classname>SqlMapClientTemplate</classname> instance for us.</para>
+      <para>생성자 아규먼트로 <literal>SqlMapClient</literal>를 전달해서
+      <classname>SqlMapTemplate</classname> 인스턴스를 수동으로 만들수도 있다.
+      <literal>SqlMapClientDaoSupport</literal> 기반 클래스가 개발자들을 위해서
+      <classname>SqlMapClientTemplate</classname> 인서턴스를 미리 초기화한다.</para>
 
-      <para>The <classname>SqlMapClientTemplate</classname> offers a generic
-      <literal>execute</literal> method, taking a custom
-      <literal>SqlMapClientCallback</literal> implementation as argument. This
-      can, for example, be used for batching:</para>
+      <para><classname>SqlMapClientTemplate</classname>는 인자로 커스텀
+      <literal>SqlMapClientCallback</literal> 구현체를 받아들이는 일반적인
+      <literal>execute</literal> 메서드를 제공한다. 예를 들어 배치작업에 이를
+      사용할 수 있다.</para>
 
       <programlisting language="java">public class SqlMapAccountDao extends SqlMapClientDaoSupport implements AccountDao {
 
@@ -1991,25 +1736,23 @@ Makes you wonder if anyone actually reads thes docs :)--> with iBATIS 2.x we
     }
 }</programlisting>
 
-      <para>In general, any combination of operations offered by the native
-      <literal>SqlMapExecutor</literal> API can be used in such a callback.
-      Any thrown <literal>SQLException</literal> is converted automatically to
-      Spring's generic <classname>DataAccessException</classname>
-      hierarchy.</para>
+      <para>일반적으로 네이티브 <literal>SqlMapExecutor</literal>가 제공하는 작업의
+      어떤 조합이라도 이러한 콜백에서 사용할 수 있다. 던져진 어떤
+      <literal>SQLException</literal>이라도 스프링의 일반적인
+      <classname>DataAccessException</classname> 계층으로 자동으로 변환된다.</para>
     </section>
 
     <section id="orm-ibatis-straight">
-      <title>Implementing DAOs based on plain iBATIS API</title>
+      <title>평범한 iBATIS API에 기반한 DAO 구현하기</title>
 
-      <para>DAOs can also be written against plain iBATIS API, without any
-      Spring dependencies, directly using an injected
-      <literal>SqlMapClient</literal>. The following example shows a
-      corresponding DAO implementation:</para>
+      <para>어떤 스프링 의존성도 없이 주입된 <literal>SqlMapClient</literal>를 직접
+      사용해서 DAO를 평범한 iBATIS API로 작성할 수도 있다. 다음 예제는 이에 대응되는
+      DAO 구현체를 보여준다.</para>
 
       <programlisting language="java">public class SqlMapAccountDao implements AccountDao {
-        
+
     private SqlMapClient sqlMapClient;
-    
+
     public void setSqlMapClient(SqlMapClient sqlMapClient) {
         this.sqlMapClient = sqlMapClient;
     }
@@ -2033,14 +1776,11 @@ Makes you wonder if anyone actually reads thes docs :)--> with iBATIS 2.x we
     }
 }</programlisting>
 
-      <para>In this scenario, you need to handle the
-      <literal>SQLException</literal> thrown by the iBATIS API in a custom
-      fashion, usually by wrapping it in your own application-specific DAO
-      exception. Wiring in the application context would still look like it
-      does in the example for the
-      <classname>SqlMapClientDaoSupport</classname><!--Clarify what wiring the app context looks like. What do you mean *before*? Looks like *what* specifically? TR: REVISED, PLS REVIEW.-->,
-      due to the fact that the plain iBATIS-based DAO still follows the
-      dependency injection pattern:</para>
+      <para>이 시나리오에서 관행적인 방법으로 iBATIS API가 던진 <literal>SQLException</literal>를
+      처리해야 한다. 보통은 <literal>SQLException</literal>을 어플리케이션에 특화된 DAO
+      예외로 감싸서 처리한다. 평범한 iBATIS에 기반한 DAO가 의존성 주입패턴을 따르고 있기 때문에
+      어플리케이션 컨텍스트에서의 연결은 <classname>SqlMapClientDaoSupport</classname>
+      예제에서의 연결처럼 보인다.<!--Clarify what wiring the app context looks like. What do you mean *before*? Looks like *what* specifically? TR: REVISED, PLS REVIEW.--></para>
 
       <programlisting language="xml">&lt;beans&gt;
 
