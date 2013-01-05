@@ -3,64 +3,59 @@
  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <chapter id="oxm">
-    <title>Marshalling XML using O/X Mappers</title>
+    <title>O/X 매퍼(Mapper)를 사용한 XML 마샬링(Marshalling)</title>
 
     <section id="oxm-introduction">
-        <title>Introduction</title>
+        <title>소개</title>
         <para>
-            In this chapter, we will describe Spring's Object/XML Mapping support. Object/XML Mapping, or O/X mapping
-            for short, is the act of converting an XML document to and from an object. This conversion process is also
-            known as XML Marshalling, or XML Serialization. This chapter uses these terms interchangeably.
+            이번 장에서는 스프링의 Object/XML 매핑지원을 설명할 것이다. Object/XML 매핑(줄여서 O/X 매핑)은 XML 문서를
+            객체로 변환하거나 객체를 XML로 변환하는 행위이다. 이 변환과정은 XML 먀샬링(Marshalling)이나 XML
+            직렬화(Serialization)라고도 알려져 있다. 이번 장에서는 혼용가능한 이 용어들을 사용할 것이다.
         </para>
         <para>
-            Within the field of O/X mapping, a <emphasis>marshaller</emphasis> is responsible for serializing an 
-            object (graph) to XML. In similar fashion, an <emphasis>unmarshaller</emphasis> deserializes the XML to an
-            object graph. This XML can take the form of a DOM document, an input or output stream, or a SAX handler.
+            O/X 매핑분야에서는 <emphasis>marshaller</emphasis>가 객체(그래프)를 XML로 직렬화하는 책임을 진다.
+            유사한 방법으로 <emphasis>unmarshaller</emphasis>가 XML을 객체 그래프로 역직렬화한다.
+            이 XML은 DOM 문서나 입력 스트림, 출력 스트림, SAX 핸들러의 형식을 받을 수 있다.
         </para>
-        <para>Some of the benefits of using Spring for your O/X mapping needs are:</para>
+        <para>O/X 매핑이 필요한 곳에 스프링을 사용하는 이점이 몇가지 있다.</para>
         <formalpara>
-            <title>Ease of configuration</title>
+            <title>쉬운 설정</title>
             <para>
-                Spring's bean factory makes it easy to configure marshallers, without needing to construct JAXB context,
-                JiBX binding factories, etc. The marshallers can be configured as any other bean in your application
-                context. Additionally, XML Schema-based configuration is available for a number of marshallers, making
-                the configuration even simpler.
+                스프링의 빈 팩토리는 JAXB 컨텍스트, JiBX 바인딩 팩토리 등을 생성할 필요없이 마샬러의 설정을 쉽게한다.
+                어플리케이션 컨텍스트의 다른 빈들처럼 마살러를 설정할 수 있다. 게다가 설정을 더 쉽게 하는 XML
+                스키마기반의 설정을 다수의 마살러에도 사용할 수 있다.
             </para>
         </formalpara>
         <formalpara>
-            <title>Consistent Interfaces</title>
+            <title>일관된 인터페이스</title>
             <para>
-                Spring's O/X mapping operates through two global interfaces: the 
-                <interfacename>Marshaller</interfacename> and <interfacename>Unmarshaller</interfacename> interface. 
-                These abstractions allow you to switch O/X mapping 
-                frameworks with relative ease, with little or no changes required on the classes that do the 
-                marshalling. This approach has the additional benefit of making it possible to do XML marshalling with 
-                a mix-and-match approach (e.g. some marshalling performed using JAXB, other using XMLBeans) in a 
-                non-intrusive fashion, leveraging the strength of each technology.
+                스프링의 O/X 매핑은 두개의 전역 인터페이스 <interfacename>Marshaller</interfacename>와
+                <interfacename>Unmarshaller</interfacename>인터페이스를 통해서 수행된다. 이러한 추상화를
+                통해서 마샬링을 하는 클래스를 약간만 변경하거나 전혀 변경하지 않고 상대적으로 쉽게 O/X 매핑 프레임워크를
+                바꿀 수 있다. 이 접근은 비침투적인 방법으로 각 기술의 장점을 이용해서 믹스앤매치(mix-and-match) 접근으로
+                XML 마샬링을 할 수 있게 하는 부가적인 이점이 있다.
             </para>
         </formalpara>
         <formalpara>
-            <title>Consistent Exception Hierarchy</title>
+            <title>일관된 예외 계층</title>
             <para>
-                Spring provides a conversion from exceptions from the underlying O/X mapping tool to its own exception
-                hierarchy with the <classname>XmlMappingException</classname> as the root exception. As can be expected,
-                these runtime exceptions wrap the original exception so no information is lost.
+                스프링은 의존하는 O/X 매핑도구의 예외를 최상위(root) 예외가
+                <classname>XmlMappingException</classname>인 자신만의 예외계층으로의 변환을 제공한다.
+                기대하는 대로 이러한 런타임 예외는 원래의 예외를 감싸기 때문에 정보를 잃어버리지 않는다.
             </para>
         </formalpara>
     </section>
     <section id="oxm-marshaller-unmarshaller">
-        <title>Marshaller and Unmarshaller</title>
+        <title>마살러(Marshaller)와 언마샬러(Unmarshaller)</title>
         <para>
-            As stated in the introduction, a <emphasis>marshaller</emphasis> serializes an object to XML, and an
-            <emphasis>unmarshaller</emphasis> deserializes XML stream to an object. In this section, we will describe
-            the two Spring interfaces used for this purpose.
+            소개부분에서 얘기했듯이 <emphasis>마샬러</emphasis>는 객체를 XML롤 직렬화하고 <emphasis>언마샬러</emphasis>는
+            XML 스트림을 객체로 역직렬화한다. 이번 섹션에서 이 목적에 사용하는 스프링의 두 인터페이스를 설명할 것이다.
         </para>
         <section>
-            <title>Marshaller</title>
+            <title>마샬러</title>
             <para>
-                Spring abstracts all marshalling operations behind the 
-                <interfacename>org.springframework.oxm.Marshaller</interfacename> interface, the main methods of which 
-                is listed below.
+                스프링은 <interfacename>org.springframework.oxm.Marshaller</interfacename>
+                인터페이스뒤에 모든 마샬링 작업을 추상화한다. 여기의 주요 메서드들은 다음 목록에 나와 있다.
                 <programlisting language="java"><![CDATA[
 public interface Marshaller {
 
@@ -70,16 +65,16 @@ public interface Marshaller {
     void marshal(Object graph, Result result)
         throws XmlMappingException, IOException;
 }]]></programlisting>
-                The <interfacename>Marshaller</interfacename> interface has one main method, which marshals the given
-                object to a given <interfacename>javax.xml.transform.Result</interfacename>. Result is a tagging 
-                interface that basically represents an XML output abstraction: concrete implementations wrap various XML
-                representations, as indicated in the table below.
+                <interfacename>Marshaller</interfacename> 인터페이스는 주어진 객체를 주어진
+                <interfacename>javax.xml.transform.Result</interfacename>로 마샬링하는 하나의 메인메서드를 가진다.
+                결과는 기본적으로 XML 출력 추상화를 나타내는 태깅(tagging) 인터페이스이다.
+                구현체(concrete implementations)는 다음 표에 나타난 대로 다양한 XML 표현을 감싼다.
                 <informaltable>
                     <tgroup cols="2">
                         <thead>
                             <row>
-                                <entry><interfacename>Result</interfacename> implementation</entry>
-                                <entry>Wraps XML representation</entry>
+                                <entry><interfacename>Result</interfacename> 구현체</entry>
+                                <entry>XML 표현을 감싼다</entry>
                             </row>
                         </thead>
                         <tbody>
@@ -104,20 +99,20 @@ public interface Marshaller {
                 </informaltable>
                 <note>
                     <para>
-                        Although the <methodname>marshal()</methodname> method accepts a plain object as its first 
-                        parameter, most <classname>Marshaller</classname> implementations cannot handle arbitrary 
-                        objects. Instead, an object class must be mapped in a mapping file, marked with an annotation,
-                        registered with the marshaller, or have a common base class. Refer to the further sections
-                        in this chapter to determine how your O/X technology of choice manages this.
+                        <methodname>marshal()</methodname> 메서드가 첫 파라미터로 평범한 객체를 받기는 하지만
+                        대부분의 <classname>Marshaller</classname> 구현체는 임의의 객체들을 다룰 수는 없다.
+                        대신에 객체 클래스는 매핑 파일에서 매핑되거나 어노테이션으로 표시되거나 마샬러와 등록되거나 공통적인
+                        기반 클래스를 가져야 한다.
+                        이것을 다루는 O/X 기술을 어떻게 선택해야 하는지는 이번 장의 후반 섹션들을 참고해라.
                     </para>
                 </note>
             </para>
         </section>
         <section>
-            <title>Unmarshaller</title>
+            <title>언마샬러</title>
             <para>
-                Similar to the <interfacename>Marshaller</interfacename>, there is the 
-                <interfacename>org.springframework.oxm.Unmarshaller</interfacename> interface.
+                <interfacename>Marshaller</interfacename>와 유사하게
+                <interfacename>org.springframework.oxm.Unmarshaller</interfacename> 인터페이스가 있다.
                 <programlisting language="java"><![CDATA[
 public interface Unmarshaller {
 
@@ -127,16 +122,15 @@ public interface Unmarshaller {
     Object unmarshal(Source source)
         throws XmlMappingException, IOException;
 }]]></programlisting>
-                This interface also has one method, which reads from the given 
-                <interfacename>javax.xml.transform.Source</interfacename> (an XML input abstraction), and returns the
-                object read. As with Result, Source is a tagging interface that has three concrete implementations. Each
-                wraps a different XML representation, as indicated in the table below.
+                이 인터페이스도 주어진 <interfacename>javax.xml.transform.Source</interfacename>
+                (XML 입력 추상화)를 읽어서 읽어들인 객체를 반환하는 하나의 메서드를 가진다. 결과에 따라 Source는
+                세개의 구현체를 가진 태깅인터페이스이다. 각각은 다음 표에 나온 여러가지 XML 표현을 감싼다.
                 <informaltable>
                     <tgroup cols="2">
                         <thead>
                             <row>
-                                <entry><interfacename>Source</interfacename> implementation</entry>
-                                <entry>Wraps XML representation</entry>
+                                <entry><interfacename>Source</interfacename> 구현체</entry>
+                                <entry>XML 표현을 감싼다</entry>
                             </row>
                         </thead>
                         <tbody>
@@ -147,7 +141,7 @@ public interface Unmarshaller {
                             <row>
                                 <entry><classname>SAXSource</classname></entry>
                                 <entry>
-                                    <classname>org.xml.sax.InputSource</classname>, and
+                                    <classname>org.xml.sax.InputSource</classname>와
                                     <interfacename>org.xml.sax.XMLReader</interfacename>
                                 </entry>
                             </row>
@@ -155,7 +149,7 @@ public interface Unmarshaller {
                                 <entry><classname>StreamSource</classname></entry>
                                 <entry>
                                     <classname>java.io.File</classname>,
-                                    <classname>java.io.InputStream</classname>, or
+                                    <classname>java.io.InputStream</classname>,
                                     <classname>java.io.Reader</classname>
                                 </entry>
                             </row>
@@ -165,32 +159,31 @@ public interface Unmarshaller {
             </para>
         </section>
         <para>
-            Even though there are two separate marshalling interfaces (<interfacename>Marshaller</interfacename>
-            and <interfacename>Unmarshaller</interfacename>), all implementations found in Spring-WS implement both in
-            one class. This means that you can wire up one marshaller class and refer to it both as a marshaller and an 
-            unmarshaller in your <filename>applicationContext.xml</filename>.
+            두 개의 분리된 마샬링 인터페이스(<interfacename>Marshaller</interfacename>와
+            <interfacename>Unmarshaller</interfacename>)이 있기는 하지만 이 둘을 하나의 클래스에 구현한
+            Spring-WS에서 모든 구현체가 있다. 즉, 마샬러 클래스를 연결하고 이를
+            <filename>applicationContext.xml</filename>에서 마살러와 언마살러 둘 다로 참조할 수 있다.
         </para>
         <section>
             <title>XmlMappingException</title>
             <para>
-                Spring converts exceptions from the underlying O/X mapping tool to its own exception hierarchy with the
-                <classname>XmlMappingException</classname> as the root exception. As can be expected, these runtime
-                exceptions wrap the original exception so no information will be lost.
+                스프링은 의존하는 O/X 매핑도구의 예외를 루트 예외가 <classname>XmlMappingException</classname>인
+                자신만의 예외 계층으로 변환한다. 기대하는 대로 이러한 런타임 예외는 원래의 예외를 감싸기 때문에 잃어버리는 정보는 없다.
             </para>
             <para>
-                Additionally, the <classname>MarshallingFailureException</classname> and
-                <classname>UnmarshallingFailureException</classname> provide a distinction between marshalling and
-                unmarshalling operations, even though the underlying O/X mapping tool does not do so.
+                추가적으로 <classname>MarshallingFailureException</classname>와
+                <classname>UnmarshallingFailureException</classname>는 의존하는 O/X 매핑 도구가 마샬링 작업과
+                언마샬링 작업을 구분하지 않더라도 마살링 작업과 언마샬링 작업을 구분할 수 있게 한다.
             </para>
             <para>
-                The O/X Mapping exception hierarchy is shown in the following figure:
+                O/X 매핑 예외계층은 다음 그림에 나와있다.
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/oxm-exceptions.png" align="center"/>
                     </imageobject>
                     <caption>
                         <para>
-                            O/X Mapping exception hierarchy
+                            O/X 매핑 예외 계층
                         </para>
                     </caption>
                 </mediaobject>
@@ -198,11 +191,10 @@ public interface Unmarshaller {
         </section>
     </section>
     <section id="oxm-usage">
-        <title>Using Marshaller and Unmarshaller</title>
+        <title>마샬러(Marshaller)와 언마샬러(Unmarshaller)의 사용</title>
         <para>
-            Spring's OXM can be used for a wide variety of situations. In the following example, we will use it to
-            marshal the settings of a Spring-managed application as an XML file. We will use a simple JavaBean to
-            represent the settings:
+            스프링의 OXM을 다양한 상황에 사용할 수 있다. 다음 예제에서 XML 파일로 스프링이 관리하는 어플리케이션의 설정을
+            마샬링하는데 스프링의 OXM을 사용할 것이다. 이 설정을 표현하는데 간단한 JavaBean을 사용할 것이다.
             <programlisting language="java"><![CDATA[
 public class Settings {
     private boolean fooEnabled;
@@ -217,10 +209,10 @@ public class Settings {
 }]]></programlisting>
         </para>
         <para>
-            The application class uses this bean to store its settings. Besides a main method, the class has two
-            methods: <methodname>saveSettings()</methodname> saves the settings bean to a file named
-            <filename>settings.xml</filename>, and <methodname>loadSettings()</methodname> loads these settings again. A
-            <methodname>main()</methodname> method constructs a Spring application context, and calls these two methods.
+            어플리케이션 클래스는 어플리케이션의 설정을 저장하는데 이 빈을 사용한다. 클래스는 메인 메서드외에 두 개의 메서드를 가진다.
+            <methodname>saveSettings()</methodname>는 <filename>settings.xml</filename>라는 파일에 설정 빈을
+            저장하고 <methodname>loadSettings()</methodname>는 이러한 설정을 다시 로드한다.
+            <methodname>main()</methodname> 메서드는 스프링의 어플리케이션 컨텍스트를 생성하고 이 두 메서드를 호출한다.
             <programlisting language="java"><![CDATA[
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -279,9 +271,9 @@ public class Application {
         application.loadSettings();
     }
 }]]></programlisting>
-            The <classname>Application</classname> requires both a <property>marshaller</property>
-            and <property>unmarshaller</property> property to be set. We can do so using the following
-            <filename>applicationContext.xml</filename>:
+            <classname>Application</classname>에는 <property>marshaller</property>와
+            <property>unmarshaller</property> 프로퍼티가 둘 다 설정되어야 한다. 다음의
+            <filename>applicationContext.xml</filename>를 사용해서 이 작업을 할 수 있다.
             <programlisting language="xml"><![CDATA[
 <beans>
     <bean id="application" class="Application">
@@ -291,15 +283,15 @@ public class Application {
     <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller"/>
 </beans>
 ]]></programlisting>
-            This application context uses Castor, but we could have used any of the other marshaller instances described
-            later in this chapter. Note that Castor does not require any further configuration by default, so the bean
-            definition is rather simple. Also note that the <classname>CastorMarshaller</classname> implements both
-            <interfacename>Marshaller</interfacename> and <interfacename>Unmarshaller</interfacename>, so we can refer
-            to the <varname>castorMarshaller</varname> bean in both the <property>marshaller</property> and
-            <property>unmarshaller</property> property of the application.
+            이 어플리케이션 컨텍스트는 Castor를 사용하지만 이 장의 뒷부분에서 설명하는 다른 마샬러 인스턴스 중 어떤 것이라도 사용할 수 있다.
+            Castor는 기본적으로 더이상의 어떤 설정도 필요로 하지 않기 때문에 빈 정의가 훨씬 간단하다.
+            또한 <classname>CastorMarshaller</classname>는 <interfacename>Marshaller</interfacename>와
+            <interfacename>Unmarshaller</interfacename>를 모두 구현하고 있으므로 어플리케이션의
+            <property>marshaller</property>와 <property>unmarshaller</property> 모두에서
+            <varname>castorMarshaller</varname> 빈을 참조할 수 있다.
         </para>
         <para>
-            This sample application produces the following <filename>settings.xml</filename> file:
+            이 예제 어플리케이션은 다음의 <filename>settings.xml</filename> 파일을 만든다.
             <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <settings foo-enabled="false"/>
@@ -307,11 +299,10 @@ public class Application {
         </para>
     </section>
 	<section>
-       	<title>XML Schema-based Configuration</title>
+        <title>XML 스키마 기반의 설정</title>
        	<para>
-       		Marshallers could be configured more concisely using tags from the OXM namespace.
-       		To make these tags available, the appropriate schema has to be referenced first in the preamble of the XML configuration file.
-       		Note the 'oxm' related text below:
+       		마살러를 OXM 네임스페이스의 태그를 사용해서 더욱 간결하게 설정할 수 있다. 이러한 태그를 사용하려면
+            우선 XML 설정파일의 앞부분에 적절한 스키마를 참조해야 한다. 다음은 'oxm'과 관련된 부분이다.
        	</para>
        	<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -323,7 +314,7 @@ public class Application {
     ]]><![CDATA[http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd"]]></emphasis><![CDATA[>
 ]]></programlisting>
 		<para>
-			Currently, the following tags are available:
+			지금은 다음의 태그를 사용할 수 있다.
 			<itemizedlist>
 				<listitem>
 					<para><link linkend="oxm-jaxb2-xsd"><literal>jaxb2-marshaller</literal></link></para>
@@ -337,34 +328,33 @@ public class Application {
 			</itemizedlist>
 		</para>
 		<para>
-			Each tag will be explained in its respective marshaller's section. As an example though, here is how
-			the configuration of a JAXB2 marshaller might look like:
+            각각의 마살러 부분에서 각 태그를 설명할 것이다.
+            예제로 보자면 JAXB2 마샬러를 설정하는 방법은 다음과 같을 것이다.
 		</para>
 		<programlisting language="xml"><![CDATA[<oxm:jaxb2-marshaller id="marshaller" contextPath="org.springframework.ws.samples.airline.schema"/>]]></programlisting>
-    </section>    
+    </section>
     <section id="oxm-jaxb">
         <title>JAXB</title>
         <para>
-            The JAXB binding compiler translates a W3C XML Schema into one or more Java classes, a 
-            <filename>jaxb.properties</filename> file, and possibly some resource files. JAXB also offers a 
-            way to generate a schema from annotated Java classes.
+            JAXB 바인딩 컴파일러는 W3C XML 스키마를 하나 이상의 자바 클래스, <filename>jaxb.properties</filename> 파일,
+            어쩌면 몇몇 리소스 파일들로 변환한다. JAXB도 어노테이션이 붙은 자바 클래스에서 스키마를 생성하는 방법을 제공한다.
         </para>
         <para>
-            Spring supports the JAXB 2.0 API as XML marshalling strategies, following the
-            <interfacename>Marshaller</interfacename> and <interfacename>Unmarshaller</interfacename>
-            interfaces described in <xref linkend="oxm-marshaller-unmarshaller"/>. The corresponding integration 
-            classes reside in the <package>org.springframework.oxm.jaxb</package> package.
+            스프링은 XML 마샬링 전략으로 JAXB 2.0 API를 지원한다. 다음의 <interfacename>Marshaller</interfacename>와
+            <interfacename>Unmarshaller</interfacename>는 <xref linkend="oxm-marshaller-unmarshaller"/>에서
+            설명한다. 여기에 상응하는 통합 틀래스들은 <package>org.springframework.oxm.jaxb</package> 패키지에 있다.
         </para>
         <section id="oxm-jaxb2">
             <title>Jaxb2Marshaller</title>
             <para>
-                The <classname>Jaxb2Marshaller</classname> class implements both the Spring
-                <interfacename>Marshaller</interfacename> and <interfacename>Unmarshaller</interfacename>interface. It
-                requires a context path to operate, which you can set using the <property>contextPath</property>
-                property. The context path is a list of colon (:) separated Java package names that contain schema
-                derived classes. It also offers a <property>classesToBeBound</property> property, which allows you to set an array of 
-                classes to be supported by the marshaller. Schema validation is performed by specifying one or more 
-                schema resource to the bean, like so:
+                <classname>Jaxb2Marshaller</classname> 클래스는 스프링의
+                <interfacename>Marshaller</interfacename>와 <interfacename>Unmarshaller</interfacename>를
+                모두 구현하고 있다. <classname>Jaxb2Marshaller</classname> 클래스가 동작하려면
+                <property>contextPath</property> 프로퍼티로 설정할 수 있는 컨텍스트 경로가 필요하다. 컨텍스트 경로는
+                스키마로 만들어낸 클래스를 포함하고 있는 자바 패키지명을 콜론(:)으로 구분한 목록이다.
+                <classname>Jaxb2Marshaller</classname> 클래스는 마샬러가 지원해야 하는 클래스들의 배열을 설정할 수 있는
+                <property>classesToBeBound</property> 프로퍼티도 제공한다. 스키마 유효성확인은 다음과 같이 빈에 하나
+                이상의 스키마 리소스를 지정해서 수행한다.
             </para>
             <programlisting language="xml"><![CDATA[
 <beans>
@@ -373,7 +363,7 @@ public class Application {
         <property name="classesToBeBound">
             <list>
                 <value>org.springframework.oxm.jaxb.Flight</value>
-                <value>org.springframework.oxm.jaxb.Flights</value>                
+                <value>org.springframework.oxm.jaxb.Flights</value>
             </list>
         </property>
         <property name="schema" value="classpath:org/springframework/oxm/schema.xsd"/>
@@ -382,14 +372,14 @@ public class Application {
 
 </beans>]]></programlisting>
 			<section id="oxm-jaxb2-xsd">
-	        	<title>XML Schema-based Configuration</title>
+                <title>XML 스키마기반의 설정</title>
 	        	<para>
-	        		The <literal>jaxb2-marshaller</literal> tag configures a <classname>org.springframework.oxm.jaxb.Jaxb2Marshaller</classname>.
-	        		Here is an example:
+                    <literal>jaxb2-marshaller</literal> 태그는 <classname>org.springframework.oxm.jaxb.Jaxb2Marshaller</classname>를 설정한다.
+                    다음은 그 예제이다.
 	        	</para>
 	        	<programlisting language="xml"><![CDATA[<oxm:jaxb2-marshaller id="marshaller" contextPath="org.springframework.ws.samples.airline.schema"/>]]></programlisting>
 	        	<para>
-	        		Alternatively, the list of classes to bind can be provided to the marshaller via the <literal>class-to-be-bound</literal> child tag:
+	        		아니면 <literal>class-to-be-bound</literal> 자식태그로 바인딩해야 할 클래스의 목록을 마샬러에 제공할 수 있다.
 	        	</para>
 	        	<programlisting language="xml"><![CDATA[<oxm:jaxb2-marshaller id="marshaller">
     <oxm:class-to-be-bound name="org.springframework.ws.samples.airline.schema.Airport"/>
@@ -398,7 +388,7 @@ public class Application {
 </oxm:jaxb2-marshaller>
 	        	]]></programlisting>
 	        	<para>
-	        		Available attributes are:
+	        		사용할 수 있는 속성은 다음과 같다.
                     <informaltable>
                         <tgroup cols="3">
                         	<colspec colwidth="1.5*"/>
@@ -406,21 +396,21 @@ public class Application {
                         	<colspec colwidth="1*"/>
                             <thead>
                                 <row>
-                                    <entry>Attribute</entry>
-                                    <entry>Description</entry>
-                                    <entry>Required</entry>
+                                    <entry>속성</entry>
+                                    <entry>설명</entry>
+                                    <entry>필수여부</entry>
                                 </row>
                             </thead>
                             <tbody>
                                 <row>
                                     <entry><literal>id</literal></entry>
-                                    <entry>the id of the marshaller</entry>
-                                    <entry>no</entry>
+                                    <entry>마샬러의 아이디</entry>
+                                    <entry>필수아님</entry>
                                 </row>
                                 <row>
                                     <entry><literal>contextPath</literal></entry>
-                                    <entry>the JAXB Context path</entry>
-                                    <entry>no</entry>
+                                    <entry>JAXB 컨텍스트 경로</entry>
+                                    <entry>필수아님</entry>
                                 </row>
                             </tbody>
                         </tgroup>
@@ -432,21 +422,22 @@ public class Application {
     <section id="oxm-castor">
         <title>Castor</title>
         <para>
-            Castor XML mapping is an open source XML binding framework. It allows you to transform the data contained in
-            a java object model into/from an XML document. By default, it does not require any further configuration,
-            though a mapping file can be used to have more control over the behavior of Castor.
+            Castor XML 매핑은 오픈소스 XML 바인딩 프레임워크이다. Castor XML 매핑은 자바 객체모델에 있는 데이터를
+            XML 문서로 변환하거나 그 반대로 변환할 수 있게 한다. 기본적으로 Castor XML 매핑은 다른 어떤 설정도 필요없지만
+            Castor의 동작을 더 세밀하게 제어하려면 매핑파일을 사용해야 한다.
         </para>
         <para>
-            For more information on Castor, refer to the <ulink url="http://castor.org/xml-framework.html">
-            <citetitle>Castor web site</citetitle></ulink>. The Spring integration classes reside in the
-            <package>org.springframework.oxm.castor</package> package.
+            Castor에 대한 자세한 내용은 <ulink url="http://castor.org/xml-framework.html">
+            <citetitle>Castor 웹사이트</citetitle></ulink>를 참고해라. 스프링 통합 클래스는
+            <package>org.springframework.oxm.castor</package> 패키지에 있다.
         </para>
         <section>
             <title>CastorMarshaller</title>
             <para>
-                As with JAXB, the <classname>CastorMarshaller</classname> implements both the 
-                <interfacename>Marshaller</interfacename> and <interfacename>Unmarshaller</interfacename> interface. 
-                It can be wired up as follows:
+                JAXB로 작업할 때처럼 <classname>CastorMarshaller</classname>는
+                <interfacename>Marshaller</interfacename>와 <interfacename>Unmarshaller</interfacename>
+                인터페이스를 모두 구현하고 있다.
+                다음과 같이 연결할 수 있다.
             </para>
             <programlisting language="xml"><![CDATA[
 <beans>
@@ -459,13 +450,13 @@ public class Application {
         <section>
             <title>Mapping</title>
             <para>
-                Although it is possible to rely on Castor's default marshalling behavior, it might be necessary to have
-                more control over it. This can be accomplished using a Castor mapping file. For more information, refer
-                to <ulink url="http://castor.org/xml-mapping.html">Castor XML Mapping</ulink>.
+                Castor의 기본 마샬링 동작에 의존할 수도 있지만 그 이상의 제어를 해야할 것이다.
+                이는 Castor 매핑 파일을 사용해서 할 수 있다. 자세한 내용은
+                <ulink url="http://castor.org/xml-mapping.html">Castor XML Mapping</ulink>을 참고해라.
             </para>
             <para>
-                The mapping can be set using the <property>mappingLocation</property> resource property, indicated
-                below with a classpath resource.
+                아래에서 클래스패스 리소스를 가리키는 <property>mappingLocation</property> 리소스 프로퍼티를 사용해서
+                매핑을 설정할 수 있다.
             </para>
             <programlisting language="xml"><![CDATA[
 <beans>
@@ -480,23 +471,23 @@ public class Application {
     <section id="oxm-xmlbeans">
         <title>XMLBeans</title>
         <para>
-            XMLBeans is an XML binding tool that has full XML Schema support, and offers full XML Infoset
-            fidelity. It takes a different approach to that of most other O/X mapping frameworks, in that
-            all classes that are generated from an XML Schema are all derived from
-            <interfacename>XmlObject</interfacename>, and contain XML binding information in them.
+            XMLBeans은 XML 스키마를 완전히 지원하는 XML 바인딩 도구로 정확한 전체 XML Infoset을 제공한다. XMLBeans는 다른
+            대부분의 O/X 매핑 프레임워크들이 취하는 XML 스키마에서 생성한 모든 클래스들은
+            <interfacename>XmlObject</interfacename>로 모두 만들어지고 그 안에 XML 바인딩 정보가 들어있는 것과는
+            다른 접근을 취한다.
         </para>
         <para>
-            For more information on XMLBeans, refer to the <ulink url="http://xmlbeans.apache.org/">
-			   <citetitle>XMLBeans web site </citetitle></ulink>. The Spring-WS integration classes reside
-            in the <package>org.springframework.oxm.xmlbeans</package> package.
+            XMLBeans의 자세한 정보는 <ulink url="http://xmlbeans.apache.org/">
+            <citetitle>XMLBeans 웹사이트</citetitle></ulink>를 참고해라. Spring-WS 통합 클래스들은
+            <package>org.springframework.oxm.xmlbeans</package> 패키지에 있다.
         </para>
         <section>
             <title>XmlBeansMarshaller</title>
             <para>
-                The <classname>XmlBeansMarshaller</classname>
-                implements both the <interfacename>Marshaller</interfacename>
-                and <interfacename>Unmarshaller</interfacename>
-                interfaces. It can be configured as follows:
+                <classname>XmlBeansMarshaller</classname>는
+                <interfacename>Marshaller</interfacename>와
+                <interfacename>Unmarshaller</interfacename>를 모두
+                구현하고 있다. 다음과 같이 설정할 수 있다.
             </para>
             <programlisting language="xml"><![CDATA[
 <beans>
@@ -507,20 +498,18 @@ public class Application {
 </beans>]]></programlisting>
             <note>
                 <para>
-                    Note that the <classname>XmlBeansMarshaller</classname>
-                    can only marshal objects of type <interfacename>XmlObject</interfacename>,
-                    and not every <classname>java.lang.Object</classname>.
+                    <classname>XmlBeansMarshaller</classname>는 모든 <classname>java.lang.Object</classname>가 아니라 <interfacename>XmlObject</interfacename> 타입의 객체들만 마샬링할 수 있다.
                 </para>
             </note>
 			<section id="oxm-xmlbeans-xsd">
-	        	<title>XML Schema-based Configuration</title>
+	        	<title>XML 스키마 기반의 설정</title>
 	        	<para>
-	        		The <literal>xmlbeans-marshaller</literal> tag configures a <classname>org.springframework.oxm.xmlbeans.XmlBeansMarshaller</classname>.
-	        		Here is an example:
+                    <literal>xmlbeans-marshaller</literal> 태그는 <classname>org.springframework.oxm.xmlbeans.XmlBeansMarshaller</classname>를 설정한다.
+                    다음은 그 예제이다.
 	        	</para>
 	        	<programlisting language="xml"><![CDATA[<oxm:xmlbeans-marshaller id="marshaller"/>]]></programlisting>
 	        	<para>
-	        		Available attributes are:
+	        		사용할 수 있는 속성은 다음과 같다.
                     <informaltable>
                         <tgroup cols="3">
                         	<colspec colwidth="1.5*"/>
@@ -528,28 +517,28 @@ public class Application {
                         	<colspec colwidth="1*"/>
                             <thead>
                                 <row>
-                                    <entry>Attribute</entry>
-                                    <entry>Description</entry>
-                                    <entry>Required</entry>
+                                    <entry>속성</entry>
+                                    <entry>설명</entry>
+                                    <entry>필수여부</entry>
                                 </row>
                             </thead>
                             <tbody>
                                 <row>
                                     <entry><literal>id</literal></entry>
-                                    <entry>the id of the marshaller</entry>
-                                    <entry>no</entry>
+                                    <entry>마샬러의 아이디</entry>
+                                    <entry>필수아님</entry>
                                 </row>
                                 <row>
                                     <entry><literal>options</literal></entry>
-                                    <entry>the bean name of the XmlOptions that is to be used for this marshaller. Typically a
-                                    <classname>XmlOptionsFactoryBean</classname> definition</entry>
-                                    <entry>no</entry>
+                                    <entry>이 마샬러에 사용해야 하는 XmlOptions의 빈 이름. 보통은
+                                    <classname>XmlOptionsFactoryBean</classname> 정의이다.</entry>
+                                    <entry>필수아님</entry>
                                 </row>
                             </tbody>
                         </tgroup>
                     </informaltable>
 	        	</para>
-	        </section>            
+	        </section>
         </section>
 
 
@@ -558,25 +547,24 @@ public class Application {
     <section id="oxm-jibx">
         <title>JiBX</title>
         <para>
-            The JiBX framework offers a solution similar to that which JDO provides for ORM: a binding definition defines the
-            rules for how your Java objects are converted to or from XML. After preparing the binding and compiling the
-            classes, a JiBX binding compiler enhances the class files, and adds code to handle converting instances of
-            the classes from or to XML.
+            JiBX 프레임워크는 JDO가 ORM에 제공하는 것과 유사한 해결책을 제공한다. 즉, 바인딩 정의가 자바 객체를 XML로 변환하거나
+            XML을 자바 객체로 변환하는 방법에 대한 규칙을 정의한다. 클래스의 바인딩과 컴파일을 준비한 후에 JiBX 바인딩 컴파일러는
+            클래스의 인스턴스를 XML로 변환하거나 XML을 클래스의 인스턴스로 변하는 작업을 다루는 코드를 추가해서 클래스 파일을 개선시킨다.
         </para>
         <para>
-            For more information on JiBX, refer to the <ulink url="http://jibx.sourceforge.net/">
-            <citetitle>JiBX web site</citetitle></ulink>. The Spring integration classes reside in the
-            <package>org.springframework.oxm.jibx</package> package.
+            JiBX에 대한 자세한 내용은 <ulink url="http://jibx.sourceforge.net/">
+            <citetitle>JiBX 웹사이트</citetitle></ulink>를 참고해라. 스프링 통합 클래스들은
+            <package>org.springframework.oxm.jibx</package> 패키지에 있다.
         </para>
         <section>
             <title>JibxMarshaller</title>
             <para>
-                The <classname>JibxMarshaller</classname> class implements both the 
-                <interfacename>Marshaller</interfacename> and <interfacename>Unmarshaller</interfacename> interface.
-                To operate, it requires the name of the class to marshal in, which you can set using the
-                <property>targetClass</property> property. Optionally, you can set the binding name using the
-                <property>bindingName</property> property. In the next sample, we bind the 
-                <classname>Flights</classname> class:
+                <classname>JibxMarshaller</classname> 클래스는
+                <interfacename>Marshaller</interfacename>와 <interfacename>Unmarshaller</interfacename>
+                인터페이스를 모두 구현하고 있다. <classname>JibxMarshaller</classname> 클래스가 동작하려면
+                <property>targetClass</property> 프로퍼티를 사용해서 설정할 수 있는 마샬링할 클래스의 이름이 필요하다.
+                선택적으로 <property>bindingName</property> 프로퍼티를 사용해서 바인딩 이름을 설정할 수 있다.
+                다음 예제에서는 <classname>Flights</classname> 클래스를 바인딩한다.
             </para>
             <programlisting language="xml"><![CDATA[
 <beans>
@@ -588,19 +576,19 @@ public class Application {
     ...
 ]]></programlisting>
             <para>
-                A <classname>JibxMarshaller</classname> is configured for a single class. If you want to marshal
-                multiple classes, you have to configure multiple <classname>JibxMarshaller</classname>s with
-                different <property>targetClass</property> property values.
+                <classname>JibxMarshaller</classname>는 하나의 클래스에 설정한다. 여러 클래스를 마샬링하고 싶다면 다른
+                <property>targetClass</property> 프로퍼티 값을 가진 <classname>JibxMarshaller</classname>를
+                여러 개 설정해야 한다.
             </para>
 			<section id="oxm-jibx-xsd">
-	        	<title>XML Schema-based Configuration</title>
+	        	<title>XML 스키마에 기반한 설정</title>
 	        	<para>
-	        		The <literal>jibx-marshaller</literal> tag configures a <classname>org.springframework.oxm.jibx.JibxMarshaller</classname>.
-	        		Here is an example:
+                    <literal>jibx-marshaller</literal> 태그는 <classname>org.springframework.oxm.jibx.JibxMarshaller</classname>를 설정한다.
+                    다음은 그 예제이다.
 	        	</para>
 	        	<programlisting language="xml"><![CDATA[<oxm:jibx-marshaller id="marshaller" target-class="org.springframework.ws.samples.airline.schema.Flight"/>]]></programlisting>
 	        	<para>
-	        		Available attributes are:
+                    사용할 수 있는 속성은 다음과 같다.
                     <informaltable>
                         <tgroup cols="3">
                         	<colspec colwidth="1.5*"/>
@@ -608,51 +596,51 @@ public class Application {
                         	<colspec colwidth="1*"/>
                             <thead>
                                 <row>
-                                    <entry>Attribute</entry>
-                                    <entry>Description</entry>
-                                    <entry>Required</entry>
+                                    <entry>속성</entry>
+                                    <entry>설명</entry>
+                                    <entry>필수여부</entry>
                                 </row>
                             </thead>
                             <tbody>
                                 <row>
                                     <entry><literal>id</literal></entry>
-                                    <entry>the id of the marshaller</entry>
-                                    <entry>no</entry>
+                                    <entry>마샬러의 아이디</entry>
+                                    <entry>필수아님</entry>
                                 </row>
                                 <row>
                                     <entry><literal>target-class</literal></entry>
-                                    <entry>the target class for this marshaller</entry>
-                                    <entry>yes</entry>
+                                    <entry>이 마샬러의 대상 클래스</entry>
+                                    <entry>필수</entry>
                                 </row>
                                 <row>
                                     <entry><literal>bindingName</literal></entry>
-                                    <entry>the binding name used by this marshaller</entry>
-                                    <entry>no</entry>
+                                    <entry>이 마샬러가 사용하는 바인딩 이름</entry>
+                                    <entry>필수아님</entry>
                                 </row>
                             </tbody>
                         </tgroup>
                     </informaltable>
 	        	</para>
-	        </section>            
+	        </section>
         </section>
     </section>
     <section id="oxm-xstream">
         <title>XStream</title>
         <para>
-            XStream is a simple library to serialize objects to XML and back again. It does not require any mapping, and
-            generates clean XML.
+            XStream는 객체를 XML로 직렬화하거나 그 반대로 하는 간단한 라이브러리이다.
+            XStream는 어떤 매핑도 필요로하지 않고 깔끔한 XML을 생성한다.
         </para>
         <para>
-            For more information on XStream, refer to the <ulink url="http://xstream.codehaus.org/">
-			<citetitle>XStream web site</citetitle></ulink>. The Spring integration classes reside in the
-            <package>org.springframework.oxm.xstream</package> package.
+            XStream에 대한 자세한 정보는 <ulink url="http://xstream.codehaus.org/">
+            <citetitle>XStream 웹사이트</citetitle></ulink>를 참고해라.
+            스프링 통합 클래스들은 <package>org.springframework.oxm.xstream</package> 패키지에 있다.
         </para>
         <section>
             <title>XStreamMarshaller</title>
             <para>
-                The <classname>XStreamMarshaller</classname> does not require any configuration, and can be configured
-                in an application context directly. To further customize the XML, you can set an 
-                <emphasis>alias map</emphasis>, which consists of string aliases mapped to classes:
+                <classname>XStreamMarshaller</classname>는 어떤 설정도 필요로 하지 않고 어플리케이션 컨텍스트에서
+                직접 설정할 수 있다. XML을 추가로 커스터마이징하기 위해 클래스에 매핑된 문자열 별칭으로 이루어진
+                <emphasis>별칭 맵(alias map)</emphasis>을 설정할 수 있다.
             </para>
             <programlisting language="xml"><![CDATA[
 <beans>
@@ -669,25 +657,24 @@ public class Application {
 </beans>]]></programlisting>
             <warning>
                 <para>
-                  By default, XStream allows for arbitrary classes to be unmarshalled, which can result in security
-                  vulnerabilities.
-                  As such, it is recommended to set the <property>supportedClasses</property> property on the
-                  <classname>XStreamMarshaller</classname>, like so:
+                  기본적으로 XStream은 보안허점이 될 수도 있는 언마샬링되는 임의의 클래스들을 허용한다. 그래서 다음과 같이
+                  <classname>XStreamMarshaller</classname>에
+                  <property>supportedClasses</property> 프로퍼티를 설정하기를 권장한다.
                   <programlisting language="xml"><![CDATA[<bean id="xstreamMarshaller" class="org.springframework.oxm.xstream.XStreamMarshaller">
     <property name="supportedClasses" value="org.springframework.oxm.xstream.Flight"/>
     ...
 </bean>]]></programlisting>
-                  This will make sure that only the registered classes are eligible for unmarshalling.
+                  이는 등록된 클래스들만 언마샬링할 수 있다는 것을 보장할 것이다.
                 </para>
                 <para>
-                  Additionally, you can register <ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/oxm/xstream/XStreamMarshaller.html#setConverters(com.thoughtworks.xstream.converters.ConverterMatcher[])">
-                  custom converters</ulink> to make sure that only your supported classes can be unmarshalled.
+                  추가적으로 지원하는 클래스만 언마샬링되어야 한다는 것을 보장하기위해 <ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/oxm/xstream/XStreamMarshaller.html#setConverters(com.thoughtworks.xstream.converters.ConverterMatcher[])">
+                  커스텀 컨버터</ulink>를 등록할 수 있다.
                 </para>
             </warning>
           <note>
               <para>
-                  Note that XStream is an XML serialization library, not a data binding library. Therefore, it has
-                  limited namespace support. As such, it is rather unsuitable for usage within Web services.
+                  XStream은 XML 직렬화 라이브러리이지 데이터 바인딩 라이브러리가 아니다.
+                  그러므로 XStream은 제한된 네임스페이스를 지원한다. 그러므로 웹서비스내에서 사용하기에는 별로 알맞지 않다.
               </para>
           </note>
         </section>
