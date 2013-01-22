@@ -3,22 +3,20 @@
  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <sidebar>
-  <title>Spring Web Flow</title>
+  <title>스프링 웹 플로우(Spring Web Flow)</title>
 
-  <para>Spring Web Flow (SWF) aims to be the best solution for the management
-  of web application page flow.</para>
+  <para>스프링 웹 플로우 (SWF, Spring Web Flow)는 웹 어플리케이션 페이지 흐름을 관리하는
+  최상의 솔루션이다.</para>
 
-  <para>SWF integrates with existing frameworks like Spring MVC, Struts, and
-  JSF, in both servlet and portlet environments. If you have a business
-  process (or processes) that would benefit from a conversational model as
-  opposed to a purely request model, then SWF may be the solution.</para>
+  <para>SWF는 서블릿 환경과 포틀릿 환경에서 모두에서 스프링 MVC, 스트럿츠, JSF같은
+  프레임워크와 통합한다. 순사하게 요청 모델과는 반대로 대화식 모델의 이점을 갖는 비즈니스 처리과정을
+  가진다면 SWF가 해결책이 될 것이다.</para>
 
-  <para>SWF allows you to capture logical page flows as self-contained modules
-  that are reusable in different situations, and as such is ideal for building
-  web application modules that guide the user through controlled navigations
-  that drive business processes.</para>
+  <para>SWF는 여러 상황에서 재사용할 수 있는 내장된 모쥴처럼 논리적인 페이지 흐름을 갖을 수 있도록
+  하고 비즈니스 처리과정을 유도하는 제어된 네비게이션드로 사용자를 도와주는 웹 어플리케이션 모듈을
+  구성하는데 최적이다.</para>
 
-  <para>For more information about SWF, consult the
-  <ulink url="http://www.springframework.org/webflow">Spring Web Flow website</ulink>.
+  <para>SWF에 대한 자세한 내용은 <ulink url="http://www.springframework.org/webflow">Spring
+  Web Flow 웹사이트</ulink>를 참고해라.
   </para>
 </sidebar>
