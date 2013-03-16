@@ -2,189 +2,161 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="web-integration">
-  <title>Integrating with other web frameworks</title>
+  <title>다른 웹 프레임워크와의 통합</title>
 
   <section id="intro">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>This chapter details Spring's integration with third party web
-    frameworks such as <ulink
+    <para>이번 장에서는 <ulink
     url="http://java.sun.com/javaee/javaserverfaces/">JSF</ulink>, <ulink
     url="http://struts.apache.org/">Struts</ulink>, <ulink
-    url="http://www.opensymphony.com/webwork/">WebWork</ulink>, and <ulink
-    url="http://tapestry.apache.org/">Tapestry</ulink>.</para>
+    url="http://www.opensymphony.com/webwork/">WebWork</ulink>, <ulink
+    url="http://tapestry.apache.org/">Tapestry</ulink>같은 서드파티
+    웹 프레임워크와 스프링의 통합에 대해서 다룬다.</para>
 
     <!-- insert some content about Spring Web Flow here -->
 
     <xi:include href="swf-sidebar.xml"
                 xmlns:xi="http://www.w3.org/2001/XInclude" />
 
-    <para>One of the core value propositions of the Spring Framework is that
-    of enabling <emphasis>choice</emphasis>. In a general sense, Spring does
-    not force one to use or buy into any particular architecture, technology,
-    or methodology (although it certainly recommends some over others). This
-    freedom to pick and choose the architecture, technology, or methodology
-    that is most relevant to a developer and his or her development team is
-    arguably most evident in the web area, where Spring provides its own web
-    framework (<link linkend="mvc">Spring MVC</link>), while at the same time
-    providing integration with a number of popular third party web frameworks.
-    This allows one to continue to leverage any and all of the skills one may
-    have acquired in a particular web framework such as Struts, while at the
-    same time being able to enjoy the benefits afforded by Spring in other
-    areas such as data access, declarative transaction management, and
-    flexible configuration and application assembly.</para>
+    <para>스프링 프레임워크가 제시하는 핵심 가치 중 하나는 <emphasis>선택권</emphasis>을
+    주는 것이다. 일반적으로 스프링은 특정 아치텍처나 기술, 방법론을 사용하도록 강제하지 않는다.
+    (다른 것들보다 권장하는 것들이 있기는 하지만) 개발자나 개발팀과 가장 관련있는 아키텍처, 기술,
+    방법론을 선택할 수 있는 자유는 스프링이 스프링의 웹 프레임워크
+    (<link linkend="mvc">Spring MVC</link>)를 제공하는 동시에 다수의 인기있는 서드파티
+    웹 프레임워크과 통합을 제공하는 것은 웹 분야에서 아주 명백하다. 이는 Struts같은 특정 웹
+    프레임워크에 대해 이미 가지고 있는 스킬을 계속해서 사용하면서 동시에 데이터 접근, 선언적인
+    트랜잭션 관리, 유연한 설정과 어플리케이션 구성 부분에서 스프링이 제공하는 장점을 사용할 수
+    있게 한다.</para>
 
-    <para>Having dispensed with the woolly sales patter (c.f. the previous
-    paragraph), the remainder of this chapter will concentrate upon the meaty
-    details of integrating your favorite web framework with Spring. One thing
-    that is often commented upon by developers coming to Java from other
-    languages is the seeming super-abundance of web frameworks available in
-    Java. There are indeed a great number of web frameworks in the Java
-    space; in fact there are far too many to cover with any semblance of
-    detail in a single chapter. This chapter thus picks four of the more
-    popular web frameworks in Java, starting with the Spring configuration
-    that is common to all of the supported web frameworks, and then detailing
-    the specific integration options for each supported web framework.</para>
-    
+    <para>이번 장에서는 스프링과 선호하는 웹프레임워크와의 통합에 대해서 아주 자세하게 다룰 것이다.
+    다른 언어에서 자바로 넘어온 개발자들은 자바 분야에서는 엄청나게 많은 웹프레임워크를 사용할 수
+    있다고 종종 이야기한다. 사실 이러한 프레임워크의 세세한 내용을 하나의 장에서 다 다루기에는 내용이
+    너무 많다. 그래서 이번 장에서는 자바에서 인기있는 네가지 웹 프레임워크를 골랐고 지원하는 모든
+    웹프레임워크에 공동되는 스프링 설정부터 시작해서 지원하는 각 웹 프레임워크에 대한 통합 옵션에
+    대한 자세한 내용을 다룬다.</para>
+
     <note>
-        <para>Please note that this chapter does not attempt to explain
-        how to use any of the supported web frameworks. For example, if you want
-        to use Struts for the presentation layer of your web application, the
-        assumption is that you are already familiar with Struts. If you need
-        further details about any of the supported web frameworks themselves,
-        please do consult <xref linkend="web-integration-resources" /> at the end
-        of this chapter.
+        <para>이번 장에서는 지원하는 웹 프레임워크를 어떻게 사용하는지는 설명하지 않는다. 예를
+        들어 웹 어플리케이션에서 표현 계층으로 Struts를 사용하고자 한다면 이미 Struts에
+        익숙하다고 가정한다. 지원하는 웹 프레임워크 자체에 대한 자세한 내용은 이번 장 마지막에 있는
+        <xref linkend="web-integration-resources" />를 참고해라.
         </para>
     </note>
 
   </section>
 
   <section id="web-integration-common">
-    <title>Common configuration</title>
+    <title>공통 설정</title>
 
-    <para>Before diving into the integration specifics of each supported web
-    framework, let us first take a look at the Spring configuration that is
-    <emphasis>not</emphasis> specific to any one web framework. (This section
-    is equally applicable to Spring's own web framework, Spring MVC.)</para>
+    <para>지원하는 각 웹 프레임워크의 통합과 관련해서 구체적으로 들어가기 전에 특정 웹 프레임워크에
+    한정되지 <emphasis>않은</emphasis> 스프링 설정을 먼저 보자.(이번 섹션은 스프링의 웹
+    프레임워크인 스프링 MVC에도 동일하게 적용할 수 있다.)</para>
 
-    <para>One of the concepts (for want of a better word) espoused by
-    (Spring's) lightweight application model is that of a layered
-    architecture. Remember that in a 'classic' layered architecture, the web
-    layer is but one of many layers; it serves as one of the entry points
-    into a server side application and it delegates to service objects
-    (facades) defined in a service layer to satisfy business specific (and
-    presentation-technology agnostic) use cases. In Spring, these service
-    objects, any other business-specific objects, data access objects, etc.
-    exist in a distinct 'business context', which contains
-    <emphasis>no</emphasis> web or presentation layer objects (presentation
-    objects such as Spring MVC controllers are typically configured in a
-    distinct 'presentation context'). This section details how one configures
-    a Spring container (a <classname>WebApplicationContext</classname>) that
-    contains all of the 'business beans' in one's application.</para>
+    <para>(스프링의) 경량 어플리케이션 모델이 지지하는 개념(더 좋은 단어를 찾지 못했다) 중 하나는
+    계층화된 아키텍처이다. '전통적인' 계층화된 아키텍처에서 웹 계층은 많은 계층 중에 하나라는 것을
+    기억해라. 웹 계층은 서버측의 진입점 중 하나이면서 비즈니스에 특화된(그러면서 표현기술과는 상관없이)
+    사용사례를 만족시키기 위해 서비스 계층에 정의된 서비스 객체(퍼사드)에 위임한다. 스프링에서는 이러한
+    서비스 객체, 비즈니스에 특화된 객체. 데이터접근 객체 등은 웹 계층이나 표현계층 객체(스프링 MVC
+    컨트롤러같은 표현 객체는 보통 별도의 '표현(presentation) 컨텍스트'에 설정한다)를 담고 있지
+    <emphasis>않은</emphasis> 별개의 '비즈니스 컨텍스트'에 존재한다. 이번 섹션에서는
+    어플리케이션의 모든 '비즈니즈 빈'을 담고 있는 스프링 컨테이너
+    (<classname>WebApplicationContext</classname>)를 설정하는 방법을 설명한다.</para>
 
-    <para>On to specifics: all that one need do is to declare a <ulink
-    url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/context/ContextLoaderListener.html"><classname>ContextLoaderListener</classname></ulink>
-    in the standard Java EE servlet <literal>web.xml</literal> file of one's web
-    application, and add a <literal>contextConfigLocation</literal>
-    &lt;context-param/&gt; section (in the same file) that defines which set
-    of Spring XML configuration files to load.</para>
+    <para>구체적으로 들어가서 모든 어플리케이션은 웹 어플리케이션의 표준 Java EE 서블릿
+    <literal>web.xml</literal>에서 <ulink
+    url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/context/ContextLoaderListener.html"><classname>ContextLoaderListener</classname></ulink>를
+    선언하고 로딩해야하는 스프링 XML 설정파일들을 정의하는
+    <literal>contextConfigLocation</literal> &lt;context-param/&gt;
+    부분(같은 파일에)을 추가해야 한다.</para>
 
-    <para>Find below the &lt;listener/&gt; configuration:</para>
+    <para>다음의 &lt;listener/&gt; 설정을 봐라.</para>
 
     <programlisting language="xml">&lt;listener&gt;
   &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
 &lt;/listener&gt;</programlisting>
 
-    <para>Find below the &lt;context-param/&gt; configuration:</para>
+    <para>다음의 &lt;context-param/&gt; 설정을 봐라.</para>
 
     <programlisting language="xml">&lt;context-param&gt;
   &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
   &lt;param-value&gt;/WEB-INF/applicationContext*.xml&lt;/param-value&gt;
 &lt;/context-param&gt;</programlisting>
 
-    <para>If you don't specify the <literal>contextConfigLocation</literal>
-    context parameter, the <classname>ContextLoaderListener</classname> will
-    look for a file called <literal>/WEB-INF/applicationContext.xml</literal>
-    to load. Once the context files are loaded, Spring creates a <ulink
-    url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/context/WebApplicationContext.html"><classname>WebApplicationContext</classname></ulink>
-    object based on the bean definitions and stores it in the
-    <interface>ServletContext</interface> of the web application.</para>
+    <para><literal>contextConfigLocation</literal> 컨텍스트 파라미터를 지정하지
+    않았다면 <classname>ContextLoaderListener</classname>는 로딩할
+    <literal>/WEB-INF/applicationContext.xml</literal> 파일을 찾을 것이다. 컨텐스트
+    파일이 로딩되고 나면 빈 정의에 기반해서 <ulink
+    url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/context/WebApplicationContext.html"><classname>WebApplicationContext</classname></ulink> 객체를 생성하고
+    웹 어플리케이션의 <interface>ServletContext</interface>에 저장한다.</para>
 
-    <para>All Java web frameworks are built on top of the Servlet API, and so
-    one can use the following code snippet to get access to this 'business
-    context' <interface>ApplicationContext</interface> created by the
-    <classname>ContextLoaderListener</classname>.</para>
+    <para>모든 자바 웹 어플리케이션은 서블릿 API를 기반으로 만들어졌다. 그래서
+    <classname>ContextLoaderListener</classname>가 생성한 이 '비즈니스 컨텍스트'
+    <interface>ApplicationContext</interface>에 접근하는 다음 코드를
+    사용할 수 있다.</para>
 
     <programlisting language="java">WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(servletContext);</programlisting>
 
-    <para>The <ulink
-    url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/context/support/WebApplicationContextUtils.html"><classname>WebApplicationContextUtils</classname></ulink>
-    class is for convenience, so you don't have to remember the name of the
-    <interface>ServletContext</interface> attribute. Its
-    <emphasis>getWebApplicationContext()</emphasis> method will return
-    <literal>null</literal> if an object doesn't exist under the
+    <para><ulink
+    url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/context/support/WebApplicationContextUtils.html"><classname>WebApplicationContextUtils</classname></ulink> 클래스는 평의상 제공되는 클래스이므로
+    <interface>ServletContext</interface> 속성의 이름을 기억할 필요가 없다.
     <literal>WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</literal>
-    key. Rather than risk getting <classname>NullPointerExceptions</classname>
-    in your application, it's better to use the
-    <literal>getRequiredWebApplicationContext()</literal> method. This method
-    throws an exception when the <interface>ApplicationContext</interface> is
-    missing.</para>
+    키 아래 객체가 존재하지 않는다면 <classname>WebApplicationContextUtils</classname>의
+    <emphasis>getWebApplicationContext()</emphasis> 메서드는
+    <literal>null</literal>을 반환할 것이다. 어플리케이션에서
+    <classname>NullPointerExceptions</classname>를 얻는 위험보다는
+    <literal>getRequiredWebApplicationContext()</literal> 메서드를 사용하는 것이 더
+    낫다. 이 메서드는 <interface>ApplicationContext</interface>가 누락되었을 때
+    예외를 던진다.</para>
 
-    <para>Once you have a reference to the
-    <classname>WebApplicationContext</classname>, you can retrieve beans by
-    their name or type. Most developers retrieve beans by name and then cast them
-    to one of their implemented interfaces.</para>
+    <para>일단 <classname>WebApplicationContext</classname>에 대한 참조를 가지면
+    이름이나 타입으로 빈을 가져올 수 있다. 대부분의 개발자들은 이름으로 빈을 가져와서 구현한
+    인터페이스 중 하나로 빈을 캐스팅한다.</para>
 
-    <para>Fortunately, most of the frameworks in this section have simpler
-    ways of looking up beans. Not only do they make it easy to get beans from
-    a Spring container, but they also allow you to use dependency injection on
-    their controllers. Each web framework section has more detail on its
-    specific integration strategies.</para>
+    <para>다행히 이번 섹션에서 다루는 대부분의 프레임워크는 더 간단한 빈 검색방법을 가진다. 스프링
+    컨테이너에서 빈을 쉽게 가져오게 할 뿐만 아니라 컨트롤러에서 의존성 주입을 사용할 수 있게 한다.
+    더 자세한 각각의 통합 전략은 각 웹프레임워크 부분에서 다룬다.</para>
   </section>
 
   <section id="jsf">
-    <title>JavaServer Faces 1.1 and 1.2</title>
+    <title>자바서버 페이스(JavaServer Faces) 1.1와 1.2</title>
 
-    <para>JavaServer Faces (JSF) is the JCP's standard component-based,
-    event-driven web user interface framework. As of Java EE 5, it is an
-    official part of the Java EE umbrella.</para>
+    <para>자바서버 페이스(JSF, JavaServer Faces)는 컴포넌트 기반이면서 이벤트 주도인
+    JCP의 표준 웹 유저인터페이스 프레임워크이다. Java EE 5부터 JSF는 Java EE의 공식으로
+    포함되었다.</para>
 
-    <para>For a popular JSF runtime as well as for popular JSF component
-    libraries, check out the <ulink url="http://myfaces.apache.org/">Apache
-    MyFaces project</ulink>. The MyFaces project also provides common JSF
-    extensions such as <ulink
-    url="http://myfaces.apache.org/orchestra/">MyFaces Orchestra</ulink>: a
-    Spring-based JSF extension that provides rich conversation scope
-    support.</para>
+    <para>인기있는 JSF 컴포넌트 라이브러리와 JSF 런타임이 필요하다면
+    <ulink url="http://myfaces.apache.org/">Apache MyFaces 프로젝트</ulink>를
+    봐라. MyFaces 프로젝트도 풍부한 컨버세이션 범위(conversation scope)를 지원하는 스프링
+    기반의 JSF 확장인 <ulink url="http://myfaces.apache.org/orchestra/">MyFaces
+    Orchestra</ulink>같은 공통 JSF 확장을 제공한다.</para>
 
     <note>
-      <para>Spring Web Flow 2.0 provides rich JSF support through its newly
-      established Spring Faces module, both for JSF-centric usage (as
-      described in this section) and for Spring-centric usage (using JSF views
-      within a Spring MVC dispatcher). Check out the <ulink
+      <para>스프링 웹 플로우 2.0은 JSF 중심적인 사용(이번 섹션에서 설명하듯이)과 스프링 중심적인
+      사용(스프링 MVC 디스패처내에서 JSF 뷰를 사용해서)을 모두 제공하는 새롭게 만들어진 스프링
+      페이스(Faces) 모듈로 풍부한 JSF를 지원한다. 자세한 내용은 <ulink
       url="http://www.springframework.org/webflow">Spring Web Flow
-      website</ulink> for details!</para>
+      웹사이트</ulink>를 확인해라!</para>
     </note>
 
-    <para>The key element in Spring's JSF integration is the JSF 1.1
-    <classname>VariableResolver</classname> mechanism. On JSF 1.2, Spring
-    supports the <classname>ELResolver</classname> mechanism as a
-    next-generation version of JSF EL integration.</para>
+    <para>스프링의 JSF 통합의 핵심요소는 JSF 1.1
+    <classname>VariableResolver</classname> 메카니즘이다. JSF 1.2에서 스프링은 JSF
+    EL 통합의 차세대 버전처럼 <classname>ELResolver</classname> 메카니즘을
+    지원한다.</para>
 
     <section id="jsf-delegatingvariableresolver">
       <title>DelegatingVariableResolver (JSF 1.1/1.2)</title>
 
-      <para>The easiest way to integrate one's Spring middle-tier with one's
-      JSF web layer is to use the <ulink
+      <para>스프링 미들티어를 JSF 웹 계층과 통합하는 가장 쉬운 방법은 <ulink
       url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/jsf/DelegatingVariableResolver.html">
-      <classname>DelegatingVariableResolver</classname></ulink> class. To
-      configure this variable resolver in one's application, one will need to
-      edit one's <emphasis>faces-context.xml</emphasis> file. After the
-      opening <literal>&lt;faces-config/&gt;</literal> element, add an
-      <literal>&lt;application/&gt;</literal> element and a
-      <literal>&lt;variable-resolver/&gt;</literal> element within it. The
-      value of the variable resolver should reference Spring's
-      <classname>DelegatingVariableResolver</classname>; for example:</para>
+      <classname>DelegatingVariableResolver</classname></ulink> 클래스를 사용하는
+      것이다. 어플리케이션에서 이 변수리졸버(variable resolver)를 설정하려면
+      <emphasis>faces-context.xml</emphasis> 파일을 수정해야 한다.
+      <literal>&lt;faces-config/&gt;</literal> 요소를 연 뒤에 요소안에
+      <literal>&lt;application/&gt;</literal> 요소와
+      <literal>&lt;variable-resolver/&gt;</literal> 요소를 추가해라. 변수 리졸버의
+      값은 스프링의 <classname>DelegatingVariableResolver</classname>를 참조해야
+      한다. 예를 들면 다음과 같다.</para>
 
       <programlisting language="xml">&lt;faces-config&gt;
   &lt;application&gt;
@@ -198,16 +170,14 @@
   &lt;/application&gt;
 &lt;/faces-config&gt;</programlisting>
 
-      <para>The <classname>DelegatingVariableResolver</classname> will first
-      delegate value lookups to the default resolver of the underlying JSF
-      implementation and then to Spring's 'business context'
-      <classname>WebApplicationContext</classname>. This allows one to easily
-      inject dependencies into one's JSF-managed beans.</para>
+      <para><classname>DelegatingVariableResolver</classname>는 우선 사용하는 JSF
+      구현체의 기본 리졸버에 값 검색을 위임하고 그 다음에는 스프링의 '비즈니스 컨텍스트'
+      <classname>WebApplicationContext</classname>에 위임한다. 이는 JSF과 관리하는
+      빈에 의존성을 쉽게 주입할 수 있게 한다.</para>
 
-      <para>Managed beans are defined in one's
-      <literal>faces-config.xml</literal> file. Find below an example where
-      <literal>#{userManager}</literal> is a bean that is retrieved from the
-      Spring 'business context'.</para>
+      <para>관리하는 빈은 <literal>faces-config.xml</literal> 파일에 정의한다.
+      <literal>#{userManager}</literal>이 스프링 '비즈니스 컨텍스트'에서 가져온 빈인
+      예제를 다음에서 볼 수 있다.</para>
 
       <programlisting language="xml">&lt;managed-bean&gt;
   &lt;managed-bean-name&gt;userList&lt;/managed-bean-name&gt;
@@ -223,18 +193,17 @@
     <section id="jsf-springbeanvariableresolver">
       <title>SpringBeanVariableResolver (JSF 1.1/1.2)</title>
 
-      <para><classname>SpringBeanVariableResolver</classname> is a variant of
-      <classname>DelegatingVariableResolver</classname>. It delegates to the
-      Spring's 'business context' <classname>WebApplicationContext</classname>
-      <emphasis>first</emphasis> and then to the default resolver of the
-      underlying JSF implementation. This is useful in particular when using
-      request/session-scoped beans with special Spring resolution rules, e.g.
-      Spring <interfacename>FactoryBean</interfacename>
-      implementations.</para>
+      <para><classname>SpringBeanVariableResolver</classname>는
+      <classname>DelegatingVariableResolver</classname>의 변형이다.
+      <classname>SpringBeanVariableResolver</classname>는
+      <emphasis>먼저</emphasis> 스프링의 '비즈니스 컨텍스트'
+      <classname>WebApplicationContext</classname>에 위임하고 그 다음 사용하는 JSF
+      구현체의 기본 리졸버에 위임한다. 이는 특히 전문화된 스프링 처리(resolution) 규칙을 가진
+      요청/세션 범위의 빈을 사용하는 경우 유용하다. 스프링
+      <interfacename>FactoryBean</interfacename> 구현체가 그 예이다.</para>
 
-      <para>Configuration-wise, simply define
-      <classname>SpringBeanVariableResolver</classname> in your
-      <emphasis>faces-context.xml</emphasis> file:</para>
+      <para>설정은 <emphasis>faces-context.xml</emphasis>파일에
+      <classname>SpringBeanVariableResolver</classname>를 정의해라.</para>
 
       <programlisting language="xml">&lt;faces-config&gt;
   &lt;application&gt;
@@ -247,17 +216,16 @@
     <section id="jsf-springbeanfaceselresolver">
       <title>SpringBeanFacesELResolver (JSF 1.2+)</title>
 
-      <para><classname>SpringBeanFacesELResolver</classname> is a JSF 1.2
-      compliant <classname>ELResolver</classname> implementation, integrating
-      with the standard Unified EL as used by JSF 1.2 and JSP 2.1. Like
-      <classname>SpringBeanVariableResolver</classname>, it delegates to the
-      Spring's 'business context' <classname>WebApplicationContext</classname>
-      <emphasis>first</emphasis>, then to the default resolver of the
-      underlying JSF implementation.</para>
+      <para><classname>SpringBeanFacesELResolver</classname>는 JSF 1.2를 따르는
+      <classname>ELResolver</classname> 구현체로 JSF 1.2와 JSP 2.1가 사용하는 표준
+      Unified EL와 통합한다. <classname>SpringBeanVariableResolver</classname>처럼
+      <classname>SpringBeanFacesELResolver</classname>는
+      <emphasis>먼저</emphasis> 스프링의 '비즈니스 컨텍스트'
+      <classname>WebApplicationContext</classname>에 위임하고 그 다음에 사용하는
+      JSF 구현체의 기본 리졸버에 위임한다.</para>
 
-      <para>Configuration-wise, simply define
-      <classname>SpringBeanFacesELResolver</classname> in your JSF 1.2
-      <emphasis>faces-context.xml</emphasis> file:</para>
+      <para>설정은 JSF 1.2 <emphasis>faces-context.xml</emphasis>파일에
+      <classname>SpringBeanFacesELResolver</classname>를 정의해라.</para>
 
       <programlisting language="xml">&lt;faces-config&gt;
   &lt;application&gt;
@@ -270,15 +238,15 @@
     <section id="jsf-facescontextutils">
       <title>FacesContextUtils</title>
 
-      <para>A custom <interfacename>VariableResolver</interfacename> works
-      well when mapping one's properties to beans in
-      <emphasis>faces-config.xml</emphasis>, but at times one may need to grab
-      a bean explicitly. The <ulink
+      <para><emphasis>faces-config.xml</emphasis>에서 프로퍼티를 빈에 매핑할 때 커스텀
+      <interfacename>VariableResolver</interfacename>가 잘 동작하지만 때로는 명시적으로
+      빈을 가져와야 한다. <ulink
       url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/jsf/FacesContextUtils.html">
-      <classname>FacesContextUtils</classname></ulink> class makes this easy.
-      It is similar to <classname>WebApplicationContextUtils</classname>,
-      except that it takes a <classname>FacesContext</classname> parameter
-      rather than a <interface>ServletContext</interface> parameter.</para>
+      <classname>FacesContextUtils</classname></ulink> 클래스가 이를 쉽게 해준다.
+      <classname>FacesContextUtils</classname>는
+      <interface>ServletContext</interface>파라미터 대신
+      <classname>FacesContext</classname> 파리미터를 받는다는 점을 제외하면
+      <classname>WebApplicationContextUtils</classname>와 유사하다.</para>
 
       <programlisting language="java">ApplicationContext ctx = FacesContextUtils.getWebApplicationContext(FacesContext.getCurrentInstance());</programlisting>
     </section>
@@ -287,166 +255,156 @@
   <section id="struts">
     <title>Apache Struts 1.x and 2.x</title>
 
-    <para><ulink url="http://struts.apache.org">Struts</ulink> used to be the
-    <emphasis>de facto</emphasis> web framework for Java applications, mainly
-    because it was one of the first to be released (June 2001). It has now been renamed to <emphasis>Struts 1</emphasis> 
-	(as opposed to Struts 2). Many applications still use it. 
-	Invented by Craig McClanahan, Struts is an open source project hosted by the Apache
-    Software Foundation. At the time, it greatly simplified the JSP/Servlet
-    programming paradigm and won over many developers who were using
-    proprietary frameworks. It simplified the programming model, it was open
-    source (and thus free as in beer), and it had a large community, which
-    allowed the project to grow and become popular among Java web
-    developers.</para>
+    <para><ulink url="http://struts.apache.org">Struts</ulink>는 처을 나온 웹
+    프레임워크중 하나였기 때문에(2001년 6월) 자바 어플리케이션의 <emphasis>사실상 표준(de facto)</emphasis>
+  웹 프레임워크였다. 지금은 <emphasis>Struts 1</emphasis>이름이 바뀌었다.(Struts 2와
+  대조적으로) 많은 어플리케이션이 아직도 스트럿츠를 사용한다. Craig McClanahan가 만든 스트럿츠는
+    아파치 소프트웨어 재단(Apache Software Foundation)에서 호스팅되는 오프소스 프로젝트이다.
+    그 당시에 스트럿츠는 JSP/서블릿 프로그래밍 패러다임을 엄청나게 간소화했고 자신의 프레임워크를
+    사용하는 수많은 개발자들을 끌어들였다. 스트럿츠는 프로그래밍 모델을 간소화하고 오픈소스였으며
+    (그러므로 무료다) 프로젝트가 성장하고 자바 웹 개발자사이에서 인기있게 만드는 커다란 커뮤티니를
+    가지고 있었다.</para>
 
     <note>
-      <para><emphasis>The following section discusses Struts 1 a.k.a. "Struts
-      Classic".</emphasis></para>
+      <para><emphasis>다름 섹션에서는 스트럿츠 1 가칭 "스트럿츠 클래식"을
+      설명한다.</emphasis></para>
 
-      <para>Struts 2 is effectively a different product - a successor of
-      WebWork 2.2 (as discussed in <xref linkend="webwork" />), carrying the
-      Struts brand now. Check out the Struts 2 <ulink
-      url="http://struts.apache.org/2.x/docs/spring-plugin.html">Spring
-      Plugin</ulink> for the built-in Spring integration shipped with Struts
-      2. In general, Struts 2 is closer to WebWork 2.2 than to Struts 1 in
-      terms of its Spring integration implications.</para>
+      <para>Struts 2는 사실상 완전히 다른 제품으로 WebWork 2.2
+      (<xref linkend="webwork" />에서 설명한다)의 후계자로 지금은 스트럿츠 브랜드로
+      배포된다. 스트럿츠 2에 내장된 스프링 통합과 관련해서는 스트럿츠 2 <ulink
+      url="http://struts.apache.org/2.x/docs/spring-plugin.html">스프링
+      플러그인</ulink>을 확인해 봐라. 보통 스트럿츠 2는 스프링 통합의 면에서 스트럿츠 1보다는
+      웹워크 2.2에 더 가깝다.</para>
     </note>
 
-    <para>To integrate your Struts 1.x application with Spring, you have two
-    options:</para>
+    <para>스트럿츠 1.x 어플리케이션과 스프링을 통합하기 위한 두가지 선택사항이 있다.</para>
 
     <itemizedlist>
       <listitem>
-        <para>Configure Spring to manage your Actions as beans, using the
-        <classname>ContextLoaderPlugin</classname>, and set their dependencies
-        in a Spring context file.</para>
+        <para><classname>ContextLoaderPlugin</classname>를 사용해서 스프링이
+        액션(Action)을 빈으로 관리하도록 설정하고 스프링 컨텍스트 파일에 앳션의 의존성을
+        설정한다.</para>
       </listitem>
 
       <listitem>
-        <para>Subclass Spring's <classname>ActionSupport</classname> classes
-        and grab your Spring-managed beans explicitly using a
-        <emphasis>getWebApplicationContext()</emphasis> method.</para>
+        <para>스프링의 <classname>ActionSupport</classname> 클래스의 하위클래스를
+        만들고 <emphasis>getWebApplicationContext()</emphasis> 메서드를 사용해서
+        명시적으로 스프링이 관리하는 빈을 가져온다.</para>
       </listitem>
     </itemizedlist>
 
     <section id="struts-contextloaderplugin">
       <title>ContextLoaderPlugin</title>
 
-      <para>The <ulink
-      url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/struts/ContextLoaderPlugIn.html"><classname>ContextLoaderPlugin</classname></ulink>
-      is a Struts 1.1+ plug-in that loads a Spring context file for the Struts
-      <classname>ActionServlet</classname>. This context refers to the root
-      <classname>WebApplicationContext</classname> (loaded by the
-      <classname>ContextLoaderListener</classname>) as its parent. The default
-      name of the context file is the name of the mapped servlet, plus
-      <emphasis>-servlet.xml</emphasis>. If
-      <classname>ActionServlet</classname> is defined in web.xml as
-      <literal>&lt;servlet-name&gt;action&lt;/servlet-name&gt;</literal>, the
-      default is <emphasis>/WEB-INF/action-servlet.xml</emphasis>.</para>
+      <para><ulink
+      url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/struts/ContextLoaderPlugIn.html"><classname>ContextLoaderPlugin</classname></ulink>는
+      스트럿츠 <classname>ActionServlet</classname>에 대한 스프링 컨텍스트 파일을 로드하는
+      스트럿츠 1.1+ 플러그인이다. 이 컨텐스트는 루트
+      <classname>WebApplicationContext</classname>
+      (<classname>ContextLoaderListener</classname>가 로드한)를 자신의 부모로 참조한다.
+      컨텍스트 파일의 기본 이름은 매핑된 서블릿 이름에 <emphasis>-servlet.xml</emphasis>를
+      추가한 이름이다. <classname>ActionServlet</classname>이 web.xml에
+      <literal>&lt;servlet-name&gt;action&lt;/servlet-name&gt;</literal>로
+      정의되었다면 기본 이름은
+      <emphasis>/WEB-INF/action-servlet.xml</emphasis>이다.</para>
 
-      <para>To configure this plug-in, add the following XML to the plug-ins
-      section near the bottom of your <emphasis>struts-config.xml</emphasis>
-      file:</para>
+      <para>이 플러그인을 설정하려면 <emphasis>struts-config.xml</emphasis> 파일
+      하단의 플러그인 부분에 다음 XML을 추가해라.</para>
 
       <programlisting language="xml">&lt;plug-in className="org.springframework.web.struts.ContextLoaderPlugIn"/&gt;</programlisting>
 
-      <para>The location of the context configuration files can be customized
-      using the '<literal>contextConfigLocation</literal>' property.</para>
+      <para>컨텍스트 설정 파일의 위치는 '<literal>contextConfigLocation</literal>'
+      프로퍼티를 사용해서 커스터마이징할 수 있다.</para>
 
       <programlisting language="xml">&lt;plug-in className="org.springframework.web.struts.ContextLoaderPlugIn"&gt;
   &lt;set-property property="contextConfigLocation"
       value="/WEB-INF/action-servlet.xml,/WEB-INF/applicationContext.xml"/&gt;
 &lt;/plug-in&gt;</programlisting>
 
-      <para>It is possible to use this plugin to load all your context files,
-      which can be useful when using testing tools like StrutsTestCase.
-      StrutsTestCase's <classname>MockStrutsTestCase</classname> won't
-      initialize Listeners on startup so putting all your context files in the
-      plugin is a workaround. (A <ulink
+      <para>모든 컨텍스트 파일을 로드하는데 이 플러그인을 사용할 수 있는데 StrutsTestCase같은
+      테스트도구를 사용하는 경우 유용할 수 있다. StrutsTestCase의
+      <classname>MockStrutsTestCase</classname>는 구동할 때 리스너(Listener)를
+      초기화하지 않으므로 플러그인에 모든 컨텍스트 파일을 두는 것이 우회방법이다. 이 이슈에 관한
+      <ulink
       url="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1088866&amp;group_id=39190&amp;atid=424562">
-      bug has been filed</ulink> for this issue, but has been closed as 'Wont
-      Fix').</para>
+      버그가 올라왔지만</ulink> 'Wont Fix'로 닫혔다.</para>
 
-      <para>After configuring this plug-in in
-      <emphasis>struts-config.xml</emphasis>, you can configure your
-      <classname>Action</classname> to be managed by Spring. Spring (1.1.3+)
-      provides two ways to do this:</para>
+      <para><emphasis>struts-config.xml</emphasis>에 이 플러그인을 설정한 후에는
+      <classname>Action</classname>을 스프링이 관리하도록 설정할 수 있다.
+      스프링 (1.1.3+)는 이를 위한 두가지 방법을 제공한다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>Override Struts' default
-          <classname>RequestProcessor</classname> with Spring's
-          <classname>DelegatingRequestProcessor</classname>.</para>
+          <para>스트럿츠의 기본 <classname>RequestProcessor</classname>를
+          스프링의 <classname>DelegatingRequestProcessor</classname>를
+          오버라이드한다.</para>
         </listitem>
 
         <listitem>
-          <para>Use the <classname>DelegatingActionProxy</classname> class in
-          the <literal>type</literal> attribute of your
-          <literal>&lt;action-mapping&gt;</literal>.</para>
+          <para><literal>&lt;action-mapping&gt;</literal>의
+          <literal>type</literal> 속성에
+          <classname>DelegatingActionProxy</classname> 클래스를 사용해라.</para>
         </listitem>
       </itemizedlist>
 
-      <para>Both of these methods allow you to manage your Actions and their
-      dependencies in the <emphasis>action-servlet.xml</emphasis> file. The
-      bridge between the Action in <emphasis>struts-config.xml</emphasis> and
-      <emphasis>action-servlet.xml</emphasis> is built with the
-      action-mapping's "path" and the bean's "name". If you have the following
-      in your <emphasis>struts-config.xml</emphasis> file:</para>
+      <para>이러한 두 메서드 모두 <emphasis>action-servlet.xml</emphasis>의 Action과
+      Action의 의존성을 관리할 수 있게 해준다. <emphasis>struts-config.xml</emphasis>과
+      <emphasis>action-servlet.xml</emphasis>의 Action간의 브릿지는
+      action-mapping의 "path"와 빈의 "name"으로 만들어진다.
+      <emphasis>struts-config.xml</emphasis> 파일에 다음 코드가 있다면</para>
 
       <programlisting language="xml">&lt;action path="/users" .../&gt;</programlisting>
 
-      <para>You must define that Action's bean with the "/users" name in
-      <emphasis>action-servlet.xml</emphasis>:</para>
+      <para><emphasis>action-servlet.xml</emphasis>에 "/users" 이름으로
+      Action의 빈을 정의해야 한다.</para>
 
       <programlisting language="xml">&lt;bean name="/users" .../&gt;</programlisting>
 
       <section id="struts-delegatingrequestprocessor">
         <title>DelegatingRequestProcessor</title>
 
-        <para>To configure the <ulink
+        <para><emphasis>struts-config.xml</emphasis> 파일에 <ulink
         url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/struts/DelegatingRequestProcessor.html">
-        <literal>DelegatingRequestProcessor</literal></ulink> in your
-        <emphasis>struts-config.xml</emphasis> file, override the
-        "processorClass" property in the &lt;controller&gt; element. These
-        lines follow the &lt;action-mapping&gt; element.</para>
+        <literal>DelegatingRequestProcessor</literal></ulink>를 설정하려면
+        &lt;controller&gt;요소에 "processorClass" 프로퍼티를 오버라이드해라. 이러한
+        라인은 &lt;action-mapping&gt; 요소 다음에 온다.</para>
 
         <programlisting language="xml">&lt;controller&gt;
   &lt;set-property property="processorClass"
       value="org.springframework.web.struts.DelegatingRequestProcessor"/&gt;
 &lt;/controller&gt;</programlisting>
 
-        <para>After adding this setting, your Action will automatically be
-        looked up in Spring's context file, no matter what the type. In fact,
-        you don't even need to specify a type. Both of the following snippets
-        will work:</para>
+        <para>이 설정을 추가한 후에는 타입에 상관없이 스프링 컨텍스트 파일에서 Action을
+        자동적으로 검색할 것이다. 사실 심지어 타입을 지정할 필요도 없다. 다음 두 코드 모두
+        동작할 것이다.</para>
 
         <programlisting language="xml">&lt;action path="/user" type="com.whatever.struts.UserAction"/&gt;
 &lt;action path="/user"/&gt;</programlisting>
 
-        <para>If you're using Struts' <emphasis>modules</emphasis> feature,
-        your bean names must contain the module prefix. For example, an action
-        defined as <literal>&lt;action path="/user"/&gt;</literal> with module
-        prefix "admin" requires a bean name with <literal>&lt;bean
-        name="/admin/user"/&gt;</literal>.</para>
+        <para>스트럿츠의 <emphasis>모듈</emphasis> 기능을 사용한다면 빈 이름이 모듈 접두사를
+        포함하고 있어야 한다. 예를 들어 모듈 접두사 "admin"으로
+        <literal>&lt;action path="/user"/&gt;</literal>와 같이 정의한 액션은
+        <literal>&lt;bean name="/admin/user"/&gt;</literal>라는 빈 이름을
+        필요로 한다.</para>
 
         <note>
-          <para>If you are using Tiles in your Struts application, you must
-          configure your &lt;controller&gt; with the <ulink
-          url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/struts/DelegatingTilesRequestProcessor.html"><classname>DelegatingTilesRequestProcessor</classname></ulink>
-          instead.</para>
+          <para>스트럿츠 어플리케이션에서 타일즈(Tiles)를 사용한다면 &lt;controller&gt;를
+          <ulink
+          url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/struts/DelegatingTilesRequestProcessor.html"><classname>DelegatingTilesRequestProcessor</classname></ulink>로 설정해야
+          한다.</para>
         </note>
       </section>
 
       <section id="struts-delegatingactionproxy">
         <title>DelegatingActionProxy</title>
 
-        <para>If you have a custom <classname>RequestProcessor</classname> and
-        can't use the <classname>DelegatingRequestProcessor</classname> or
-        <classname>DelegatingTilesRequestProcessor</classname> approaches, you
-        can use the <ulink
+        <para>커스텀 <classname>RequestProcessor</classname>를 가지고 있고
+        <classname>DelegatingRequestProcessor</classname>나
+        <classname>DelegatingTilesRequestProcessor</classname>의 접근을 사용할 수
+        없다면 action-mapping의 타입으로 <ulink
         url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/struts/DelegatingActionProxy.html">
-        <classname>DelegatingActionProxy</classname></ulink> as the type in
-        your action-mapping.</para>
+        <classname>DelegatingActionProxy</classname></ulink>를 사용할 수
+        있다.</para>
 
         <programlisting language="xml">&lt;action path="/user" type="org.springframework.web.struts.DelegatingActionProxy"
     name="userForm" scope="request" validate="false" parameter="method"&gt;
@@ -454,18 +412,16 @@
   &lt;forward name="edit" path="/userForm.jsp"/&gt;
 &lt;/action&gt;</programlisting>
 
-        <para>The bean definition in <emphasis>action-servlet.xml</emphasis>
-        remains the same, whether you use a custom
-        <literal>RequestProcessor</literal> or the
-        <classname>DelegatingActionProxy</classname>.</para>
+        <para>커스텀 <literal>RequestProcessor</literal>를 사용하든지
+        <classname>DelegatingActionProxy</classname>를 사용하든지 간에
+        <emphasis>action-servlet.xml</emphasis>의 빈 정의는 동일하다.</para>
 
-        <para>If you define your <classname>Action</classname> in a context
-        file, the full feature set of Spring's bean container will be
-        available for it: dependency injection as well as the option to
-        instantiate a new <classname>Action</classname> instance for each
-        request. To activate the latter, add
-        <emphasis>scope="prototype"</emphasis> to your Action's bean
-        definition.</para>
+        <para>컨텍스트 파일에 <classname>Action</classname>을 정의하면 스프링 빈
+        컨테이너의 전체 기능을 Action에 사용할 수 있다. 각 요청에 새로운
+        <classname>Action</classname> 인스턴스를 인스턴스화하는 선택권뿐만 아니라 의존성
+        주입까지 사용할 수 있다. <classname>Action</classname> 인스턴스를 인스턴스화하는
+        선택권을 활성화하려면 Action의 빈 정의에
+        <emphasis>scope="prototype"</emphasis>를 추가해라.</para>
 
         <programlisting language="xml">&lt;bean name="/user" scope="prototype" autowire="byName"
     class="org.example.web.UserAction"/&gt;</programlisting>
@@ -473,22 +429,21 @@
     </section>
 
     <section id="struts-actionsupport">
-      <title>ActionSupport Classes</title>
+      <title>ActionSupport 클래스</title>
 
-      <para>As previously mentioned, you can retrieve the
-      <classname>WebApplicationContext</classname> from the
-      <interface>ServletContext</interface> using the
-      <classname>WebApplicationContextUtils</classname> class. An easier way
-      is to extend Spring's <classname>Action</classname> classes for Struts.
-      For example, instead of subclassing Struts'
-      <classname>Action</classname> class, you can subclass Spring's <ulink
+      <para>이전에 얘기했듯이 <classname>WebApplicationContextUtils</classname>
+      클래스를 사용하는 <interface>ServletContext</interface>에서
+      <classname>WebApplicationContext</classname>를 얻어올 수 있다. 스트럿츠를 위해서
+      스프링의 <classname>Action</classname> 클래스를 확장하는 것이 가장 쉬운 방법이다.
+      예를 들어 스트럿츠의 <classname>Action</classname> 클래스의 하위클래스를 만드는 대신에
+      스프링의 <ulink
       url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/struts/ActionSupport.html">
-      <classname>ActionSupport</classname></ulink> class.</para>
+      <classname>ActionSupport</classname></ulink> 클래스의 하위클래스를
+      만들 수 있다.</para>
 
-      <para>The <classname>ActionSupport</classname> class provides additional
-      convenience methods, like
-      <emphasis>getWebApplicationContext()</emphasis>. Below is an example of
-      how you might use this in an Action:</para>
+      <para><classname>ActionSupport</classname> 클래스는
+      <emphasis>getWebApplicationContext()</emphasis>같은 편리한 메서드를 추가적으로
+      제공한다. Action에서 이 메서드를 어떻게 사용하는지 다음 예제를 보자.</para>
 
       <programlisting language="java">public class UserAction extends DispatchActionSupport {
 
@@ -501,14 +456,14 @@
         }
         WebApplicationContext ctx = getWebApplicationContext();
         UserManager mgr = (UserManager) ctx.getBean("userManager");
-        // talk to manager for business logic
+        // manager에게 비즈니스로직을 알려준다
         return mapping.findForward("success");
     }
 }</programlisting>
 
-      <para>Spring includes subclasses for all of the standard Struts Actions
-      - the Spring versions merely have <emphasis>Support</emphasis> appended
-      to the name: <itemizedlist spacing="compact">
+      <para>스프링은 모든 표준 스트럿츠 액션의 하위클래스를 가진다. 스프링의 하위클래스들은 그저
+      이름에 <emphasis>Support</emphasis>를 추가했을
+      뿐이다.  <itemizedlist spacing="compact">
           <listitem>
             <para><ulink
             url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/struts/ActionSupport.html"><classname>ActionSupport</classname></ulink>,</para>
@@ -521,8 +476,7 @@
 
           <listitem>
             <para><ulink
-            url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/struts/LookupDispatchActionSupport.html"><literal>LookupDispatchActionSupport</literal></ulink>
-            and</para>
+            url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/struts/LookupDispatchActionSupport.html"><literal>LookupDispatchActionSupport</literal></ulink>,</para>
           </listitem>
 
           <listitem>
@@ -531,126 +485,102 @@
           </listitem>
         </itemizedlist></para>
 
-      <para>The recommended strategy is to use the approach that best suits
-      your project. Subclassing makes your code more readable, and you know
-      exactly how your dependencies are resolved. In contrast, using the
-      <classname>ContextLoaderPlugin</classname> allows you to easily add new
-      dependencies in your context XML file. Either way, Spring provides some
-      nice options for integrating with Struts.</para>
+      <para>프로젝트에 가장 적합한 접근을 사용하는 것이 추천하는 전략이다. 서브클래스를 만드는 것은
+      코드의 가독성을 더 좋게 하고 의존성을 어떻게 처리해야 하는지 정확히 알고 있다. 반면에
+      <classname>ContextLoaderPlugin</classname>를 사용하는 방법은 컨텍스트 XML 파일에
+      새로운 의존성을 쉽게 추가할 수 있게 한다. 어떤 방법이든 스프링은 스트럿츠와 통합하는 좋은
+      선택권을 제공한다.</para>
     </section>
   </section>
 
   <section id="webwork">
-    <title>WebWork 2.x</title>
+    <title>웹워크(WebWork) 2.x</title>
 
-    <para>From the <ulink url="http://www.opensymphony.com/webwork/">WebWork
-    homepage</ulink>:</para>
-    
+    <para>다음은 <ulink url="http://www.opensymphony.com/webwork/">WebWork
+    홈페이지</ulink>에서 발췌한 내용이다.</para>
+
     <para>
         <quote>
-          <emphasis>WebWork is a Java web-application development framework. It is
-          built specifically with developer productivity and code simplicity in
-          mind, providing robust support for building reusable UI templates, such
-          as form controls, UI themes, internationalization, dynamic form
-          parameter mapping to JavaBeans, robust client and server side
-          validation, and much more.</emphasis>
+          <emphasis>WebWork는 자바 웹 어플리케이션 개발 프레임워크이다. 웹워크는 특히
+          개발생산성과 코드 간소화에 초점을 맞추어서 만들어졌고 폼 컨트롤, UI 테마, 국제화,
+          자바빈으로의 동적 폼 파라미터 매핑, 풍부한 클라이언트와 서버사이드 유효성 검사등의
+          재사용 가능한 UI 템플릿을 만드는 것을 강력히 지원한다.</emphasis>
         </quote>
     </para>
 
-    <para>Web work's architecture and concepts are easy to
-    understand, and the framework also has an extensive tag library as well as
-    nicely decoupled validation.</para>
+    <para>웹워크의 아키텍처와 개념은 이해하기 쉽다. 웹워크는 광범위한 태그 라이브러리와 잘
+    디커플링된 유효성검사도 가진다.</para>
 
-    <para>One of the key enablers in WebWork's technology stack is <ulink
-    url="http://www.opensymphony.com/webwork/wikidocs/IoC%20Overview.html">an
-    IoC container</ulink> to manage Webwork Actions, handle the "wiring" of
-    business objects, etc. Prior to WebWork version 2.2, WebWork used its own
-    proprietary IoC container (and provided integration points so that one
-    could integrate an IoC container such as Spring's into the mix). However,
-    as of WebWork version 2.2, the default IoC container that is used within
-    WebWork <emphasis>is</emphasis> Spring. This is obviously great news if
-    one is a Spring developer, because it means that one is immediately
-    familiar with the basics of IoC configuration, idioms, and suchlike within
-    WebWork.</para>
+    <para>웹워크 기술 스택의 핵심 중 하나는 <ulink
+    url="http://www.opensymphony.com/webwork/wikidocs/IoC%20Overview.html">IoC
+    컨테이너</ulink>이다. IoC 컨테이너가 웹워크 액션을 관리하고 비즈니스 객체의 "연결"을 다룬다.
+    웹워크 2.2 이전의 버전에서는 웹워크 자체 IoC 컨테이너를 사용했다.(그리고 스프링을 함께 사용하는
+    등의 IoC 컨테이너를 통합할 수 있는 통합 포인트를 제공했다.) 하지만 웹워크 2.2 버전 부터는
+    웹워크내에서 사용하는 기본 IoC 컨테이너가 <emphasis>스프링이다</emphasis>. 이는 웹워크에서
+    IoC 설정의 기본, 이디엄(idiom)등에 바로 익숙해 질 수 있다는 의미이므로 스프링 개발자들에게는
+    분명히 대단한 소식이다.</para>
 
-    <para>Now in the interests of adhering to the DRY (Don't Repeat Yourself)
-    principle, it would be foolish to document the Spring-WebWork integration
-    in light of the fact that the WebWork team have already written such a
-    writeup. Please consult the <ulink
-    url="http://www.opensymphony.com/webwork/wikidocs/Spring.html">Spring-WebWork
-    integration page</ulink> on the <ulink
-    url="http://wiki.opensymphony.com/display/WW/WebWork">WebWork wiki</ulink>
-    for the full lowdown.</para>
+    <para>DRY (Don't Repeat Yourself) 원칙을 따르기 위해 웹워크 팀이 이미 작성해놓았으므로
+    스프링-웹워크 통합에 대한 문서를 작성하는 것은 어리석은 일이다. 자세한 내용은 <ulink
+    url="http://wiki.opensymphony.com/display/WW/WebWork">WebWork 위키</ulink>에서
+    <ulink url="http://www.opensymphony.com/webwork/wikidocs/Spring.html">
+    Spring-WebWork 통합 페이지</ulink>를 참고해라.</para>
 
-    <para>Note that the Spring-WebWork integration code was developed (and
-    continues to be maintained and improved) by the WebWork developers
-    themselves. So please refer first to the WebWork site and forums if you are
-    having issues with the integration. But feel free to
-    post comments and queries regarding the Spring-WebWork integration on the
-    <ulink url="http://forum.springframework.org/forumdisplay.php?f=25">Spring
-    support forums</ulink>, too.</para>
+    <para>Spring-WebWork 통합 코드는 웹워크 개발자들이 직접 작성했다.(그리고 계속해서
+    유지보수하고 향상시키고 있다.) 그러므로 통합과 관련된 이슈가 있다면 웹워크 사이트와 포럼을 먼저
+    참고해라. 하지만 <ulink
+    url="http://forum.springframework.org/forumdisplay.php?f=25">Spring 지원
+    포럼</ulink>에도 스프링-웹워크 통합과 관련된 질문을 올려도 된다.</para>
   </section>
 
   <section id="tapestry">
-    <title>Tapestry 3.x and 4.x</title>
+    <title>테피스트리(Tapestry) 3.x와 4.x</title>
 
-    <para>From the <ulink url="http://tapestry.apache.org/">Tapestry
-    homepage</ulink>:</para>
-    
+    <para>다음은 <ulink url="http://tapestry.apache.org/">Tapestry
+    홈페이지</ulink>에서 발췌한 내용이다.</para>
+
     <para>
         <quote>
-          <emphasis>Tapestry is an open-source framework for creating dynamic,
-          robust, highly scalable web applications in Java. Tapestry complements
-          and builds upon the standard Java Servlet API, and so it works in any
-          servlet container or application server.</emphasis>
+          <emphasis>테피스트리는 동적이면서 튼튼하고 확장성이 좋은 자바 웹 어플리케이션을 위한
+          오픈소스 프레임워크이다. 테피스트리는 표준 자바 서블릿 API위에 만들어졌으므로 어떤
+          서블릿 컨테이너나 어플리케이션 서버와도 동작한다.</emphasis>
         </quote>
     </para>
 
-    <para>While Spring has its own <link linkend="mvc">powerful web
-    layer</link>, there are a number of unique advantages to building an
-    enterprise Java application using a combination of Tapestry for the web
-    user interface and the Spring container for the lower layers. This section
-    of the web integration chapter attempts to detail a few best practices for
-    combining these two frameworks.</para>
+    <para>스프링은 자체의 <link linkend="mvc">강력한 웹 계층</link>을 가지지만
+    웹 유저 인터페이스에는 테피스트리를 하위 계층에는 스프링 컨테이너를 섞어서 사용하는 엔터프라이즈
+    자바 어플리케이션을 만들때 여러 장점이 있다. 웹 통합 장의 이번 섹션에서는 두 프레임워크를 같이
+    사용하는 좋은 사용사례를 설명한다.</para>
 
-    <para>A <emphasis>typical</emphasis> layered enterprise Java application
-    built with Tapestry and Spring will consist of a top user interface (UI)
-    layer built with Tapestry, and a number of lower layers, all wired together
-    by one or more Spring containers. Tapestry's own reference documentation
-    contains the following snippet of best practice advice. (Text that the
-    author of this Spring section has added is contained within
-    <literal>[]</literal> brackets.)</para>
-    
+    <para>테피스트리와 스프링으로 만들어진 <emphasis>일반적인</emphasis> 계층화된 엔터프라이즈
+    자바 어플리케이션은 테피스트리로 만들어진 상위 유저 인터페이스(UI) 계층과 다수의 하위 계층을 하나
+    이상의 스프링 컨테이너로 연결해서 구성할 것이다. 테피스트리의 레퍼런스 문서에 좋은 사용사례로 다음
+    코드가 나와있다. (이 스프링 문서의 작성자가 추가한 부분은 <literal>[]</literal>안에
+    있다.)</para>
+
     <para>
         <quote>
-          <emphasis>A very succesful design pattern in Tapestry is to keep pages
-          and components very simple, and <emphasis
-          role="bold">delegate</emphasis> as much logic as possible out to
-          HiveMind [or Spring, or whatever] services. Listener methods should
-          ideally do little more than marshal together the correct information
-          and pass it over to a service.</emphasis>
+          <emphasis>테피스트리의 가장 성공적인 디자인 페턴은 페이지와 컴포넌트랄 아주 간단하게
+          유지하고 HiveMind(또는 스프링 등등) 서비스로 가능한한 많은 로직을 <emphasis
+          role="bold">위임한다</emphasis>. 리스너 메서드는 제대로된 정보를 함께 마샬링하는
+          것보다 약간 더 이상적으로 수행하고 이를 서비스에 전달한다.</emphasis>
         </quote>
     </para>
 
-    <para>The key question then is: how does one supply Tapestry pages with
-    collaborating services? The answer, ideally, is that one would want to
-    dependency inject those services directly into one's Tapestry pages. In
-    Tapestry, one can effect this dependency injection by a variety of
-    means. This section is only going to enumerate the dependency injection
-    means afforded by Spring. The real beauty of the rest of this
-    Spring-Tapestry integration is that the elegant and flexible design of
-    Tapestry itself makes doing this dependency injection of Spring-managed
-    beans a cinch. (Another nice thing is that this Spring-Tapestry
-    integration code was written - and continues to be maintained - by the
-    Tapestry creator <ulink url="http://howardlewisship.com/blog/">Howard M.
-    Lewis Ship</ulink>, so hats off to him for what is really some silky
-    smooth integration).</para>
+    <para>핵심 질문은 "어떻게 테피스트리 페이지를 연관된 서비스와 함께 제공하는가?"이고 대답은
+    이상적으로는 서비스의 테피스트리 페이지에 직접 서비스를 의존성 주입하는 것이다. 테피스트리에서
+    여러가지 방법으로 이 의존성 주입을 할 수 있다. 이번 섹션에서는 스프링이 할 수 있는 의존성 주입의
+    의미를 열거할 것이다. 이 스프링-테피스트리 통합과 관련되서 진짜 좋은 점은 테피스트리 자체의
+    세련되고 유연한 디자인이 스프링이 관리하는 빈의 의존성 주입을 쉽게 하는 것이다. (또 다른 좋은
+    점은 스프링-테피스트리 통합 코드를 테피스트리를 만든 <ulink
+    url="http://howardlewisship.com/blog/">Howard M. Lewis Ship</ulink>이 이미
+    작성했으므로 자연스러운 통합과 관련해서 Howard에게 경의를 표해야 한다.)</para>
 
     <section id="tapestry-di">
-      <title>Injecting Spring-managed beans</title>
+      <title>스프링이 관리하는 빈 주입하기</title>
 
-      <para>Assume we have the following simple Spring container definition
-      (in the ubiquitous XML format):</para>
+      <para>다음의 간단한 스프링 컨테이너 정의를 가지고 있다고 가정해 보자.
+      (XML 형식으로)</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -659,26 +589,26 @@
        xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 <emphasis role="bold">http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd"</emphasis>&gt;
- 
+
 &lt;beans&gt;
-    &lt;!-- the DataSource --&gt;
+    &lt;!-- 데이터소스 --&gt;
     &lt;jee:jndi-lookup id="dataSource" jndi-name="java:DefaultDS"/&gt;
 
-    &lt;bean id="hibSessionFactory" 
+    &lt;bean id="hibSessionFactory"
           class="org.springframework.orm.hibernate3.LocalSessionFactoryBean"&gt;
         &lt;property name="dataSource" ref="dataSource"/&gt;
     &lt;/bean&gt;
 
-    &lt;bean id="transactionManager" 
+    &lt;bean id="transactionManager"
           class="org.springframework.transaction.jta.JtaTransactionManager"/&gt;
 
-    &lt;bean id="mapper" 
+    &lt;bean id="mapper"
           class="com.whatever.dataaccess.mapper.hibernate.MapperImpl"&gt;
         &lt;property name="sessionFactory" ref="hibSessionFactory"/&gt;
     &lt;/bean&gt;
 
-    &lt;!-- (transactional) AuthenticationService --&gt;
-    &lt;bean id="authenticationService" 
+    &lt;!-- (트랜잭션이 적용된) AuthenticationService --&gt;
+    &lt;bean id="authenticationService"
           class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"&gt;
         &lt;property name="transactionManager" ref="transactionManager"/&gt;
         &lt;property name="target"&gt;
@@ -692,10 +622,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 *=PROPAGATION_REQUIRED
             &lt;/value&gt;
         &lt;/property&gt;
-    &lt;/bean&gt;  
- 
-    &lt;!-- (transactional) UserService --&gt;
-    &lt;bean id="userService" 
+    &lt;/bean&gt;
+
+    &lt;!-- (트랜잭션이 적용된) UserService --&gt;
+    &lt;bean id="userService"
           class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"&gt;
         &lt;property name="transactionManager" ref="transactionManager"/&gt;
         &lt;property name="target"&gt;
@@ -709,84 +639,72 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 *=PROPAGATION_REQUIRED
             &lt;/value&gt;
         &lt;/property&gt;
-    &lt;/bean&gt;  
- 
+    &lt;/bean&gt;
+
  &lt;/beans&gt;</programlisting>
 
-      <para>Inside the Tapestry application, the above bean definitions need
-      to be <link linkend="web-integration-common">loaded into a Spring
-      container</link>, and any relevant Tapestry pages need to be supplied
-      (injected) with the <literal>authenticationService</literal> and
-      <literal>userService</literal> beans, which implement the
-      <interfacename>AuthenticationService</interfacename> and
-      <interfacename>UserService</interfacename> interfaces,
-      respectively.</para>
+      <para>테피스트리 어플리케이션에서 위의 정의가
+      <link linkend="web-integration-common">스프링 컨테이너로 로드되어야</link> 하고
+      관계된 테피스트리 페이지에 <interfacename>AuthenticationService</interfacename>와
+      <interfacename>UserService</interfacename> 인터페이스를 각각 구현한
+      <literal>authenticationService</literal>와
+      <literal>userService</literal>를 제공해야(주입해야) 한다.</para>
 
-      <para>At this point, the application context is available to a web
-      application by calling Spring's static utility function
-      <literal>WebApplicationContextUtils.getApplicationContext(servletContext)</literal>,
-      where servletContext is the standard
-      <interface>ServletContext</interface> from the Java EE Servlet
-      specification. As such, one simple mechanism for a page to get an
-      instance of the <interfacename>UserService</interfacename>, for example,
-      would be with code such as:</para>
+      <para>이 관점에서 어플리케이션 컨텍스트는 스프링 정적 유틸리티 함수
+      <literal>WebApplicationContextUtils.getApplicationContext(servletContext)</literal>를
+      (여기서 servletContext는 Java EE 서블릿 스펙의 표준
+      <interface>ServletContext</interface>이다.) 호출해서 웹 어플리케이션에서 사용할 수
+      있다. 에를 들어 <interfacename>UserService</interfacename>의 인스턴스를 얻는
+      페이지의 간단한 메카니즘을 다음과 같이 작성할 것이다.</para>
 
       <programlisting language="java">WebApplicationContext appContext = WebApplicationContextUtils.getApplicationContext(
     getRequestCycle().getRequestContext().getServlet().getServletContext());
 UserService userService = (UserService) appContext.getBean("userService");
-<lineannotation>// ... some code which uses UserService</lineannotation></programlisting>
+<lineannotation>// ... UserService를 사용하는 코드</lineannotation></programlisting>
 
-      <para>This mechanism does work. Having said that, it can be made a lot
-      less verbose by encapsulating most of the functionality in a method in
-      the base class for the page or component. However, in some respects it
-      goes against the IoC principle; ideally you would like the page to not
-      have to ask the context for a specific bean by name, and in fact, the
-      page would ideally not know about the context at all.</para>
+      <para>이 메카니즘은 동작한다. 페이지나 컨포넌트에 대한 기반 클래스의 메서드에서 기능의
+      대부분을 은닉화해서 훨씬 덜 장황하게 만들 수 있다. 하지만 어떤 면에서 이는 IoC 원리에 반한다.
+      이상적으로 페이지는 이름으로 특정 빈을 컨텍스트에 물어보지 않아야 하고 사실상 페이지는
+      이상적으로 컨텍스트를 전혀 몰라야 한다.</para>
 
-      <para>Luckily, there is a mechanism to allow this. We rely upon the fact
-      that Tapestry already has a mechanism to declaratively add properties to
-      a page, and it is in fact the preferred approach to manage all
-      properties on a page in this declarative fashion, so that Tapestry can
-      properly manage their lifecycle as part of the page and component
-      lifecycle.</para>
+      <para>다행히 이를 가능하게 하는 메카니즘이 있다. 테피스트리가 선언적으로 페이지에 프로퍼티를
+      추가하는 메카니즘을 이미 가지고 있고 이 선언적인 방법으로 페이지의 모든 프로퍼티를 관리하는
+      것이 선호하는 접근방법이다. 그러므로 테피스트리는 페이지와 컴포넌트의 생명주기를 적절하게
+      관리할 수 있다.</para>
 
       <note>
-        <para>This next section is applicable to Tapestry 3.x. If you are
-        using Tapestry version 4.x, please consult the section entitled <xref
-        linkend="tapestry-4-style-di" />.</para>
+        <para>다음 섹션은 테피스트리 3.x에 적용된다. 테피스트리 4.x 버전을 사용한다면 <xref
+        linkend="tapestry-4-style-di" /> 부분을 참고해라.</para>
       </note>
 
       <section id="tapestry-pre4-style-di">
-        <title>Dependency Injecting Spring Beans into Tapestry pages</title>
+        <title>테피스트리 페이지에 스프링 빈 의존성 주입하기</title>
 
-        <para>First we need to make the
-        <interface>ApplicationContext</interface> available to the Tapestry
-        page or Component without having to have the
-        <interface>ServletContext</interface>; this is because at the stage in
-        the page's/component's lifecycle when we need to access the
-        <interface>ApplicationContext</interface>, the
-        <interface>ServletContext</interface> won't be easily available to the
-        page, so we can't use
-        <literal>WebApplicationContextUtils.getApplicationContext(servletContext)</literal>
-        directly. One way is by defining a custom version of the Tapestry
-        <interfacename>IEngine</interfacename> which exposes this for
-        us:</para>
+        <para>우선 <interface>ServletContext</interface>갖지 않는 테피스트리 페이지나
+        컴포넌트에서 <interface>ApplicationContext</interface>를 사용할 수 있게 해야
+        한다. <interface>ApplicationContext</interface>에 접근해야할 때 페이지나
+        컴포넌트의 생명주기에서 <interface>ServletContext</interface>는 페이지에서 쉽게
+        사용할 수 없으므로
+        <literal>WebApplicationContextUtils.getApplicationContext(servletContext)</literal>를
+        직접 사용할 수 없다. 이를 노출해주는 테피스트리
+        <interfacename>IEngine</interfacename>의 커스텀 버전을 정의하는 것이
+        한가지 방법이다. </para>
 
         <programlisting language="java">package com.whatever.web.xportal;
 
 // import ...
 
 public class MyEngine extends org.apache.tapestry.engine.BaseEngine {
- 
+
     public static final String APPLICATION_CONTEXT_KEY = "appContext";
- 
+
     /**
      * @see org.apache.tapestry.engine.AbstractEngine#setupForRequest(org.apache.tapestry.request.RequestContext)
      */
     protected void setupForRequest(RequestContext context) {
         super.setupForRequest(context);
-     
-        // insert ApplicationContext in global, if not there
+
+        // (없다면) ApplicationContext를 전역에 추가한다
         Map global = (Map) getGlobal();
         ApplicationContext ac = (ApplicationContext) global.get(APPLICATION_CONTEXT_KEY);
         if (ac == null) {
@@ -798,16 +716,15 @@ public class MyEngine extends org.apache.tapestry.engine.BaseEngine {
     }
 }</programlisting>
 
-        <para>This engine class places the Spring Application Context as an
-        attribute called "appContext" in this Tapestry app's 'Global' object.
-        Make sure to register the fact that this special IEngine instance
-        should be used for this Tapestry application, with an entry in the
-        Tapestry application definition file. For example:</para>
+        <para>이 엔진(engine) 클래스는 이 테피스트리 앱의 'Global' 객체에 "appContext"라는
+        속성으로 스프링 어플리케이션 컨텍스트를 둔다. 이 전문화된 IEngine 인스턴스가 테피스트리
+        어플리케이션 정의 파일의 엔트리로 테피스트리 어플리케이션에서 사용되도록 등록해야 한다.
+        예를 들면 다음과 같다.</para>
 
         <programlisting language="xml"><lineannotation>file: xportal.application:</lineannotation>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!DOCTYPE application PUBLIC 
-    "-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+&lt;!DOCTYPE application PUBLIC
+    "-//Apache Software Foundation//Tapestry Specification 3.0//EN"
     "http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd"&gt;
 &lt;application
     name="Whatever xPortal"
@@ -816,12 +733,12 @@ public class MyEngine extends org.apache.tapestry.engine.BaseEngine {
       </section>
 
       <section id="tapestry-componentdefs">
-        <title>Component definition files</title>
+        <title>컴포넌트 정의 파일</title>
 
-        <para>Now in our page or component definition file (*.page or *.jwc),
-        we simply add property-specification elements to grab the beans we
-        need out of the <interfacename>ApplicationContext</interfacename>, and
-        create page or component properties for them. For example:</para>
+        <para>이제 페이지나 컴포넌트 정의 파일(*.page나 *.jwc)에
+        <interfacename>ApplicationContext</interfacename> 밖에서 필요한 빈을 보관하기
+        위해서 프로퍼티-명세(property-specification) 요소를 추가하고 이에 대한 페이지나 컴포넌트 프로퍼티를 생성한다. 예를
+        들면 다음과 같다.</para>
 
         <programlisting language="xml">    &lt;property-specification name="userService"
                             type="com.whatever.services.service.user.UserService"&gt;
@@ -832,17 +749,16 @@ public class MyEngine extends org.apache.tapestry.engine.BaseEngine {
         global.appContext.getBean("authenticationService")
     &lt;/property-specification&gt;</programlisting>
 
-        <para>The OGNL expression inside the property-specification specifies
-        the initial value for the property, as a bean obtained from the
-        context. The entire page definition might look like this:</para>
+        <para>프로퍼티-명세(property-specification)내의 OGNL 표현식은 컨텍스트에서 가져온
+        빈으로 프로퍼티의 초기값을 지정한다. 전체 페이지 정의는 다음과 같을 것이다.</para>
 
         <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!DOCTYPE page-specification PUBLIC 
-    "-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+&lt;!DOCTYPE page-specification PUBLIC
+    "-//Apache Software Foundation//Tapestry Specification 3.0//EN"
     "http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd"&gt;
-     
+
 &lt;page-specification class="com.whatever.web.xportal.pages.Login"&gt;
- 
+
     &lt;property-specification name="username" type="java.lang.String"/&gt;
     &lt;property-specification name="password" type="java.lang.String"/&gt;
     &lt;property-specification name="error" type="java.lang.String"/&gt;
@@ -855,104 +771,99 @@ public class MyEngine extends org.apache.tapestry.engine.BaseEngine {
                             type="com.whatever.services.service.user.AuthenticationService"&gt;
         global.appContext.getBean("authenticationService")
     &lt;/property-specification&gt;
-   
+
     &lt;bean name="delegate" class="com.whatever.web.xportal.PortalValidationDelegate"/&gt;
- 
+
     &lt;bean name="validator" class="org.apache.tapestry.valid.StringValidator" lifecycle="page"&gt;
         &lt;set-property name="required" expression="true"/&gt;
         &lt;set-property name="clientScriptingEnabled" expression="true"/&gt;
     &lt;/bean&gt;
- 
+
     &lt;component id="inputUsername" type="ValidField"&gt;
         &lt;static-binding name="displayName" value="Username"/&gt;
         &lt;binding name="value" expression="username"/&gt;
         &lt;binding name="validator" expression="beans.validator"/&gt;
     &lt;/component&gt;
-   
+
     &lt;component id="inputPassword" type="ValidField"&gt;
         &lt;binding name="value" expression="password"/&gt;
        &lt;binding name="validator" expression="beans.validator"/&gt;
        &lt;static-binding name="displayName" value="Password"/&gt;
        &lt;binding name="hidden" expression="true"/&gt;
     &lt;/component&gt;
- 
+
 &lt;/page-specification&gt;</programlisting>
       </section>
 
       <section id="tapestry-getters">
-        <title>Adding abstract accessors</title>
+        <title>추상 접근자(accessor) 추가하기</title>
 
-        <para>Now in the Java class definition for the page or component
-        itself, all we need to do is add an abstract getter method for the
-        properties we have defined (in order to be able to access the
-        properties).</para>
+        <para>이제 페이지나 컴포넌트에 대한 자바 클래스 정의에서 정의한 프로퍼티의 추상 getter
+        메서드를 추가하는 것(프로퍼티에 접근할 수 있게 하려고)이 해야하는 일의 전부이다.</para>
 
-        <programlisting language="java">// our UserService implementation; will come from page definition
+        <programlisting language="java">// UserService 구현제. 이는 페이지 정의에서 가져올 것이다
 public abstract UserService getUserService();
-// our AuthenticationService implementation; will come from page definition
+// AuthenticationService 구현체. 이는 페이지 정의에서 가져올 것이다
 public abstract AuthenticationService getAuthenticationService();</programlisting>
 
-        <para>For the sake of completeness, the entire Java class, for a login
-        page in this example, might look like this:</para>
+        <para>이 예제의 로그인 페이지의 전체 자바 클래스는 다음과 같을 것이다.</para>
 
         <programlisting language="java">package com.whatever.web.xportal.pages;
- 
+
 /**
- *  Allows the user to login, by providing username and password.
- *  After successfully logging in, a cookie is placed on the client browser
- *  that provides the default username for future logins (the cookie
- *  persists for a week).
+ *  username과 password를 제공해서 사용자가 로그인할 수 있게 한다.
+ *  성공적으로 로그인한 뒤 클라이언트 브라우저에 차후 로그인을 위해서 기본 username을
+ *  제공하는 쿠키가 있다.(쿠키는 일주일간 유지된다)
  */
 public abstract class Login extends BasePage implements ErrorProperty, PageRenderListener {
- 
-    /** the key under which the authenticated user object is stored in the visit as */
+
+    /** 방문했을 때 인증된 사용자 객체의 키를 저장한다. */
     public static final String USER_KEY = "user";
-   
-    /** The name of the cookie that identifies a user **/
-    private static final String COOKIE_NAME = Login.class.getName() + ".username";  
+
+    /** 사용자를 식별하는 쿠키의 이름 **/
+    private static final String COOKIE_NAME = Login.class.getName() + ".username";
     private final static int ONE_WEEK = 7 * 24 * 60 * 60;
- 
+
     public abstract String getUsername();
     public abstract void setUsername(String username);
- 
+
     public abstract String getPassword();
     public abstract void setPassword(String password);
- 
+
     public abstract ICallback getCallback();
     public abstract void setCallback(ICallback value);
-    
+
     public abstract UserService getUserService();
     public abstract AuthenticationService getAuthenticationService();
- 
+
     protected IValidationDelegate getValidationDelegate() {
         return (IValidationDelegate) getBeans().getBean("delegate");
     }
- 
+
     protected void setErrorField(String componentId, String message) {
         IFormComponent field = (IFormComponent) getComponent(componentId);
         IValidationDelegate delegate = getValidationDelegate();
         delegate.setFormComponent(field);
         delegate.record(new ValidatorException(message));
     }
- 
+
     /**
-     *  Attempts to login. 
+     *  로그인을 시도한다.
      * &lt;p&gt;
-     *  If the user name is not known, or the password is invalid, then an error
-     *  message is displayed.
+     *  사용자 이름을 모르거나 비밀번호가 틀렸으면 오류 메시지를 보여준다.
      **/
     public void attemptLogin(IRequestCycle cycle) {
-     
+
         String password = getPassword();
- 
-        // Do a little extra work to clear out the password.
+
+        // 비밀번호를 제거하기 위해 약간의 작업을 한다.
         setPassword(null);
         IValidationDelegate delegate = getValidationDelegate();
- 
+
         delegate.setFormComponent((IFormComponent) getComponent("inputPassword"));
         delegate.recordFieldInputValue(null);
- 
-        // An error, from a validation field, may already have occurred.
+
+        // 유효성검사 필드에서 오류가 이미 발생했을 것이다.
         if (delegate.getHasErrors()) {
             return;
         }
@@ -966,25 +877,24 @@ public abstract class Login extends BasePage implements ErrorProperty, PageRende
             return;
         }
     }
- 
+
     /**
-     *  Sets up the {@link User} as the logged in user, creates
-     *  a cookie for their username (for subsequent logins),
-     *  and redirects to the appropriate page, or
-     *  a specified page).
+     *  {@link User}를 로그인된 유저로 설정하고
+     *  username의 쿠키를 생성하고(차후 로그인을 위해서)
+     *  적절한 페이지나 지정한 페이지로 리다이렉트한다.
      **/
     public void loginUser(User user, IRequestCycle cycle) {
-     
+
         String username = user.getUsername();
- 
-        // Get the visit object; this will likely force the
-        // creation of the visit object and an HttpSession
+
+        // 방문한 객체를 얻는다. 이는 방문한 객체(visit object)와
+        // HttpSession의 생성을 강제할 것이다.
         Map visit = (Map) getVisit();
         visit.put(USER_KEY, user);
- 
-        // After logging in, go to the MyLibrary page, unless otherwise specified
+
+        // 로그인한 뒤 별도로 지정한 것이 없다면 MyLibrary 페이지로 이동한다
         ICallback callback = getCallback();
- 
+
         if (callback == null) {
             cycle.activate("Home");
         }
@@ -996,12 +906,12 @@ public abstract class Login extends BasePage implements ErrorProperty, PageRende
         Cookie cookie = new Cookie(COOKIE_NAME, username);
         cookie.setPath(engine.getServletPath());
         cookie.setMaxAge(ONE_WEEK);
- 
-        // Record the user's username in a cookie
+
+        // 사용자의 username을 쿠키에 기록한다
         cycle.getRequestContext().addCookie(cookie);
         engine.forgetPage(getPageName());
     }
-   
+
     public void pageBeginRender(PageEvent event) {
         if (getUsername() == null) {
             setUsername(getRequestCycle().getRequestContext().getCookieValue(COOKIE_NAME));
@@ -1011,44 +921,39 @@ public abstract class Login extends BasePage implements ErrorProperty, PageRende
       </section>
 
       <section id="tapestry-4-style-di">
-        <title>Dependency Injecting Spring Beans into Tapestry pages -
-        Tapestry 4.x style</title>
+        <title>테피스트리 페이지에 스프링 빈 주입하기 - 테피스트리 4.x 방식</title>
 
-        <para>Effecting the dependency injection of Spring-managed beans into
-        Tapestry pages in Tapestry version 4.x is <emphasis>so</emphasis> much
-        simpler. All that is needed is a single <ulink
-        url="http://howardlewisship.com/tapestry-javaforge/tapestry-spring/">add-on
-        library</ulink>, and some (small) amount of (essentially boilerplate)
-        configuration. Simply package and deploy this library with the (any of
-        the) other libraries required by your web application (typically in
-        <literal>WEB-INF/lib</literal>).</para>
+        <para>테피스트리 4.x 버전에서 테피스트리 페이지에 스프링이 관리하는 빈을 의존성 주입하는
+        것은 <emphasis>훨씬</emphasis> 더 간단하다. 단일 <ulink
+        url="http://howardlewisship.com/tapestry-javaforge/tapestry-spring/">애드온
+        라이브러리</ulink>와 약간의 설정이(반드시 필요한 보일러플레이트)이 필요한 전부이다. 그냥
+        이 라이브러리를 웹 어플리케이션이 필요로 하는 다른 라이브러리(보통
+        <literal>WEB-INF/lib</literal>에)와 함께 패키징해서 배포하면 된다.</para>
 
-        <para>You will then need to create and expose the Spring container
-        using the <link linkend="web-integration-common">method detailed
-        previously</link>. You can then inject Spring-managed beans into
-        Tapestry very easily; if we are using Java 5, consider the
-        <classname>Login</classname> page from above: we simply need to
-        annotate the appropriate getter methods in order to dependency inject
-        the Spring-managed <literal>userService</literal> and
-        <literal>authenticationService</literal> objects (lots of the class
-        definition has been elided for clarity).</para>
+        <para><link linkend="web-integration-common">앞에서 설명한 메서드</link>를
+        사용해서 스프링 컨테이너를 생성하고 노출해야 한다. 그 다음에는 스프링이 관리하는 빈을 아주
+        쉽게 테피스트리에 주입할 수 있다. Java 5를 사용한다면 앞의
+        <classname>Login</classname> 페이지를 고려해 봐라. 스프링이 관리하는
+        <literal>userService</literal>와
+        <literal>authenticationService</literal> 객체(글래스 정의의 대부분은 명확함을
+        위해서 생략했다.)를 의존성 주입하기 위해서 적절한 getter 메서드에 어노테이션을
+        붙혀야 한다.</para>
 
         <programlisting language="java">package com.whatever.web.xportal.pages;
 
 public abstract class Login extends BasePage implements ErrorProperty, PageRenderListener {
-    
+
     @InjectObject("spring:userService")
     public abstract UserService getUserService();
-    
+
     @InjectObject("spring:authenticationService")
     public abstract AuthenticationService getAuthenticationService();
 
 }</programlisting>
 
-        <para>We are almost done. All that remains is the HiveMind
-        configuration that exposes the Spring container stored in the
-        <interfacename>ServletContext</interfacename> as a HiveMind service;
-        for example:</para>
+        <para>거의 다 됐다. <interfacename>ServletContext</interfacename>에
+        HiveMind 서비스로 저장된 스프링 컨테이너를 노출하는 HiveMind 설정만이 남아있다.
+        예를 들면 다음과 같다.</para>
 
         <programlisting language="xml">&lt;?xml version="1.0"?&gt;
 &lt;module id="com.javaforge.tapestry.spring" version="0.1.1"&gt;
@@ -1064,7 +969,7 @@ public abstract class Login extends BasePage implements ErrorProperty, PageRende
         &lt;/invoke-factory&gt;
     &lt;/service-point&gt;
 
-    &lt;!-- Hook the Spring setup into the overall application initialization. --&gt;
+    &lt;!-- 스프링 설정을 전체 어플리케이션 초기화과정으로 후킹한다 --&gt;
     &lt;contribution
         configuration-id="tapestry.init.ApplicationInitializers"&gt;
         &lt;command id="spring-context"
@@ -1073,58 +978,55 @@ public abstract class Login extends BasePage implements ErrorProperty, PageRende
 
 &lt;/module&gt;</programlisting>
 
-        <para>If you are using Java 5 (and thus have access to annotations),
-        then that really is it.</para>
+        <para>Java 5를 사용한다면(그러므로 어노테이션에 접근할 수 있다) 이것이
+        전부이다.</para>
 
-        <para>If you are not using Java 5, then one obviously doesn't annotate
-        one's Tapestry page classes with annotations; instead, one simply uses
-        good old fashioned XML to declare the dependency injection; for
-        example, inside the <literal>.page</literal> or
-        <literal>.jwc</literal> file for the <classname>Login</classname> page
-        (or component):</para>
+        <para>Java 5를 사용하지 않는다면 테피스트리 페이지 클래스에 어노테이션을 붙히지 않는다.
+        대신 의존성 주입을 선언하는 좋지만 구식인 XML을 사용해라. 예를 들어
+        <classname>Login</classname> 페이지(또는 컴포넌트)의
+        <literal>.page</literal>나  <literal>.jwc</literal> 파일 내부에
+        선언한다.</para>
 
         <programlisting language="xml">&lt;inject property="userService" object="spring:userService"/&gt;
 &lt;inject property="authenticationService" object="spring:authenticationService"/&gt;</programlisting>
 
-        <para>In this example, we've managed to allow service beans defined in a
-        Spring container to be provided to the Tapestry page in a declarative
-        fashion. The page class does not know where the service implementations
-        are coming from, and in fact it is easy to slip in another implementation,
-        for example, during testing. This inversion of control is one of the prime
-        goals and benefits of the Spring Framework, and we have managed to extend
-        it throughout the stack in this Tapestry application.</para>
+        <para>이 예제에서 스프링 컨테이너에 정의된 서비스 빈을 선언적인 방법으로 테피스트리 페이지에
+        제공할 수 있도록 관리한다. 페이지 클래스는 서비스 구현체가 어디서 오는지 알지 못하고 사실상
+        다른 구현체로 쉽게 넘어갈 수 있다.(예를 들면 테스트 도중에) 이 제어의 역전이 스프링
+        프레임워크의 주요 목적과 이득이다. 테피스트리 어플리케이션의 스택 전체에서 이 확장을
+        관리한다.</para>
       </section>
     </section>
 
   </section>
 
   <section id="web-integration-resources">
-    <title>Further Resources</title>
+    <title>추가 자료</title>
 
-    <para>Find below links to further resources about the various web
-    frameworks described in this chapter.</para>
+    <para>이번 장에서 설명한 여러 웹 프레임워크에 대한 추가 자료를 아래 링크에서
+    찾을 수 있다.</para>
 
     <itemizedlist>
       <listitem>
-        <para>The <ulink
+        <para><ulink
         url="http://java.sun.com/javaee/javaserverfaces/">JSF</ulink>
-        homepage</para>
+        홈페이지</para>
       </listitem>
 
       <listitem>
-        <para>The <ulink url="http://struts.apache.org/">Struts</ulink>
-        homepage</para>
+        <para><ulink url="http://struts.apache.org/">Struts</ulink>
+        홈페이지</para>
       </listitem>
 
       <listitem>
-        <para>The <ulink
+        <para><ulink
         url="http://www.opensymphony.com/webwork/">WebWork</ulink>
-        homepage</para>
+        홈페이지</para>
       </listitem>
 
       <listitem>
-        <para>The <ulink url="http://tapestry.apache.org/">Tapestry</ulink>
-        homepage</para>
+        <para><ulink url="http://tapestry.apache.org/">Tapestry</ulink>
+        홈페이지</para>
       </listitem>
     </itemizedlist>
   </section>
