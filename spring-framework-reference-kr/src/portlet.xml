@@ -3,86 +3,69 @@
  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <chapter id="portlet" xmlns:xi="http://www.w3.org/2001/XInclude">
-  <title>Portlet MVC Framework</title>
+  <title>포틀릿(Portlet) MVC 프레임워크</title>
 
   <section id="portlet-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
 
     <sidebar>
-      <title>JSR-168 The Java Portlet Specification</title>
-      <para>For more general information about portlet development, please
-      review a whitepaper from Sun entitled
-      <ulink url="http://developers.sun.com/prodtech/portalserver/reference/techart/jsr168/">"Introduction to JSR 168"</ulink>,
-      and of course the
-      <ulink url="http://jcp.org/aboutJava/communityprocess/final/jsr168/">JSR-168 Specification</ulink> itself.</para>
+      <title>JSR-168 자바 포틀릿 명세</title>
+      <para>포틀릿 개발과 관련한 일반적인 정보는 Sun이 작성한
+      <ulink url="http://developers.sun.com/prodtech/portalserver/reference/techart/jsr168/">"JSR 168 소개"</ulink>와
+      <ulink url="http://jcp.org/aboutJava/communityprocess/final/jsr168/">JSR-168 명세</ulink>를 보기 바란다.</para>
     </sidebar>
 
-    <para>In addition to supporting conventional (servlet-based) Web development,
-    Spring also supports JSR-168 Portlet development. As much as possible, the
-    Portlet MVC framework is a mirror image of the Web MVC framework, and also
-    uses the same underlying view abstractions and integration technology. So, be
-    sure to review the chapters entitled <xref linkend="mvc"/> and
-    <xref linkend="view"/> before continuing with this chapter.</para>
+    <para>전통적인 (서블릿 기반의) 웹 개발 지원에 추가적으로 스프링은 JSR-168 포틀릿 개발도
+    지원한다. 포틀릿 MVC 프레임워크는 웹 MVC 프레임워크의 복사판과도 같고 동일한 뷰 추상화와 통합
+    기술을 사용한다. 그러므로 이번 장을 읽기 전에 <xref linkend="mvc"/>장과
+    <xref linkend="view"/> 장을 읽어봐라.</para>
 
     <note>
-      <para>Bear in mind that while the concepts of Spring MVC are the
-      same in Spring Portlet MVC, there are some notable differences
-      created by the unique workflow of JSR-168 portlets.</para>
+      <para>스프링 MVC의 개념이 스프링 포틀릿 MVC에서도 동일하지만 JSR-168 포틀릿의
+      독특한 흐름(workflow)으로 생겨난 주요한 차이점이 있다는 점을 명심해라.</para>
     </note>
 
-    <para>The main way in which portlet workflow differs from servlet
-    workflow is that the request to the portlet can have two distinct
-    phases: the action phase and the render phase. The action phase is
-    executed only once and is where any 'backend' changes or actions occur,
-    such as making changes in a database. The render phase then produces
-    what is displayed to the user each time the display is refreshed.
-    The critical point here is that for a single overall request, the action
-    phase is executed only once, but the render phase may be executed
-    multiple times. This provides (and requires) a clean separation between
-    the activities that modify the persistent state of your system and the
-    activities that generate what is displayed to the user.</para>
+    <para>서블릿의 흐름과 다른 포틀릿의 흐름은 포틀릿으로의 요청이 액션(action) 단계와
+    렌더링(render) 단계의 두 단계로 구분될 수 있다는 것이다. 액션 단계는 데이터베이스의 변경같은
+    '백엔드'의 변경사항이나 액션이 일어났을 때 딱 한번만 실행된다. 그 다음 렌더링 단계가 화면을
+    갱신할 때마다 사용자에게 보여줄 내용을 만든다. 여기서 중요한 점은 하나의 전체 요청에서 액션
+    단계는 딱 한번만 실행되지만 렌더링 단계는 여러번 실행될 수 있다는 것이다. 이는 시스템의 상태를
+    변경하는 활동과 사용자에게 보여줄 내용을 생성하는 활동을 깔끔하게 구분해준다.
+    (구분해야 한다)</para>
 
     <!-- insert some content about Spring Web Flow here -->
     <xi:include href="swf-sidebar.xml"/>
 
-    <para>The dual phases of portlet requests are one of the real strengths
-    of the JSR-168 specification. For example, dynamic search results can be
-    updated routinely on the display without the user explicitly rerunning
-    the search. Most other portlet MVC frameworks attempt to completely
-    hide the two phases from the developer and make it look as much like
-    traditional servlet development as possible - we think this
-    approach removes one of the main benefits of using portlets. So, the
-    separation of the two phases is preserved throughout the Spring Portlet
-    MVC framework. The primary manifestation of this approach is that where
-    the servlet version of the MVC classes will have one method that deals
-    with the request, the portlet version of the MVC classes will have two
-    methods that deal with the request: one for the action phase and one for
-    the render phase. For example, where the servlet version of
-    <classname>AbstractController</classname> has the
-    <methodname>handleRequestInternal(..)</methodname> method, the portlet
-    version of <classname>AbstractController</classname> has
-    <methodname>handleActionRequestInternal(..)</methodname> and
-    <methodname>handleRenderRequestInternal(..)</methodname> methods.</para>
+    <para>포틀릿 요청의 이중 단계는 JSR-168 명세의 진짜 강점 중 하나이다. 예를 들어 사용자가
+    명시적으로 검색을 재실행하지 않아도 동적인 검색 결과의 화면을 언제나 갱신할 수 있다. 대부분의
+    다른 포틀릿 MVC 프레임워크는 개발자한테 이 두 단계를 완전히 감추고 가능한한 일반적인 서블릿
+    개발처럼 보이도록 한다. 스프링 개발팀은 이 접근이 포틀릿을 사용하는 주요한 이점을 없앤다고 생각한다.
+    그래서 스프링 포틀릿 MVC 프레임워크에서 두 단계의 구분은 유지된다. 이 접근방법의 주요한 영향으로
+    MVC 클래스의 서블릿 버전이 요청을 다루는 하나의 메서드를 가질 때 MVC 클래스의 포틋릿 버전은
+    요청을 다루는 두 메서드를 가질 것이다.(하나는 액션단계용이고 하나는 렌더링단계용이다.) 예를 들어
+    <classname>AbstractController</classname>의 서블릿 버전은
+    <methodname>handleRequestInternal(..)</methodname> 메서드를 가지지만
+    <classname>AbstractController</classname>의 포틀릿 버전은
+    <methodname>handleActionRequestInternal(..)</methodname>와
+    <methodname>handleRenderRequestInternal(..)</methodname> 메서드를
+    가진다.</para>
 
-    <para>The framework is designed around a
-    <classname>DispatcherPortlet</classname> that dispatches requests to
-    handlers, with configurable handler mappings and view resolution, just
-    as the <classname>DispatcherServlet</classname> in the web framework
-    does. File upload is also supported in the same way.</para>
+    <para>포틀릿 프레임워크는 웹 프레임워크에서
+    <classname>DispatcherServlet</classname>가 하듯이 요청을 핸들러로 디스패치하는
+    <classname>DispatcherPortlet</classname>을 기반으로 설계되었고 설정가능한 핸들러
+    매핑과 뷰 처리를 제공한다. 파입업로드도 같은 방법으로 지원한다.</para>
 
-    <para>Locale resolution and theme resolution are not supported in
-    Portlet MVC - these areas are in the purview of the
-    portal/portlet container and are not appropriate at the Spring level.
-    However, all mechanisms in Spring that depend on the locale (such as
-    internationalization of messages) will still function properly because
-    <classname>DispatcherPortlet</classname> exposes the current locale in
-    the same way as <classname>DispatcherServlet</classname>.</para>
+    <para>포틀릿 MVC에서는 로케일 처리와 테마 처리를 지원하지 않는다. 이 영역은
+    포탈(portal)/포틀릿 컨테이너의 범위이므로 스프링 수준에서 다루기는 적합하지 않다. 하지만
+    로케일에 기반한 스프링의 모든 메카니즘은(메시지의 국제화 등)
+    <classname>DispatcherPortlet</classname>가
+    <classname>DispatcherServlet</classname>과 같은 방법으로 현재 로케일을
+    노출하므로 기능이 제대로 동작할 것이다.</para>
 
     <section id="portlet-introduction-controller">
-      <title>Controllers - The C in MVC</title>
-      <para>The default handler is still a very simple
-      <interfacename>Controller</interfacename> interface, offering just two
-      methods:</para>
+      <title>컨트롤러 - MVC에서 C</title>
+      <para>기본 핸들러는 여전히 아주 간단한 <interfacename>Controller</interfacename>
+      인터페이스이고 두 메서드를 제공한다.</para>
       <itemizedlist>
         <listitem>
           <para><methodname>void handleActionRequest(request,response)</methodname> </para>
@@ -91,34 +74,31 @@
           <para><methodname>ModelAndView handleRenderRequest(request,response)</methodname> </para>
         </listitem>
       </itemizedlist>
-      <para>The framework also includes most of the same controller
-      implementation hierarchy, such as <classname>AbstractController</classname>,
-      <classname>SimpleFormController</classname>, and so on. Data binding,
-      command object usage, model handling, and view resolution are all the
-      same as in the servlet framework.</para>
+      <para>포틀릿 프레임워크는 <classname>AbstractController</classname>,
+      <classname>SimpleFormController</classname>처럼 거의 동일한 컨트롤러 구현체 계층을
+      가진다. 데이터 바인딩, 커맨드 객체의 사용, 모델 처리, 뷰 처리는 서블릿 프레임워크와 완전히
+      동일하다.</para>
     </section>
 
     <section id="portlet-introduction-view">
-      <title>Views - The V in MVC</title>
-      <para>All the view rendering capabilities of the servlet framework are
-      used directly via a special bridge servlet named
-      <classname>ViewRendererServlet</classname>. By using this servlet, the
-      portlet request is converted into a servlet request and the view can be
-      rendered using the entire normal servlet infrastructure. This means all
-      the existing renderers, such as JSP, Velocity, etc., can still be used
-      within the portlet.</para>
+      <title>뷰 - MVC에서 V</title>
+      <para><classname>ViewRendererServlet</classname>라는 특수한 브릿지 서블릿으로
+      서블릿 프레임워크의 모든 뷰 렌더링 기능을 직접 사용한다. 이 서블릿을 사용해서 포틀릿 요청을
+      서블릿 요청으로 변환하고 일반적인 서블릿 인프라 전체를 사용해서 뷰를 렌더링할 수 있다. 이는
+      JSP, Velocity 등 기존에 존재하는 렌더러 모두를 포틀릿에서도 계속해서 사용할 수 있음을
+      의미한다.</para>
     </section>
 
     <section id="portlet-introduction-scope">
-      <title>Web-scoped beans</title>
-      <para>Spring Portlet MVC supports beans whose lifecycle is scoped to the
-      current HTTP request or HTTP <interfacename>Session</interfacename> (both
-      normal and global). This is not a specific feature of Spring Portlet MVC
-      itself, but rather of the <interfacename>WebApplicationContext</interfacename>
-      container(s) that Spring Portlet MVC uses. These bean scopes are described
-      in detail in <xref linkend="beans-factory-scopes-other"/></para>
+      <title>웹의 범위를 갖는(Web-scoped) 빈</title>
+      <para>스프링 포틀릿 MVC는 생명주기가 현재 HTTP 요청이나 HTTP
+      <interfacename>Session</interfacename>(일반적인 세션이나 전역 세션 모두)의 범위를
+      갖는 빈을 지원한다. 이는 스프링 포틀릿 MVC 자체의 특정 기능이라기 보다는 스프링 포틀릿 MVC가
+      사용하는 <interfacename>WebApplicationContext</interfacename> 컨테이너의
+      기능이다. 이러한 빈의 범위는 <xref linkend="beans-factory-scopes-other"/>에서
+      설명한다.</para>
     </section>
-    
+
     <!--
         As of Spring 3.0.0.RC1, the PetPortal sample application is not
         included in the Spring distribution. Thus the following note is
@@ -136,19 +116,17 @@
   </section>
 
   <section id="portlet-dispatcher">
-    <title>The <classname>DispatcherPortlet</classname></title>
+    <title><classname>DispatcherPortlet</classname></title>
 
-    <para>Portlet MVC is a request-driven web MVC framework, designed around
-    a portlet that dispatches requests to controllers and offers other
-    functionality facilitating the development of portlet applications.
-    Spring's <classname>DispatcherPortlet</classname> however, does more
-    than just that. It is completely integrated with the Spring
-    <interfacename>ApplicationContext</interfacename> and allows you to use
-    every other feature Spring has.</para>
+    <para>포틀릿 MVC는 요청을 컨트롤러로 디스패치하고 포틀릿 어플리케이션을 개발하는 기반 기능을
+    제공하는 포틀릿에 기반해서 설계된 요청주도 웹 MVC 프레임워크이다. 하지만 스프링의
+    <classname>DispatcherPortlet</classname>는 이 이상을 수행한다.
+    <classname>DispatcherPortlet</classname>은 스프링
+    <interfacename>ApplicationContext</interfacename>와 완전히 통합되었고 스프링이
+    가진 모든 기능을 사용할 수 있게 한다.</para>
 
-    <para>Like ordinary portlets, the
-    <classname>DispatcherPortlet</classname> is declared in the
-    <literal>portlet.xml</literal> file of your web application:</para>
+    <para>일반적인 포틀릿처럼 <classname>DispatcherPortlet</classname>는 웹
+    어플리케이션의 <literal>portlet.xml</literal> 파일에 선언한다.</para>
 
     <programlisting language="xml"><![CDATA[<portlet>
     <portlet-name>sample</portlet-name>
@@ -162,178 +140,151 @@
     </portlet-info>
 </portlet>]]></programlisting>
 
-    <para>The <classname>DispatcherPortlet</classname> now needs to be
-    configured.</para>
+    <para>이제 <classname>DispatcherPortlet</classname>를 설정해야 한다.</para>
 
-    <para>In the Portlet MVC framework, each
-    <classname>DispatcherPortlet</classname> has its own
-    <interfacename>WebApplicationContext</interfacename>, which inherits all
-    the beans already defined in the Root
-    <interfacename>WebApplicationContext</interfacename>. These inherited
-    beans can be overridden in the portlet-specific scope, and new
-    scope-specific beans can be defined local to a given portlet instance.</para>
+    <para>포틀릿 MVC 프레임워크에서 각 <classname>DispatcherPortlet</classname>는
+    루트 <interfacename>WebApplicationContext</interfacename>에 이미 정의된 모든 빈을
+    상속받은 자신만의 <interfacename>WebApplicationContext</interfacename>를 가진다.
+    이 상속된 빈은 포틀릿에 한정된 범위에서 오버라이드할 수 있고 새로운 범위로 한정된 빈은 해당
+    포틀릿 인스턴스의 로컬로 정의할 수 있다.</para>
 
-    <para>The framework will, on initialization of a
-    <classname>DispatcherPortlet</classname>, look for a file named
-    <literal>[portlet-name]-portlet.xml</literal> in the <literal>WEB-INF</literal>
-    directory of your web application and create the beans defined there
-    (overriding the definitions of any beans defined with the same name in
-    the global scope).</para>
+    <para><classname>DispatcherPortlet</classname> 초기화시 포틀릿 MVC 프레임워크는
+    웹 어플리케이션의 <literal>WEB-INF</literal> 디렉토리에서
+    <literal>[portlet-name]-portlet.xml</literal>라는 파일을 검색해서 정의된 빈을
+    생성한다.(전역 범위에 같은 이름으로 정의된 모든 빈 정의는 오버라이드한다.)</para>
 
-    <para>The config location used by the
-    <classname>DispatcherPortlet</classname> can be modified through a
-    portlet initialization parameter (see below for details).</para>
+    <para><classname>DispatcherPortlet</classname>가 사용하는 설정 위치는
+    포틀릿 초기화 파라미터로 수정할 수 있다.(자세한 내용은 뒤에 나온다.)</para>
 
-    <para>The Spring <classname>DispatcherPortlet</classname> has a few
-    special beans it uses, in order to be able to process requests and
-    render the appropriate views. These beans are included in the Spring
-    framework and can be configured in the
-    <interfacename>WebApplicationContext</interfacename>, just as any other
-    bean would be configured. Each of those beans is described in more
-    detail below. Right now, we'll just mention them, just to let you know
-    they exist and to enable us to go on talking about the
-    <classname>DispatcherPortlet</classname>. For most of the beans,
-    defaults are provided so you don't have to worry about configuring
-    them.</para>
+    <para>스프링 <classname>DispatcherPortlet</classname>는 요청을 처리하고 적절한
+    뷰를 렌더링하는 데 사용하는 몇몇 특수한 빈을 가진다. 이러한 빈은 스프링 프레임워크에 포함되어
+    있고 설정할 다른 빈과 마찬가지로
+    <interfacename>WebApplicationContext</interfacename>에서 설정할 수 있다. 이
+    빈들은 뒤에서 각각 자세히 설명한다. 지금은 <classname>DispatcherPortlet</classname>을
+    계속 설명하기 위해서 이러한 빈이 존재한다는 것만 알아두면 된다. 대부분의 빈은 설정을 신경쓰지
+    않아도 되도록 기본값을 제공한다.</para>
 
     <table id="portlet-webappctx-special-beans-tbl">
-      <title>Special beans in the <interfacename>WebApplicationContext</interfacename></title>
+      <title><interfacename>WebApplicationContext</interfacename>의 특수한 빈</title>
       <tgroup cols="2">
         <colspec colname="c1" colwidth="1*" align="left" />
         <colspec colname="c2" colwidth="3*" />
         <thead>
           <row>
-            <entry>Expression</entry>
-            <entry>Explanation</entry>
+            <entry>표현식</entry>
+            <entry>설명</entry>
           </row>
         </thead>
         <tbody>
           <row>
             <entry>handler mapping(s)</entry>
-            <entry>(<xref linkend="portlet-handlermapping" />) a
-            list of pre- and post-processors and controllers that
-            will be executed if they match certain criteria (for
-            instance a matching portlet mode specified with the
-            controller)</entry>
+            <entry>(<xref linkend="portlet-handlermapping" />)
+            전처리자, 후처리자, 컨트롤러의 목록으로 이들이 특정 크리테리아와 일치한다면
+            실행될 것이다.(예를 들어 찾아낸 포틀릿은 모드는 컨트롤러로
+            지정된다.)</entry>
           </row>
           <row>
             <entry>controller(s)</entry>
-            <entry>(<xref linkend="portlet-controller" />) the beans
-            providing the actual functionality (or at least, access
-            to the functionality) as part of the MVC triad</entry>
+            <entry>(<xref linkend="portlet-controller" />) MVC의 일부로
+            실제 기능을 제공하는 빈(또는 최소한 기능에 접근하는)</entry>
           </row>
           <row>
             <entry>view resolver</entry>
-            <entry>(<xref linkend="portlet-viewresolver" />) capable
-            of resolving view names to view definitions</entry>
+            <entry>(<xref linkend="portlet-viewresolver" />) 뷰 이름을
+            뷰 정의로 처리할 수 있다</entry>
           </row>
           <row>
             <entry>multipart resolver</entry>
-            <entry>(<xref linkend="portlet-multipart" />) offers
-            functionality to process file uploads from HTML
-            forms</entry>
+            <entry>(<xref linkend="portlet-multipart" />) HTML 폼의
+            파일 업로드를 처리하는 기능을 제공한다</entry>
           </row>
           <row>
             <entry>handler exception resolver</entry>
             <entry>(<xref linkend="portlet-exceptionresolver" />)
-            offers functionality to map exceptions to views or
-            implement other more complex exception handling
-            code</entry>
+            예외를 뷰에 매핑하거나 복잡한 예외 처리코드를 구현하는 기능을
+            제공한다</entry>
           </row>
         </tbody>
       </tgroup>
     </table>
 
-    <para>When a <classname>DispatcherPortlet</classname> is setup for use
-    and a request comes in for that specific
-    <classname>DispatcherPortlet</classname>, it starts processing the
-    request. The list below describes the complete process a request goes
-    through if handled by a <classname>DispatcherPortlet</classname>:</para>
+    <para><classname>DispatcherPortlet</classname>이 해당
+    <classname>DispatcherPortlet</classname> 들어오는 요청을 받고 사용할 설정이 되면
+    요청을 처리하기 시작한다. 아래 목록은 <classname>DispatcherPortlet</classname>의
+    요청을 처리하는 전체 과정을 설명한다.</para>
 
     <orderedlist>
 
-      <listitem><para>The locale returned by
-      <literal>PortletRequest.getLocale()</literal> is bound to the
-      request to let elements in the process resolve the locale to use
-      when processing the request (rendering the view, preparing data,
-      etc.).</para></listitem>
+      <listitem><para>요청을 처리할 때(뷰 렌더링, 데이터 준비 등) 처리중인 요청이 사용할
+      로케일을 처리하도록 <literal>PortletRequest.getLocale()</literal>가 반환하는
+      로케일을 요청에 바인딩한다. </para></listitem>
 
-      <listitem><para>If a multipart resolver is specified and this is an
-      <interfacename>ActionRequest</interfacename>, the request is
-      inspected for multiparts and if they are found, it is wrapped in a
-      <interfacename>MultipartActionRequest</interfacename> for further
-      processing by other elements in the process. (See <xref
-      linkend="portlet-multipart" /> for further information about
-      multipart handling).</para></listitem>
+      <listitem><para>멀티파트 리졸버를 지정했고 요청이
+      <interfacename>ActionRequest</interfacename>라면 해당 요청은 멀티파트인지
+      검사하고 멀티파트라면 다른 요소가 추가적인 처리를 하도록
+      <interfacename>MultipartActionRequest</interfacename>로 감싼다.
+      (멀티파트 처리에 대한 자세한 내용은 <xref linkend="portlet-multipart" />를
+      봐라.)</para></listitem>
 
-      <listitem><para>An appropriate handler is searched for. If a handler
-      is found, the execution chain associated with the handler
-      (pre-processors, post-processors, controllers) will be executed in order
-      to prepare a model.</para></listitem>
+      <listitem><para>적합한 핸들러를 검색한다. 핸들러를 발견하면 모델을 준비하기 위해
+      핸들러(전처리자, 후처리자, 컨트롤러)에 연결된 실행 체인을 실행할
+      것이다.</para></listitem>
 
-      <listitem><para>If a model is returned, the view is rendered, using
-      the view resolver that has been configured with the
-      <interfacename>WebApplicationContext</interfacename>. If no model is
-      returned (which could be due to a pre- or post-processor
-      intercepting the request, for example, for security reasons), no
-      view is rendered, since the request could already have been
-      fulfilled.</para></listitem>
+      <listitem><para>모델이 반환되면
+      <interfacename>WebApplicationContext</interfacename>로 설정된 뷰 리졸버를
+      사용해서 뷰를 렌더링한다. 모델이 반환되지 않는다면(예를 들어 전처리자나 후처리자가 보안때문에
+      요청을 가로채는 등의 이유로) 요청이 이미 완료되었으므로 뷰를 렌더링하지
+      않는다.</para></listitem>
 
     </orderedlist>
 
-    <para>Exceptions that are thrown during processing of the request
-    get picked up by any of the handler exception resolvers that are
-    declared in the <interfacename>WebApplicationContext</interfacename>.
-    Using these exception resolvers you can define custom behavior in case
-    such exceptions get thrown.</para>
+    <para>요청을 처리하는 중 던저진 예외는
+    <interfacename>WebApplicationContext</interfacename>에 선언된 핸들러
+    예외 리졸버(handler exception resolver)가 처리한다. 이러한 예외 리졸버를 사용해서
+    예외가 던저진 경우에 대한 커스텀 동작을 정의할 수 있다.</para>
 
-    <para>You can customize Spring's <classname>DispatcherPortlet</classname>
-    by adding context parameters in the <literal>portlet.xml</literal> file or
-    portlet init-parameters. The possibilities are listed below.</para>
+    <para><literal>portlet.xml</literal> 파일이나 포틀릿 init 파라미터에 컨텍스트
+    파라미터를 추가해서 스프링의 <classname>DispatcherPortlet</classname>를 커스터마이징할
+    수 있다. 할 수 있는 일은 다음 목록에 나와있다.</para>
 
     <table frame="all" id="portlet-dpp-init-params">
-      <title><classname>DispatcherPortlet</classname> initialization parameters</title>
+      <title><classname>DispatcherPortlet</classname> 초기화 파라미터</title>
       <tgroup cols="2">
         <colspec colname="c1" colwidth="1*" align="left" />
         <colspec colname="c2" colwidth="3*" />
         <thead>
           <row>
-            <entry>Parameter</entry>
-            <entry>Explanation</entry>
+            <entry>파라미터</entry>
+            <entry>설명</entry>
           </row>
         </thead>
         <tbody>
           <row>
             <entry><literal>contextClass</literal></entry>
-            <entry>Class that implements
-            <interfacename>WebApplicationContext</interfacename>,
-            which will be used to instantiate the context used by
-            this portlet. If this parameter isn't specified, the
-            <classname>XmlPortletApplicationContext</classname> will
-            be used.</entry>
+            <entry><interfacename>WebApplicationContext</interfacename>를
+            구현한 클래스로 해당 포틀릿이 사용하는 컨텍스트를 인스턴스화하는데 사용할 것이다.
+            이 파라미터를 지정하지 않으면
+            <classname>XmlPortletApplicationContext</classname>를
+            사용할 것이다.</entry>
           </row>
           <row>
             <entry><literal>contextConfigLocation</literal></entry>
-            <entry>String which is passed to the context instance
-            (specified by <literal>contextClass</literal>) to
-            indicate where context(s) can be found. The String is
-            potentially split up into multiple Strings (using a
-            comma as a delimiter) to support multiple contexts (in
-            case of multiple context locations, for beans that are
-            defined twice, the latest takes precedence).</entry>
+            <entry>컨텍스트를 찾을 수 있는 위치를 나타내려고 컨텍스트 인스턴스
+            (<literal>contextClass</literal>가 지정한)에 전달하는 문자열이다.
+            이 문자열은 여러 컨텍스트(여러 컨텍스트 위치가 있는 경우 두번 정의된 빈은
+            마지막에 정의된 빈을 우선시한다)를 지원하기 위해 여러개의 문자열로 나눌
+            수 있다.(구분자로 콤마를 사용한다)</entry>
           </row>
           <row>
             <entry><literal>namespace</literal></entry>
-            <entry>The namespace of the
-            <interfacename>WebApplicationContext</interfacename>.
-            Defaults to <literal>[portlet-name]-portlet</literal>.</entry>
+            <entry><interfacename>WebApplicationContext</interfacename>의
+            네임스페이스다. 기본값은 <literal>[portlet-name]-portlet</literal>이다.</entry>
           </row>
           <row>
             <entry><literal>viewRendererUrl</literal></entry>
-            <entry>The URL at which
-            <classname>DispatcherPortlet</classname> can access an
-            instance of <classname>ViewRendererServlet</classname>
-            (see <xref linkend="portlet-viewservlet" />).</entry>
+            <entry><classname>DispatcherPortlet</classname>가
+            <classname>ViewRendererServlet</classname>에 접근할 수 있는
+            URL이다.(<xref linkend="portlet-viewservlet" /> 참고)</entry>
           </row>
         </tbody>
       </tgroup>
@@ -341,26 +292,22 @@
   </section>
 
   <section id="portlet-viewservlet">
-    <title>The <classname>ViewRendererServlet</classname></title>
+    <title><classname>ViewRendererServlet</classname></title>
 
-    <para>The rendering process in Portlet MVC is a bit more complex than in
-    Web MVC. In order to reuse all the <link linkend="view">view technologies</link>
-    from Spring Web MVC, we must convert the
+    <para>포틀릿 MVC에서 렌더링 과정은 웹 MVC보다 약간 더 복잡하다. 스프링 웹 MVC의 모든
+    <link linkend="view">뷰 기술</link>을 재사용하려면
     <interfacename>PortletRequest</interfacename> /
-    <interfacename>PortletResponse</interfacename> to
+    <interfacename>PortletResponse</interfacename>를
     <interfacename>HttpServletRequest</interfacename> /
-    <interfacename>HttpServletResponse</interfacename> and then call the
-    <literal>render</literal> method of the
-    <interfacename>View</interfacename>. To do this,
-    <classname>DispatcherPortlet</classname> uses a special servlet that
-    exists for just this purpose: the
-    <classname>ViewRendererServlet</classname>.</para>
+    <interfacename>HttpServletResponse</interfacename>로 변환하고
+    <interfacename>View</interfacename>의 <literal>render</literal> 메서드를
+    호출해야 한다. 이렇게 하기 위해서 <classname>DispatcherPortlet</classname>이
+    이 목적때문에 존재하는 전용 서블릿 <classname>ViewRendererServlet</classname>을
+    사용한다.</para>
 
-    <para>In order for <classname>DispatcherPortlet</classname> rendering to
-    work, you must declare an instance of the
-    <classname>ViewRendererServlet</classname> in the
-    <literal>web.xml</literal> file for your web application as
-    follows:</para>
+    <para><classname>DispatcherPortlet</classname> 렌더링이 동작하려면 웹
+    어플리케이션의 <literal>web.xml</literal> 파일에 다음과 같이
+    <classname>ViewRendererServlet</classname> 인스턴스를 선언해야 한다.</para>
 
     <programlisting language="xml"><![CDATA[<servlet>
     <servlet-name>ViewRendererServlet</servlet-name>
@@ -372,172 +319,147 @@
     <url-pattern>/WEB-INF/servlet/view</url-pattern>
 </servlet-mapping>]]></programlisting>
 
-    <para>To perform the actual rendering, <classname>DispatcherPortlet</classname>
-    does the following:</para>
+    <para>실제 렌더링을 수행하기 위해 <classname>DispatcherPortlet</classname>는
+    다음의 과정을 진행한다.</para>
 
     <orderedlist>
-      <listitem><para>Binds the
-      <interfacename>WebApplicationContext</interfacename> to the request
-      as an attribute under the same
-      <literal>WEB_APPLICATION_CONTEXT_ATTRIBUTE</literal> key that
-      <classname>DispatcherServlet</classname> uses.</para></listitem>
+      <listitem><para><classname>DispatcherServlet</classname>이 사용하는 같은
+      <literal>WEB_APPLICATION_CONTEXT_ATTRIBUTE</literal> 키에 속성으로
+      <interfacename>WebApplicationContext</interfacename>를
+      요청에 바인딩한다.</para></listitem>
 
-      <listitem><para>Binds the <interfacename>Model</interfacename> and
-      <interfacename>View</interfacename> objects to the request to make
-      them available to the
-      <classname>ViewRendererServlet</classname>.</para></listitem>
+      <listitem><para><classname>ViewRendererServlet</classname>에서 사용할
+      수 있도록 <interfacename>Model</interfacename>과
+      <interfacename>View</interfacename> 객체를 요청에
+      바인딩한다.</para></listitem>
 
-      <listitem><para>Constructs a
-      <interfacename>PortletRequestDispatcher</interfacename> and performs
-      an <literal>include</literal> using the <literal>/WEB-
-      INF/servlet/view</literal> URL that is mapped to the
-      <classname>ViewRendererServlet</classname>.</para></listitem>
+      <listitem><para><interfacename>PortletRequestDispatcher</interfacename>를
+      생성하고 <classname>ViewRendererServlet</classname>에 매핑된 <literal>/WEB-
+      INF/servlet/view</literal> URL을 사용해서 <literal>include</literal>를
+      수행한다.</para></listitem>
     </orderedlist>
 
-    <para>The <classname>ViewRendererServlet</classname> is then able to
-    call the <literal>render</literal> method on the
-    <interfacename>View</interfacename> with the appropriate
-    arguments.</para>
+    <para>그 다음 <classname>ViewRendererServlet</classname>이
+    <interfacename>View</interfacename>의 <literal>render</literal> 메서드를
+    적절한 인자로 호출할 수 있다.</para>
 
-    <para>The actual URL for the <classname>ViewRendererServlet</classname>
-    can be changed using <classname>DispatcherPortlet</classname>’s
-    <literal>viewRendererUrl</literal> configuration parameter.</para>
+    <para><classname>ViewRendererServlet</classname>의 실제 URL은
+    <classname>DispatcherPortlet</classname>의
+    <literal>viewRendererUrl</literal> 설정 파라미터를 사용해서 변경할 수 있다.</para>
 
   </section>
 
   <section id="portlet-controller">
-    <title>Controllers</title>
+    <title>컨트롤러</title>
 
-    <para>The controllers in Portlet MVC are very similar to the Web MVC
-    Controllers, and porting code from one to the other should be
-    simple.</para>
+    <para>포틀릿 MVC의 컨트롤러는 웹 MVC 컨트롤러와 아주 유사하고 서로간에 코드를 포딩하는
+    것은 아주 간단하다.</para>
 
-    <para>The basis for the Portlet MVC controller architecture is the
+    <para>포틀릿 MVC 컨트롤러 아키텍처의 기반은 다음 목록에 나온
     <interfacename>org.springframework.web.portlet.mvc.Controller</interfacename>
-    interface, which is listed below.</para>
+    인터페이스이다.</para>
 
     <programlisting language="java"><![CDATA[public interface Controller {
 
     /**
-     * Process the render request and return a ModelAndView object which the
-     * DispatcherPortlet will render.
+     * 요청의 렌더링을 처리하고 DispatcherPortlet이 렌더링할
+     * ModelAndView 객체를 반환한다.
      */
     ModelAndView handleRenderRequest(RenderRequest request, RenderResponse response)
         throws Exception;
 
     /**
-     * Process the action request. There is nothing to return.
+     * 액션 요청을 처리한다. 아무것도 반환하지 않는다.
      */
     void handleActionRequest(ActionRequest request, ActionResponse response)
         throws Exception;
 }]]></programlisting>
 
-    <para>As you can see, the Portlet
-    <interfacename>Controller</interfacename> interface requires two methods
-    that handle the two phases of a portlet request: the action request and
-    the render request. The action phase should be capable of handling an
-    action request, and the render phase should be capable of handling a
-    render request and returning an appropriate model and view. While the
-    <interfacename>Controller</interfacename> interface is quite abstract,
-    Spring Portlet MVC offers several controllers that already contain a
-    lot of the functionality you might need; most of these are very similar
-    to controllers from Spring Web MVC. The
-    <interfacename>Controller</interfacename> interface just defines the
-    most common functionality required of every controller: handling an
-    action request, handling a render request, and returning a model and a
-    view.</para>
+    <para>여기서 보듯이 포틀릿 <interfacename>Controller</interfacename> 인터페이스는
+    포틀릿 요청의 두 단계(액션 요청과 렌더링 요청)을 다루는 두 개의 메서드를 필요로 한다. 액션 단계는
+    액션 요청을 처리할 수 있어야 하고 렌더링 단계는 렌더링 요청을 처리하고 적절한 모델과 뷰를 반환할
+    수 있어야 한다. <interfacename>Controller</interfacename> 인터페이스가 상당히
+    추상화되어 있으므로 스프링 포틀릿 MVC는 필요로 할 많은 기능을 담고 있는 다수의 컨트롤러를
+    제공한다. 이러한 대부분의 컨트롤러는 스프링 웹 MVC의 컨트롤러와 아주 유사하다.
+    <interfacename>Controller</interfacename> 인터페이스는 모든 컨트롤러가 필요로하는
+    많은 공통 기능(액션 요청, 렌더링 요청 처리, 모델과 뷰 반환)을 정의하고 있다.</para>
 
     <section id="portlet-controller-abstractcontroller">
-      <title><classname>AbstractController</classname> and <classname>PortletContentGenerator</classname></title>
+      <title><classname>AbstractController</classname>와 <classname>PortletContentGenerator</classname></title>
 
-      <para>Of course, just a <interfacename>Controller</interfacename>
-      interface isn't enough. To provide a basic infrastructure, all of
-      Spring Portlet MVC's <interfacename>Controller</interfacename>s
-      inherit from <classname>AbstractController</classname>, a class
-      offering access to Spring's
-      <interfacename>ApplicationContext</interfacename> and control over
-      caching.</para>
+      <para>물론 <interfacename>Controller</interfacename> 인터페이스만으로는
+      충분치 않다. 기본 인프라스트럭처인 <classname>AbstractController</classname>를
+      상속받은 스프링 포틀릿 MVC의 모든 <interfacename>Controller</interfacename>를
+      제공하려면 클래스가 스프링의 <interfacename>ApplicationContext</interfacename>에
+      접근할 수 있고 캐싱을 제어할 수 있어야 한다.</para>
 
       <table frame="all" id="portlet-ac-features">
-        <title>Features offered by the <classname>AbstractController</classname></title>
+        <title><classname>AbstractController</classname>가 제공하는 기능</title>
         <tgroup cols="2">
           <colspec colname="c1" colwidth="1*" align="left" />
           <colspec colname="c2" colwidth="3*" />
           <thead>
             <row>
-              <entry>Parameter</entry>
-              <entry>Explanation</entry>
+              <entry>파라미터</entry>
+              <entry>설명</entry>
             </row>
           </thead>
           <tbody>
             <row>
               <entry><literal>requireSession</literal></entry>
-              <entry>Indicates whether or not this
-              <interfacename>Controller</interfacename> requires a
-              session to do its work. This feature is offered to
-              all controllers. If a session is not present when
-              such a controller receives a request, the user is
-              informed using a
-              <classname>SessionRequiredException</classname>.</entry>
+              <entry>해당 <interfacename>Controller</interfacename>가 동작하는
+              세션을 필요로 하는지를 나타낸다. 이러한 컨트롤러가 요청을 받았을 때 세션이
+              제공되지 않으면 <classname>SessionRequiredException</classname>를
+              사용해서 사용자에게 알려준다.</entry>
             </row>
             <row>
               <entry><literal>synchronizeSession</literal></entry>
-              <entry>Use this if you want handling by this
-              controller to be synchronized on the user's session.
-              To be more specific, the extending controller will
-              override the <methodname>handleRenderRequestInternal(..)</methodname> and
-              <methodname>handleActionRequestInternal(..)</methodname> methods, which will be
-              synchronized on the user’s session if you specify
-              this variable.</entry>
+              <entry>사용자 세션 동기화를 해당 컨트롤러가 제어하기를 원한다면 이 파라미터를
+              사용해라. 더 자세히 보자면 컨트롤러를 확장하는 것은 변수를 지정한 경우 사용자 세션의
+              동기화를 할 <methodname>handleRenderRequestInternal(..)</methodname>와
+              <methodname>handleActionRequestInternal(..)</methodname> 메서드를
+              오버라이드 할 것이다.</entry>
             </row>
             <row>
               <entry><literal>renderWhenMinimized</literal></entry>
-              <entry>If you want your controller to actually
-              render the view when the portlet is in a minimized
-              state, set this to true. By default, this is set to
-              false so that portlets that are in a minimized state
-              don’t display any content.</entry>
+              <entry>포틀릿이 최소화된 상태(minimized state)일 때 컨트롤러가 뷰를
+              실제로 렌더링하게 하려면 이 파라미터를 true로 설정해라. 기본적으로 이는
+              false이므로 최소화된 상태의 포틀릿은 아무 내용도 보여주지 않을 것이다.</entry>
             </row>
             <row>
               <entry><literal>cacheSeconds</literal></entry>
-              <entry>When you want a controller to override the
-              default cache expiration defined for the portlet,
-              specify a positive integer here. By default it is
-              set to <literal>-1</literal>, which does not change
-              the default caching. Setting it to <literal>0</literal>
-              will ensure the result is never cached.</entry>
+              <entry>포틀릿에 정의된 캐시 기본 만료(expiration)를 컨트롤러가
+              오버라이드하려면 이 파라미터를 양수로 지정해라. 기본적으로 이 파라미터는
+              기본 캐싱을 바꾸지 않는 의미로 <literal>-1</literal>로 설정되어 있다.
+              이 파라미터를 <literal>0</literal>으로 설정하면 결과를 절대
+              캐싱하지 않는다.</entry>
             </row>
           </tbody>
         </tgroup>
       </table>
 
-      <para>The <literal>requireSession</literal> and
-      <literal>cacheSeconds</literal> properties are declared on the
-      <classname>PortletContentGenerator</classname> class, which is the
-      superclass of <classname>AbstractController</classname>) but are
-      included here for completeness.</para>
+      <para><literal>requireSession</literal>와 <literal>cacheSeconds</literal>
+      프로퍼티는 <classname>PortletContentGenerator</classname>
+      (<classname>AbstractController</classname>의 수퍼클래스)에 선언하지만
+      자세함을 위해서 여기에 포함시켰다.</para>
 
-      <para>When using the <classname>AbstractController</classname> as a
-      baseclass for your controllers (which is not recommended since there
-      are a lot of other controllers that might already do the job for
-      you) you only have to override either the
+      <para><classname>AbstractController</classname>를 컨트롤러의 기반클래스로
+      사용하는 경우(이미 해당 작업을 하는 다른 클래스가 많이 있으므로 추천하는 방법은 아니다.)
       <methodname>handleActionRequestInternal(ActionRequest,
-      ActionResponse)</methodname> method or the
+      ActionResponse)</methodname> 메서드나
       <methodname>handleRenderRequestInternal(RenderRequest,
-      RenderResponse)</methodname> method (or both), implement your logic,
-      and return a <classname>ModelAndView</classname> object (in the case
-      of <literal>handleRenderRequestInternal</literal>).</para>
+      RenderResponse)</methodname> 메서드(혹은 둘다)를 오버라이드하고 로직을 구현하고
+      <classname>ModelAndView</classname> 객체를 반환
+      (<literal>handleRenderRequestInternal</literal>인 경우에)해야 한다.</para>
 
-      <para>The default implementations of both
-      <methodname>handleActionRequestInternal(..)</methodname> and
-      <methodname>handleRenderRequestInternal(..)</methodname> throw a
-      <classname>PortletException</classname>. This is consistent with
-      the behavior of <classname>GenericPortlet</classname> from the JSR-
-      168 Specification API. So you only need to override the method that
-      your controller is intended to handle.</para>
+      <para><methodname>handleActionRequestInternal(..)</methodname>와
+      <methodname>handleRenderRequestInternal(..)</methodname>의 기본 구현체는
+      <classname>PortletException</classname>를 던진다. 이는 JSR-168 명세서 API의
+      <classname>GenericPortlet</classname> 동작과 일관성이 있다. 그러므로 컨트롤러가
+      다루기를 원하는 메서드만 오버라이드 해야한다.</para>
 
-      <para>Here is short example consisting of a class and a declaration
-      in the web application context.</para>
+      <para>클래스와 웹 어플리케이션 컨텍스트의 선언으로 구성된 간단한 예제가 다음에
+      나와 있다.</para>
 
       <programlisting language="java"><![CDATA[package samples;
 
@@ -560,101 +482,82 @@ public class SampleController extends AbstractController {
     <property name="cacheSeconds" value="120"/>
 </bean>]]></programlisting>
 
-      <para>The class above and the declaration in the web application
-      context is all you need besides setting up a handler mapping (see
-      <xref linkend="portlet-handlermapping" />) to get this very simple
-      controller working.</para>
+      <para>이 아주 간단한 컨트롤러가 동작하는데 위의 클래스와 웹 어플리케이션의 선언이 핸들러
+      매핑 구성(<xref linkend="portlet-handlermapping" /> 참고)외에 해야하는
+      전부이다.</para>
     </section>
 
     <section id="portlet-controller-simple">
-      <title>Other simple controllers</title>
+      <title>그 외 간단한 컨트롤러</title>
 
-      <para>Although you can extend <classname>AbstractController</classname>,
-      Spring Portlet MVC provides a number of concrete implementations which offer
-      functionality that is commonly used in simple MVC applications.</para>
+      <para><classname>AbstractController</classname>를 확장할 수 있더라도 스프링
+      포틀릿 MVC는 간단한 MVC 어플리케이션에서 공통적으로 사용하는 기능을 제공하는 다수의 구현체를
+      제공하고 있다.</para>
 
-      <para>The <classname>ParameterizableViewController</classname> is
-      basically the same as the example above, except for the fact that
-      you can specify the view name that it will return in the web
-      application context (no need to hard-code the view name).</para>
+      <para><classname>ParameterizableViewController</classname>는 웹
+      어플리케이션 컨텍스트에서 반환할 뷰 이름을 지정할 수 있다는 점(뷰 이름을 하드코딩할 필요가
+      없다)을 제외하면 기본적으로 위의 예제와 같다.</para>
 
-      <para>The <classname>PortletModeNameViewController</classname> uses
-      the current mode of the portlet as the view name. So, if your
-      portlet is in View mode (i.e. <literal>PortletMode.VIEW</literal>)
-      then it uses "view" as the view name.</para>
+      <para><classname>PortletModeNameViewController</classname>는 뷰 이름으로
+      포틀릿의 현재 모드를 사용한다. 그래서 포틀릿이 View 모드라면(예시:
+      <literal>PortletMode.VIEW</literal>) 뷰 이름으로 "view"를 사용한다.</para>
     </section>
 
     <section id="portlet-controller-command">
-      <title>Command Controllers</title>
+      <title>커맨드 컨트롤러</title>
 
-      <para>Spring Portlet MVC has the exact same hierarchy of
-      <emphasis>command controllers</emphasis> as Spring Web MVC. They
-      provide a way to interact with data objects and dynamically bind
-      parameters from the <interfacename>PortletRequest</interfacename> to
-      the data object specified. Your data objects don't have to
-      implement a framework-specific interface, so you can directly
-      manipulate your persistent objects if you desire. Let's examine what
-      command controllers are available, to get an overview of what you can do
-      with them:</para>
+      <para>스프링 포틀릿 MVC는 스프링 웹 MVC와 정확히 같은 계층의 <emphasis>커맨트
+      컨트롤러</emphasis>를 가진다. 커맨드 컨트롤러는 데이터 객체와 상호작용하고
+      <interfacename>PortletRequest</interfacename>의 파라미터를 지정한 데이터 객체로
+      동적으로 바인딩하는 방법을 제공한다. 데이터 객체는 프레임워크에 특화된 인터페이스를 구현하지
+      않아야 하므로 원한다면 퍼시스턴트 객체를 직접 조작할 수 있다. 커맨드 컨트롤러로 무엇을
+      할 수 있는지 살펴보기 위해서 어떤 커맨드 컨트롤러를 사용할 수 있는지 보자.</para>
 
       <itemizedlist>
         <listitem><para><classname>AbstractCommandController</classname>
-        - a command controller you can use to create your own command
-        controller, capable of binding request parameters to a data
-        object you specify. This class does not offer form
-        functionality, it does however offer validation features and
-        lets you specify in the controller itself what to do with the
-        command object that has been filled with the parameters from the
-        request.</para></listitem>
+        - 자신만의 커맨트 컨트롤러를 생성하는데 사용할 수 있는 커맨드 컨트롤러로 요청 파라미터를
+        지정한 데이터 객체에 바인딩할 수 있다. 이 클래스는 폼(form) 기능을 제공하지 않지만
+        유효성검사 기능은 제공하고 컨트롤러에서 요청의 파라미터로 채워진 커맨드 객체로
+        무엇을 할지 지정하게 한다.</para></listitem>
 
         <listitem><para><classname>AbstractFormController</classname> -
-        an abstract controller offering form submission support. Using
-        this controller you can model forms and populate them using a
-        command object you retrieve in the controller. After a user has
-        filled the form, <classname>AbstractFormController</classname>
-        binds the fields, validates, and hands the object back to the
-        controller to take appropriate action. Supported features are:
-        invalid form submission (resubmission), validation, and normal
-        form workflow. You implement methods to determine which views
-        are used for form presentation and success. Use this controller
-        if you need forms, but don't want to specify what views you're
-        going to show the user in the application
-        context.</para></listitem>
+        폼 제출을 지원하는 추상 컨트롤러다. 이 컨트롤러를 사용해서 폼을 만들 수 있고
+        컨트롤러에서 획득한 커맨드 객체를 사용해서 폼을 유지할 수 있다. 사용자가 폼을 채운
+        후에 <classname>AbstractFormController</classname>가 필드를 바인딩하고
+        유효성을 검사하고 객체를 적절한 액션을 취하는 컨트롤러에 다시 전달한다. 유효하지 않은
+        폼 제출 (중복제출), 유효성 검사, 일반적인 폼 워크플로우의 기능을 지원한다. 폼 표현과
+        성공에 어떤 뷰를 사용할지 결정하는 메서드를 구현한다. 폼은 필요하지만 어플리케이션
+        컨텍스트에서 사용자를 보여줄 뷰를 지정하기 원치 않는다면 이 컨트롤러를
+        사용해라.</para></listitem>
 
-        <listitem><para><classname>SimpleFormController</classname> - a
-        concrete <classname>AbstractFormController</classname> that
-        provides even more support when creating a form with a
-        corresponding command object. The
-        <classname>SimpleFormController</classname> lets you specify a
-        command object, a viewname for the form, a viewname for the page you
-        want to show the user when form submission has succeeded, and
-        more.</para></listitem>
+        <listitem><para><classname>SimpleFormController</classname> -
+        <classname>AbstractFormController</classname>의 구현체로 대응되는
+        커맨드 객체로 폼을 생성할 때 추가적인 지원을 제공한다.
+        <classname>SimpleFormController</classname>는 커맨드 객체, 폼에 대한
+        뷰이름, 폼 제출이 성공적으로 이뤄졌을 때 사용자를 보여주는 페이지의 뷰이름을
+        지정하게 한다.</para></listitem>
 
         <listitem><para><classname>AbstractWizardFormController</classname> –
-        a concrete <classname>AbstractFormController</classname> that
-        provides a wizard-style interface for editing the contents of a
-        command object across multiple display pages. Supports multiple
-        user actions: finish, cancel, or page change, all of which are
-        easily specified in request parameters from the
-        view.</para></listitem>
+        여러 화면에 걸쳐서 커맨드 객체의 내용을 수정하는 마법사방식의 인터페이스를 제공하는
+        <classname>AbstractFormController</classname>의 구현체이다. 종료, 취소,
+        페이지 변경등 여러 사용자 동작을 지원하고 이 모든 기능을 화면의 요청 파라미터로
+        쉽게 지정한다.</para></listitem>
       </itemizedlist>
 
-      <para>These command controllers are quite powerful, but they do
-      require a detailed understanding of how they operate in order to use
-      them efficiently. Carefully review the Javadocs for this entire
-      hierarchy and then look at some sample implementations before you
-      start using them.</para>
+      <para>이러한 커맨드 컨트롤러는 아주 강력하지만 효율적으로 사용하려면 어떻게 동작하는지
+      자세히 이해해야 한다. 이 컨트롤러의 전체 계층에 대해서는 Javadoc을 자세히 보고 사용하기
+      전에 예제 구현체를 살펴봐라.</para>
     </section>
 
     <section id="portlet-controller-wrapping">
       <title><classname>PortletWrappingController</classname></title>
 
-      <para>Instead of developing new controllers, it is possible to use
-      existing portlets and map requests to them from a
-      <classname>DispatcherPortlet</classname>. Using the
-      <classname>PortletWrappingController</classname>, you can
-      instantiate an existing <interfacename>Portlet</interfacename> as a
-      <interfacename>Controller</interfacename> as follows:</para>
+      <para>새로운 컨트롤러를 개발하는 대신 기존에 존재하는 포틀릿을 사용해서
+      <classname>DispatcherPortlet</classname>에서 요청을 컨트롤러로 매핑할 수 있다.
+      <classname>PortletWrappingController</classname>를 사용해서
+      <interfacename>Controller</interfacename>로 이미 존재하는
+      <interfacename>Portlet</interfacename>을 다음과 같이 인스턴스화
+      할 수 있다.</para>
 
       <programlisting language="xml"><![CDATA[<bean id="myPortlet" class="org.springframework.web.portlet.mvc.PortletWrappingController">
     <property name="portletClass" value="sample.MyPortlet"/>
@@ -664,95 +567,76 @@ public class SampleController extends AbstractController {
     </property>
 </bean>]]></programlisting>
 
-      <para>This can be very valuable since you can then use interceptors
-      to pre-process and post-process requests going to these portlets.
-      Since JSR-168 does not support any kind of filter mechanism, this is
-      quite handy. For example, this can be used to wrap the Hibernate
-      <classname>OpenSessionInViewInterceptor</classname> around a MyFaces
-      JSF Portlet.</para>
+      <para>이러한 포틀릿으로 들어오는 요청 이전과 이후의 처리를 위해 인터셉터를 사용할 수
+      있으므로 이는 아주 가치가 있다. JSR-168가 필터 메카니즘을 전혀 지원하지 않으므로 이
+      방법이 아주 편리하다. 예를 들어 이를 MyFaces JSF 포틀릿을 하이버네이트
+      <classname>OpenSessionInViewInterceptor</classname>로 감싸는데
+      사용할 수 있다.</para>
     </section>
   </section>
 
   <section id="portlet-handlermapping">
-    <title>Handler mappings</title>
+    <title>핸들러 매핑</title>
 
-    <para>Using a handler mapping you can map incoming portlet requests to
-    appropriate handlers. There are some handler mappings you can use out
-    of the box, for example, the
-    <classname>PortletModeHandlerMapping</classname>, but let's first
-    examine the general concept of a
-    <interfacename>HandlerMapping</interfacename>.</para>
+    <para>핸들러 매핑을 사용해서 들어오는 포틀릿 요청을 적당한 핸들러로 매핑할 수 있다. 사용할
+    수 있는 몇몇 핸들러 매핑이 존재하지만(예를 들면
+    <classname>PortletModeHandlerMapping</classname>) 먼저
+    <interfacename>HandlerMapping</interfacename>의 일반적인 개념을 살펴보자.</para>
 
-    <para>Note: We are intentionally using the term “Handler” here instead
-    of “Controller”. <classname>DispatcherPortlet</classname> is designed
-    to be used with other ways to process requests than just Spring Portlet
-    MVC’s own Controllers. A Handler is any Object that can handle portlet
-    requests. Controllers are an example of Handlers, and they are of
-    course the default. To use some other framework with
-    <classname>DispatcherPortlet</classname>, a corresponding implementation
-    of <interfacename>HandlerAdapter</interfacename> is all that is needed.</para>
+    <para>Note: 의도적으로 “Controller” 대신에 “Handler”라는 용어를 여기서 사용하고 있다.
+    <classname>DispatcherPortlet</classname>은 스프링 포틀릿 MVC 자체의 컨트롤러와는
+    다른 방법으로 요청을 처리하는데 사용하도록 설계되었다. 핸들러는 포틀릿 요청을 다룰 수 있는
+    객체이다. 컨트롤러는 핸들러의 하나의 예시이면서 기본값이다. 다른 프레임워크와 함께
+    <classname>DispatcherPortlet</classname>를 사용하려면
+    <interfacename>HandlerAdapter</interfacename>의 대응되는 구현체가 필요한 전부이다.</para>
 
-    <para>The functionality a basic
-    <interfacename>HandlerMapping</interfacename> provides is the delivering
-    of a <classname>HandlerExecutionChain</classname>, which must contain
-    the handler that matches the incoming request, and may also contain a
-    list of handler interceptors that are applied to the request. When a
-    request comes in, the <classname>DispatcherPortlet</classname> will hand
-    it over to the handler mapping to let it inspect the request and come up
-    with an appropriate <classname>HandlerExecutionChain</classname>. Then
-    the <classname>DispatcherPortlet</classname> will execute the handler
-    and interceptors in the chain (if any). These concepts are all exactly
-    the same as in Spring Web MVC.</para>
+    <para>기본 <interfacename>HandlerMapping</interfacename>이 제공하는 기능은
+    들어오는 요청과 일치하는 핸들러를 반드시 가지고 요청에 적용되는 핸들러 인터셉터의 목록을 가질
+    수도 있는 <classname>HandlerExecutionChain</classname>의 전달이다. 요청이 들어올 때
+    <classname>DispatcherPortlet</classname>는 요청을 검사하고 적절한
+    <classname>HandlerExecutionChain</classname>에 접근하도록 핸들러 매핑에 전달한다.
+    그 다음 <classname>DispatcherPortlet</classname>은 체인에 있는(존재한다면) 핸들러와
+    인터셉터를 실행할 것이다. 이러한 개념은 스프링 웹 MVC와 완전히 같다.</para>
 
-    <para>The concept of configurable handler mappings that can optionally
-    contain interceptors (executed before or after the actual handler was
-    executed, or both) is extremely powerful. A lot of supporting
-    functionality can be built into a custom
-    <interfacename>HandlerMapping</interfacename>. Think of a custom handler
-    mapping that chooses a handler not only based on the portlet mode of the
-    request coming in, but also on a specific state of the session
-    associated with the request.</para>
+    <para>선택적으로 인터셉터(실제 실행되는 핸들러 이전과 이후에 실행된다)를 가질 수 있고 설정가능한
+    핸들러 매핑의 개념은 굉장히 강력하다. 지원하는 다수의 기능은 커스텀
+    <interfacename>HandlerMapping</interfacename>의 일부가 될 수 있다. 들어오는 요청의
+    포틀릿 모드에 기반하지 않고 요청과 연관된 세션의 특정 상태에 기반해서 핸들러를 선택하는
+    커스텀 핸들러 매핑을 생각해 보자.</para>
 
-    <para>In Spring Web MVC, handler mappings are commonly based on URLs.
-    Since there is really no such thing as a URL within a Portlet, we must
-    use other mechanisms to control mappings. The two most common are the
-    portlet mode and a request parameter, but anything available to the
-    portlet request can be used in a custom handler mapping.</para>
+    <para>스프링 웹 MVC에서 핸들러 매핑은 일반적으로 URL에 기반한다. 포틀릿에서는 URL같은
+    것이 없기 때문에 매핑을 제어하는 다른 메카니즘을 사용해야 한다. 가장 일반적인 두가지는 포틀릿
+    모드와 요청 파라미터이지만 포틀릿 요청에서 사용할 수 있는 것들은 커스텀 핸들러 매핑에서도
+    사용할 수 있다.</para>
 
-    <para>The rest of this section describes three of Spring Portlet MVC's
-    most commonly used handler mappings. They all extend
-    <classname>AbstractHandlerMapping</classname> and share the following
-    properties:</para>
+    <para>이번 섹션의 남은 부분은 스프링 포틀릿 MVC에서 가장 일반적으로 사용하는 핸들러 매핑을
+    설명한다. 이 핸들러 매핑은 모두 <classname>AbstractHandlerMapping</classname>을
+    확장하고 다음 프로퍼티를 공유한다.</para>
 
     <itemizedlist>
-      <listitem><para><literal>interceptors</literal>: The list of
-      interceptors to use.
-      <interfacename>HandlerInterceptor</interfacename>s are discussed in
-      <xref linkend="portlet-handlermapping-interceptor"/>.</para></listitem>
+      <listitem><para><literal>interceptors</literal>: 사용할 인터셉터 목록.
+      <interfacename>HandlerInterceptor</interfacename>는
+      <xref linkend="portlet-handlermapping-interceptor"/>에서
+      설명했다.</para></listitem>
 
-      <listitem><para><literal>defaultHandler</literal>: The default
-      handler to use, when this handler mapping does not result in a
-      matching handler.</para></listitem>
+      <listitem><para><literal>defaultHandler</literal>: 해당 핸들러
+      매핑에서 일치하는 핸들러가 없는 경우 사용할 기본 핸들러.</para></listitem>
 
-      <listitem><para><literal>order</literal>: Based on the value of the
-      order property (see the
-      <interfacename>org.springframework.core.Ordered</interfacename>
-      interface), Spring will sort all handler mappings available in the
-      context and apply the first matching handler.</para></listitem>
+      <listitem><para><literal>order</literal>: order 프로퍼티 값에 기반해서
+      (<interfacename>org.springframework.core.Ordered</interfacename>
+      인터페이스 참고) 스프링은 컨텍스트에서 사용할 수 있는 모든 핸들러 매핑을 정렬하고 처음
+      일치하는 핸들러를 적용할 것이다.</para></listitem>
 
-      <listitem><para><literal>lazyInitHandlers</literal>: Allows for lazy
-      initialization of singleton handlers (prototype handlers are always
-      lazily initialized). Default value is false. This property is
-      directly implemented in the three concrete
-      Handlers.</para></listitem>
+      <listitem><para><literal>lazyInitHandlers</literal>: 싱글톤 핸들러의 지연
+      초기화를 허용한다.(프로토타입 핸들러는 항상 지연 초기화를 한다.) 기본값은 false다. 이
+      프로퍼티는 세가지 구현체에서 직접 구현되었다.</para></listitem>
     </itemizedlist>
 
     <section id="portlet-handlermapping-portletmode">
       <title><classname>PortletModeHandlerMapping</classname></title>
 
-      <para>This is a simple handler mapping that maps incoming requests
-      based on the current mode of the portlet (e.g. ‘view’, ‘edit’,
-      ‘help’). An example:</para>
+      <para>들어오는 요청을 포틀릿의 현재 모드에 기반해서(예시. ‘view’, ‘edit’, ‘help’)
+      매핑하는 간단한 핸들러 매핑이다. 예를 들면 다음과 같다.</para>
 
       <programlisting language="xml"><![CDATA[<bean class="org.springframework.web.portlet.handler.PortletModeHandlerMapping">
     <property name="portletModeMap">
@@ -768,17 +652,14 @@ public class SampleController extends AbstractController {
     <section id="portlet-handlermapping-parameter">
       <title><classname>ParameterHandlerMapping</classname></title>
 
-      <para>If we need to navigate around to multiple controllers without
-      changing portlet mode, the simplest way to do this is with a request
-      parameter that is used as the key to control the mapping.</para>
+      <para>포틀릿 모드를 변경하지 않고 여러 컨트롤러를 탐색해야 한다면 매핑을 제어하는 키로
+      요청 파라미터를 사용하는 것이 가장 간단한 방법이다.</para>
 
-      <para><classname>ParameterHandlerMapping</classname> uses the value
-      of a specific request parameter to control the mapping. The default
-      name of the parameter is <literal>'action'</literal>, but can be changed
-      using the <literal>'parameterName'</literal> property.</para>
+      <para><classname>ParameterHandlerMapping</classname>은 특정 요청 파라미터의
+      값을 매핑을 제어하는데 사용한다. 파라미터의 기본 이름은 <literal>'action'</literal>이지만
+      <literal>'parameterName'</literal> 프로퍼티를 사용해서 변경할 수 있다.</para>
 
-      <para>The bean configuration for this mapping will look something
-      like this:</para>
+      <para>이 매핑에 대한 빈(bean) 설정은 다음과 같을 것이다.</para>
 
       <programlisting language="xml"><![CDATA[<bean class="org.springframework.web.portlet.handler.ParameterHandlerMapping”>
     <property name="parameterMap">
@@ -794,36 +675,31 @@ public class SampleController extends AbstractController {
     <section id="portlet-handlermapping-portletmodeparameter">
       <title><classname>PortletModeParameterHandlerMapping</classname></title>
 
-      <para>The most powerful built-in handler mapping,
-      <classname>PortletModeParameterHandlerMapping</classname> combines
-      the capabilities of the two previous ones to allow different
-      navigation within each portlet mode.</para>
+      <para>가장 강력한 내장 핸들러 매핑인
+      <classname>PortletModeParameterHandlerMapping</classname>는
+      각 포틀릿 모드내에서 다른 탐색을 허용하는 앞의 두 핸들러 매핑의 기능을 합쳐놓았다.</para>
 
-      <para>Again the default name of the parameter is "action", but can
-      be changed using the <literal>parameterName</literal>
-      property.</para>
+      <para>마찬가지로 기본 파라미터 이름은 "action"이지만
+      <literal>parameterName</literal> 프로퍼티를 사용해서 변경할 수 있다.</para>
 
-      <para>By default, the same parameter value may not be used in two
-      different portlet modes. This is so that if the portal itself
-      changes the portlet mode, the request will no longer be valid in the
-      mapping. This behavior can be changed by setting the
-      <literal>allowDupParameters</literal> property to true. However,
-      this is not recommended.</para>
+      <para>기본적으로 두가지 다른 포틀릿 모드에서 같은 파라미터값을 사용하지 않는다. 이는
+      포탈(portal)이 직접 포틀릿 모드를 변경하면 요청이 더이상 매핑에서 유효하지 않도록 하기
+      위함이다. 이 동작은 <literal>allowDupParameters</literal> 프로퍼티를 true로
+      설정해서 변경할 수 있다. 하지만 변경하는 것을 권장하지 않는다.</para>
 
-      <para>The bean configuration for this mapping will look something
-      like this:</para>
+      <para>이 매핑에 대한 빈(bean) 설정은 다음과 같을 것이다.</para>
 
       <programlisting language="xml"><![CDATA[<bean class="org.springframework.web.portlet.handler.PortletModeParameterHandlerMapping">
     <property name="portletModeParameterMap">
         <map>
-            <entry key="view"> ]]><lineannotation>&lt;!-- 'view' portlet mode --&gt;</lineannotation><![CDATA[
+            <entry key="view"> ]]><lineannotation>&lt;!-- 'view' 포틀릿 모드 --&gt;</lineannotation><![CDATA[
                 <map>
                     <entry key="add" value-ref="addItemHandler"/>
                     <entry key="edit" value-ref="editItemHandler"/>
                     <entry key="delete" value-ref="deleteItemHandler"/>
                 </map>
             </entry>
-            <entry key="edit"> ]]><lineannotation>&lt;!-- 'edit' portlet mode --&gt;</lineannotation><![CDATA[
+            <entry key="edit"> ]]><lineannotation>&lt;!-- 'edit' 포틀릿 모드 --&gt;</lineannotation><![CDATA[
                 <map>
                     <entry key="prefs" value-ref="prefsHandler"/>
                     <entry key="resetPrefs" value-ref="resetPrefsHandler"/>
@@ -833,217 +709,181 @@ public class SampleController extends AbstractController {
     </property>
 </bean>]]></programlisting>
 
-      <para>This mapping can be chained ahead of a
-      <classname>PortletModeHandlerMapping</classname>, which can then provide
-      defaults for each mode and an overall default as well.</para>
+      <para>이 매핑은 <classname>PortletModeHandlerMapping</classname>보다 먼저
+      체이닝될 수 있어서 각 모드나 전체적인 기본값을 제공할 수 있다.</para>
     </section>
 
     <section id="portlet-handlermapping-interceptor">
-      <title>Adding <interfacename>HandlerInterceptor</interfacename>s</title>
+      <title><interfacename>HandlerInterceptor</interfacename> 추가</title>
 
-      <para>Spring's handler mapping mechanism has a notion of handler
-      interceptors, which can be extremely useful when you want to apply
-      specific functionality to certain requests, for example, checking
-      for a principal. Again Spring Portlet MVC implements these concepts
-      in the same way as Web MVC.</para>
+      <para>스프링의 핸들러 매핑 메카니즘은 특정 요청에 어떤 기능(예를 들어 중요한 검사 등)을
+      적용하기를 원할 때 아주 유용할 수 있는 핸들러 인터셉터의 개념을 가진다. 스프링 포틀릿 MVC는
+      웹 MVC와 같은 방법으로 이러한 개념을 구현한다.</para>
 
-      <para>Interceptors located in the handler mapping must implement
-      <interfacename>HandlerInterceptor</interfacename> from the
-      <literal>org.springframework.web.portlet</literal> package. Just
-      like the servlet version, this interface defines three methods: one
-      that will be called before the actual handler will be executed
-      (<literal>preHandle</literal>), one that will be called after the
-      handler is executed (<literal>postHandle</literal>), and one that is
-      called after the complete request has finished
-      (<literal>afterCompletion</literal>). These three methods should
-      provide enough flexibility to do all kinds of pre- and post-
-      processing.</para>
+      <para>핸들러 매핑에 있는 인터셉터는
+      <literal>org.springframework.web.portlet</literal> 패키지의
+      <interfacename>HandlerInterceptor</interfacename>를 구현해야 한다. 서블릿
+      버전처럼 이 인터셉터는 세가지 메서드를 정의한다. 한 메서드는 실제 핸들러가 실행되기 전에
+      호출될 것이고(<literal>preHandle</literal>) 한 메서드는 핸들러가 실행된 후에 호출할
+      것이고(<literal>postHandle</literal>) 한 메서드는 요청이 완료된 후에 호출할 것이다.
+      (<literal>afterCompletion</literal>) 이 세가지 메서드는 모든 종류의 전처리와
+      후처리를 하는 유연성을 충분히 제공해야 한다.</para>
 
-      <para>The <literal>preHandle</literal> method returns a boolean
-      value. You can use this method to break or continue the processing
-      of the execution chain. When this method returns
-      <literal>true</literal>, the handler execution chain will continue.
-      When it returns <literal>false</literal>, the
-      <classname>DispatcherPortlet</classname> assumes the interceptor
-      itself has taken care of requests (and, for example, rendered an
-      appropriate view) and does not continue executing the other
-      interceptors and the actual handler in the execution chain.</para>
+      <para><literal>preHandle</literal> 메서드는 불리언 값을 반환한다. 실행체인의
+      처리를 멈추거나 계속 진행하는데 이 메서드를 사용할 수 있다. 이 메서드가
+      <literal>true</literal>를 반환하면 핸들러 실행 체인을 계속 진행될 것이고
+      <literal>false</literal>를 반환하면
+      <classname>DispatcherPortlet</classname>는 인터셉터가 직접 요청을
+      처리한다고(예를 들어 적절한 뷰를 렌더링하는 등) 가정하고 실행 체인의 다른 인터셉터와
+      실제 핸들러를 계속해서 실행하지 않는다.</para>
 
-      <para>The <literal>postHandle</literal> method is only called on a
-      <interfacename>RenderRequest</interfacename>. The
-      <literal>preHandle</literal> and <literal>afterCompletion</literal>
-      methods are called on both an
-      <interfacename>ActionRequest</interfacename> and a
-      <interfacename>RenderRequest</interfacename>. If you need to
-      execute logic in these methods for just one type of request, be sure
-      to check what kind of request it is before processing it.</para>
+      <para><interfacename>RenderRequest</interfacename>에서만
+      <literal>postHandle</literal>메서드를 호출한다. <literal>preHandle</literal>와
+      <literal>afterCompletion</literal> 메서드는
+      <interfacename>ActionRequest</interfacename>와
+      <interfacename>RenderRequest</interfacename>에서 모두 실행된다. 딱 한가지
+      종류의 요청에서 이러한 메서드의 로직을 실행해야 한다면 처리하기 전에 요청의 종류를
+      확인해봐야 한다.</para>
     </section>
 
     <section id="portlet-handlermapping-interceptoradapter">
       <title><classname>HandlerInterceptorAdapter</classname></title>
 
-      <para>As with the servlet package, the portlet package has a
-      concrete implementation of
-      <interfacename>HandlerInterceptor</interfacename> called
-      <classname>HandlerInterceptorAdapter</classname>. This class has
-      empty versions of all the methods so that you can inherit from this
-      class and implement just one or two methods when that is all you
-      need.</para>
+      <para>서블릿 패키지처럼 포틀릿 패키지는
+      <interfacename>HandlerInterceptor</interfacename>의 구현체인
+      <classname>HandlerInterceptorAdapter</classname>를 가진다. 이 클래스를
+      상속받아서 필요한 하나나 두개의 메서드를 구현할 수 있도록 이 클래스는 구현부는
+      없는(empty)는 모든 메서드를 가진다.</para>
 
     </section>
 
     <section id="portlet-handlermapping-parameterinterceptor">
       <title><classname>ParameterMappingInterceptor</classname></title>
 
-      <para>The portlet package also has a concrete interceptor named
-      <classname>ParameterMappingInterceptor</classname> that is meant to
-      be used directly with <classname>ParameterHandlerMapping</classname>
-      and <classname>PortletModeParameterHandlerMapping</classname>. This
-      interceptor will cause the parameter that is being used to control
-      the mapping to be forwarded from an
-      <interfacename>ActionRequest</interfacename> to the subsequent
-      <interfacename>RenderRequest</interfacename>. This will help ensure
-      that the <interfacename>RenderRequest</interfacename> is mapped to
-      the same Handler as the
-      <interfacename>ActionRequest</interfacename>. This is done in the
-      <literal>preHandle</literal> method of the interceptor, so you can
-      still modify the parameter value in your handler to change where the
-      <interfacename>RenderRequest</interfacename> will be mapped.</para>
+      <para>포틀릿 패키지도 <classname>ParameterMappingInterceptor</classname>라는
+      인터셉터를 가지므로 직접 <classname>ParameterHandlerMapping</classname>과
+      <classname>PortletModeParameterHandlerMapping</classname>을 함께 사용할 수
+      있다. 이 인터셉터는 파라미터를 <interfacename>ActionRequest</interfacename>에서
+      이어진 <interfacename>RenderRequest</interfacename>으로 진행하는 매핑을 제어하는데
+      사용할 수 있게 한다. 이는 <interfacename>ActionRequest</interfacename>처럼
+      <interfacename>RenderRequest</interfacename>가 같은 핸들러로 매핑된도록 보장하는
+      것을 도와줄 것이다. 이는 인터셉터의 <literal>preHandle</literal> 메서드에서 이뤄지므로
+      <interfacename>RenderRequest</interfacename>가 매핑될 위치를 변경하기 위해
+      핸들러에서 파라미터 값을 수정할 수 있다.</para>
 
-      <para>Be aware that this interceptor is calling
-      <literal>setRenderParameter</literal> on the
-      <interfacename>ActionResponse</interfacename>, which means that you
-      cannot call <literal>sendRedirect</literal> in your handler when
-      using this interceptor. If you need to do external redirects then
-      you will either need to forward the mapping parameter manually or
-      write a different interceptor to handle this for you.</para>
+      <para>이 인터셉터가 <interfacename>ActionResponse</interfacename>에서
+      <literal>setRenderParameter</literal>를 호출하고 있음을 유의해라. 즉, 이
+      인터셉터를 사용할 때는 핸들러에서 <literal>sendRedirect</literal>를 호출할 수
+      없다. 외부로 리다이렉트해야 한다면 수동으로 파라미터를 매핑하거나 이를 처리하는 다른
+      인터셉터를 작성해야 할 것이다.</para>
     </section>
   </section>
 
   <section id="portlet-viewresolver">
-    <title>Views and resolving them</title>
+    <title>뷰와 뷰 처리</title>
 
-    <para>As mentioned previously, Spring Portlet MVC directly reuses all
-    the view technologies from Spring Web MVC. This includes not only the
-    various <interfacename>View</interfacename> implementations themselves,
-    but also the <interfacename>ViewResolver</interfacename> implementations.
-    For more information, refer to <xref linkend="view"/> and
-    <xref linkend="mvc-viewresolver"/> respectively.</para>
+    <para>앞에서 언급했듯이 스프링 포틀릿 MVC가 직접 스프링 웹 MVC의 뷰 기술들을 모두 재사용한다.
+    이는 다양한 <interfacename>View</interfacename> 구현체들을 포함하지 않고
+    <interfacename>ViewResolver</interfacename> 구현체들도 포함하고 있지 않다는 뜻이다.
+    자세한 내용은 <xref linkend="view"/>와 <xref linkend="mvc-viewresolver"/>를
+    각각 참조해 봐라.</para>
 
-    <para>A few items on using the existing <interfacename>View</interfacename> and
-    <interfacename>ViewResolver</interfacename> implementations  are worth mentioning:</para>
+    <para>존재하는 <interfacename>View</interfacename>와
+    <interfacename>ViewResolver</interfacename> 구현체를 사용할 때 몇가지 언급해야 할 것들이 있다.</para>
 
     <itemizedlist>
-      <listitem><para>Most portals expect the result of rendering a
-      portlet to be an HTML fragment. So, things like JSP/JSTL, Velocity,
-      FreeMarker, and XSLT all make sense. But it is unlikely that views
-      that return other document types will make any sense in a portlet
-      context.</para></listitem>
+      <listitem><para>대부분의 포탈(portal)은 포틀릿을 렌더링한 결과가 HTML 조각이 되기를
+      기대한다. 그러므로 JSP/JSTL, Velocity, FreeMarker, XSLT등이 모두 가능하다. 하지만
+      포틀릿에서는 다른 타입의 문서를 반환하는 뷰는 적당하지 않다.</para></listitem>
 
-      <listitem><para>There is no such thing as an HTTP redirect from
-      within a portlet (the <literal>sendRedirect(..)</literal> method of
-      <interfacename>ActionResponse</interfacename> cannot
-      be used to stay within the portal). So, <classname>RedirectView</classname>
-      and use of the <literal>'redirect:'</literal> prefix will
-      <emphasis role="bold">not</emphasis> work correctly from within Portlet MVC.</para></listitem>
+      <listitem><para>포틀릿내에서는 HTTP 리다이렉트 같은 것이 존재하지 않는다.
+      (<interfacename>ActionResponse</interfacename>의
+      <literal>sendRedirect(..)</literal> 메서드는 포탈내에서 존재할 수 없다.) 그러므로
+      포틀릿 MVC 내에서는 <classname>RedirectView</classname>와
+      <literal>'redirect:'</literal> 접두사의 사용이 제대로 동작하지
+      <emphasis role="bold">않을</emphasis> 것이다.</para></listitem>
 
-      <listitem><para>It may be possible to use the <literal>'forward:'</literal> prefix from
-      within Portlet MVC. However, remember that since you are in a
-      portlet, you have no idea what the current URL looks like. This
-      means you cannot use a relative URL to access other resources in
-      your web application and that you will have to use an absolute
-      URL.</para></listitem>
+      <listitem><para>포틀릿 MVC에서 <literal>'forward:'</literal> 접두사를 사용할
+      수도 있다. 하지만 포틀릿이므로 현재 URL이 무엇인지 알 수 없다. 즉, 웹 어플리케이션에서
+      다른 리소스에 접근하는 상대 URL을 사용할수 없고 절대 URL을 사용해야
+      한다.</para></listitem>
     </itemizedlist>
 
-    <para>Also, for JSP development, the new Spring Taglib and the new
-    Spring Form Taglib both work in portlet views in exactly the same way
-    that they work in servlet views.</para>
+    <para>또한 JSP 개발에서 새로운 스프링 Taglib와 스프링 폼 Taglib 모두 포틀릿 뷰에서도
+    서블릿 뷰의 동작과 완전히 똑같히 동작한다.</para>
   </section>
 
   <section id="portlet-multipart">
-    <title>Multipart (file upload) support</title>
+    <title>멀티파트(파일 업로드) 지원</title>
 
-    <para>Spring Portlet MVC has built-in multipart support to handle file
-    uploads in portlet applications, just like Web MVC does. The design for
-    the multipart support is done with pluggable
-    <interfacename>PortletMultipartResolver</interfacename> objects, defined
-    in the <literal>org.springframework.web.portlet.multipart</literal>
-    package. Spring provides a <interfacename>PortletMultipartResolver</interfacename>
-    for use with
-    <ulink url="http://jakarta.apache.org/commons/fileupload">Commons FileUpload</ulink>.
-    How uploading files is supported will be described in the rest of this section.</para>
+    <para>스프링 포틀릿 MVC에는 포틀릿 어플리케이션에서 웹 MVC처럼 파일 업로드를 다루는 멀티파트 지원을
+    내장하고 있다. 멀티파트 지원은 <literal>org.springframework.web.portlet.multipart</literal>
+    패키지에 정의된 플러그할 수 있는 <interfacename>PortletMultipartResolver</interfacename>
+    객체로 설계되었다. 스프링은 <ulink url="http://jakarta.apache.org/commons/fileupload">
+    Commons FileUpload</ulink>와 함께 사용할 수 있는
+    <interfacename>PortletMultipartResolver</interfacename>를 제공한다. 파일
+    업로드를 지원하는 방법은 이 섹션의 남은 부분에서 설명할 것이다.</para>
 
-    <para>By default, no multipart handling will be done by Spring Portlet
-    MVC, as some developers will want to handle multiparts themselves. You
-    will have to enable it yourself by adding a multipart resolver to the
-    web application's context. After you have done that,
-    <classname>DispatcherPortlet</classname> will inspect each request to
-    see if it contains a multipart. If no multipart is found, the request
-    will continue as expected. However, if a multipart is found in the
-    request, the <interfacename>PortletMultipartResolver</interfacename>
-    that has been declared in your context will be used. After that, the
-    multipart attribute in your request will be treated like any other
-    attribute.</para>
+    <para>일부 개발자들은 멀티파트를 직접 다루기 원하므로 기본적으로 스프링 포틀릿 MVC는
+    멀티파트를 처리하지 않을 것이다. 웹 어플리케이션 컨텍스트에 멀티파트 리졸버를 추가해서 직접
+    멀티파트 지원을 활성화해야 한다. 활성화하고 나면
+    <classname>DispatcherPortlet</classname>이 각 요청이 멀티파트인지 검사할 것이다.
+    멀티파트가 아니라면 요청은 기대대로 계속 된다. 하지만 요청이 멀티파트라면 컨텍스트에 선언한
+    <interfacename>PortletMultipartResolver</interfacename>를 사용할 것이다.
+    그 다음부터는 요청의 멀티파트 속성을 다른 속성처럼 다룰 것이다.</para>
 
     <note>
-      <para>Any configured <interfacename>PortletMultipartResolver</interfacename>
-      bean <emphasis>must</emphasis> have the following id (or name):
-      "<literal>portletMultipartResolver</literal>". If you have defined your
-      <interfacename>PortletMultipartResolver</interfacename> with any other name,
-      then the <classname>DispatcherPortlet</classname> will <emphasis>not</emphasis>
-      find your <interfacename>PortletMultipartResolver</interfacename>, and
-      consequently no multipart support will be in effect.</para>
+      <para>설정한 모든 <interfacename>PortletMultipartResolver</interfacename>
+      빈은 반드시 "<literal>portletMultipartResolver</literal>"라는 아이디(또는 이름)을
+      <emphasis>가져야 한다</emphasis>. 다른 이름으로
+      <interfacename>PortletMultipartResolver</interfacename>를 정의했다면
+      <classname>DispatcherPortlet</classname>가
+      <interfacename>PortletMultipartResolver</interfacename>를 찾지
+      <emphasis>못하므로</emphasis> 멀티파트 지원이 동작하지 않을 것이다.</para>
     </note>
 
     <section id="portlet-multipart-resolver">
-      <title>Using the <interfacename>PortletMultipartResolver</interfacename></title>
+      <title><interfacename>PortletMultipartResolver</interfacename>의 사용</title>
 
-      <para>The following example shows how to use the
-      <classname>CommonsPortletMultipartResolver</classname>:</para>
+      <para>다음 예제는 <classname>CommonsPortletMultipartResolver</classname>를
+      사용하는 방법을 보여준다.</para>
 
       <programlisting language="xml"><![CDATA[<bean id="portletMultipartResolver"
         class="org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver">
 
-    ]]><lineannotation>&lt;!-- one of the properties available; the maximum file size in bytes --&gt;</lineannotation><![CDATA[
+    ]]><lineannotation>&lt;!-- 사용할 수 있는 프로퍼티 중 하나; 파일의 최대 바이트 크기 --&gt;</lineannotation><![CDATA[
     <property name="maxUploadSize" value="100000"/>
 </bean>]]></programlisting>
 
-      <para>Of course you also need to put the appropriate jars in your
-      classpath for the multipart resolver to work. In the case of the
-      <classname>CommonsMultipartResolver</classname>, you need to use
-      <literal>commons-fileupload.jar</literal>. Be sure to use at least
-      version 1.1 of Commons FileUpload as previous versions do not
-      support JSR-168 Portlet applications.</para>
+      <para>물론 멀티파트 리졸버가 동작하도록 클래스 패스에 적절한 jar도 둘어야 한다.
+      <classname>CommonsMultipartResolver</classname>의 경우
+      <literal>commons-fileupload.jar</literal>를 사용해야 한다. Commons
+      FileUpload의 과거의 버전은 JSR-168 포틀릿 어플리케이션을 지원하지 않으므로 최소한
+      1.1 버전의 Commons FileUpload를 사용해야 한다.</para>
 
-      <para>Now that you have seen how to set Portlet MVC up to handle
-      multipart requests, let's talk about how to actually use it. When
-      <classname>DispatcherPortlet</classname> detects a multipart
-      request, it activates the resolver that has been declared in your
-      context and hands over the request. What the resolver then does is
-      wrap the current <interfacename>ActionRequest</interfacename> in a
-      <interfacename>MultipartActionRequest</interfacename> that has
-      support for multipart file uploads. Using the
-      <interfacename>MultipartActionRequest</interfacename> you can get
-      information about the multiparts contained by this request and
-      actually get access to the multipart files themselves in your
-      controllers.</para>
+      <para>포틀릿 MVC가 멀티파트 요청을 처리하도록 설정하는 방법을 보았으니 이제 실제로 어떻게
+      사용하는지 보자. <classname>DispatcherPortlet</classname>가 멀티파트 요청을
+      발견하면 <classname>DispatcherPortlet</classname>가 컨텍스트에 선언한 리졸버를
+      활성화하고 요청을 전달한다. 그 다음 리졸버는
+      <interfacename>ActionRequest</interfacename>을 멀티파트 파일 업로드를 지원하는
+      <interfacename>MultipartActionRequest</interfacename>로 감싼다.
+      <interfacename>MultipartActionRequest</interfacename>를 사용해서 해당 요청의
+      멀티파트 정보를 얻을 수 있고 컨트롤러에서 멀티파트 파일 자체에 실제로 접근할 수 있다.</para>
 
-      <para>Note that you can only receive multipart file uploads as part
-      of an <interfacename>ActionRequest</interfacename>, not as part of a
-      <interfacename>RenderRequest</interfacename>.</para>
+      <para><interfacename>RenderRequest</interfacename>의 일부가 아니라
+      <interfacename>ActionRequest</interfacename>의 일부로만 멀티파트 파일을
+      받을 수 있다는 점을 기억해라.</para>
     </section>
 
     <section id="portlet-multipart-forms">
-      <title>Handling a file upload in a form</title>
+      <title>폼의 파일 업로드 처리</title>
 
-      <para>After the
-      <interfacename>PortletMultipartResolver</interfacename> has finished
-      doing its job, the request will be processed like any other. To use
-      the <interfacename>PortletMultipartResolver</interfacename>, create
-      a form with an upload field (see example below),
-      then let Spring bind the file onto your form (backing object). To
-      actually let the user upload a file, we have to create a (JSP/HTML)
-      form:</para>
+      <para><interfacename>PortletMultipartResolver</interfacename>가 자신의
+      작업을 완료한 후에 요청은 다름 요청과 마찬가지로 처리된다.
+      <interfacename>PortletMultipartResolver</interfacename>를 사용하려면 업로드
+      필드를 가진 폼(아래 예제 참고)을 생성하고 스프링이 파일을 폼(지원 객체, backing object)에
+      바인딩하도록 한다. 실제로 사용자가 파일을 업로드하게 하려면 (JSP/HTML) 폼을
+      생성해야 한다.</para>
 
       <programlisting language="xml"><![CDATA[<h1>Please upload a file</h1>
 <form method="post" action="<portlet:actionURL/>" enctype="multipart/form-data">
@@ -1051,28 +891,21 @@ public class SampleController extends AbstractController {
     <input type="submit"/>
 </form>]]></programlisting>
 
-      <para>As you can see, we've created a field named “file” that matches the
-      property of the bean that holds the <literal>byte[]</literal> array.
-      Furthermore we've added the encoding attribute
-      (<literal>enctype="multipart/form-data"</literal>), which is
-      necessary to let the browser know how to encode the multipart fields
-      (do not forget this!).</para>
+      <para>여기서 보듯이 <literal>byte[]</literal> 배열을 담고 있는 빈의 프로퍼티와 일치하는
+      “file”라는 이름의 필드를 생성했다. 게다가 브라우저가 멀티파트 필드를 어떻게 인코딩해야 하는지
+      알 수 있도록 인코딩 속성(<literal>enctype="multipart/form-data"</literal>)을
+      추가했다.(이 부분을 잊지 마라!)</para>
 
-      <para>Just as with any other property that's not automagically
-      convertible to a string or primitive type, to be able to put binary
-      data in your objects you have to register a custom editor with the
-      <classname>PortletRequestDataBinder</classname>. There are a couple
-      of editors available for handling files and setting the results on
-      an object. There's a
-      <classname>StringMultipartFileEditor</classname> capable of
-      converting files to Strings (using a user-defined character set), and
-      there is a <classname>ByteArrayMultipartFileEditor</classname> which
-      converts files to byte arrays. They function analogous to the
-      <classname>CustomDateEditor</classname>.</para>
+      <para>순식간에 문자열이나 프리미티브 타입으로 변환할 수 없는 다른 프로퍼티와 마찬가지로 객체에
+      바이너리 데이터를 보관하려면 <classname>PortletRequestDataBinder</classname>로
+      커스텀 에디터를 등록해야 한다. 파일을 다루고 객체에 설정하는데 사용할 수 있는 두개의 에디터가
+      존재한다. 파일을 문자열(사용자가 정의한 캐릭터셋(character set)을 사용해서)로 변환하는
+      <classname>StringMultipartFileEditor</classname>와 파일을 바이트 배열로 변환하는
+      <classname>ByteArrayMultipartFileEditor</classname>가 있다. 이 기능들은
+      <classname>CustomDateEditor</classname>와 유사하다.</para>
 
-      <para>So, to be able to upload files using a form, declare the
-      resolver, a mapping to a controller that will process the bean, and
-      the controller itself.</para>
+      <para>그러므로 폼을 사용해서 파일을 업로드하게 하려면 리졸버, 빈을 처리할 컨트롤러에 대한
+      매칭과 컨트롤러를 선언한다.</para>
 
       <programlisting language="xml"><![CDATA[<bean id="portletMultipartResolver"
         class="org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver"/>
@@ -1091,32 +924,31 @@ public class SampleController extends AbstractController {
     <property name="successView" value="confirmation"/>
 </bean>]]></programlisting>
 
-      <para>After that, create the controller and the actual class to hold
-      the file property.</para>
+      <para>이렇게 한 후 컨트롤러와 파일 프로퍼티를 가진 실제 클래스를 생성한다.</para>
 
       <programlisting language="java"><![CDATA[public class FileUploadController extends SimpleFormController {
 
     public void onSubmitAction(ActionRequest request, ActionResponse response,
             Object command, BindException errors) throws Exception {
 
-        ]]><lineannotation>// cast the bean</lineannotation><![CDATA[
+        ]]><lineannotation>// 빈을 캐스팅한다</lineannotation><![CDATA[
         FileUploadBean bean = (FileUploadBean) command;
 
-        ]]><lineannotation>// let's see if there's content there</lineannotation><![CDATA[
+        ]]><lineannotation>// 내용이 존재하는지 확인한다</lineannotation><![CDATA[
         byte[] file = bean.getFile();
         if (file == null) {
-            ]]><lineannotation>// hmm, that's strange, the user did not upload anything</lineannotation><![CDATA[
+            ]]><lineannotation>// 흠.. 뭔가 잘못됐다. 사용자가 아무것도 업로드하지 않았다</lineannotation><![CDATA[
         }
 
-        // do something with the file here
+        // 여기서 파일로 어떤 작업을 한다
     }
 
     protected void initBinder(
             PortletRequest request, PortletRequestDataBinder binder) throws Exception {
-        // to actually be able to convert Multipart instance to byte[]
-        // we have to register a custom editor
+        // 실제로 Multipart 인스턴스를 byte[]로 변환할 수 있게 하려면
+        // 커스텀 에디터를 등록해야 한다
         binder.registerCustomEditor(byte[].class, new ByteArrayMultipartFileEditor());
-        ]]><lineannotation>// now Spring knows how to handle multipart object and convert</lineannotation><![CDATA[
+        ]]><lineannotation>// 이제 스프링이 멀티파트 객체를 어떻게 다루고 어떻게 변환하는지 알고 있다</lineannotation><![CDATA[
     }
 }
 
@@ -1133,44 +965,41 @@ public class FileUploadBean {
     }
 }]]></programlisting>
 
-      <para>As you can see, the <classname>FileUploadBean</classname> has
-      a property of type <literal>byte[]</literal> that holds the file. The
-      controller registers a custom editor to let Spring know how to
-      actually convert the multipart objects the resolver has found to
-      properties specified by the bean. In this example, nothing is done
-      with the <literal>byte[]</literal> property of the bean itself, but
-      in practice you can do whatever you want (save it in a database,
-      mail it to somebody, etc).</para>
+      <para>여기서 보듯이 <classname>FileUploadBean</classname>은 파일을 담고 있는
+      <literal>byte[]</literal> 타입의 프로퍼티를 가진다. 컨트롤러는 스프링이 멀티파트 객체를
+      실제로 변환하는 방법을 알게 하고 리볼버가 빈이 지정한 프로퍼티를 찾도록 하는 커스텀 에디터를
+      등록한다. 이 예제에서는 빈의 <literal>byte[]</literal> 프로퍼티 자체로는 아무것도
+      하지 않지만 실사례에서는 원하는 무엇이든지 할 수 있다.(데이터베이스에 저장하거나 누군가에게
+      메일로 보내는 등)</para>
 
-      <para>An equivalent example in which a file is bound straight to a
-      String-typed property on a form backing object might look like
-      this:</para>
+      <para>폼을 지원하는 객체(form backing object)의 문자열 타입의 프로퍼티에 직접
+      바인딩되는 동일한 예제는 다음과 같을 것이다.</para>
 
       <programlisting language="java"><![CDATA[public class FileUploadController extends SimpleFormController {
 
     public void onSubmitAction(ActionRequest request, ActionResponse response,
             Object command, BindException errors) throws Exception {
 
-        // cast the bean
+        // 빈을 캐스팅한다
         FileUploadBean bean = (FileUploadBean) command;
 
-        // let's see if there's content there
+        // 내용이 존재하는지 검사한다
         String file = bean.getFile();
         if (file == null) {
-            // hmm, that's strange, the user did not upload anything
+            // 흠.. 뭔가 잘못됐다. 사용자가 아무것도 업로드하지 않았다
         }
 
-        // do something with the file here
+        // 여기서 파일로 어떤 작업을 한다
     }
 
     protected void initBinder(
         PortletRequest request, PortletRequestDataBinder binder) throws Exception {
 
-        // to actually be able to convert Multipart instance to a String
-        // we have to register a custom editor
+        // 실제로 Multipart 인스턴스를 문자열로 변환할 수 있게 하려면
+        // 커스텀 에디터를 등록해야 한다
         binder.registerCustomEditor(String.class,
             new StringMultipartFileEditor());
-        // now Spring knows how to handle multipart objects and convert
+        // 이제 스프링이 멀티파트 객체를 어떻게 다루고 어떻게 변환하는지 알고 있다
     }
 }
 
@@ -1187,31 +1016,29 @@ public class FileUploadBean {
     }
 }]]></programlisting>
 
-      <para>Of course, this last example only makes (logical) sense in the
-      context of uploading a plain text file (it wouldn't work so well in
-      the case of uploading an image file).</para>
+      <para>물론 이 마지막 예제는 평범한 텍스트 파일을 업로드하는 경우에만 (논리적으로) 말이된다.
+      (이미지 파일을 업로드하는 경우에는 제대로 동작하지 않을 것이다.)</para>
 
-      <para>The third (and final) option is where one binds directly to a
-      <interfacename>MultipartFile</interfacename> property declared on
-      the (form backing) object's class. In this case one does not need to
-      register any custom property editor because there is no type
-      conversion to be performed.</para>
+      <para>세번째(그리고 마지막) 선택사항은 (폼을 지원하는) 객체의 클래스에 선언한
+      <interfacename>MultipartFile</interfacename> 프로퍼티에 직접 바인딩하는 것이다.
+      이 경우에는 타입 변환을 수행할 필요가 없으므로 어떤 커스텀 프로퍼티 에디터도 등록할
+      필요가 없다.</para>
 
       <programlisting language="java"><![CDATA[public class FileUploadController extends SimpleFormController {
 
     public void onSubmitAction(ActionRequest request, ActionResponse response,
             Object command, BindException errors) throws Exception {
 
-        // cast the bean
+        // 빈을 캐스팅한다
         FileUploadBean bean = (FileUploadBean) command;
 
-        // let's see if there's content there
+        // 내용이 존재하는지 검사한다
         MultipartFile file = bean.getFile();
         if (file == null) {
-            // hmm, that's strange, the user did not upload anything
+            // 흠.. 뭔가 잘못됐다. 사용자가 아무것도 업로드하지 않았다
         }
 
-        // do something with the file here
+        // 여기서 파일로 어떤 작업을 한다
     }
 }
 
@@ -1231,31 +1058,25 @@ public class FileUploadBean {
   </section>
 
   <section id="portlet-exceptionresolver">
-    <title>Handling exceptions</title>
+    <title>예외 처리</title>
 
-    <para>Just like Servlet MVC, Portlet MVC provides
-    <interfacename>HandlerExceptionResolver</interfacename>s to ease the
-    pain of unexpected exceptions that occur while your request is being
-    processed by a handler that matched the request. Portlet MVC also
-    provides a portlet-specific, concrete
-    <classname>SimpleMappingExceptionResolver</classname> that enables you
-    to take the class name of any exception that might be thrown and map it
-    to a view name.</para>
+    <para>서블릿 MVC와 마찬가지로 포틀릿 MVC도 요청에 적합한 핸들러가 요청을 처리하는 도중에
+    발생한 의도하지 않는 예외를 쉽게 처리해주는
+    <interfacename>HandlerExceptionResolver</interfacename>를 제공한다. 포틀릿
+    MVC도 던져질 예의의 클래스명을 받아서 뷰 이름에 매핑할 수 있도록 포틀릿에 한정된 구현체
+    <classname>SimpleMappingExceptionResolver</classname>를 제공한다.</para>
   </section>
 
   <section id="portlet-annotation">
-    <title>Annotation-based controller configuration</title>
+    <title>어노테이션에 기반한 컨트롤러 구성</title>
 
-    <para>Spring 2.5 introduced an annotation-based programming model for MVC
-    controllers, using annotations such as
-    <interfacename>@RequestMapping</interfacename>,
+    <para>스프링 2.5는 <interfacename>@RequestMapping</interfacename>,
     <interfacename>@RequestParam</interfacename>,
-    <interfacename>@ModelAttribute</interfacename>, etc. This annotation
-    support is available for both Servlet MVC and Portlet MVC. Controllers
-    implemented in this style do not have to extend specific base classes or
-    implement specific interfaces. Furthermore, they do not usually have
-    direct dependencies on Servlet or Portlet API's, although they can easily
-    get access to Servlet or Portlet facilities if desired.</para>
+    <interfacename>@ModelAttribute</interfacename> 등의 어노테이션을 사용해서 MVC
+    컨트롤러에 어노테이션에 기반한 프로그래밍 모델을 도입했다. 이 어노테이션 지원은 서블릿 MVC와
+    포틀릿 MVC 모두에서 사용할 수 있다. 이 방식으로 구현한 컨트롤러는 특정 기반 클래스를 확장하거나
+    특정 인터페이스를 구현하지 않는다. 게다가 원한다면 서블릿이나 포틀릿 기능에 쉽게 접근할 수 있기는
+    하지만 보통은 서블릿이나 포틀릿 API에 직접 의존성을 갖지 않는다.</para>
 
 	<!--
 		PetPortal is no longer included with the Spring distribution as of
@@ -1272,23 +1093,23 @@ public class FileUploadBean {
     </tip>
 	-->
 
-    <para>The following sections document these annotations and how they are
-    most commonly used in a Portlet environment.</para>
+    <para>다음 섹션에서는 이러한 어노테이션을 포틀릿 환경에서 보통 어떻게 사용하는지
+    설명한다.</para>
 
     <section id="portlet-ann-setup">
-      <title>Setting up the dispatcher for annotation support</title>
+      <title>어노테이션 지원에 대한 디스패처 설정</title>
 
-      <para><emphasis><interfacename>@RequestMapping</interfacename> will only be processed
-      if a corresponding <interfacename>HandlerMapping</interfacename> (for type level annotations)
-      and/or <interfacename>HandlerAdapter</interfacename> (for method level annotations) is
-      present in the dispatcher.</emphasis> This is the case by default in both
-      <classname>DispatcherServlet</classname> and <classname>DispatcherPortlet</classname>.</para>
+      <para><emphasis>디스패처에 대응되는 <interfacename>HandlerMapping</interfacename>(타입
+      수준의 어노테이션에서)이나 <interfacename>HandlerAdapter</interfacename>(메서드 수준의
+      어노테이션에서)이 존재하는 경우에만 <interfacename>@RequestMapping</interfacename>를
+      처리할 것이다.</emphasis> 이 동작이 <classname>DispatcherServlet</classname>과
+      <classname>DispatcherPortlet</classname>에서 모두 기본값이다.</para>
 
-      <para>However, if you are defining custom <interfacename>HandlerMappings</interfacename> or
-      <interfacename>HandlerAdapters</interfacename>, then you need to make sure that a
-      corresponding custom <classname>DefaultAnnotationHandlerMapping</classname>
-      and/or <classname>AnnotationMethodHandlerAdapter</classname> is defined as well
-      - provided that you intend to use <interfacename>@RequestMapping</interfacename>.</para>
+      <para>하지만 커스텀 <interfacename>HandlerMappings</interfacename>이나
+      <interfacename>HandlerAdapters</interfacename>를 정의했다면 대응되는
+      <classname>DefaultAnnotationHandlerMapping</classname>나
+      <classname>AnnotationMethodHandlerAdapter</classname>도 역시 정의해야 한다.
+      (<interfacename>@RequestMapping</interfacename>를 사용할 것이라면)</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -1300,44 +1121,40 @@ public class FileUploadBean {
 
     &lt;bean class="org.springframework.web.portlet.mvc.annotation.AnnotationMethodHandlerAdapter"/&gt;
 
-    <lineannotation>// ... (controller bean definitions) ...</lineannotation>
+    <lineannotation>// ... (컨트롤러 빈 정의) ...</lineannotation>
 
 &lt;/beans&gt;
 </programlisting>
 
-      <para>Defining a <classname>DefaultAnnotationHandlerMapping</classname>
-      and/or <classname>AnnotationMethodHandlerAdapter</classname> explicitly
-      also makes sense if you would like to customize the mapping strategy, e.g.
-      specifying a custom <interfacename>WebBindingInitializer</interfacename> (see below).</para>
+      <para>매핑 전략을 커스터마이징한다면
+      <classname>DefaultAnnotationHandlerMapping</classname>이나
+      <classname>AnnotationMethodHandlerAdapter</classname>를 명시적으로 정의하는 것도
+      절적하다. 예를 들어 커스텀 <interfacename>WebBindingInitializer</interfacename>를
+      지정하는 것 등이다.(아래 참조)</para>
     </section>
 
     <section id="portlet-ann-controller">
-      <title>Defining a controller with
-      <interfacename>@Controller</interfacename></title>
+      <title><interfacename>@Controller</interfacename>로
+      컨트롤러 정의하기</title>
 
-      <para>The <interfacename>@Controller</interfacename> annotation indicates
-      that a particular class serves the role of a <emphasis>controller</emphasis>.
-      There is no need to extend any controller base class or reference the
-      Portlet API. You are of course still able to reference Portlet-specific
-      features if you need to.</para>
+      <para><interfacename>@Controller</interfacename> 어노테이션은 특정 클래스가
+      <emphasis>컨트롤러</emphasis>의 역할을 한다는 것을 나타낸다. 여기서 어떤 기반 컨트롤러
+      클래스를 확장하거나 포틀릿 API를 참조할 필요가 없다. 필요하다면 여전히 포틀릿에 특화된 기능을
+      참조할 수 있다.</para>
 
-      <para>The basic purpose of the <interfacename>@Controller</interfacename>
-      annotation is to act as a stereotype for the annotated class, indicating
-      its role. The dispatcher will scan such annotated classes for mapped
-      methods, detecting <interfacename>@RequestMapping</interfacename>
-      annotations (see the next section).</para>
+      <para><interfacename>@Controller</interfacename> 어노테이션의 기본적인 목적은
+      어노테이션이 붙은 클래스에 스테레오타입으로(클래스의 역할을 나타내면서) 동작하는 것이다. 디스패처는
+      매핑된 메서드와 <interfacename>@RequestMapping</interfacename> 어노테이션을 참조하기
+      위해서 이렇게 어노테이션이 붙은 클래스를 스캔할 것이다.(다음 섹션을 참고해라.)</para>
 
-      <para>Annotated controller beans may be defined explicitly,
-      using a standard Spring bean definition in the dispatcher's context.
-      However, the <interfacename>@Controller</interfacename> stereotype also
-      allows for autodetection, aligned with Spring 2.5's general support for
-      detecting component classes in the classpath and auto-registering bean
-      definitions for them.</para>
+      <para>어노테이션이 붙은 컨트롤러 빈은 디스패처의 컨텍스트에서 표준 스프링 빈 정의를 사용해서
+      명시적으로 정의할 것이다. 하지만 <interfacename>@Controller</interfacename>
+      스테레오타입도 클래스패스의 컴포넌트 클래스 탐지와 이 클래스들의 빈 정의의 자동 등록에 대한
+      스프링 2.5의 일반적인 지원으로 자동탐지를 허용한다.</para>
 
-      <para>To enable autodetection of such annotated controllers, you have to add
-      component scanning to your configuration. This is easily achieved by using
-      the <emphasis>spring-context</emphasis> schema as shown in the following
-      XML snippet:</para>
+      <para>이렇게 어노테이션이 붙은 컨트롤러의 자동탐지를 활성화하려면 설정에 컴포넌트 스캔을
+      추가해야 한다. 이는 다음 XML 코드에서 보듯이 <emphasis>spring-context</emphasis>
+      스키마를 사용해서 쉽게 추가할 수 있다.</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -1359,34 +1176,30 @@ public class FileUploadBean {
     </section>
 
     <section id="portlet-ann-requestmapping">
-      <title>Mapping requests with
-      <interfacename>@RequestMapping</interfacename></title>
+      <title><interfacename>@RequestMapping</interfacename>로
+      요청 매핑하기</title>
 
-      <para>The <interfacename>@RequestMapping</interfacename> annotation is used
-      to map portlet modes like 'VIEW'/'EDIT' onto an entire class or a particular
-      handler method. Typically the type-level annotation maps a specific mode
-      (or mode plus parameter condition) onto a form controller, with additional
-      method-level annotations 'narrowing' the primary mapping for specific
-      portlet request parameters.</para>
+      <para><interfacename>@RequestMapping</interfacename> 어노테이션은 전체 클래스나
+      특정 핸들러 메서드에 'VIEW'/'EDIT'같은 포틀릿 모드를 매핑하는데 사용한다. 보통 타입수준의
+      어노테이션은 폼 컨트롤러에 특정 모드(또는 모드에 파라미터를 추가한 상황)를 매핑하고 추가적인
+      메서드 수준의 어노테이션은 특정 포틀릿 요청 파라미터로 주요 매핑을 '제한'한다.</para>
 
       <tip>
-        <para><interfacename>@RequestMapping</interfacename> at the type
-        level may be used for plain implementations of the
-        <interfacename>Controller</interfacename> interface as well.
-        In this case, the request processing code would follow the
-        traditional <literal>handle(Action|Render)Request</literal> signature,
-        while the controller's mapping would be expressed through an
-        <interfacename>@RequestMapping</interfacename> annotation.
-        This works for pre-built <interfacename>Controller</interfacename>
-        base classes, such as <classname>SimpleFormController</classname>,
-        too.</para>
+        <para>타입 수준의 <interfacename>@RequestMapping</interfacename>은
+        <interfacename>Controller</interfacename>의 평범함 구현체에도 사용할 것이다.
+        이 경우에 요청을 처리하는 코드는 전통적인
+        <literal>handle(Action|Render)Request</literal> 시그니처를 따를 것이지만
+        컨트롤러의 매핑은 <interfacename>@RequestMapping</interfacename> 어노테이션으로
+        표현할 것이다. 이는 <classname>SimpleFormController</classname>같은 미리
+        만들어진(pre-built) <interfacename>Controller</interfacename> 기반
+        클래스에서도 동작한다.</para>
 
-        <para>In the following discussion, we'll focus on controllers
-        that are based on annotated handler methods.</para>
+        <para>다음 부분에서 어노테이션이 붙은 핸들러 메서드에 기반한 컨트롤러를 다룰
+        것이다.</para>
       </tip>
 
-      <para>The following is an example of a form controller from the
-      PetPortal sample application using this annotation:</para>
+      <para>다음은 이 어노테이션을 사용한 PetPortal 예제 어플리케이션의
+      폼 컨트롤러 예제이다.</para>
 
       <programlisting language="java">@Controller
 <emphasis role="bold">@RequestMapping("EDIT")</emphasis>
@@ -1404,21 +1217,21 @@ public class PetSitesEditController {
         return this.petSites;
     }
 
-    <emphasis role="bold">@RequestMapping</emphasis>  // default (action=list)
+    <emphasis role="bold">@RequestMapping</emphasis>  // 기본값 (action=list)
     public String showPetSites() {
         return "petSitesEdit";
     }
 
-    <emphasis role="bold">@RequestMapping(params = "action=add")</emphasis>  // render phase
+    <emphasis role="bold">@RequestMapping(params = "action=add")</emphasis>  // 렌더링 단계
     public String showSiteForm(Model model) {
-        // Used for the initial form as well as for redisplaying with errors.
+        // 최초의 폼과 오류를 다시 보여주는 데 사용한다
         if (!model.containsAttribute("site")) {
             model.addAttribute("site", new PetSite());
         }
         return "petSitesAdd";
     }
 
-    <emphasis role="bold">@RequestMapping(params = "action=add")</emphasis>  // action phase
+    <emphasis role="bold">@RequestMapping(params = "action=add")</emphasis>  // 액션 단계
     public void populateSite(
             @ModelAttribute("site") PetSite petSite, BindingResult result,
             SessionStatus status, ActionResponse response) {
@@ -1440,162 +1253,154 @@ public class PetSitesEditController {
     </section>
 
     <section id="portlet-ann-requestmapping-arguments">
-      <title>Supported handler method arguments</title>
+      <title>지원하는 핸들러 메서드 아규먼트</title>
 
-      <para>Handler methods which are annotated with
-      <classname>@RequestMapping</classname> are allowed to have very flexible
-      signatures. They may have arguments of the following types, in arbitrary
-      order (except for validation results, which need to follow right after
-      the corresponding command object, if desired):
+      <para><classname>@RequestMapping</classname> 어노테이션이 붙은 핸들러 메서드는
+      아주 유연한 시그니처를 가질 수 있게 한다. 이 메서드는 임의의 순서(원한다면 커맨드 객체뒤에 와야
+      하는 대응되는 유효성 검사 결과를 제외하고)로 다음 타입의 인자를 가질 것이다.
 
       <itemizedlist>
         <listitem>
-          <para>Request and/or response objects (Portlet API).
-          You may choose any specific request/response type, e.g. PortletRequest /
-          ActionRequest / RenderRequest. An explicitly declared action/render
-          argument is also used for mapping specific request types onto a handler
-          method (in case of no other information given that differentiates
-          between action and render requests).</para>
+          <para>요청 또는 응답 객체(포틀릿 API).
+          PortletRequest / ActionRequest / RenderRequest같은 특정 요청/응답 타입을
+          선택할 것이다. 명시적으로 선언한 action/render 인자도 핸들러 메서드에 특정 요청 타입을
+          매핑하는데 사용한다.(action과 render 요청을 구별하는 어떤 정보도 주어지지 않은
+          경우에)</para>
         </listitem>
 
         <listitem>
-          <para>Session object (Portlet API): of type PortletSession. An argument
-          of this type will enforce the presence of a corresponding session.
-          As a consequence, such an argument will never be <literal>null</literal>.</para>
+          <para>PortletSession 타입의 세션 객체 (포틀릿 API). 이 타입의 인자는 대응되는
+          세션에 존재하게 강제할 것이다. 그 결과 이러한 인자는 <literal>null</literal>이
+          되지 않을 것이다.</para>
         </listitem>
 
         <listitem>
-          <para><classname>org.springframework.web.context.request.WebRequest</classname>
-          or <classname>org.springframework.web.context.request.NativeWebRequest</classname>.
-          Allows for generic request parameter access as well as request/session
-          attribute access, without ties to the native Servlet/Portlet API.</para>
+          <para><classname>org.springframework.web.context.request.WebRequest</classname>나
+          <classname>org.springframework.web.context.request.NativeWebRequest</classname>.
+          네이티브 서블릿/포틀릿 API에 의존하지 않고 요청/세션 속성 접근과 마찬가지로 일반적인
+          요청 파라미터의 접근을 허용한다.</para>
         </listitem>
 
         <listitem>
-          <para><classname>java.util.Locale</classname> for the current request
-          locale (the portal locale in a Portlet environment).</para>
+          <para>현재 요청 로케일에 대한 <classname>java.util.Locale</classname>
+          (포틀릿 환경의 포탈(portal) 로케일)</para>
         </listitem>
 
         <listitem>
-          <para><classname>java.io.InputStream</classname> /
-          <classname>java.io.Reader</classname> for access to the request's content.
-          This will be the raw InputStream/Reader as exposed by the Portlet API.</para>
+          <para>요청의 내용에 접근하는 <classname>java.io.InputStream</classname> /
+          <classname>java.io.Reader</classname>. 이는 포틀릿 API가 노출하는 로우(raw)
+          InputStream/Reader가 될 것이다.</para>
         </listitem>
 
         <listitem>
-          <para><classname>java.io.OutputStream</classname> /
-          <classname>java.io.Writer</classname> for generating the response's content.
-          This will be the raw OutputStream/Writer as exposed by the Portlet API.</para>
+          <para>응답의 내용을 생성하는 <classname>java.io.OutputStream</classname> /
+          <classname>java.io.Writer</classname>. 이는 포틀릿 API가 노출하는 로우(raw)
+          OutputStream/Writer가 될 것이다.</para>
         </listitem>
 
         <listitem>
-          <para><classname>@RequestParam</classname> annotated parameters
-          for access to specific Portlet request parameters. Parameter values
-          will be converted to the declared method argument type.</para>
+          <para>특정 포틀릿 요청 파라미터에 접근하는
+          <classname>@RequestParam</classname> 어노테이션이 붙은 파라미터들. 파라미터
+          값을 선언한 메서드 인자 타입으로 변환할 것이다.</para>
         </listitem>
 
         <listitem>
-          <para><interfacename>java.util.Map</interfacename> /
+          <para>웹 뷰에 노출될 암시적인(implicit) 모델을 풍부하게 하는
+          <interfacename>java.util.Map</interfacename> /
           <interfacename>org.springframework.ui.Model</interfacename> /
-          <classname>org.springframework.ui.ModelMap</classname> for
-          enriching the implicit model that will be exposed to the web view.</para>
+          <classname>org.springframework.ui.ModelMap</classname>.</para>
         </listitem>
 
         <listitem>
-          <para>Command/form objects to bind parameters to: as bean
-          properties or fields, with customizable type conversion, depending
-          on <classname>@InitBinder</classname> methods and/or the
-          HandlerAdapter configuration - see the
-          "<literal>webBindingInitializer</literal>" property on
-          <classname>AnnotationMethodHandlerAdapter</classname>. Such
-          command objects along with their validation results will be
-          exposed as model attributes, by default using the non-qualified
-          command class name in property notation (e.g. "orderAddress" for
-          type "mypackage.OrderAddress"). Specify a parameter-level
-          <classname>ModelAttribute</classname> annotation for declaring a
-          specific model attribute name.</para>
+          <para><classname>@InitBinder</classname> 메서드나 HandlerAdapter 설정에
+          의존하면서 커스터마이징할 수 있는 타입 변환으로 빈 프로퍼티나 필드로 파라미터에 바인드할
+          Command/form 객체.
+          (<classname>AnnotationMethodHandlerAdapter</classname>에
+          "<literal>webBindingInitializer</literal>" 프로퍼티를 봐라.) 이러한 커맨드
+          객체와 그 유효성검사 결과는 기본적으로 프로퍼티 표시법(notation)으로 정규화되지 않은
+          커맨드 클래스를 사용해서 모델 속성으로 노출될 것이다.(예를 들면
+          "mypackage.OrderAddress" 타입의 "orderAddress") 특정 모델 속성 이름을
+          선언하려면 파라미터 수준의 <classname>ModelAttribute</classname>
+          어노테이션을 지정해라.</para>
         </listitem>
 
         <listitem>
-          <para><classname>org.springframework.validation.Errors</classname> /
+          <para>앞의 command/form 객체(바로 앞의 인자)에 대한
+          <classname>org.springframework.validation.Errors</classname> /
           <classname>org.springframework.validation.BindingResult</classname>
-          validation results for a preceding command/form object (the
-          immediate preceding argument).</para>
+          유효성검사 결과.</para>
         </listitem>
 
         <listitem>
-          <para><classname>org.springframework.web.bind.support.SessionStatus</classname>
-          status handle for marking form processing as complete (triggering
-          the cleanup of session attributes that have been indicated by the
-          <classname>@SessionAttributes</classname> annotation at the
-          handler type level).</para>
+          <para>폼 처리를 완료로 표시하는
+          <classname>org.springframework.web.bind.support.SessionStatus</classname>
+          산태 핸들. (핸들러 타입 수준의 <classname>@SessionAttributes</classname>
+          어노테이션이 가리키는 세션 속성을 정리한다.)</para>
         </listitem>
       </itemizedlist></para>
 
-      <para>The following return types are supported for handler methods:
+      <para>핸들러 메서드는 다음의 반환 타입을 지원한다.
 
       <itemizedlist>
         <listitem>
-          <para>A <classname>ModelAndView</classname> object, with the model implicitly
-          enriched with command objects and the results of <literal>@ModelAttribute</literal>
-          annotated reference data accessor methods.</para>
+          <para>커맨드객체와 <literal>@ModelAttribute</literal> 어노테이션이 붙은 참조
+          데이터 접근자 메서드의 결과로 암묵적으로 풍부해진 모델을 가진
+          <classname>ModelAndView</classname> 객체.</para>
         </listitem>
 
         <listitem>
-          <para>A <interfacename>Model</interfacename> object, with the view name implicitly
-          determined through a <interfacename>RequestToViewNameTranslator</interfacename>
-          and the model implicitly enriched with command objects and the results of
-          <literal>@ModelAttribute</literal> annotated reference data accessor methods.</para>
+          <para><interfacename>RequestToViewNameTranslator</interfacename>로
+          암묵적으로 결정된 뷰 이름과 커맨드객체와 <literal>@ModelAttribute</literal>
+          어노테이션이 붙은 참조 데이터 접근자 메서드의 결과로 암묵적으로 풍부해진 모델을 가진
+          <interfacename>Model</interfacename> 객체.</para>
         </listitem>
 
         <listitem>
-          <para>A <interfacename>Map</interfacename> object for exposing a model, with the view name
-          implicitly determined through a <interfacename>RequestToViewNameTranslator</interfacename>
-          and the model implicitly enriched with command objects and the results of
-          <literal>@ModelAttribute</literal> annotated reference data accessor methods.</para>
+          <para><interfacename>RequestToViewNameTranslator</interfacename>로
+          암묵적으로 결정한 뷰이름을 가진 모델을 노출하는 <interfacename>Map</interfacename>
+          객체로 모델은 커맨드 객체와 <literal>@ModelAttribute</literal> 어노테이션이
+          붙은 참조 데이터 접근자 메서드의 결과로 암묵적으로 풍부해진다.</para>
         </listitem>
 
         <listitem>
-          <para>A <interfacename>View</interfacename> object, with the model implicitly
-          determined through command objects and <literal>@ModelAttribute</literal>
-          annotated reference data accessor methods. The handler method may also
-          programmatically enrich the model by declaring a <interfacename>Model</interfacename>
-          argument (see above).</para>
+          <para>커맨드 객체와 <literal>@ModelAttribute</literal> 어노테이션이 붙은 참조
+          데이터 접근자 메서드로 암묵적으로 결정된 모델을 가진
+          <interfacename>View</interfacename> 객체.
+          <interfacename>Model</interfacename> 인자를 선언해서(앞부분 참고) 핸들러
+          메서드도 모델을 프로그래밍적으로 강화할 수도 있다.</para>
         </listitem>
 
         <listitem>
-          <para>A <classname>String</classname> value which is interpreted as view name,
-          with the model implicitly determined through command objects and
-          <literal>@ModelAttribute</literal> annotated reference data accessor methods.
-          The handler method may also programmatically enrich the model by declaring a
-          <interfacename>Model</interfacename> argument (see above).</para>
+          <para>뷰 이름으로 해석되는 <classname>String</classname> 값으로커맨드 객체와
+          <literal>@ModelAttribute</literal> 어노테이션이 붙은 참조 데이터 접근자 메서드로
+          암묵적으로 결정된 모델을 가진다. <interfacename>Model</interfacename> 인자를
+          선언해서(앞부분 참고) 핸들러 메서드도 모델을 프로그래밍적으로 강화할 수도 있다.</para>
         </listitem>
 
         <listitem>
-          <para><literal>void</literal> if the method handles the response itself
-          (e.g. by writing the response content directly).</para>
+          <para>메서드가 직접 응답을 처리하면 <literal>void</literal>이다.
+          (예를 들면 응답 내용을 직접 작성하는 등)</para>
         </listitem>
 
         <listitem>
-          <para>Any other return type will be considered a single model attribute
-          to be exposed to the view, using the attribute name specified through
-          <literal>@ModelAttribute</literal> at the method level (or the default
-          attribute name based on the return type's class name otherwise). The model
-          will be implicitly enriched with command objects and the results of
-          <literal>@ModelAttribute</literal> annotated reference data accessor methods.</para>
+          <para>다른 모든 반환 타입은 메서드 수준의 <literal>@ModelAttribute</literal>로
+          지정한 속성명을 사용해서(그렇지 않으면 방환 타입의 클래스에 기반한 기본 속성명) 뷰로
+          노출하는 단일 모델 속성으로 간주할 것이다. 모델은 커맨드 객체와
+          <literal>@ModelAttribute</literal> 어노테이션이 붙은 참조 데이터 접근자
+          메서드의 결과로 암묵적으로 풍부해진다.</para>
         </listitem>
       </itemizedlist></para>
     </section>
 
     <section id="portlet-ann-requestparam">
-      <title>Binding request parameters to method parameters with
-      <classname>@RequestParam</classname></title>
+      <title><classname>@RequestParam</classname>로 요청 파라미터를
+      메서드 파라미터로 바인딩하기</title>
 
-      <para>The <classname>@RequestParam</classname> annotation is used to
-      bind request parameters to a method parameter in your controller.</para>
+      <para>컨트롤러에서 요청 파라미터를 메서드 파라미터로 바인딘하는데
+      <classname>@RequestParam</classname> 어노테이션을 사용한다.</para>
 
-      <para>The following code snippet from the PetPortal sample application
-      shows the usage:</para>
+      <para>PetPortal 예제 어플리케이션의 다음 코드는
+      <classname>@RequestParam</classname>의 사용방법을 보여준다.</para>
 
       <programlisting language="java">@Controller
 @RequestMapping("EDIT")
@@ -1613,45 +1418,38 @@ public class PetSitesEditController {
 }
 </programlisting>
 
-      <para>Parameters using this annotation are required by default, but you
-      can specify that a parameter is optional by setting
-      <interfacename>@RequestParam</interfacename>'s
-      <literal>required</literal> attribute to <literal>false</literal> (e.g.,
-      <literal>@RequestParam(value="id", required=false)</literal>).</para>
+      <para>이 어노테이션을 사용한 파라미터들은 기본적으로 필수값이지만
+      <interfacename>@RequestParam</interfacename>의 <literal>required</literal>
+      속성을 <literal>false</literal>로 지정해서 해당 파라미터를 선택적인 값으로 지정할 수 있다.
+      (예시: <literal>@RequestParam(value="id", required=false)</literal>)</para>
     </section>
 
     <section id="portlet-ann-modelattrib">
-      <title>Providing a link to data from the model with
-      <classname>@ModelAttribute</classname></title>
+      <title><classname>@ModelAttribute</classname>이 붙은
+      모델에서 데이터로의 링크 제공하기</title>
 
-      <para><classname>@ModelAttribute</classname> has two usage scenarios in
-      controllers. When placed on a method parameter,
-      <classname>@ModelAttribute</classname> is used to map a model attribute
-      to the specific, annotated method parameter (see the
-      <literal>populateSite()</literal> method below). This is how the
-      controller gets a reference to the object holding the data entered in
-      the form. In addition, the parameter can be declared as the specific
-      type of the form backing object rather than as a generic
-      <classname>java.lang.Object</classname>, thus increasing type
-      safety.</para>
+      <para><classname>@ModelAttribute</classname>은 컨트롤러에서 두가지 사용 시나리오를
+      가진다. 메서드 파라미터에 사용한 경우 모델 속성을 어노트에션이 붙은 특정 메서드 파라미터에 매핑할
+      때 사용한다.(다음 예제의 <literal>populateSite()</literal> 메서드를 봐라.) 이것이
+      컨트롤러가 폼에서 들어온 데이터를 가진 객체에 대한 참조를 얻는 방법이다. 게다가 파라미터를
+      일반적인 <classname>java.lang.Object</classname>가 아니라 폼 지원 객체(form
+      backing object)의 특정 타입으로 선언할 수 있으므로 타입 안정성을 높혀준다.</para>
 
-      <para><classname>@ModelAttribute</classname> is also used at the method
-      level to provide <emphasis>reference data</emphasis> for the model (see
-      the <literal>getPetSites()</literal> method below). For this usage
-      the method signature can contain the same types as documented above for
-      the <classname>@RequestMapping</classname> annotation.</para>
+      <para><classname>@ModelAttribute</classname>을 모델에 대한 <emphasis>참조
+      데이터(reference data)</emphasis>를 제공하려고 메서드 수준에서 사용할 수도 있다. (다음
+      예제의 <literal>getPetSites()</literal>를 봐라.) 이 사용방법에서는 메서드 시그니처가
+      위의 <classname>@RequestMapping</classname> 어노테이션에서 문서화된 것과 같은
+      타입을 담고 있을 수 있다.</para>
 
       <para><emphasis>Note:</emphasis> <classname>@ModelAttribute</classname>
-      annotated methods will be executed <emphasis>before</emphasis> the
-      chosen <classname>@RequestMapping</classname> annotated handler method.
-      They effectively pre-populate the implicit model with specific attributes,
-      often loaded from a database. Such an attribute can then already be
-      accessed through <classname>@ModelAttribute</classname> annotated
-      handler method parameters in the chosen handler method, potentially
-      with binding and validation applied to it.</para>
+      어노테이션이 붙은 메서드는 선택된 <classname>@RequestMapping</classname> 어노테이션이
+      붙은 핸들러 메서드 <emphasis>이전에</emphasis> 실행될 것이다. 이 메서드들은 효율적으로
+      특성 속성(때로는 데이터베이스에서 가져온)을 가진 암묵적인 모델을 미리 존재하게 한다. 이러한
+      속성은 선택된 핸들러 메서드에서 <classname>@ModelAttribute</classname> 어노테이션이
+      붙은 핸들러 메서드(잠재적으로 바인딩과 유효성검사를 적용해서)를 통해서 이미
+      접근했을 수 있다.</para>
 
-      <para>The following code snippet shows these two usages of this
-      annotation:</para>
+      <para>다음 예제 코드는 이 어노테이션의 두가지 사용방법을 보여준다.</para>
 
       <programlisting language="java">@Controller
 @RequestMapping("EDIT")
@@ -1665,7 +1463,7 @@ public class PetSitesEditController {
         return this.petSites;
     }
 
-    @RequestMapping(params = "action=add")  // action phase
+    @RequestMapping(params = "action=add")  // action 단계
     public void populateSite(
             <emphasis role="bold">@ModelAttribute("site")</emphasis> PetSite petSite, BindingResult result,
             SessionStatus status, ActionResponse response) {
@@ -1681,18 +1479,15 @@ public class PetSitesEditController {
     </section>
 
     <section id="portlet-ann-sessionattrib">
-      <title>Specifying attributes to store in a Session with
-      <classname>@SessionAttributes</classname></title>
+      <title><classname>@SessionAttributes</classname>로 세션에
+      저장할 속성 지정하기</title>
 
-      <para>The type-level <classname>@SessionAttributes</classname>
-      annotation declares session attributes used by a specific handler.
-      This will typically list the names of model attributes or types of
-      model attributes which should be
-      transparently stored in the session or some conversational storage,
-      serving as form-backing beans between subsequent requests.</para>
+      <para>최상위 <classname>@SessionAttributes</classname> 어노테이션은 특정
+      핸들러가 사용하는 세션 속성을 선언한다. 이는 보통 모델 속성의 이름이나 모델 속성의 타입의
+      목록이 될 것이고 이 모델 속성은 투명하게 세션이나 대화식 스토리지에에 저장해야 하고
+      뒤이은 요청간에 폼지원 빈으로 제공한다.</para>
 
-      <para>The following code snippet shows the usage of this
-      annotation:</para>
+      <para>다음 코드는 이 어노테이션의 사용방법을 보여준다.</para>
 
       <programlisting language="java">@Controller
 @RequestMapping("EDIT")
@@ -1704,41 +1499,37 @@ public class PetSitesEditController {
     </section>
 
     <section id="portlet-ann-webdatabinder">
-      <title>Customizing <classname>WebDataBinder</classname>
-      initialization</title>
+      <title><classname>WebDataBinder</classname> 초기화
+      커스터마이징</title>
 
-      <para>To customize request parameter binding with PropertyEditors, etc.
-      via Spring's <classname>WebDataBinder</classname>, you can either use
-      <interfacename>@InitBinder</interfacename>-annotated methods within your
-      controller or externalize your configuration by providing a custom
-      <interfacename>WebBindingInitializer</interfacename>.</para>
+      <para>스프링의 <classname>WebDataBinder</classname>를 통해서 PropertyEditor
+      등으로 요청 파라미터 바인딩을 커스터마이징하려면 컨트롤러내에서
+      <interfacename>@InitBinder</interfacename> 어노테이션이 붙은 메서드를 사용하거나
+      커스텀 <interfacename>WebBindingInitializer</interfacename>를 제공해서 설정을
+      외부로 내낼 수 있다(externalize).</para>
 
       <section id="portlet-ann-initbinder">
-        <title>Customizing data binding with
-        <interfacename>@InitBinder</interfacename></title>
+        <title><interfacename>@InitBinder</interfacename>로
+        데이터 바인딩 커스터마이징하기</title>
 
-        <para>Annotating controller methods with
-        <interfacename>@InitBinder</interfacename> allows you to configure web
-        data binding directly within your controller class.
-        <interfacename>@InitBinder</interfacename> identifies methods which
-        initialize the <classname>WebDataBinder</classname> which will be used
-        for populating command and form object arguments of annotated handler
-        methods.</para>
+        <para><interfacename>@InitBinder</interfacename> 어노테이션이 붙은 컨트롤러
+        메서드로 컨트롤러 클래스에서 웹 데이터 바인딩을 직접 설정할 수 있다.
+        <interfacename>@InitBinder</interfacename>는 어노테이션이 붙은 핸들러 메서드의
+        커맨드와 폼 객체 아규먼트를 유지하는데 사용할
+        <classname>WebDataBinder</classname>를 초기화하는 메서드를 식별한다.</para>
 
-        <para>Such init-binder methods support all arguments that
-        <interfacename>@RequestMapping</interfacename> supports, except for
-        command/form objects and corresponding validation result objects.
-        Init-binder methods must not have a return value. Thus, they are
-        usually declared as <literal>void</literal>. Typical arguments include
-        <classname>WebDataBinder</classname> in combination with
-        <interfacename>WebRequest</interfacename> or
-        <classname>java.util.Locale</classname>, allowing code to register
-        context-specific editors.</para>
+        <para>이러한 init-binder 메서드는
+        <interfacename>@RequestMapping</interfacename>이 지원하는 아규먼트 중
+        커맨드/폼 객체와 이에 대응되는 유효성검사 결과 객체를 제외한 모든 아규먼트를 지원한다.
+        init-binder 메서드는 반드시 반환값을 갖지 않아야 한다. 그러므로 일반적으로
+        <literal>void</literal>로 선언한다. 전형적인 아규먼트는 컨텍스트에 특화된 에디터를
+        등록하는 코드를 허용하는 <interfacename>WebRequest</interfacename>나
+        <classname>java.util.Locale</classname>를 조합한
+        <classname>WebDataBinder</classname>를 포함한다.</para>
 
-        <para>The following example demonstrates the use of
-        <interfacename>@InitBinder</interfacename> for configuring a
-        <classname>CustomDateEditor</classname> for all
-        <classname>java.util.Date</classname> form properties.</para>
+        <para>다음 예제는 모든 <classname>java.util.Date</classname> 폼
+        프로퍼티에 대한 <classname>CustomDateEditor</classname>를 설정하는
+        <interfacename>@InitBinder</interfacename>의 사용방법을 보여준다.</para>
 
         <programlisting language="java">@Controller
 public class MyFormController {
@@ -1755,62 +1546,46 @@ public class MyFormController {
       </section>
 
       <section id="portlet-ann-webbindinginitializer">
-        <title>Configuring a custom
-        <interfacename>WebBindingInitializer</interfacename></title>
+        <title>커스텀 <interfacename>WebBindingInitializer</interfacename>
+        설정</title>
 
-        <para>To externalize data binding initialization, you can provide a
-        custom implementation of the
-        <interfacename>WebBindingInitializer</interfacename> interface, which
-        you then enable by supplying a custom bean configuration for an
-        <classname>AnnotationMethodHandlerAdapter</classname>, thus overriding
-        the default configuration.</para>
+        <para>데이터 바인딩 초기화를 외부화하려고
+        <interfacename>WebBindingInitializer</interfacename> 인터페이스의 커스텀
+        구현체를 제공할 수 있고 <classname>AnnotationMethodHandlerAdapter</classname>의
+        커스텀 빈 설정을 제공해서 활성화하므로 기본 설정을 오버라이딩한다.</para>
       </section>
     </section>
   </section>
 
   <section id="portlet-deployment">
-    <title>Portlet application deployment</title>
+    <title>포틀릿 어플리케이션 배포</title>
 
-    <para>The process of deploying a Spring Portlet MVC application is no
-    different than deploying any JSR-168 Portlet application. However, this
-    area is confusing enough in general that it is worth talking about here
-    briefly.</para>
+    <para>스프링 포틀릿 MVC 어플리케이션을 배포하는 과정은 JSR-168 포틀릿 어플리케이션을 배포하는
+    과정과 다르지 않다. 하지만 이 부분은 좀 헷갈리므로 여기서 간략히 얘기하고자 한다.</para>
 
-    <para>Generally, the portal/portlet container runs in one webapp in your
-    servlet container and your portlets run in another webapp in your
-    servlet container. In order for the portlet container webapp to make
-    calls into your portlet webapp it must make cross-context calls to a
-    well-known servlet that provides access to the portlet services defined
-    in your <literal>portlet.xml</literal> file.</para>
+    <para>보통 포탈(portal)/포틀릿 컨테이너는 서블릿 컨테이터에서 웹앱(webapp)에서 실행되고
+    포틀릿은 서블릿 컨데이터의 다른 웹앱에서 실행된다. 포틀릿 컨테이너 웹앱이 포틀릿 웹앱을 호출하게
+    하려면 <literal>portlet.xml</literal> 파일에 정의한 포틀릿 서비스에 접근할 수 있는 잘
+    알려진 서블릿을 호출하는 교차컨텍스트(cross-context)를 구성해야 한다.</para>
 
-    <para>The JSR-168 specification does not specify exactly how this should
-    happen, so each portlet container has its own mechanism for this, which
-    usually involves some kind of “deployment process” that makes changes to
-    the portlet webapp itself and then registers the portlets within the
-    portlet container.</para>
+    <para>JSR-168 명세가 이 부분이 어떻게 이뤄지는지 정확히 명시하지 않으므로 각 포틀릿 컨테이너는
+    이 부분에 대한 자신만의 메카니즘을 가진다. 이 메카니즘은 보통 포틀릿 웹 앱 자체를 변경하는 종류의
+    "배포 과정"을 포함하고 있고 배포  과정후에 포틀릿 컨테이너 내에 포틀릿을 등록한다.</para>
 
-    <para>At a minimum, the <literal>web.xml</literal> file in your portlet
-    webapp is modified to inject the well-known servlet that the portlet
-    container will call. In some cases a single servlet will service all
-    portlets in the webapp, in other cases there will be an instance of the
-    servlet for each portlet.</para>
+    <para>포틀릿 컨테이너가 호출할 유명한 서블릿을 주입하기 위해 포틀릿 웹앱의
+    <literal>web.xml</literal>를 최소한으로 수정한다. 일부의 경우 단일 서블릿이 웹앱의 모든
+    포틀릿을 서비스하지만 각 포틀릿마다 서블릿 인스턴스가 존재하는 경우도 있다.</para>
 
-    <para>Some portlet containers will also inject libraries and/or
-    configuration files into the webapp as well. The portlet container must
-    also make its implementation of the Portlet JSP Tag Library available to
-    your webapp.</para>
+    <para>일부 포틀릿 컨테이너도 웹앱에 라이브러리나 설정 파일을 주입할 것이다. 포틀릿 컨테이너도
+    웹앱에서 사용할 수 있는 Portlet JSP Tag Library 구현체를 구성해야 한다.</para>
 
-    <para>The bottom line is that it is important to understand the
-    deployment needs of your target portal and make sure they are met
-    (usually by following the automated deployment process it provides).
-    Be sure to carefully review the documentation from your portal for this
-    process.</para>
+    <para>배포(deployment)를 이해하는데 중요한 요점은 대상 포탈(porta)이 필요하고 포탈과
+    만나도록 해야한다는 것이다.(보통은 자동화된 배포과정으로 제공한다.) 이 과정에 대한
+    포탈(portal)의 문서를 자세히 읽어봐라.</para>
 
-    <para>Once you have deployed your portlet, review the resulting
-    <literal>web.xml</literal> file for sanity. Some older portals have
-    been known to corrupt the definition of the
-    <classname>ViewRendererServlet</classname>, thus breaking the rendering
-    of your portlets.</para>
+    <para>포틀릿을 배포하고 나면 최종 <literal>web.xml</literal> 파일이 정상정인지 살펴봐라.
+    일부 오래된 포탈은 <classname>ViewRendererServlet</classname> 정의를 잘못되게
+    하므로 포틀릿 렌더링을 깨뜨린다.</para>
   </section>
 
 </chapter>
