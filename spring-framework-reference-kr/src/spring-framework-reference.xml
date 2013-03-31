@@ -398,12 +398,11 @@
   </part>
 
   <part id="spring-integration">
-    <title>Integration</title>
+    <title>통합</title>
 
     <partintro id="spring-integration-intro">
-      <para>This part of the reference documentation covers the Spring
-      Framework's integration with a number of Java EE (and related)
-      technologies.</para>
+      <para>레퍼런스 문서의 이번 부분에서는 스프링 프레임워크를 다수의 Java EE(혹은 관련된)
+      기술과 통합하는 내용을 다룬다.</para>
 
       <itemizedlist>
         <listitem>

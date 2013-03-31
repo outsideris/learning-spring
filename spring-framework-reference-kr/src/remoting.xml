@@ -2,71 +2,65 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="remoting">
-  <title>Remoting and web services using Spring</title>
+  <title>스프링을 사용한 원격작업(remoting) 및 웹 서비스</title>
 
   <section id="remoting-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>Spring features integration classes for remoting support using
-    various technologies. The remoting support eases the development of
-    remote-enabled services, implemented by your usual (Spring) POJOs.
-    Currently, Spring supports the following remoting technologies: <itemizedlist>
+    <para>스프링은 다양한 기술을 사용해서 원격 지원에 대한 통합 클래스를 제공한다. 원격 지원은
+    일반적인 (스프링) POJO를 구현해서 원격이 가능한 서비스의 배포를 쉽게 한다.
+    현재 스프링은 다음의 원격 기술을 지원한다. <itemizedlist>
         <listitem>
-          <para><emphasis>Remote Method Invocation (RMI)</emphasis>. Through
-          the use of the <classname>RmiProxyFactoryBean</classname> and the
-          <classname>RmiServiceExporter</classname> Spring supports both
-          traditional RMI (with <interfacename>java.rmi.Remote</interfacename>
-          interfaces and
-          <exceptionname>java.rmi.RemoteException</exceptionname>) and
-          transparent remoting via RMI invokers (with any Java
-          interface).</para>
+          <para><emphasis>원격 메서드 호출 (RMI, Remote Method Invocation)</emphasis>.
+          <classname>RmiProxyFactoryBean</classname>와
+          <classname>RmiServiceExporter</classname>를 사용하더라도 스프링은 전통전이
+          두 RMI(<interfacename>java.rmi.Remote</interfacename>인터페이스와
+          <exceptionname>java.rmi.RemoteException</exceptionname>)와 RMI
+          인보커(어떤 자바 인터페이스로도)를 통한 투명한 원격작업을 지원한다.</para>
         </listitem>
 
         <listitem>
-          <para><emphasis>Spring's HTTP invoker</emphasis>. Spring provides a
-          special remoting strategy which allows for Java serialization via
-          HTTP, supporting any Java interface (just like the RMI invoker). The
-          corresponding support classes are
-          <classname>HttpInvokerProxyFactoryBean</classname> and
-          <classname>HttpInvokerServiceExporter</classname>.</para>
+          <para><emphasis>스프링의 HTTP 인보커</emphasis>. 스프링은 모든 Java
+          인터페이스를 지원하면서(RMI 인보커처럼) HTTP를 통해 자바 직렬화를 할 수 있는 특수한
+          원격전략을 제공한다. 이에 대응되는 지원 클래스는
+          <classname>HttpInvokerProxyFactoryBean</classname>와
+          <classname>HttpInvokerServiceExporter</classname>이다.</para>
         </listitem>
 
         <listitem>
-          <para><emphasis>Hessian</emphasis>. By using Spring's
-          <classname>HessianProxyFactoryBean</classname> and the
-          <classname>HessianServiceExporter</classname> you can transparently
-          expose your services using the lightweight binary HTTP-based
-          protocol provided by Caucho.</para>
+          <para><emphasis>해시안(Hessian)</emphasis>. 스프링의
+          <classname>HessianProxyFactoryBean</classname>와
+          <classname>HessianServiceExporter</classname>를 사용해서 Caucho가
+          제공하는 HTTP기반의 경량 바이너리 프로토콜로 서비스를 투명하게 노출할 수 있다.</para>
         </listitem>
 
         <listitem>
-          <para><emphasis>Burlap</emphasis>. Burlap is Caucho's XML-based
-          alternative to Hessian. Spring provides support classes such as
-          <classname>BurlapProxyFactoryBean</classname> and
-          <classname>BurlapServiceExporter</classname>.</para>
+          <para><emphasis>버랩(Burlap)</emphasis>. 버랩은 Caucho이 XML 기반으로 만든
+          해시안의 대안이다. 스프링은 <classname>BurlapProxyFactoryBean</classname>와
+          <classname>BurlapServiceExporter</classname>같은 지원 클래스를
+          제공한다.</para>
         </listitem>
 
         <listitem>
-          <para><emphasis>JAX-RPC</emphasis>. Spring provides remoting support
-          for web services via JAX-RPC (J2EE 1.4's web service API).</para>
+          <para><emphasis>JAX-RPC</emphasis>. 스프링은 JAX-RPC(J2EE 1.4의 웹 서비스
+          API)를 사용하는 웹 서비스의 원격 지원을 제공한다.</para>
         </listitem>
 
         <listitem>
-          <para><emphasis>JAX-WS</emphasis>. Spring provides remoting support
-          for web services via JAX-WS (the successor of JAX-RPC, as introduced
-          in Java EE 5 and Java 6).</para>
+          <para><emphasis>JAX-WS</emphasis>. 스프링은 JAX-WS(JAX-RPC의 후계자로
+          Java EE 5와 Java 6에서 도입되었다.)를 사용하는 웹 서비스의 원격 지원을
+          제공한다.</para>
         </listitem>
 
         <listitem>
-          <para><emphasis>JMS</emphasis>. Remoting using JMS as the underlying
-          protocol is supported via the
-          <classname>JmsInvokerServiceExporter</classname> and
-          <classname>JmsInvokerProxyFactoryBean</classname> classes.</para>
+          <para><emphasis>JMS</emphasis>. 의존 프로토콜로 JMS를 사용하는 원격은
+          <classname>JmsInvokerServiceExporter</classname>와
+          <classname>JmsInvokerProxyFactoryBean</classname> 클래스로
+          지원한다.</para>
         </listitem>
       </itemizedlist></para>
 
-    <para>While discussing the remoting capabilities of Spring, we'll use the
-    following domain model and corresponding services:</para>
+    <para>스프링의 원격 기능을 설명하면서 다음의 도메인 모델과 서비스를 사용할 것이다.</para>
 
     <programlisting language="java">public class Account implements Serializable{
 
@@ -95,84 +89,78 @@
     public List&lt;Account&gt; getAccounts(String name) throws RemoteException;
 }</programlisting>
 
-    <programlisting language="java"><lineannotation>// the implementation doing nothing at the moment</lineannotation>
+    <programlisting language="java"><lineannotation>// 이 구현체는 지금은 아무것도 하지 않는다</lineannotation>
 public class AccountServiceImpl implements AccountService {
 
     public void insertAccount(Account acc) {
-        <lineannotation>// do something...</lineannotation>
+        <lineannotation>// 어떤 작업을 한다...</lineannotation>
     }
-  
+
     public List&lt;Account&gt; getAccounts(String name) {
-        <lineannotation>// do something...</lineannotation>
+        <lineannotation>// 어떤 작업을 한다...</lineannotation>
     }
 }</programlisting>
 
-    <para>We will start exposing the service to a remote client by using RMI
-    and talk a bit about the drawbacks of using RMI. We'll then continue to
-    show an example using Hessian as the protocol.</para>
+    <para>RMI를 사용해서 원격 클라이언트에 서비스를 노출할 것이고 RIM를 사용할 때의
+    단점을 약간 얘기할 것이다. 그 다음 해시안을 프로토콜로 사용하는 예제를 계속해서 볼
+    것이다.</para>
   </section>
 
   <section id="remoting-rmi">
-    <title>Exposing services using RMI</title>
+    <title>RMI를 사용해서 서비스 노출하기</title>
 
-    <para>Using Spring's support for RMI, you can transparently expose your
-    services through the RMI infrastructure. After having this set up, you
-    basically have a configuration similar to remote EJBs, except for the fact
-    that there is no standard support for security context propagation or
-    remote transaction propagation. Spring does provide hooks for such
-    additional invocation context when using the RMI invoker, so you can for
-    example plug in security frameworks or custom security credentials
-    here.</para>
+    <para>스프링의 RMI 지원을 사용해서 RMI 인프라를 통해 서비스를 투명하게 노출할 수 있다.
+    이 설정을 한 후 보안 컨텍스트 전파나 원격 트랜잭션 전파에 대한 지원이 없다는 점을 제외하면 원격
+    EJB와 유사한 설정을 가진다. RMI 인보커를 사용할 때 추가적인 호출 컨텍스트같은 훅(hook)을
+    스프링이 제공하므로 여기서 보안 프레임워크나 커스텀 보안 자격(credentials)등을 연결할 수
+    있다.</para>
 
     <section id="remoting-rmi-server">
-      <title>Exporting the service using the
-      <classname>RmiServiceExporter</classname></title>
+      <title><classname>RmiServiceExporter</classname>를
+      사용해서 서비스 내보내기(export)</title>
 
-      <para>Using the <classname>RmiServiceExporter</classname>, we can expose
-      the interface of our AccountService object as RMI object. The interface
-      can be accessed by using <classname>RmiProxyFactoryBean</classname>, or
-      via plain RMI in case of a traditional RMI service. The
-      <classname>RmiServiceExporter</classname> explicitly supports the
-      exposing of any non-RMI services via RMI invokers.</para>
+      <para><classname>RmiServiceExporter</classname>를 사용해서 RMI 객체로
+      AccountService 객체의 인터페이스를 노출할 수 있다. 이 인터페이스는
+      <classname>RmiProxyFactoryBean</classname>으로 접근할 수 있고 전통적인 RMI
+      서비스인 경우에는 평범한 RMI로 접근할 수 있다.
+      <classname>RmiServiceExporter</classname>는 RMI 인보커로 RMI가 아닌 서비스의
+      노출을 명시적으로 지원한다.</para>
 
-      <para>Of course, we first have to set up our service in the Spring
-      container:</para>
+      <para>물론 서비스를 스프링 컨테이너에 먼저 설정해야 한다.</para>
 
       <programlisting language="xml">&lt;bean id="accountService" class="example.AccountServiceImpl"&gt;
-    <lineannotation>&lt;!-- any additional properties, maybe a DAO? --&gt;</lineannotation>
+    <lineannotation>&lt;!-- DAO 등 추가적인 프로퍼티 --&gt;</lineannotation>
 &lt;/bean&gt;</programlisting>
 
-      <para>Next we'll have to expose our service using the
-      <classname>RmiServiceExporter</classname>:</para>
+      <para>그 다음 <classname>RmiServiceExporter</classname>로
+      서비스를 노출해야 한다.</para>
 
       <programlisting language="xml">&lt;bean class="org.springframework.remoting.rmi.RmiServiceExporter"&gt;
-    <lineannotation>&lt;!-- does not necessarily have to be the same name as the bean to be exported --&gt;</lineannotation>
+    <lineannotation>&lt;!-- 내보낼 빈과 같은 이름이어야 할 필요는 없다 --&gt;</lineannotation>
     &lt;property name="serviceName" value="AccountService"/&gt;
     &lt;property name="service" ref="accountService"/&gt;
     &lt;property name="serviceInterface" value="example.AccountService"/&gt;
-    <lineannotation>&lt;!-- defaults to <literal>1099</literal> --&gt;</lineannotation>
+    <lineannotation>&lt;!-- 기본값은 <literal>1099</literal> --&gt;</lineannotation>
     &lt;property name="registryPort" value="1199"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>As you can see, we're overriding the port for the RMI registry.
-      Often, your application server also maintains an RMI registry and it is
-      wise to not interfere with that one. Furthermore, the service name is
-      used to bind the service under. So right now, the service will be bound
-      at <literal>'rmi://HOST:1199/AccountService'</literal>. We'll use the
-      URL later on to link in the service at the client side.</para>
+      <para>여기서 볼 수 있듯이 RMI 등록(registry) 포트를 오버라이딩한다. 때로는 어플리케이션
+      서버도 RMI 등록을 유지하면서 RMI 등록에 간섭하지 않는다는 것을 알고 있다. 게다가 서비스명은
+      서비스 아래에 바인딩된다. 그러므로 서비스는
+      <literal>'rmi://HOST:1199/AccountService'</literal>에 바인딩 될 것이다.
+      나중에 클라이언트 측 서비스에서 링크에 URL을 사용할 것이다.</para>
 
       <note>
-        <para>The <literal>servicePort</literal> property has been omitted (it
-        defaults to 0). This means that an anonymous port will be used to
-        communicate with the service.</para>
+        <para><literal>servicePort</literal> 프로퍼티를 생략했다.(기본값은 0이다)
+        이는 서비스와의 통신에 익명 포트를 사용한다는 의미이다.</para>
       </note>
     </section>
 
     <section id="remoting-rmi-client">
-      <title>Linking in the service at the client</title>
+      <title>클라이언트 서비스에서의 연결(link)</title>
 
-      <para>Our client is a simple object using the
-      <interfacename>AccountService</interfacename> to manage accounts:</para>
+      <para>클라이언트는 account를 관리하는
+      <interfacename>AccountService</interfacename>를 사용하는 간단한 객체이다.</para>
 
       <programlisting language="java">public class SimpleObject {
 
@@ -182,13 +170,12 @@ public class AccountServiceImpl implements AccountService {
         this.accountService = accountService;
     }
 
-    // additional methods using the accountService
+    // accountService를 사용하는 추가적인 메서드
 
 }</programlisting>
 
-      <para>To link in the service on the client, we'll create a separate
-      Spring container, containing the simple object and the service linking
-      configuration bits:</para>
+      <para>클라이언트의 서비스에서 연결하기 위해 간단한 객체와 약간의 서비스 연결 설정을 가진
+      분리된 스프링 컨테이너를 생성할 것이다.</para>
 
       <programlisting language="xml">&lt;bean class="example.SimpleObject"&gt;
     &lt;property name="accountService" ref="accountService"/&gt;
@@ -199,31 +186,27 @@ public class AccountServiceImpl implements AccountService {
     &lt;property name="serviceInterface" value="example.AccountService"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>That's all we need to do to support the remote account service on
-      the client. Spring will transparently create an invoker and remotely
-      enable the account service through the
-      <classname>RmiServiceExporter</classname>. At the client we're linking
-      it in using the <classname>RmiProxyFactoryBean</classname>.</para>
+      <para>이것이 클라이언트에서 원격 account 서비스를 지원하는데 필요한 전부이다. 스프링은
+      투명하게 인보커를 생성하고 <classname>RmiServiceExporter</classname>로 원격으로
+      account 서비스를 활성화할 것이다. 클라이언트에서
+      <classname>RmiProxyFactoryBean</classname>를 사용해서 이를 연결한다.</para>
     </section>
   </section>
 
   <section id="remoting-caucho-protocols">
-    <title>Using Hessian or Burlap to remotely call services via HTTP</title>
+    <title>HTTP를 통한 서비스 원격 호출에 해시안과 버랩 사용하기</title>
 
-    <para>Hessian offers a binary HTTP-based remoting protocol. It is
-    developed by Caucho and more information about Hessian itself can be found
-    at <ulink url="http://www.caucho.com"></ulink>.</para>
+    <para>해시안은 바이너리 HTTP 기반의 원격 프로토콜을 제공한다. 이 프로토콜은 Caucho이 개발했고
+    해시안의 자세한 내용은 <ulink url="http://www.caucho.com"></ulink>에서 볼 수
+    있다.</para>
 
     <section id="remoting-caucho-protocols-hessian">
-      <title>Wiring up the <classname>DispatcherServlet</classname> for
-      Hessian and co.</title>
+      <title>해시안등에 <classname>DispatcherServlet</classname> 연결하기</title>
 
-      <para>Hessian communicates via HTTP and does so using a custom servlet.
-      Using Spring's <classname>DispatcherServlet</classname> principles, as
-      known from Spring Web MVC usage, you can easily wire up such a servlet
-      exposing your services. First we'll have to create a new servlet in your
-      application (this is an excerpt from
-      <filename>'web.xml'</filename>):</para>
+      <para>해시안은 HTTP로 통신하고 커스텀 서블릿을 사용한다. 스프링 웹 MVC에서 사용하듯이
+      스프링의 <classname>DispatcherServlet</classname> 원리를 사용해서 서비스를 노출하는
+      서비스등을 쉽게 연결할 수 있다. 우선 어플리케이션에 새로운 서블릿을 생성해야 한다.(이는
+      <filename>'web.xml'</filename>에서 가져온다.)</para>
 
       <programlisting language="xml">&lt;servlet&gt;
     &lt;servlet-name&gt;remoting&lt;/servlet-name&gt;
@@ -236,34 +219,29 @@ public class AccountServiceImpl implements AccountService {
     &lt;url-pattern&gt;/remoting/*&lt;/url-pattern&gt;
 &lt;/servlet-mapping&gt;</programlisting>
 
-      <para>You're probably familiar with Spring's
-      <classname>DispatcherServlet</classname> principles and if so, you know
-      that now you'll have to create a Spring container configuration resource
-      named <filename>'remoting-servlet.xml'</filename> (after the name of
-      your servlet) in the <filename class="directory">'WEB-INF'</filename>
-      directory. The application context will be used in the next
-      section.</para>
+      <para>이 글을 읽는 사람이라면 스프링 <classname>DispatcherServlet</classname>
+      원리에 익숙할 것이므로 <filename class="directory">'WEB-INF'</filename>
+      디렉토리에 <filename>'remoting-servlet.xml'</filename>(이후부터는 서블릿의
+      이름)이라는 스프링 컨테이너 설정 리소스를 생성해야함을 알고 있을 것이다. 어플리케이션
+      컨텍스트는 다음 섹션에서 사용할 것이다.</para>
 
-      <para>Alternatively, consider the use of Spring's simpler
-      <classname>HttpRequestHandlerServlet</classname>. This allows you to
-      embed the remote exporter definitions in your root application context
-      (by default in <filename>'WEB-INF/applicationContext.xml'</filename>),
-      with individual servlet definitions pointing to specific exporter beans.
-      Each servlet name needs to match the bean name of its target exporter in
-      this case.</para>
+      <para>아니면 더 간단한 스프링의
+      <classname>HttpRequestHandlerServlet</classname>를 사용하는 것을 고려해
+      볼 수 있다. <classname>HttpRequestHandlerServlet</classname>로 루트 어플리케이션
+      컨텍스트에 원격 익스포터(exporter) 정의를 내장할 수 있고 각 서블릿 정의는 특정 익스포터
+      빈을 가르킨다. 이 경우 각 서블릿 이름이 대상 익스포터의 빈 이름과 일치해야 한다.</para>
     </section>
 
     <section id="remoting-caucho-protocols-hessian-server">
-      <title>Exposing your beans by using the
-      <classname>HessianServiceExporter</classname></title>
+      <title><classname>HessianServiceExporter</classname>를
+      사용해서 빈 노출하기</title>
 
-      <para>In the newly created application context called
-      <literal>remoting-servlet.xml</literal>, we'll create a
-      <classname>HessianServiceExporter</classname> exporting your
-      services:</para>
+      <para>새로 생성한 어플리케이션 컨텍스트
+      <literal>remoting-servlet.xml</literal>에서 서비스를 노출하는
+      <classname>HessianServiceExporter</classname>를 생성할 것이다.</para>
 
       <programlisting language="xml">&lt;bean id="accountService" class="example.AccountServiceImpl"&gt;
-    <lineannotation>&lt;!-- any additional properties, maybe a DAO? --&gt;</lineannotation>
+    <lineannotation>&lt;!-- DAO 등 추가적인 프로퍼티 --&gt;</lineannotation>
 &lt;/bean&gt;
 
 &lt;bean name="/AccountService" class="org.springframework.remoting.caucho.HessianServiceExporter"&gt;
@@ -271,29 +249,27 @@ public class AccountServiceImpl implements AccountService {
     &lt;property name="serviceInterface" value="example.AccountService"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>Now we're ready to link in the service at the client. No explicit
-      handler mapping is specified, mapping request URLs onto services, so
-      <classname>BeanNameUrlHandlerMapping</classname> will be used: Hence,
-      the service will be exported at the URL indicated through its bean name
-      within the containing <classname>DispatcherServlet</classname>'s mapping
-      (as defined above):
-      <literal>'http://HOST:8080/remoting/AccountService'</literal>.</para>
+      <para>이제 클라이언트에서 서비스를 연결할 준비가 됐다. 서비스에 요청 URL을 매핑하는 핸들러
+      매핑을 명시적으로 지정하지 않았으므로
+      <classname>BeanNameUrlHandlerMapping</classname>을 사용할 것이다. 그러므로
+      <classname>DispatcherServlet</classname>의 매핑(위에서 정의했다)의 빈 이름을
+      나타내는 URL인
+      <literal>'http://HOST:8080/remoting/AccountService'</literal>로 서비스를
+      노출할 것이다.</para>
 
-      <para>Alternatively, create a
-      <classname>HessianServiceExporter</classname> in your root application
-      context (e.g. in
-      <filename>'WEB-INF/applicationContext.xml'</filename>):</para>
+      <para>아니면 루트 어플리케이션 컨텍스트(예를 들면
+      <filename>'WEB-INF/applicationContext.xml'</filename>)에
+      <classname>HessianServiceExporter</classname>를 생성해라.</para>
 
       <programlisting language="xml">&lt;bean name="accountExporter" class="org.springframework.remoting.caucho.HessianServiceExporter"&gt;
     &lt;property name="service" ref="accountService"/&gt;
     &lt;property name="serviceInterface" value="example.AccountService"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>In the latter case, define a corresponding servlet for this
-      exporter in <filename>'web.xml'</filename>, with the same end result:
-      The exporter getting mapped to the request path
-      <literal>/remoting/AccountService</literal>. Note that the servlet name
-      needs to match the bean name of the target exporter.</para>
+      <para>후자의 경우 동일한 결과가 나오도록 해당 익스포터에 대응되는 서블릿을
+      <filename>'web.xml'</filename>에 정의해라. 익스포터는 요청경로
+      <literal>/remoting/AccountService</literal>에 매핑된다. 이 서블릿 이름은
+      대상 익스포터의 빈 이름과 일치해야 한다.</para>
 
       <programlisting language="xml">&lt;servlet&gt;
     &lt;servlet-name&gt;accountExporter&lt;/servlet-name&gt;
@@ -307,14 +283,12 @@ public class AccountServiceImpl implements AccountService {
     </section>
 
     <section id="remoting-caucho-protocols-hessian-client">
-      <title>Linking in the service on the client</title>
+      <title>클라이언트측 서비스에서의 연결</title>
 
-      <para>Using the <classname>HessianProxyFactoryBean</classname> we can
-      link in the service at the client. The same principles apply as with the
-      RMI example. We'll create a separate bean factory or application context
-      and mention the following beans where the
-      <classname>SimpleObject</classname> is using the
-      <interfacename>AccountService</interfacename> to manage accounts:</para>
+      <para><classname>HessianProxyFactoryBean</classname>를 사용해서 클라이언트측
+      서비스에서 연결할 수 있다. RMI 예제와 같은 원리를 적용한다. 분리된 빈 팩토리나 어플리케이션을
+      생성하고 account를 관리하려고 <interfacename>AccountService</interfacename>를
+      사용하는 <classname>SimpleObject</classname>인 다음 빈을 정의해라.</para>
 
       <programlisting language="xml">&lt;bean class="example.SimpleObject"&gt;
     &lt;property name="accountService" ref="accountService"/&gt;
@@ -327,83 +301,73 @@ public class AccountServiceImpl implements AccountService {
     </section>
 
     <section id="remoting-caucho-protocols-burlap">
-      <title>Using Burlap</title>
+      <title>버랩 사용</title>
 
-      <para>We won't discuss Burlap, the XML-based equivalent of Hessian, in
-      detail here, since it is configured and set up in exactly the same way
-      as the Hessian variant explained above. Just replace the word
-      <literal>Hessian</literal> with <literal>Burlap</literal> and you're all
-      set to go.</para>
+      <para>앞에서 설명한 해시안계열과 정확히 동일하게 설정하고 구성하므로 여기서 버랩(해시안과
+      동일하지만 XML 기반이다)에 대해서 자세히 얘기하지 않을 것이다.
+      <literal>Hessian</literal>을 <literal>Burlap</literal>으로 바꾸면 설정이
+      완료된다.</para>
     </section>
 
     <section id="remoting-caucho-protocols-security">
-      <title>Applying HTTP basic authentication to a service exposed through
-      Hessian or Burlap</title>
+      <title>해시안이나 버랩으로 노출된 서비스에 HTTP 기본 인증(HTTP basic authentication)
+      적용하기</title>
 
-      <para>One of the advantages of Hessian and Burlap is that we can easily
-      apply HTTP basic authentication, because both protocols are HTTP-based.
-      Your normal HTTP server security mechanism can easily be applied through
-      using the <literal>web.xml</literal> security features, for example.
-      Usually, you don't use per-user security credentials here, but rather
-      shared credentials defined at the
-      <literal>Hessian/BurlapProxyFactoryBean</literal> level (similar to a
-      JDBC <interfacename>DataSource</interfacename>).</para>
+      <para>해시안과 버랩의 장점 중 하나는 두 프로토콜이 모두 HTTP 기반이므로 HTTP 기본 인증을
+      쉽게 적용할 수 있다는 점이다. 예를 들어 <literal>web.xml</literal> 보안 기능으로
+      일반적인 HTTP 서버 보안 메카니즘을 쉽게 적용할 수 있다. 보통은 여기서 사용자마다 보안
+      인증서를 사용하기 보다는 <literal>Hessian/BurlapProxyFactoryBean</literal>
+      수준(JDBC <interfacename>DataSource</interfacename>와 유사하다)에서 정의되고
+      공유된 인증서를 사용할 것이다.</para>
 
       <programlisting language="xml">&lt;bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"&gt;
     &lt;property name="interceptors" ref="authorizationInterceptor"/&gt;
 &lt;/bean&gt;
 
-&lt;bean id="authorizationInterceptor" 
+&lt;bean id="authorizationInterceptor"
       class="org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor"&gt;
     &lt;property name="authorizedRoles" value="administrator,operator"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>This is an example where we explicitly mention the
-      <classname>BeanNameUrlHandlerMapping</classname> and set an interceptor
-      allowing only administrators and operators to call the beans mentioned
-      in this application context.</para>
+      <para>이는 <classname>BeanNameUrlHandlerMapping</classname>를 명시적으로
+      언급하고(mention) 이 어플리케이션 컨텍스트에서 언급된 빈을 운영자와 관리자만 호출하도록
+      하는 인터셉터를 설정하는 예제이다.</para>
 
       <note>
-        <para>Of course, this example doesn't show a flexible kind of security
-        infrastructure. For more options as far as security is concerned, have
-        a look at the Spring Security project at <ulink
-          url="http://static.springsource.org/spring-security/site/"></ulink>.</para>
+        <para>물론 이 예제는 유연한 인증 인프라을 보여주지는 않는다. 인증과 관련된 자세한 옵션은
+        <ulink url="http://static.springsource.org/spring-security/site/">
+        </ulink>의 스프링 시큐리티 프로젝트를 봐라.</para>
       </note>
     </section>
   </section>
 
   <section id="remoting-httpinvoker">
-    <title>Exposing services using HTTP invokers</title>
+    <title>HTTP 인보커를 사용해서 서비스 노출하기</title>
 
-    <para>As opposed to Burlap and Hessian, which are both lightweight
-    protocols using their own slim serialization mechanisms, Spring HTTP
-    invokers use the standard Java serialization mechanism to expose services
-    through HTTP. This has a huge advantage if your arguments and return types
-    are complex types that cannot be serialized using the serialization
-    mechanisms Hessian and Burlap use (refer to the next section for more
-    considerations when choosing a remoting technology).</para>
+    <para>자신만의 가벼운 직렬화 메카니즘을 사용하는 경량 프로토콜인 버랩이나 해시안과는 반대로
+    스프링 HTTP 인보커는 HTTP로 서비스를 노출할 때 표준 자바 직렬화 메카니즘을 사용한다. 인자나
+    반환 타입이 해시안이나 버랩이 사용하는 직렬화 메카니즘을 사용해서 직렬화할 수 없는 복잡한
+    타입이라면 이는 엄청난 장점이다.(원격 기술을 선택할 때의 고려사항은 다음 섹션에서
+    설명한다.)</para>
 
-    <para>Under the hood, Spring uses either the standard facilities provided
-    by J2SE to perform HTTP calls or Commons
-    <classname>HttpClient</classname>. Use the latter if you need more
-    advanced and easy-to-use functionality. Refer to <ulink
-    url="http://jakarta.apache.org/commons/httpclient">jakarta.apache.org/commons/httpclient</ulink>
-    for more info.</para>
+    <para>내부적으로 스프링은 HTTP 호출에 J2SE가 제공하는 표준 기술이나 Commons
+    <classname>HttpClient</classname>를 사용한다. 더 고급이고 사용하기 쉬운 기능이
+    필요하다면 후자를 사용해라. 자세한 내용은 <ulink
+    url="http://jakarta.apache.org/commons/httpclient">jakarta.apache.org/commons/httpclient</ulink>를
+    참고해라.</para>
 
     <section id="remoting-httpinvoker-server">
-      <title>Exposing the service object</title>
+      <title>서비스 객체 노출하기</title>
 
-      <para>Setting up the HTTP invoker infrastructure for a service object
-      resembles closely the way you would do the same using Hessian or Burlap.
-      Just as Hessian support provides the
-      <classname>HessianServiceExporter</classname>, Spring's HttpInvoker
-      support provides the
-      <classname>org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter</classname>.</para>
+      <para>서비스 객체에 대한 HTTP 인보커 인프라를 설정하는 방법은 해시안이나 버랩으로 할 때와
+      아주 유사하다. 해시안 지원이 <classname>HessianServiceExporter</classname>를
+      제공하듯이 스프링의 HttpInvoker 지원은
+      <classname>org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter</classname>를
+      제공한다.</para>
 
-      <para>To expose the <literal>AccountService</literal> (mentioned above)
-      within a Spring Web MVC <classname>DispatcherServlet</classname>, the
-      following configuration needs to be in place in the dispatcher's
-      application context:</para>
+      <para>스프링 웹 MVC <classname>DispatcherServlet</classname>에서
+      <literal>AccountService</literal>(위에서 나왔던)를 노출하려면 디스패처의
+      어플리케이션 컨텍스트에 다음 설정을 해야 한다.</para>
 
       <programlisting language="xml">&lt;bean name="/AccountService" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter"&gt;
     &lt;property name="service" ref="accountService"/&gt;
@@ -411,23 +375,21 @@ public class AccountServiceImpl implements AccountService {
 &lt;/bean&gt;
 </programlisting>
 
-      <para>Such an exporter definition will be exposed through the
-      <classname>DispatcherServlet</classname>'s standard mapping facilities,
-      as explained in the section on Hessian.</para>
+      <para>해시안부분에서 설명했듯이 이러한 익스포터(exporter) 정의를
+      <classname>DispatcherServlet</classname>의 표준 매핑 기능으로
+      노출할 것이다.</para>
 
-      <para>Alternatively, create an
-      <classname>HttpInvokerServiceExporter</classname> in your root
-      application context (e.g. in
-      <filename>'WEB-INF/applicationContext.xml'</filename>):</para>
+      <para>아니면 루트 어플리케이션 컨텍스트(예를 들면
+      <filename>'WEB-INF/applicationContext.xml'</filename>파일에)에
+      <classname>HttpInvokerServiceExporter</classname>를 생성해라.</para>
 
       <programlisting language="xml">&lt;bean name="accountExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter"&gt;
     &lt;property name="service" ref="accountService"/&gt;
     &lt;property name="serviceInterface" value="example.AccountService"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>In addition, define a corresponding servlet for this exporter in
-      <filename>'web.xml'</filename>, with the servlet name matching the bean
-      name of the target exporter:</para>
+      <para>추가적으로 <filename>'web.xml'</filename>의 이 익스포터에 대한
+      서블릿(대상 익스포터의 빈 이름과 일치하는 서블릿 이름으로)을 정의해라.</para>
 
       <programlisting language="xml">&lt;servlet&gt;
     &lt;servlet-name&gt;accountExporter&lt;/servlet-name&gt;
@@ -439,18 +401,18 @@ public class AccountServiceImpl implements AccountService {
     &lt;url-pattern&gt;/remoting/AccountService&lt;/url-pattern&gt;
 &lt;/servlet-mapping&gt;</programlisting>
 
-      <para>If you are running outside of a servlet container and are using
-      Sun's Java 6, then you can use the built-in HTTP server implementation.
-      You can configure the <classname>SimpleHttpServerFactoryBean</classname> together with a
-      <classname>SimpleHttpInvokerServiceExporter</classname> as is shown in this example:</para>
+      <para>서블릿 컨테이너 밖에서 돌아가고 Sun의 Java 6를 사용한다면 내장 HTTP 서버 구현체를
+      사용할 수 있다. 이 예제에서 보듯이
+      <classname>SimpleHttpServerFactoryBean</classname>를
+      <classname>SimpleHttpInvokerServiceExporter</classname>와 함게 설정할 수 있다.</para>
 
-      <programlisting language="xml">&lt;bean name="accountExporter" 
+      <programlisting language="xml">&lt;bean name="accountExporter"
     class="org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter"&gt;
     &lt;property name="service" ref="accountService"/&gt;
     &lt;property name="serviceInterface" value="example.AccountService"/&gt;
 &lt;/bean&gt;
 
-&lt;bean id="httpServer" 
+&lt;bean id="httpServer"
         class="org.springframework.remoting.support.SimpleHttpServerFactoryBean"&gt;
     &lt;property name="contexts"&gt;
         &lt;util:map&gt;
@@ -463,12 +425,11 @@ public class AccountServiceImpl implements AccountService {
     </section>
 
     <section id="remoting-httpinvoker-client">
-      <title>Linking in the service at the client</title>
+      <title>클라이언트에서의 서비스 연결</title>
 
-      <para>Again, linking in the service from the client much resembles the
-      way you would do it when using Hessian or Burlap. Using a proxy, Spring
-      will be able to translate your calls to HTTP POST requests to the URL
-      pointing to the exported service.</para>
+      <para>클라이언트에서 서비스를 연결하는 방법은 헤시안이나 버랩에서 사용한 방법과 아주 유사하다.
+      스프링이 프록시를 사용해서 호출을 익스포트된 서비스를 가리키는 URL에 대한 HTTP POST 요청으로
+      변환할 수 있다.</para>
 
       <programlisting language="xml">&lt;bean id="httpInvokerProxy" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean"&gt;
     &lt;property name="serviceUrl" value="http://remotehost:8080/remoting/AccountService"/&gt;
@@ -476,11 +437,10 @@ public class AccountServiceImpl implements AccountService {
 &lt;/bean&gt;
 </programlisting>
 
-      <para>As mentioned before, you can choose what HTTP client you want to
-      use. By default, the <classname>HttpInvokerProxy</classname> uses the
-      J2SE HTTP functionality, but you can also use the Commons
-      <classname>HttpClient</classname> by setting the
-      <literal>httpInvokerRequestExecutor</literal> property:</para>
+      <para>앞에서 얘기했듯이 사용하고자 하는 HTTP 클라이언트를 선택할 수 있다. 기본적으로
+      <classname>HttpInvokerProxy</classname>는 J2SE HTTP 기능을 사용하지만
+      <literal>httpInvokerRequestExecutor</literal> 프로퍼티를 설정해서 Commons
+      <classname>HttpClient</classname>를 사용할 수도 있다.</para>
 
       <programlisting language="xml">&lt;property name="httpInvokerRequestExecutor"&gt;
     &lt;bean class="org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor"/&gt;
@@ -490,82 +450,72 @@ public class AccountServiceImpl implements AccountService {
   </section>
 
   <section id="remoting-web-services">
-    <title>Web services</title>
+    <title>웹 서비스</title>
 
-    <para>Spring provides full support for standard Java web services
-    APIs:</para>
+    <para>스프링은 표준 자바 웹서비스 API를 완전히 지원한다.</para>
 
     <itemizedlist>
       <listitem>
-        <para>Exposing web services using JAX-RPC</para>
+        <para>JAX-RPC를 사용한 웹서비스 노출</para>
       </listitem>
 
       <listitem>
-        <para>Accessing web services using JAX-RPC</para>
+        <para>JAX-RPC를 사용한 웹서비스 접근</para>
       </listitem>
 
       <listitem>
-        <para>Exposing web services using JAX-WS</para>
+        <para>JAX-WS를 사용한 웹서비스 노출</para>
       </listitem>
 
       <listitem>
-        <para>Accessing web services using JAX-WS</para>
+        <para>JAX-WS를 사용한 웹서비스 접근</para>
       </listitem>
     </itemizedlist>
 
     <note>
-      <para>Why two standard Java web services APIs?</para>
+      <para>왜 두 개의 표준 자바 웹서비스 API가 있는가?</para>
 
-      <para>JAX-RPC 1.1 is the standard web service API in J2EE 1.4. As its
-      name indicates, it focuses on on RPC bindings, which became less and
-      less popular in the past couple of years. As a consequence, it has been
-      superseded by JAX-WS 2.0 in Java EE 5, being more flexible in terms of
-      bindings but also being heavily annotation-based. JAX-WS 2.1 is also
-      included in Java 6 (or more specifically, in Sun's JDK 1.6.0_04 and
-      above; previous Sun JDK 1.6.0 releases included JAX-WS 2.0), integrated
-      with the JDK's built-in HTTP server.</para>
+      <para>JAX-RPC 1.1는 J2EE 1.4의 표준 웹서비스 API이다. 이름에서 알 수 있듯이 수년전에
+      이미 인기가 없어진 RPC 바인딩에 집중하고 있다. 그 결과 바인딩은 더 유연하지만 상당히
+      어노테이션 기반인 Java EE 5의 JAX-WS 2.0가 그 자리를 대체했다. JAX-WS 2.1도 Java 6에
+      포함되었고(구체적으로 말하면 Sun의 JDK 1.6.0_04에 포함되었고 Sun JDK 1.6.0에는
+      JAX-WS 2.0가 포함되었다.) JDK의 내장 HTTP 서버와 통합되었다.</para>
 
-      <para>Spring can work with both standard Java web services APIs. On Java
-      EE 5 / Java 6, the obvious choice is JAX-WS. On J2EE 1.4 environments
-      that run on Java 5, you might have the option to plug in a JAX-WS
-      provider; check your Java EE server's documentation.</para>
+      <para>스프링은 두 표준 자바 웹서비스 API에서 모두 동작한다. Java EE 5 / Java 6에서는
+      JAX-WS가 좋다. Java 5에서 동작하는 J2EE 1.4 환경에서는 JAX-WS 프로바이터를 연결할 수
+      있다. Java EE 서버 문서를 확인해 봐라.</para>
     </note>
 
-    <para>In addition to stock support for JAX-RPC and JAX-WS in Spring Core,
-    the Spring portfolio also features <ulink
-    url="http://www.springframework.org/spring-ws">Spring Web
-    Services</ulink>, a solution for contract-first, document-driven web
-    services - highly recommended for building modern, future-proof web
-    services.</para>
+    <para>스프링 코어의 JAX-RPC와 JAX-WS에 대한 지원에 추가적으로 스프링 포트폴리오에 계약
+    우선(contract-first)이면서 문서주도의 웹서비스 솔루션인 <ulink
+    url="http://www.springframework.org/spring-ws">스프링 웹 서비스</ulink> 기능도
+    있다. 현재적이고 경쟁력있는 웹서비스를 만든다면 스프링 웹 비스를 강력히 추천한다.</para>
 
     <section id="remoting-web-services-jaxrpc-export">
-      <title>Exposing servlet-based web services using JAX-RPC</title>
+      <title>JAX-RPC를 사용해서 서블릿 기반의 웹 서비스 노출</title>
 
-      <para>Spring provides a convenience base class for JAX-RPC servlet
-      endpoint implementations -
-      <classname>ServletEndpointSupport</classname>. To expose our
-      <interfacename>AccountService</interfacename> we extend Spring's
-      <classname>ServletEndpointSupport</classname> class and implement our
-      business logic here, usually delegating the call to the business
-      layer.</para>
+      <para>스프링은 JAX-RPC 서블릿 엔드포인트(endpoint)
+      구현체(<classname>ServletEndpointSupport</classname>)를 위한 편리한 기반
+      클래스를 제공한다. 예제의 <interfacename>AccountService</interfacename>를
+      노출하려면 스프링의 <classname>ServletEndpointSupport</classname> 클래스를
+      확장하고 여기에 비즈니스 로직을 구현하고 비즈니스 계층에 호출을 위임하는 것이
+      일반적이다.</para>
 
       <programlisting language="java"><lineannotation>/**
- * JAX-RPC compliant RemoteAccountService implementation that simply delegates
- * to the AccountService implementation in the root web application context.
+ * JAX-RPC를 따르는 RemoteAccountService 구현체로
+ * 루트 웹 어플리케이션 컨텍스트에서 AccountService 구현체에 위임한다.
  *
- * This wrapper class is necessary because JAX-RPC requires working with dedicated
- * endpoint classes. If an existing service needs to be exported, a wrapper that
- * extends ServletEndpointSupport for simple application context access is
- * the simplest JAX-RPC compliant way.
+ * JAX-RPC가 전용 엔드포인크 클래스와 동작해야 하므로 이 랩퍼 클래스가 필요하다.
+ * 기존에 존재하는 서비스를 익스포트해야 하는 경우 어플리케이션 컨텍스트 접근을 위해
+ * ServletEndpointSupport를 확장한 래퍼가 JAX-RPC와 호환되는 가장 간단한 방법이다.
  *
- * This is the class registered with the server-side JAX-RPC implementation.
- * In the case of Axis, this happens in "server-config.wsdd" respectively via
- * deployment calls. The web service engine manages the lifecycle of instances
- * of this class: A Spring application context can just be accessed here.
+ * 이는 서버측 JAX-RPC 구현체로 등록된 클래스다. Axis에서 이는 배포호출(deployment calls)로
+ * 각각 "server-config.wsdd"에서 이뤄진다. 웹서비스 엔진이 이 클래스의 인스턴스 생명주기를
+ * 관리한다. 스프링 어플리케이션가 접근할 수 있다.
  */</lineannotation>import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
 public class AccountServiceEndpoint extends ServletEndpointSupport implements RemoteAccountService {
-    
+
     private AccountService biz;
 
     protected void onInit() {
@@ -575,36 +525,35 @@ public class AccountServiceEndpoint extends ServletEndpointSupport implements Re
     public void insertAccount(Account acc) throws RemoteException {
         biz.insertAccount(acc);
     }
-  
+
     public Account[] getAccounts(String name) throws RemoteException {
         return biz.getAccounts(name);
     }
 }</programlisting>
 
-      <para>Our <classname>AccountServletEndpoint</classname> needs to run in
-      the same web application as the Spring context to allow for access to
-      Spring's facilities. In case of Axis, copy the
-      <classname>AxisServlet</classname> definition into your
-      <filename>'web.xml'</filename>, and set up the endpoint in
-      <filename>'server-config.wsdd'</filename> (or use the deploy tool). See
-      the sample application JPetStore where the
-      <interfacename>OrderService</interfacename> is exposed as a web service
-      using Axis.</para>
+      <para>스프링 기능에 접근하게 하려면
+      <classname>AccountServletEndpoint</classname>가 스프링 컨텍스트와 같은 웹
+      어플리케이션에서 동작해야 한다. Axis의 경우에는 <filename>'web.xml'</filename>에
+      <classname>AxisServlet</classname> 정의를 복사하고
+      <filename>'server-config.wsdd'</filename>에 엔드포인트를 설정해라.(또는 배포도구를
+      사용해라.) Axis를 사용해서 <interfacename>OrderService</interfacename>를
+      웹 서비스로 노출한 JPetStore 예제 어플리케이션을 참고해라.</para>
     </section>
 
     <section id="remoting-web-services-jaxrpc-access">
-      <title>Accessing web services using JAX-RPC</title>
+      <title>JAX-RPC를 사용해서 웹 서비스에 접근하기</title>
 
-      <para>Spring provides two factory beans to create JAX-RPC web service
-      proxies, namely <classname>LocalJaxRpcServiceFactoryBean</classname> and
-      <classname>JaxRpcPortProxyFactoryBean</classname>. The former can only
-      return a JAX-RPC service class for us to work with. The latter is the
-      full-fledged version that can return a proxy that implements our
-      business service interface. In this example we use the latter to create
-      a proxy for the <interfacename>AccountService</interfacename> endpoint
-      we exposed in the previous section. You will see that Spring has great
-      support for web services requiring little coding efforts - most of the
-      setup is done in the Spring configuration file as usual:</para>
+      <para>스프링은 JAX-RPC 웹서비스 프록시를 생성하는 두 팩토리 빈
+      <classname>LocalJaxRpcServiceFactoryBean</classname>와
+      <classname>JaxRpcPortProxyFactoryBean</classname>를 제공한다.
+      <classname>LocalJaxRpcServiceFactoryBean</classname>는 사용할 JAX-RPC
+      서비스만 반환할 수 있다. <classname>JaxRpcPortProxyFactoryBean</classname>는
+      비즈니스 서비스 인터페이스를 구현한 프록시를 반환할 수 있는 완전히 독립적인 버전이다. 이
+      예제에서는 이전 섹션에서 노출한 <interfacename>AccountService</interfacename>
+      엔드포인트에 대한 프록시를 생성하려고
+      <classname>JaxRpcPortProxyFactoryBean</classname>를 사용한다. 약간의 코딩을
+      필요하지만 스프링이 웹서비스를 아주 잘 지원하는 것을 볼 수 있을 것이다. 대부분의 설정은 다른
+      때와 동일하게 스프링 설정파일에서 이뤄진다.</para>
 
       <programlisting language="xml">&lt;bean id="accountWebService" class="org.springframework.remoting.jaxrpc.JaxRpcPortProxyFactoryBean"&gt;
     &lt;property name="serviceInterface" value="example.RemoteAccountService"/&gt;
@@ -614,37 +563,33 @@ public class AccountServiceEndpoint extends ServletEndpointSupport implements Re
     &lt;property name="portName" value="AccountPort"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>Where <literal>serviceInterface</literal> is our remote business
-      interface the clients will use. <literal>wsdlDocumentUrl</literal> is
-      the URL for the WSDL file. Spring needs this at startup time to create
-      the JAX-RPC Service. <literal>namespaceUri</literal> corresponds to the
-      targetNamespace in the .wsdl file. <literal>serviceName</literal>
-      corresponds to the service name in the .wsdl file.
-      <literal>portName</literal> corresponds to the port name in the .wsdl
-      file.</para>
+      <para><literal>serviceInterface</literal>가 클라이언트가 사용할 원격 비즈니스
+      인터페이스이다. <literal>wsdlDocumentUrl</literal>는 WSDL 파일의 URL이다.
+      스프링이 JAX-RPC 서비스를 생성하려면 구동 시 <literal>wsdlDocumentUrl</literal>가
+      필요하다. <literal>namespaceUri</literal>는 .wsdl 파일의 targetNamespace와
+      대응된다. <literal>serviceName</literal>은 .wsdl 파일의 서비스명과 대응된다.
+      <literal>portName</literal>는 .wsdl 파일의 포트명과 대응된다.</para>
 
-      <para>Accessing the web service is now very easy as we have a bean
-      factory for it that will expose it as
-      <literal>RemoteAccountService</literal> interface. We can wire this up
-      in Spring:</para>
+      <para>웹서비스에 대한 빈 팩토리가 있는 것처럼 이제 웹 서비스 접근은 아주 쉽고 이는
+      <literal>RemoteAccountService</literal> 인터페이스로 노출될 것이다.
+      스프링에서 이를 연결할 수 있다.</para>
 
       <programlisting language="xml">&lt;bean id="client" class="example.AccountClientImpl"&gt;
     ...
     &lt;property name="service" ref="accountWebService"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>From the client code we can access the web service just as if it
-      was a normal class, except that it throws
-      <exceptionname>RemoteException</exceptionname>.</para>
+      <para>클라이언트 코드에서 일반적인 클래스인 것처럼 웹서비스에 접근할 수 있다. 다른 점은
+      <exceptionname>RemoteException</exceptionname>를 던진다는 것 뿐이다.</para>
 
       <programlisting language="java">public class AccountClientImpl {
 
     private RemoteAccountService service;
-    
+
     public void setService(RemoteAccountService service) {
         this.service = service;
     }
-    
+
     public void foo() {
         try {
             service.insertAccount(...);
@@ -656,11 +601,10 @@ public class AccountServiceEndpoint extends ServletEndpointSupport implements Re
 }
 </programlisting>
 
-      <para>We can get rid of the checked
-      <exceptionname>RemoteException</exceptionname> since Spring supports
-      automatic conversion to its corresponding unchecked
-      <exceptionname>RemoteException</exceptionname>. This requires that we
-      provide a non-RMI interface also. Our configuration is now:</para>
+      <para>스프링이 체크드 <exceptionname>RemoteException</exceptionname>을 대응되는
+      언체크드 <exceptionname>RemoteException</exceptionname>로 자동변환해주므로
+      체크드 <exceptionname>RemoteException</exceptionname>을 제거할 수 있다. 이를
+      위해서는 RMI가 아닌 인터페이스도 제공해야 한다. 이제 설정은 다음과 같다.</para>
 
       <programlisting language="xml">&lt;bean id="accountWebService" class="org.springframework.remoting.jaxrpc.JaxRpcPortProxyFactoryBean"&gt;
     &lt;property name="serviceInterface" value="example.AccountService"/&gt;
@@ -668,51 +612,47 @@ public class AccountServiceEndpoint extends ServletEndpointSupport implements Re
     ...
 &lt;/bean&gt;</programlisting>
 
-      <para>Where <literal>serviceInterface</literal> is changed to our non
-      RMI interface. Our RMI interface is now defined using the property
-      <literal>portInterface</literal>. Our client code can now avoid handling
-      <exceptionname>java.rmi.RemoteException</exceptionname>:</para>
+      <para><literal>serviceInterface</literal>는 RMI가 아닌 인터페이스로 바뀐다.
+      RMI 인터페이스는 이제 <literal>portInterface</literal> 프로퍼티를 사용해서 정의한다.
+      클라이언트 코드는 이제 <exceptionname>java.rmi.RemoteException</exceptionname>
+      처리를 안해도 된다.</para>
 
       <programlisting language="java">public class AccountClientImpl {
 
     private AccountService service;
-    
+
     public void setService(AccountService service) {
         this.service = service;
     }
-    
+
     public void foo() {
         service.insertAccount(...);
     }
 }</programlisting>
 
-      <para>Note that you can also drop the "portInterface" part and specify a
-      plain business interface as "serviceInterface". In this case,
-      <classname>JaxRpcPortProxyFactoryBean</classname> will automatically
-      switch to the JAX-RPC "Dynamic Invocation Interface", performing dynamic
-      invocations without a fixed port stub. The advantage is that you don't
-      even need to have an RMI-compliant Java port interface around (e.g. in
-      case of a non-Java target web service); all you need is a matching
-      business interface. Check out
-      <classname>JaxRpcPortProxyFactoryBean</classname>'s javadoc for details
-      on the runtime implications.</para>
+      <para>"portInterface" 부분을 버리고 평범한 비즈니스 인터페이스를
+      "serviceInterface"로 지정할 수도 있다. 이 경우 자동적으로
+      <classname>JaxRpcPortProxyFactoryBean</classname>는 고정된 포트
+      스텁(stub)없이도 동적 호출을 수행하는 JAX-RPC "동적 호출 인터페이스(Dynamic
+      Invocation Interface)"로 바뀔 것이다. RMI호환의 자바 포트 인터페이스가(예를 들면
+      대상 웹서비스가 자바가 아닌 경우) 필요없다는 점이 장점이다. 비즈니스 인터페이스만 맞추면
+      된다. 런타임의 동작은 <classname>JaxRpcPortProxyFactoryBean</classname>의
+      javadoc을 참고해라.</para>
     </section>
 
     <section id="remoting-web-services-jaxrpc-mapping-registration">
-      <title>Registering JAX-RPC Bean Mappings</title>
+      <title>JAX-RPC 빈(bean) 매핑 등록하기</title>
 
-      <para>To transfer complex objects over the wire such as
-      <classname>Account</classname> we must register bean mappings on the
-      client side.</para>
+      <para><classname>Account</classname>처럼 복잡한 객체를 네트워크간에 변환하려면
+      클라이언트측에서 빈 매핑을 등록해야 한다.</para>
 
       <note>
-        <para>On the server side using Axis registering bean mappings is
-        usually done in the <filename>'server-config.wsdd'</filename>
-        file.</para>
+        <para>Axis를 사용하는 서버측의 빈 매핑 등록은
+        <filename>'server-config.wsdd'</filename> 파일에서 보통 이뤄진다.</para>
       </note>
 
-      <para>We will use Axis to register bean mappings on the client side. To
-      do this we need to register the bean mappings programmatically:</para>
+      <para>클라이언트측에서 빈 매핑을 등록할 때 Axis를 사용할 것이므로 프로그래밍적으로
+      빈 매핑을 등록해야 한다.</para>
 
       <programlisting language="java">public class AxisPortProxyFactoryBean extends JaxRpcPortProxyFactoryBean {
 
@@ -733,16 +673,15 @@ public class AccountServiceEndpoint extends ServletEndpointSupport implements Re
     </section>
 
     <section id="remoting-web-services-jaxrpc-handler-registration">
-      <title>Registering your own JAX-RPC Handler</title>
+      <title>자신만의 JAX-RPC 핸들러 등록하기</title>
 
-      <para>In this section we will register our own
-      <interfacename>javax.rpc.xml.handler.Handler</interfacename> to the web
-      service proxy where we can do custom code before the SOAP message is
-      sent over the wire. The <interfacename>Handler</interfacename> is a
-      callback interface. There is a convenience base class provided in
-      <filename class="libraryfile">jaxrpc.jar</filename>, namely
-      <classname>javax.rpc.xml.handler.GenericHandler</classname> that we will
-      extend:</para>
+      <para>이번 섹션에서는 SOAP 메시지를 보내기 전에 커스텀 코드를 실행할 수 있는 웹 서비스
+      프록시에 자신만의
+      <interfacename>javax.rpc.xml.handler.Handler</interfacename>를 등록할 것이다.
+      <interfacename>Handler</interfacename>는 콜백 인터페이스다.
+      <filename class="libraryfile">jaxrpc.jar</filename>에서 편리한 기반 클래스를
+      제공하므로 <classname>javax.rpc.xml.handler.GenericHandler</classname>를
+      확장할 것이다.</para>
 
       <programlisting language="java">public class AccountHandler extends GenericHandler {
 
@@ -765,14 +704,12 @@ public class AccountServiceEndpoint extends ServletEndpointSupport implements Re
     }
 }</programlisting>
 
-      <para>What we need to do now is to register our AccountHandler to
-      JAX-RPC Service so it would invoke
-      <methodname>handleRequest(..)</methodname> before the message is sent
-      over the wire. Spring has at this time of writing no declarative support
-      for registering handlers, so we must use the programmatic approach.
-      However Spring has made it very easy for us to do this as we can
-      override the <methodname>postProcessJaxRpcService(..)</methodname>
-      method that is designed for this:</para>
+      <para>이제 AccountHandler를 JAX-RPC 서비스에 등록하면 메시지를 보내기 전에
+      <methodname>handleRequest(..)</methodname>를 호출할 것이다. 스프링이 이러한
+      핸들러 등록에 선언적인 지원을 하지 않으므로 프로그래밍적인 접근을 취해야 한다. 하지만
+      스프링에서는 이 목적으로 만들어진
+      <methodname>postProcessJaxRpcService(..)</methodname> 메서드를 오버라이스할
+      수 있으므로 이 작업을 아주 쉽게 할 수 있다.</para>
 
       <programlisting language="java">public class AccountHandlerJaxRpcPortProxyFactoryBean extends JaxRpcPortProxyFactoryBean {
 
@@ -784,8 +721,7 @@ public class AccountServiceEndpoint extends ServletEndpointSupport implements Re
     }
 }</programlisting>
 
-      <para>The last thing we must remember to do is to change the Spring
-      configuration to use our factory bean:</para>
+      <para>마지막으로 팩토리빈을 사용하도록 스프링 설명을 변경하는 것을 잊지 말아야 한다.</para>
 
       <programlisting language="xml">&lt;bean id="accountWebService" class="example.AccountHandlerJaxRpcPortProxyFactoryBean"&gt;
     ...
@@ -793,34 +729,30 @@ public class AccountServiceEndpoint extends ServletEndpointSupport implements Re
     </section>
 
     <section id="remoting-web-services-jaxws-export-servlet">
-      <title>Exposing servlet-based web services using JAX-WS</title>
+      <title>JAX-WS를 사용해서 서블릿기반의 웹서비스 노출하기</title>
 
-      <para>Spring provides a convenient base class for JAX-WS servlet
-      endpoint implementations -
-      <classname>SpringBeanAutowiringSupport</classname>. To expose our
-      <interfacename>AccountService</interfacename> we extend Spring's
-      <classname>SpringBeanAutowiringSupport</classname> class and implement
-      our business logic here, usually delegating the call to the business
-      layer. We'll simply use Spring 2.5's <literal>@Autowired</literal>
-      annotation for expressing such dependencies on Spring-managed
-      beans.</para>
+      <para>스프링은 JAX-WS 서블릿 앤드포인트 구현체에 대한 편리한 기반 클래스
+      <classname>SpringBeanAutowiringSupport</classname>를 제공한다.
+      <interfacename>AccountService</interfacename>를 노출하려고 스프링의
+      <classname>SpringBeanAutowiringSupport</classname>를 확장해서 비스니스 로직을
+      작성한다.(보통은 비즈니스 계층에 호출을 위임한다.) 스프링이 관리하는 빈의 의존성 등을 나타내기
+      위해서 간단히 스프링 2.5의 <literal>@Autowired</literal> 어노테이션을 사용할
+      것이다.</para>
 
       <programlisting language="java"><lineannotation>/**
- * JAX-WS compliant AccountService implementation that simply delegates
- * to the AccountService implementation in the root web application context.
+ * JAX-WS 호환 AccountService 구현체로 루트 웹 어플리케이션 컨텍스트에서
+ * AccountService 구현체에 위임한다.
  *
- * This wrapper class is necessary because JAX-WS requires working with dedicated
- * endpoint classes. If an existing service needs to be exported, a wrapper that
- * extends SpringBeanAutowiringSupport for simple Spring bean autowiring (through
- * the @Autowired annotation) is the simplest JAX-WS compliant way.
+ * JAX-WS가 전용 엔드포인트 클래스와 동작해야 하므로 이 랩퍼 클래스가 필요하다.
+ * 기존에 존배하는 서비스를 익스포트해야 하면 스프링 빈 자동연결(autowiring)을 위해서
+ * SpringBeanAutowiringSupport를 확장한 래퍼가 JAX-WS와 호환이 되는 가장 간단한 방법이다.
  *
- * This is the class registered with the server-side JAX-WS implementation.
- * In the case of a Java EE 5 server, this would simply be defined as a servlet
- * in web.xml, with the server detecting that this is a JAX-WS endpoint and reacting
- * accordingly. The servlet name usually needs to match the specified WS service name.
+ * 서버측 JAX-WS 구현체와 등록된 클래스다. Java EE 5 서버의 경우 이 클래스는 web.xml에
+ * 서블릿으로 정의될 것이고 서버는 이 클래스가 JAX-WS 엔드포인트라는 것을 탐지하고 적절하게 반응할
+ * 것이다. 보통 서블릿 이름이 지정한 WS 서비스명과 일치해야 한다.
  *
- * The web service engine manages the lifecycle of instances of this class.
- * Spring bean references will just be wired in here.
+ * 웹 서비스 엔진은 이 클래스 인스턴스의 생명주기를 관리한다.
+ * 스프링 빈 참조가 여기서 연결될 것이다.
  */</lineannotation>
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -841,31 +773,26 @@ public class AccountServiceEndpoint extends SpringBeanAutowiringSupport {
     }
 }</programlisting>
 
-      <para>Our <classname>AccountServletEndpoint</classname> needs to run in
-      the same web application as the Spring context to allow for access to
-      Spring's facilities. This is the case by default in Java EE 5
-      environments, using the standard contract for JAX-WS servlet endpoint
-      deployment. See Java EE 5 web service tutorials for details.</para>
+      <para>스프링의 기능에 접근할 수 있도록 스프링 컨텍스트와 같은 웹 어플리케이션에서
+      <classname>AccountServletEndpoint</classname>를 실행해야 한다. JAX-WS 서블릿
+      엔드포인트 배포의 표준 계약을 사용하는 Java EE 5 환경에서는 이것이 기본값이다. 자세한 내용은
+      Java EE 5 웹서비스 튜토리얼을 봐라.</para>
     </section>
 
     <section id="remoting-web-services-jaxws-export-standalone">
-      <title>Exporting standalone web services using JAX-WS</title>
+      <title>JAX-WS를 사용해서 독립(standalone) 웹 서비스 익스포트하기</title>
 
-      <para>The built-in JAX-WS provider that comes with Sun's JDK 1.6
-      supports exposure of web services using the built-in HTTP server that's
-      included in JDK 1.6 as well. Spring's
-      <classname>SimpleJaxWsServiceExporter</classname> detects all
-      <literal>@WebService</literal> annotated beans in the Spring application
-      context, exporting them through the default JAX-WS server (the JDK 1.6
-      HTTP server).</para>
+      <para>Sun JDK 1.6의 내장 JAX-WS 프로바이더는 JDK 1.6에 포함된 내장 HTTP 서버를
+      사용해서 웹서비스를 노출한다. 스프링의
+      <classname>SimpleJaxWsServiceExporter</classname>는 스프링 어플리케이션
+      컨텍스트에서 <literal>@WebService</literal> 어노테이션이 붙은 모든 빈을 찾아내서
+      기본 JAX-WS 서버(JDK 1.6 HTTP 서버)로 익스포트한다.</para>
 
-      <para>In this scenario, the endpoint instances are defined and managed
-      as Spring beans themselves; they will be registered with the JAX-WS
-      engine but their lifecycle will be up to the Spring application context.
-      This means that Spring functionality like explicit dependency injection
-      may be applied to the endpoint instances. Of course, annotation-driven
-      injection through <literal>@Autowired</literal> will work as
-      well.</para>
+      <para>이 시나리오에서 엔드포인트 인스턴스는 스프링 빈으로 정의하고 관리된다. 엔드포인트
+      인스턴스는 JAX-WS 엔진과 함께 등록될 것이지만 라이프사이클은 스프링 어플리케이션 컨텍스트에
+      달려있다. 즉, 명시적인 의존성 주입같은 스프링의 기능이 엔드포인트 인스턴스에 적용될 것이다.
+      물론 <literal>@Autowired</literal>를 사용한 어노테이션기반 주입도 잘 동작할
+      것이다.</para>
 
       <programlisting language="xml">&lt;bean class="org.springframework.remoting.jaxws.SimpleJaxWsServiceExporter"&gt;
     &lt;property name="baseAddress" value="http://localhost:8080/"/&gt;
@@ -877,12 +804,11 @@ public class AccountServiceEndpoint extends SpringBeanAutowiringSupport {
 
 ...</programlisting>
 
-      <para>The <classname>AccountServiceEndpoint</classname> may derive from
-      Spring's <classname>SpringBeanAutowiringSupport</classname> but doesn't
-      have to since the endpoint is a fully Spring-managed bean here. This
-      means that the endpoint implementation may look like as follows, without
-      any superclass declared - and Spring's <literal>@Autowired</literal>
-      configuration annotation still being honored:</para>
+      <para><classname>AccountServiceEndpoint</classname>는 스프링의
+      <classname>SpringBeanAutowiringSupport</classname>에서 파생되지만 엔드포인트가
+      스프링이 완전히 관리하는 빈이므로 꼭 그럴 필요는 없다. 이는 엔드포인트 구현체가 슈퍼클래스를
+      정의하지 않고 다음과 같이 작성될 것이고 스프링의 <literal>@Autowired</literal> 설정
+      어노테이션을 사용할 수 있다.</para>
 
       <programlisting language="java">@WebService(serviceName="AccountService")
 public class AccountServiceEndpoint {
@@ -903,44 +829,37 @@ public class AccountServiceEndpoint {
     </section>
 
     <section id="remoting-web-services-jaxws-export-ri">
-      <title>Exporting web services using the JAX-WS RI's Spring
-      support</title>
+      <title>JAX-WS RI의 스프링 지원을 사용한 웹서비스 익스포트</title>
 
-      <para>Sun's JAX-WS RI, developed as part of the GlassFish project, ships
-      Spring support as part of its JAX-WS Commons project. This allows for
-      defining JAX-WS endpoints as Spring-managed beans, similar to the
-      standalone mode discussed in the previous section - but this time in a
-      Servlet environment. <emphasis>Note that this is not portable in a Java
-      EE 5 environment; it is mainly intended for non-EE environments such as
-      Tomcat, embedding the JAX-WS RI as part of the web
-      application.</emphasis></para>
+      <para>GlassFish 프로젝트의 일부인 Sun의 JAX-WS RI는 JAX-WS Commons 프로젝트의
+      일부로 스프링을 지원한다. 이는 앞 섹션에서 설명한 독립(standalone) 모드와 유사하게(지금은
+      서블릿 환경이다.) 스프링이 관리하는 빈으로 JAX-WS 엔드포인트를 정의할 수 있다.
+      <emphasis>이는 Java EE 5환경에서는 사용할 주 없다. 웹어플리케이션의 일부로 JAX-WS RI를
+      임베딩한 톰캣같은 EE가 아닌 환경을 위한 것이다.</emphasis></para>
 
-      <para>The difference to the standard style of exporting servlet-based
-      endpoints is that the lifecycle of the endpoint instances themselves
-      will be managed by Spring here, and that there will be only one JAX-WS
-      servlet defined in <literal>web.xml</literal>. With the standard Java EE
-      5 style (as illustrated above), you'll have one servlet definition per
-      service endpoint, with each endpoint typically delegating to Spring
-      beans (through the use of <literal>@Autowired</literal>, as shown
-      above).</para>
+      <para>서블릿에 기반한 엔트포인트 익스포트의 표준 방식과 다른 점은 엔드포인트 인스턴스의
+      생명주기는 스프링이 관리할 것이고 <literal>web.xml</literal>에 딱 하나의 JAX-WS
+      서블릿이 정의되어 있을 것이다. 표준 Java EE 5 방식으로는(위에서 설명한) 서비스 엔드포인트마다
+      하나의 서블릿 정의를 가질 것이고 각 엔드포인트는 보통 스프링 빈(위에서 처럼
+      <literal>@Autowired</literal>를 사용해서)에 위임할 것이다.</para>
 
-      <para>Check out <ulink
-      url="https://jax-ws-commons.dev.java.net/spring/">https://jax-ws-commons.dev.java.net/spring/</ulink>
-      for the details on setup and usage style.</para>
+      <para>자세한 설정과 사용방법은 <ulink
+      url="https://jax-ws-commons.dev.java.net/spring/">https://jax-ws-commons.dev.java.net/spring/</ulink>를
+      참고해라.</para>
     </section>
 
     <section id="remoting-web-services-jaxws-access">
-      <title>Accessing web services using JAX-WS</title>
+      <title>JAX-WS로 웹서비스 접근하기</title>
 
-      <para>Analogous to the JAX-RPC support, Spring provides two factory
-      beans to create JAX-WS web service proxies, namely
-      <classname>LocalJaxWsServiceFactoryBean</classname> and
-      <classname>JaxWsPortProxyFactoryBean</classname>. The former can only
-      return a JAX-WS service class for us to work with. The latter is the
-      full-fledged version that can return a proxy that implements our
-      business service interface. In this example we use the latter to create
-      a proxy for the <interfacename>AccountService</interfacename> endpoint
-      (again):</para>
+      <para>JAX-RPC 지원과 비슷하게 스프링은 JAX-WS 웹서비스 프록시를 생성하는 두 팩토리 빈
+      <classname>LocalJaxWsServiceFactoryBean</classname>와
+      <classname>JaxWsPortProxyFactoryBean</classname>를 제공한다.
+      <classname>LocalJaxWsServiceFactoryBean</classname>는 사용할 JAX-WS 서비스
+      클래스만을 반환할 수 있고 <classname>JaxWsPortProxyFactoryBean</classname>는
+      완전히 독립적인 버전으로(full-fledged version) 비즈니스 서비스 인터페이스를 구현한
+      프록시를 반환할 수 있다. 이 예제에서 <interfacename>AccountService</interfacename>
+      엔드포인트에 대한 프록시를 생성하려고
+      <classname>JaxWsPortProxyFactoryBean</classname>를 사용한다.</para>
 
       <programlisting language="xml">&lt;bean id="accountWebService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean"&gt;
     &lt;property name="serviceInterface" value="example.AccountService"/&gt;
@@ -950,26 +869,22 @@ public class AccountServiceEndpoint {
     &lt;property name="portName" value="AccountServiceEndpointPort"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>Where <literal>serviceInterface</literal> is our business
-      interface the clients will use. <literal>wsdlDocumentUrl</literal> is
-      the URL for the WSDL file. Spring needs this a startup time to create
-      the JAX-WS Service. <literal>namespaceUri</literal> corresponds to the
-      targetNamespace in the .wsdl file. <literal>serviceName</literal>
-      corresponds to the service name in the .wsdl file.
-      <literal>portName</literal> corresponds to the port name in the .wsdl
-      file.</para>
+      <para><literal>serviceInterface</literal>가 클라이언트가 사용할 비즈니스
+      인터페이스다. <literal>wsdlDocumentUrl</literal>는 WSDL 파일의 URL이다. 스프링이
+      JAX-WS 서비스를 생성도록 구동시에 이 파일이 필요하다.
+      <literal>namespaceUri</literal>는 .wsdl 파일의 targetNamespace과 대응되고
+      <literal>serviceName</literal>는 .wsdl 파일의 서비스명과 대응되고
+      <literal>portName</literal>는 .wsdl파일의 포트명과 대응된다.</para>
 
-      <para>Accessing the web service is now very easy as we have a bean
-      factory for it that will expose it as <literal>AccountService</literal>
-      interface. We can wire this up in Spring:</para>
+      <para><literal>AccountService</literal> 인터페이스로 노출할 빈 팩토리를 가지고
+      있으므로 이제 웹서비스 접근이 아주 쉽다. 스프링에서 이를 연결할 수 있다.</para>
 
       <programlisting language="xml">&lt;bean id="client" class="example.AccountClientImpl"&gt;
     ...
     &lt;property name="service" ref="accountWebService"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>From the client code we can access the web service just as if it
-      was a normal class:</para>
+      <para>클라이언트 코드에서는 일반적인 클래스인 것처럼 웹 서비스에 접근할 수 있다.</para>
 
       <programlisting language="java">public class AccountClientImpl {
 
@@ -984,32 +899,28 @@ public class AccountServiceEndpoint {
     }
 }</programlisting>
 
-      <para><emphasis>NOTE:</emphasis> The above is slightly simplified in
-      that JAX-WS requires endpoint interfaces and implementation classes to
-      be annotated with <literal>@WebService</literal>,
-      <literal>@SOAPBinding</literal> etc annotations. This means that you
-      cannot (easily) use plain Java interfaces and implementation classes as
-      JAX-WS endpoint artifacts; you need to annotate them accordingly first.
-      Check the JAX-WS documentation for details on those requirements.</para>
+      <para><emphasis>NOTE:</emphasis> JAX-WS에서는 엔드포인트 인터페이스와 구현 클래스에
+      <literal>@WebService</literal>, <literal>@SOAPBinding</literal> 등의
+      어노테이션이 붙어야 하므로 앞에서는 약간 간소화되었다. 즉, JAX-WS 엔드포인트
+      아티팩트(artifacts)로 평번한 자바 인터페이스와 구현클래스를 (쉽게)사용할 수 없다. 그러므로
+      우선 이러한 클래스에 적절하게 어노테이션을 붙혀야 한다. 요구사항에 대한 자세한 내용은 JAX-WS
+      문서를 확인해 봐라.</para>
     </section>
   </section>
 
   <section id="remoting-jms">
     <title>JMS</title>
 
-    <para>It is also possible to expose services transparently using JMS as
-    the underlying communication protocol. The JMS remoting support in the
-    Spring Framework is pretty basic - it sends and receives on the
-    <interfacename>same thread</interfacename> and in the <emphasis>same
-    non-transactional</emphasis> <interfacename>Session</interfacename>, and
-    as such throughput will be very implementation dependent. Note that
-    these single-threaded and non-transactional constraints apply only to
-    Spring's JMS <emphasis role="bold">remoting</emphasis> support. See
-    <xref linkend="jms"/> for information on Spring's rich support for
-    JMS-based <emphasis role="bold">messaging</emphasis>.</para>
+    <para>의존하는 통신 프로토콜로 JMS를 사용해서 서비스를 투명하게 노출할 수도 있다. 스프링
+    프레임워크의 JMS 원격지원은 아주 기본적이고(<interfacename>같은 스레드</interfacename>와
+    <emphasis>트랜잭션이 아닌 같은</emphasis>
+    <interfacename>Session</interfacename>에서 주고 받는다.) 이러한 스루풋은 아주 의존적인
+    구현체가 될 것이다. 이러한 단일 스레ㅇ드이면서 트랜잭션이 아닌 제약사항은 스프링의 JMS
+    <emphasis role="bold">원격 </emphasis>지원에만 적용된다. JMS에 기반한
+    <emphasis role="bold">메시징</emphasis>에 대한 스프링의 더 많은 지원에 대한 내용은
+    <xref linkend="jms"/>를 봐라.</para>
 
-    <para>The following interface is used on both the server and the client
-    side.</para>
+    <para>다음 인터페이스는 서버와 클라이언트가 모두 사용한다.</para>
 
     <programlisting language="java">package com.foo;
 
@@ -1018,8 +929,7 @@ public interface CheckingAccountService {
     public void cancelAccount(Long accountId);
 }</programlisting>
 
-    <para>The following simple implementation of the above interface is used
-    on the server-side.</para>
+    <para>다음은 앞의 인터페이스의 간단한 구현체로 서버측에서 사용한다.</para>
 
     <programlisting language="java">package com.foo;
 
@@ -1030,8 +940,7 @@ public class SimpleCheckingAccountService implements CheckingAccountService {
     }
 }</programlisting>
 
-    <para>This configuration file contains the JMS-infrastructure beans that
-    are shared on both the client and server.</para>
+    <para>이 구성파일은 클라이언트와 서버가 모두 공유하는 JMS-인프라스트럭처 빈을 가진다.</para>
 
     <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -1050,10 +959,10 @@ public class SimpleCheckingAccountService implements CheckingAccountService {
 &lt;/beans&gt;</programlisting>
 
     <section id="remoting-jms-server">
-      <title>Server-side configuration</title>
+      <title>서버측 구성</title>
 
-      <para>On the server, you just need to expose the service object using
-      the <classname>JmsInvokerServiceExporter</classname>.</para>
+      <para>서버에서는 <classname>JmsInvokerServiceExporter</classname>를 사용해서
+      서비스 객체를 노출해야 한다.</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -1091,14 +1000,13 @@ public class Server {
     </section>
 
     <section id="remoting-jms-client">
-      <title>Client-side configuration</title>
+      <title>클라이언트측 구성</title>
 
-      <para>The client merely needs to create a client-side proxy that will
-      implement the agreed upon interface
-      (<interfacename>CheckingAccountService</interfacename>). The resulting
-      object created off the back of the following bean definition can be
-      injected into other client side objects, and the proxy will take care of
-      forwarding the call to the server-side object via JMS.</para>
+      <para>클라이언트는 합의한 인터페이스
+      (<interfacename>CheckingAccountService</interfacename>)를 구현할 클라이언트측
+      프록시를 생성해야 한다. 다음 빈 정의로 생성한 최종 객체(The resulting object created
+      off the back of the following bean definition)를 다른 클라이언트측 객체에 주입할
+      수 있고 JMS로 서버측 객체 호출에 대한 포워딩은 프록시가 담단한다.</para>
 
       <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -1131,118 +1039,96 @@ public class Client {
 }</programlisting>
     </section>
 
-    <para>You may also wish to investigate the support provided by the <ulink
-    url="http://lingo.codehaus.org/">Lingo</ulink> project, which (to quote
-    the homepage blurb) <quote>
-        <emphasis>... is a lightweight POJO based remoting and messaging
-        library based on the Spring Framework's remoting libraries which
-        extends it to support JMS.</emphasis>
+    <para><ulink url="http://lingo.codehaus.org/">Lingo</ulink> 프로젝트의 지원도
+    살펴보길 원할 것이다. <quote>
+        <emphasis>Lingo는 스프링 프레임워크에 기반해서 스프링의 원격 라이브러리가 JMS를
+        지원하도록 확장한 경량 POJO 기반의 원격 메시징 라이브러리이다.</emphasis>
       </quote></para>
   </section>
 
   <section id="remoting-autodection-remote-interfaces">
-    <title>Auto-detection is not implemented for remote interfaces</title>
+    <title>원격 인터페이스의 자동탐지는 구현되지 않았다</title>
 
-    <para>The main reason why auto-detection of implemented interfaces does
-    not occur for remote interfaces is to avoid opening too many doors to
-    remote callers. The target object might implement internal callback
-    interfaces like <interfacename>InitializingBean</interfacename> or
-    <interfacename>DisposableBean</interfacename> which one would not want to
-    expose to callers.</para>
+    <para>원격 인터페이스를 구현한 인터페이스를 자동으로 탐지하지 않는 주요 이유는 원격 호출자에
+    너무 많은 연결을 만들지 않도록 하기 위함이다. 대상 객체는 호출자에게 노출하고 싶지 않은
+    <interfacename>InitializingBean</interfacename>나
+    <interfacename>DisposableBean</interfacename> 같은 내부 콜백 인터페이스를
+    구현할 것이다.</para>
 
-    <para>Offering a proxy with all interfaces implemented by the target
-    usually does not matter in the local case. But when exporting a remote
-    service, you should expose a specific service interface, with specific
-    operations intended for remote usage. Besides internal callback
-    interfaces, the target might implement multiple business interfaces, with
-    just one of them intended for remote exposure. For these reasons, we
-    <emphasis>require</emphasis> such a service interface to be
-    specified.</para>
+    <para>대상 객체가 구현한 모든 인터페이스의 프록시를 제공하는 것을 로컬에서는 중요치 않지만
+    원격서비스를 익스포트하는 경우에는 원격에서 사용할 동작을 가진 특정 서비스 인터페이스를 노출해야
+    한다. 내부 콜백 인터페이스와 달리 대상 객체는 여러 비즈니스 인터페이스를 구현하고 그 중 하나는
+    원격으로 노출할 것이다. 그래서 서비스 인터페이스등을
+    지정<emphasis>해야 한다</emphasis>.</para>
 
-    <para>This is a trade-off between configuration convenience and the risk
-    of accidental exposure of internal methods. Always specifying a service
-    interface is not too much effort, and puts you on the safe side regarding
-    controlled exposure of specific methods.</para>
+    <para>이는 설정의 편리함과 내부 메서드를 실수로 노출할 위험사이의 트레이드오프다. 서비스
+    인터페이스를 지정하는 것이 항상 많은 노력이 드는 것은 아니고 특정 메서드 노출을 안전하게
+    제어할 수 있게 해라.</para>
   </section>
 
   <section id="remoting-considerations">
-    <title>Considerations when choosing a technology</title>
+    <title>기술 선택시 고려사항</title>
 
-    <para>Each and every technology presented here has its drawbacks. You
-    should carefully consider your needs, the services you are exposing and the
-    objects you'll be sending over the wire when choosing a technology.</para>
+    <para>여기서 언급한 모든 기술은 단점을 가진다. 기술을 선택할 때 요구사항과 노출할 서비스,
+    네트워크로 보낼 객체를 신중하게 고려해야 한다.</para>
 
-    <para>When using RMI, it's not possible to access the objects through the
-    HTTP protocol, unless you're tunneling the RMI traffic. RMI is a fairly
-    heavy-weight protocol in that it supports full-object serialization which
-    is important when using a complex data model that needs serialization over
-    the wire. However, RMI-JRMP is tied to Java clients: It is a Java-to-Java
-    remoting solution.</para>
+    <para>RMI를 사용할 때는 RMI 트래픽을 터널링하지 않고는 HTTP 프로토콜로 객체에 접근할 수 없다.
+    RMI는 상당히 비용이 드는 프로토콜로 네트워크사이에 직렬화가 필요한 복잡한 데이터 모델을 사용할 때
+    중요한 전체 객체의 직렬화를 지원한다.하지만 RMI-JRMP는 자바 클라이언트에 의존성이 있는
+    Java-to-Java 원격 솔루션이다.</para>
 
-    <para>Spring's HTTP invoker is a good choice if you need HTTP-based
-    remoting but also rely on Java serialization. It shares the basic
-    infrastructure with RMI invokers, just using HTTP as transport. Note that
-    HTTP invokers are not only limited to Java-to-Java remoting but also to
-    Spring on both the client and server side. (The latter also applies to
-    Spring's RMI invoker for non-RMI interfaces.)</para>
+    <para>HTTP기반의 원격이 필요하다면 스프링의 HTTP 인보커가 괜찮지만 스프링 HTTP 인보커도 자바
+    직렬화에 의존하고 있다. 스프링 HTTP 인보커는 RMI 인보커와 기본 인프라스트럭처를 공유하면서
+    전송에 HTTP를 사용한다. 스프링 HTTP 인보커는 Java-to-Java 원격에만 제한될 뿐만 아니라
+    클라이언트와 서버측이 모두 스프링이어야 한다. (클라이언트와 서버가 모두 스프링인 경우 RMI가
+    아닌 인터페이스에는 스프링의 RMI도 적용한다.)</para>
 
-    <para>Hessian and/or Burlap might provide significant value when operating
-    in a heterogeneous environment, because they explicitly allow for non-Java
-    clients. However, non-Java support is still limited. Known issues include
-    the serialization of Hibernate objects in combination with
-    lazily-initialized collections. If you have such a data model, consider
-    using RMI or HTTP invokers instead of Hessian.</para>
+    <para>헤시안과 버랩은 명시적으로 자바가 아닌 클라이언트를 허용하므로 이기종간의 환경에서 작업할 때
+    중요한 가치를 준다. 하지만 비자바 지원은 아직 제한적이다. 알려진 이슈에는 지연 초기화 컬렉션이
+    있는 하이버네이트 객체의 직렬화 등이 있다. 이러한 데이터 모델이 있다면 헤시안 대신에 RMI나
+    HTTP 인코커를 고려해 봐라.</para>
 
-    <para>JMS can be useful for providing clusters of services and allowing
-    the JMS broker to take care of load balancing, discovery and
-    auto-failover. By default: Java serialization is used when using JMS
-    remoting but the JMS provider could use a different mechanism for the wire
-    formatting, such as XStream to allow servers to be implemented in other
-    technologies.</para>
+    <para>JMS는 서비스 클러스터를 제공하고 로드 밸런싱, 발견(discovery), 자동
+    장애복구(auto-failover)를 담당하는 JMS 중계자(broker)를 허용할 때 유용하다. 기본적으로
+    JMS 원격을 사용할 때 자바 직렬화를 사용하지만 JMS 제공자는 네트워크 형식에 따라 다른 기술로
+    구현한 서버를 사용할 수 있는 XStream같은 다른 메카니즘을 사용할 수 있다.</para>
 
-    <para>Last but not least, EJB has an advantage over RMI in that it
-    supports standard role-based authentication and authorization and remote
-    transaction propagation. It is possible to get RMI invokers or HTTP
-    invokers to support security context propagation as well, although this is
-    not provided by core Spring: There are just appropriate hooks for plugging
-    in third-party or custom solutions here.</para>
+    <para>마지막으로 EJB는 표준 역할(role) 기반의 인증과 인가를 지원하고 원격 트랜잭션
+    전파(propagation)를 지원해서 RMI보다 뛰어난 이점들이 있다. 스프링 코어가 제공하지는 않지만
+    보안 컨텍스트 전파를 지원하는 RMI 인보커나 HTTP 인보커를 획득할 수 있다.(서드파티 플러그인이나
+    커스텀 솔루션을 위한 적절한 훅(hook)을 제공한다.)</para>
   </section>
 
   <section id="rest-client-access">
-    <title>Accessing RESTful services on the Client</title>
+    <title>클라이언트에서 RESTful 서비스 접근하기</title>
 
-    <para>The <classname>RestTemplate</classname> is the core class for
-    client-side access to RESTful services. It is conceptually similar to
-    other template classes in Spring, such as
-    <classname>JdbcTemplate</classname> and <classname>JmsTemplate</classname>
-    and other template classes found in other Spring portfolio projects.
-    <classname>RestTemplate</classname>'s behavior is customized by providing
-    callback methods and configuring the
-    <interfacename>HttpMessageConverter</interfacename> used to marshal
-    objects into the HTTP request body and to unmarshal any response back
-    into an object. As it is common to use XML as a message format, Spring
-    provides a <classname>MarshallingHttpMessageConverter</classname> that
-    uses the Object-to-XML framework that is part of the
-    <classname>org.springframework.oxm</classname> package. This gives you a
-    wide range of choices of XML to Object mapping technologies to choose
-    from.</para>
+    <para><classname>RestTemplate</classname>이 클라이언트가 RESTful 서비스에 접근하는
+    핵심 클래스다. 개념적으로는 <classname>JdbcTemplate</classname>과
+    <classname>JmsTemplate</classname>이나 스프링 포트폴리오 프로젝트의 템플릿 클래스들과
+    유사하다. 콜백 메서드를 지정하고 객체를 HTTP 요청 바디로 마샬링하고 응답을 다시 객체로
+    언마샬링하는데 사용하는 <interfacename>HttpMessageConverter</interfacename>를
+    구성해서 <classname>RestTemplate</classname>의 동작을 커스터마이징 할 수 있다. 메시지
+    형식으로 XML을 사용하는 것이 일반적이므로 스프링은
+    <classname>org.springframework.oxm</classname>에 Object-to-XML 프레임워크를
+    사용하는 <classname>MarshallingHttpMessageConverter</classname>를 제공한다.
+    <classname>MarshallingHttpMessageConverter</classname>는 XML을 객체로 매핑하는
+    기술의 넓은 범위의 선택권을 준다.</para>
 
-    <para>This section describes how to use the
-    <classname>RestTemplate</classname> and its associated
-    <interfacename>HttpMessageConverters</interfacename>.</para>
+    <para>이번 섹션에서는 <classname>RestTemplate</classname>과 관련
+    <interfacename>HttpMessageConverters</interfacename>를 사용하는
+    방법을 설명한다.</para>
 
     <section id="rest-resttemplate">
       <title>RestTemplate</title>
 
-      <para>Invoking RESTful services in Java is typically done using a helper
-      class such as Jakarta Commons <classname>HttpClient</classname>. For
-      common REST operations this approach is too low level as shown
-      below.</para>
+      <para>자바에서 RESTful 서비스 호출은 보통 Jakarta Commons
+      <classname>HttpClient</classname>같은 헬퍼 클래스를 사용해서 호출한다.
+      일반적인 REST 작업에 이 접근은 다음에서 보듯이 너무 저수순이다.</para>
 
       <programlisting>String uri = "http://example.com/hotels/1/bookings";
 
 PostMethod post = new PostMethod(uri);
-String request = // create booking request content
+String request = // 예약 요청 내용 생성
 post.setRequestEntity(new StringRequestEntity(request));
 
 httpClient.executeMethod(post);
@@ -1254,20 +1140,19 @@ if (HttpStatus.SC_CREATED == post.getStatusCode()) {
   }
 }</programlisting>
 
-      <para>RestTemplate provides higher level methods that correspond to each
-      of the six main HTTP methods that make invoking many RESTful services a
-      one-liner and enforce REST best practices.</para>
+      <para>RestTemplate은 6개의 주요 HTTP 메서드에 대응되는 고수준의 메서드를 제공하고
+      한줄로 다수의 RESTfult 서비스를 호출하고 REST 베스트 프렉틱스를 강제한다.</para>
 
       <table>
-        <title>Overview of RestTemplate methods</title>
+        <title>RestTemplate 메서드 요약</title>
 
         <tgroup cols="2">
           <tbody>
             <row>
-              <entry><emphasis role="bold">HTTP Method</emphasis></entry>
+              <entry><emphasis role="bold">HTTP 메서드</emphasis></entry>
 
               <entry><emphasis role="bold">RestTemplate
-              Method</emphasis></entry>
+              메서드</emphasis></entry>
             </row>
 
             <row>
@@ -1335,166 +1220,152 @@ if (HttpStatus.SC_CREATED == post.getStatusCode()) {
         </tgroup>
       </table>
 
-      <para>The names of <classname>RestTemplate</classname> methods follow a
-      naming convention, the first part indicates what HTTP method is being
-      invoked and the second part indicates what is returned. For example, the
-      method <methodname>getForObject()</methodname> will perform a GET, convert
-      the HTTP response into an object type of your choice and return that
-      object. The method <methodname>postForLocation()</methodname> will do a
-      POST, converting the given object into a HTTP request and return the
-      response HTTP Location header where the newly created object can be
-      found. In case of an exception processing the HTTP request, an exception
-      of the type <classname>RestClientException</classname> will be
-      thrown; this behavior can be changed by plugging in another <interfacename>ResponseErrorHandler</interfacename>
-	  implementation into the <classname>RestTemplate</classname>.</para>
+      <para><classname>RestTemplate</classname> 메서드의 이름은 작명관례를 따라서 첫
+      부분은  어떤 HTTP 메서드가 호출되는 지를 나타내고 두번째 부분은 무엇을 반환하는 지를 나타낸다.
+      예를 들어 <methodname>getForObject()</methodname> 메서드는 GET을 수행하고 HTTP
+      응답을 원하는 객체 타입으로 변환해서 반환한다.
+      <methodname>postForLocation()</methodname> 메서드는 POST를 수행하고 전달한 객체를
+      HTTP 요청으로 변환하고 새로 생성한 객체의 위치를 가리키는 응답 HTTP Location 헤더를
+      반환한다. HTTP 요청의 예외 처리에서는 <classname>RestClientException</classname>
+      타입의 예외가 던져질 것이다. 이 동작은 <classname>RestTemplate</classname>에 다른
+      <interfacename>ResponseErrorHandler</interfacename>를 연결해서 변경할 수
+      있다.</para>
 
-      <para>Objects passed to and returned from these methods are converted to
-      and from HTTP messages by
-      <interfacename>HttpMessageConverter</interfacename> instances.
-      Converters for the main mime types are registered by default, but you
-      can also write your own converter and register it via the
-      <methodname>messageConverters()</methodname> bean property. The default
-      converter instances registered with the template are
+      <para>이러한 메서드에 전달하거나 메서드가 반환한 객체들은
+      <interfacename>HttpMessageConverter</interfacename> 인스턴스를 사용해서 HTTP
+      메세지로 변환한다. 주요 mime 타입에 대한 컨버터는 기본적으로 등록되어 있지만
+      <methodname>messageConverters()</methodname> 빈 프로퍼티로 자신만의 컨버터를
+      작성해서 등록할 수도 있다. 템플릿에 등록된 기본 컨버터 인스턴스는
       <classname>ByteArrayHttpMessageConverter</classname>,
       <classname>StringHttpMessageConverter</classname>,
-      <classname>FormHttpMessageConverter</classname> and
-      <classname>SourceHttpMessageConverter</classname>. You can override
-      these defaults using the <methodname>messageConverters()</methodname> bean
-      property as would be required if using the
-      <classname>MarshallingHttpMessageConverter</classname> or 
-      <classname>MappingJacksonHttpMessageConverter</classname>.</para>
+      <classname>FormHttpMessageConverter</classname>,
+      <classname>SourceHttpMessageConverter</classname>다.
+      <methodname>messageConverters()</methodname>를 사용해서 이 기본값을 덮어쓸 수
+      있고 <classname>MarshallingHttpMessageConverter</classname>나
+      <classname>MappingJacksonHttpMessageConverter</classname>를 사용한다면
+      덮어써야 한다.</para>
 
-      <para>Each method takes URI template arguments in two forms, either as a
-      <literal>String</literal> variable length argument or a
-      <literal>Map&lt;String,String&gt;</literal>. For example,</para>
+      <para>각 메서드는 <literal>String</literal> 가변 인자나
+      <literal>Map&lt;String,String&gt;</literal> 두가지 형식의 URI 템플릿
+      인자를 받는다. 예를 들면</para>
 
       <programlisting language="java">String result = restTemplate.getForObject("http://example.com/hotels/{hotel}/bookings/{booking}",
                                           String.class,"42", "21");
 </programlisting>
 
-      <para>using variable length arguments and</para>
+      <para>가변 인자를 사용하거나</para>
 
       <programlisting language="java">Map&lt;String, String&gt; vars = Collections.singletonMap("hotel", "42");
 String result =
   restTemplate.getForObject("http://example.com/hotels/{hotel}/rooms/{hotel}", String.class, vars);
 </programlisting>
 
-      <para>using a <literal>Map&lt;String,String&gt;</literal>.</para>
+      <para><literal>Map&lt;String,String&gt;</literal>를 사용한다.</para>
 
-      <para>To create an instance of <classname>RestTemplate</classname> you can
-      simply call the default no-arg constructor. This will use standard Java
-      classes from the <literal>java.net</literal> package as the underlying
-      implementation to create HTTP requests. This can be overridden by
-      specifying an implementation of
-      <interfacename>ClientHttpRequestFactory</interfacename>. Spring provides
-      the implementation
-      <classname>CommonsClientHttpRequestFactory</classname> that uses the
-      Jakarta Commons <classname>HttpClient</classname> to create requests.
-      <classname>CommonsClientHttpRequestFactory</classname> is configured
-      using an instance of
-      <classname>org.apache.commons.httpclient.HttpClient</classname> which
-      can in turn be configured with credentials information or connection
-      pooling functionality.</para>
+      <para><classname>RestTemplate</classname> 인스턴스를 생성하려면 인자없이 기본
+      생성자를 호출하면 된다. 이는 HTTP 요청을 생성하는 의존 구현체로
+      <literal>java.net</literal>에서 표준 자바 클래스를 사용할 것이다. 그리고
+      <interfacename>ClientHttpRequestFactory</interfacename> 구현체를 지정해서
+      오버라이드할 수 있다. 스프링은 요청 생성에 Jakarta Commons
+      <classname>HttpClient</classname>를 사용하는
+      <classname>CommonsClientHttpRequestFactory</classname> 구현체를 제공한다.
+      <classname>CommonsClientHttpRequestFactory</classname>는
+      <classname>org.apache.commons.httpclient.HttpClient</classname> 인스턴스를
+      사용해서 설정하고
+      <classname>org.apache.commons.httpclient.HttpClient</classname>는
+      자격(credentials) 정보나 연결 풀링 기능을 설정할 수 있다.</para>
 
-      <para>The previous example using Jakarta Commons
-      <classname>HttpClient</classname> directly rewritten to use the
-      <classname>RestTemplate</classname> is shown below</para>
+      <para>Jakarta Commons <classname>HttpClient</classname>를 직접 사용하는 앞의
+      예제를 <classname>RestTemplate</classname>을 사용해서 다음과 같이 다시
+      작성한다.</para>
 
       <programlisting>uri = "http://example.com/hotels/{id}/bookings";
 
 RestTemplate template = new RestTemplate();
 
-Booking booking = // create booking object
+Booking booking = // 예약 객체 생성
 
 URI location = template.postForLocation(uri, booking, "1");
 </programlisting>
 
-      <para>The general callback interface is
-      <interfacename>RequestCallback</interfacename> and is called when the
-      execute method is invoked.</para>
+      <para>일반적인 콜백 인터페이스는
+      <interfacename>RequestCallback</interfacename>이고 실행(execute) 메서드가
+      호출되었을 때 호출한다.</para>
 
       <programlisting language="java">public &lt;T&gt; T execute(String url, HttpMethod method, RequestCallback requestCallback,
                      ResponseExtractor&lt;T&gt; responseExtractor,
                      String... urlVariables)
 
 
-// also has an overload with urlVariables as a Map&lt;String, String&gt;.</programlisting>
+// Map&lt;String, String&gt;처럼 urlVariables로 오버로드했다.</programlisting>
 
-      <para>The <interfacename>RequestCallback</interfacename> interface is
-      defined as</para>
+      <para><interfacename>RequestCallback</interfacename> 인터페이스는 다음과 같이
+      정의했다.</para>
 
       <programlisting language="java">public interface RequestCallback {
  void doWithRequest(ClientHttpRequest request) throws IOException;
 }</programlisting>
 
-      <para>and allows you to manipulate the request headers and write to the
-      request body. When using the execute method you do not have to worry
-      about any resource management, the template will always close the
-      request and handle any errors. Refer to the API documentation for more
-      information on using the execute method and the meaning of its other
-      method arguments.</para>
+      <para>그리고 요청헤더를 조작하고 요청 바디를 작성할 수 있게 한다. 실행 메서드를 사용하는 경우
+      리소스 관리는 전혀 걱정한 필요가 없다. 템플릿이 항상 요청을 닫고 오류를 처리할 것이다.
+      실행메서드를 사용하는 방법과 다른 메서드 인자의 의미는 API 문서를 참고해라.</para>
 
       <section>
-        <title>Working with the URI</title>
+        <title>URI 사용하기</title>
 
-        <para>For each of the main HTTP methods, the <classname>RestTemplate</classname>
-        provides variants that either take a String URI or <classname>java.net.URI</classname>
-        as the first argument.
+        <para>주요 HTTP 메서드에 대해 <classname>RestTemplate</classname>는 첫 인자로
+        문자열 URI나 <classname>java.net.URI</classname>를 받을 수 있다.
         </para>
-        
-        <para>The String URI variants accept template arguments as a
-        String variable length argument or as a <classname>Map&lt;String,String&gt;</classname>.
-        They also assume the URL String is not encoded and needs to be encoded. 
-        For example the following: 
+
+        <para>문자열 URI 방식은 가변 문자열 인자나
+        <classname>Map&lt;String,String&gt;</classname>를 템플릿 인자로 받고 URL
+        문자열이 인코딩되지 않아서 인코딩해야 한다고 가정한다. 예를 들면 다음과 같다.
         </para>
-        
+
         <programlisting language="java">restTemplate.getForObject("http://example.com/hotel list", String.class);</programlisting>
-        
-        <para>will perform a GET on <filename>http://example.com/hotel%20list</filename>.
-        That means if the input URL String is already encoded, it will be encoded twice -- 
-        i.e. <filename>http://example.com/hotel%20list</filename> will become 
-        <filename>http://example.com/hotel%2520list</filename>. 
-        If this is not the intended effect, use the 
-        <classname>java.net.URI</classname> method variant, which assumes
-        the URL is already encoded is also generally useful if you want
-        to reuse a single (fully expanded) <classname>URI</classname>
-        multiple times.</para>
 
-        <para>The <classname>UriComponentsBuilder</classname> class can be used
-        to build and encode the <classname>URI</classname> including support 
-        for URI templates. For example you can start with a URL String:
+        <para>이는 <filename>http://example.com/hotel%20list</filename>에 GET
+        요청을 보낼 것이다. 즉, 입력 URL 문자열이 이미 인코딩되었다면 한번 더 인코딩할 것이다.
+        예를 들어 <filename>http://example.com/hotel%20list</filename>는
+        <filename>http://example.com/hotel%2520list</filename>가 될 것이다.
+        두번 인코딩하는 것을 원치 않는다면 URL을 이미 인코딩했고 하나의 (완전히 확장된)
+        <classname>URI</classname>를 여러번 재사용할 때 유용한
+        <classname>java.net.URI</classname> 메서드 방식을 사용해라.</para>
+
+        <para>URI 템플릿을 지원하는 <classname>URI</classname>를 생성하고 인코딩할 때
+        <classname>UriComponentsBuilder</classname> 클래스를 사용할 수 있다.
+        예를 들면 URL 문자열로 시작할 수 있다.
         </para>
-        
-        <programlisting language="java">UriComponents uriComponents = 
+
+        <programlisting language="java">UriComponents uriComponents =
         UriComponentsBuilder.fromUriString("http://example.com/hotels/{hotel}/bookings/{booking}").build()
             .expand("42", "21")
             .encode();
-            
+
 URI uri = uriComponents.toUri();</programlisting>
 
-        <para>Or specify each URI component indiviudally:</para>
-        
-        <programlisting language="java">UriComponents uriComponents = 
+        <para>아니면 각 URI 컴포넌트를 각각 지정할 수 있다.</para>
+
+        <programlisting language="java">UriComponents uriComponents =
         UriComponentsBuilder.newInstance()
             .scheme("http").host("example.com").path("/hotels/{hotel}/bookings/{booking}").build()
             .expand("42", "21")
             .encode();
 
 URI uri = uriComponents.toUri();</programlisting>
-        
+
       </section>
 
       <section>
-        <title>Dealing with request and response headers</title>
+        <title>요청 헤더와 응답 헤더 다루기</title>
 
-        <para>Besides the methods described above, the <classname>RestTemplate</classname>
-        also has the <methodname>exchange()</methodname> method, which can be
-        used for arbitrary HTTP method execution based on the <classname>HttpEntity</classname>
-        class.</para>
+        <para>앞에서 설명한 메서드에 추가적으로 <classname>RestTemplate</classname>도
+        <classname>HttpEntity</classname> 클래스에 기반한 임의의 HTTP 메서드 실행에 사용할
+        수 있는 <methodname>exchange()</methodname> 메서드를 가진다.</para>
 
-        <para>Perhaps most importantly, the <methodname>exchange()</methodname> 
-        method can be used to add request headers and read response headers.
-        For example:</para>
+        <para>아마 가장 중요한 것중에 하나는 요청 헤더를 추가하고 응답 헤더를 읽는데
+        <methodname>exchange()</methodname> 메서드를 사용할 수 있다는 것이다.
+        예를 들면 다음과 같다.</para>
 
         <programlisting language="java">HttpHeaders requestHeaders = new HttpHeaders();
 requestHeaders.set("MyRequestHeader", "MyValue");
@@ -1506,141 +1377,133 @@ HttpEntity&lt;String&gt; response = template.exchange("http://example.com/hotels
 String responseHeader = response.getHeaders().getFirst("MyResponseHeader");
 String body = response.getBody();</programlisting>
 
-        <para>In the above example, we first prepare a request entity that contains the
-        <literal>MyRequestHeader</literal> header. We then retrieve the response, and
-        read the <literal>MyResponseHeader</literal> and body.</para>
+        <para>앞의 예제에서 <literal>MyRequestHeader</literal> 헤더를 담고 있는 요청
+        엔티티를 먼저 준비한다. 그 다음 응답을 획득하고
+        <literal>MyResponseHeader</literal>와 바디를 읽는다.</para>
         </section>
     </section>
 
     <section id="rest-message-conversion">
-      <title>HTTP Message Conversion</title>
+      <title>HTTP 메시지 변환</title>
 
-      <para>Objects passed to and returned from the methods
-      <methodname>getForObject()</methodname>,
-      <methodname>postForLocation()</methodname>, and
-      <methodname>put()</methodname> are converted to HTTP requests and from
-      HTTP responses by <interfacename>HttpMessageConverters</interfacename>.
-      The <interfacename>HttpMessageConverter</interfacename> interface is
-      shown below to give you a better feel for its functionality</para>
+      <para><methodname>getForObject()</methodname>,
+      <methodname>postForLocation()</methodname>,
+      <methodname>put()</methodname> 메서드에 전달하거나 반환받은 객체는
+      <interfacename>HttpMessageConverters</interfacename>가 HTTP 요청이나 HTTP
+      응답으로 변환한다. <interfacename>HttpMessageConverter</interfacename>
+      인터페이스의 기능은 다음 소스를 보면 알 수 있을 것이다.</para>
 
       <programlisting language="java">public interface HttpMessageConverter&lt;T&gt; {
 
-      // Indicate whether the given class and media type can be read by this converter.
+      // 이 컨버터가 해당 클래스와 미디어타입을 읽을 수 있는지 여부를 나타낸다.
       boolean canRead(Class&lt;?&gt; clazz, MediaType mediaType);
 
-      // Indicate whether the given class and media type can be written by this converter.
+      // 이 컨버터가 해당 클래스와 미디어타입을 쓸(write) 수 있는지 여부를 나타낸다.
       boolean canWrite(Class&lt;?&gt; clazz, MediaType mediaType);
 
-      // Return the list of MediaType objects supported by this converter.
+      // 이 컨버터가 지원하는 MediaType 객체 목록을 반환한다.
       List&lt;MediaType&gt; getSupportedMediaTypes();
 
-      // Read an object of the given type from the given input message, and returns it.
+      // 주어진 입력 메시지에서 해당 타입의 객체를 읽어서 반환한다.
       T read(Class&lt;T&gt; clazz, HttpInputMessage inputMessage) throws IOException,
                                                                    HttpMessageNotReadableException;
 
-      // Write an given object to the given output message.
+      // 주어진 출력 메시지에 주어진 객체를 작성한다.
       void write(T t, HttpOutputMessage outputMessage) throws IOException,
                                                               HttpMessageNotWritableException;
 
     }</programlisting>
 
-      <para>Concrete implementations for the main media (mime) types are
-      provided in the framework and are registered by default with the
-      <classname>RestTemplate</classname> on the client-side and with
-      <classname>AnnotationMethodHandlerAdapter</classname> on the
-      server-side.</para>
+      <para>메인 미디어(mime) 타입에 대한 구현체는 프레임워크가 제공하고 있고 클라이언트측에서는
+      기본적으로 <classname>RestTemplate</classname>에 등록되어 있고 서버측에는
+      <classname>AnnotationMethodHandlerAdapter</classname>로 등록되어
+      있다.</para>
 
-      <para>The implementations of
-      <classname>HttpMessageConverter</classname>s are described in the
-      following sections. For all converters a default media type is used but
-      can be overridden by setting the
-      <classname>supportedMediaTypes</classname> bean property</para>
+      <para><classname>HttpMessageConverter</classname>의 구현체는 다음 섹션에
+      나와있다. 모든 컨버터는 기본 미디어 타입을 사용하지만
+      <classname>supportedMediaTypes</classname> 빈 프로퍼티를 설정해서 덮어쓸
+      수 있다.</para>
 
       <section id="rest-string-converter">
         <title>StringHttpMessageConverter</title>
 
-        <para>An <interfacename>HttpMessageConverter</interfacename>
-        implementation that can read and write Strings from the HTTP request
-        and response. By default, this converter supports all text media types
-        (<literal>text/*</literal>), and writes with a
-        <literal>Content-Type</literal> of
-        <literal>text/plain</literal>.</para>
+        <para>HTTP 요청과 응답에서 문자열을 읽고 쓸 수 있는
+        <interfacename>HttpMessageConverter</interfacename> 구현체다. 기본적으로
+        이 컨버터는 모든 텍스트 미디어 타입(<literal>text/*</literal>)을 지원하고
+        <literal>text/plain</literal>의 <literal>Content-Type</literal>으로
+        작성한다.</para>
       </section>
 
       <section id="rest-form-converter">
         <title>FormHttpMessageConverter</title>
 
-        <para>An <interfacename>HttpMessageConverter</interfacename>
-        implementation that can read and write form data from the HTTP request
-        and response. By default, this converter reads and writes the media
-        type <literal>application/x-www-form-urlencoded</literal>. Form data
-        is read from and written into a <literal>MultiValueMap&lt;String,
-        String&gt;</literal>.</para>
+        <para>HTTP 요청과 응답에서 데이터를 읽고 쓸 수 있는
+        <interfacename>HttpMessageConverter</interfacename> 구현체다. 기본적으로
+        이 컨버터는 <literal>application/x-www-form-urlencoded</literal> 미디어
+        타입을 읽고 쓴다. 폼(form) 데이터를 읽어서 <literal>MultiValueMap&lt;String,
+        String&gt;</literal>에 작성한다.</para>
       </section>
 
       <section id="rest-byte-converter">
         <title>ByteArrayMessageConverter</title>
 
-        <para>An <interfacename>HttpMessageConverter</interfacename>
-        implementation that can read and write byte arrays from the HTTP
-        request and response. By default, this converter supports all media
-        types (<literal>*/*</literal>), and writes with a
-        <literal>Content-Type</literal> of
-        <literal>application/octet-stream</literal>. This can be overridden by
-        setting the <property>supportedMediaTypes</property> property, and
-        overriding <literal>getContentType(byte[])</literal>.</para>
+        <para>HTTP 요청과 응답에서 바이트 배열을 읽고 쓸 수 있는
+        <interfacename>HttpMessageConverter</interfacename> 구현체다. 기본적으로
+        이 컨버터는 모든 미디어 타입(<literal>*/*</literal>)을 지원하고
+        <literal>application/octet-stream</literal>의
+        <literal>Content-Type</literal>으로 작성한다. 이는
+        <property>supportedMediaTypes</property> 프로퍼티를 설정하고
+        <literal>getContentType(byte[])</literal>를 오버라이딩해서
+        덮어쓸 수 있다.</para>
       </section>
 
       <section id="rest-marhsalling-converter">
         <title>MarshallingHttpMessageConverter</title>
 
-        <para>An <interfacename>HttpMessageConverter</interfacename>
-        implementation that can read and write XML using Spring's
-        <interfacename>Marshaller</interfacename> and
-        <interfacename>Unmarshaller</interfacename> abstractions from the
-        <classname>org.springframework.oxm</classname> package. This converter
-        requires a <interfacename>Marshaller</interfacename> and
-        <interfacename>Unmarshaller</interfacename> before it can be used.
-        These can be injected via constructor or bean properties. By default
-        this converter supports (<literal>text/xml</literal>) and
-        (<literal>application/xml</literal>).</para>
+        <para><classname>org.springframework.oxm</classname> 패키지의
+        <interfacename>Marshaller</interfacename>와
+        <interfacename>Unmarshaller</interfacename> 추상화를 사용해서 XML을 읽고
+        쓸 수 있는 <interfacename>HttpMessageConverter</interfacename> 구현체다.
+        이 컨버터를 사용하기 전에 <interfacename>Marshaller</interfacename>와
+        <interfacename>Unmarshaller</interfacename>가 필요하다.
+        <interfacename>Marshaller</interfacename>와
+        <interfacename>Unmarshaller</interfacename>는 생성자나 빈 프로퍼티로 주입할
+        수 있다. 기본적으로 이 컨버터는 <literal>text/xml</literal>와
+        <literal>application/xml</literal>를 지원한다.</para>
       </section>
-      
+
       <section id="rest-mapping-json-converter">
         <title>MappingJacksonHttpMessageConverter</title>
-        
-        <para>An <interfacename>HttpMessageConverter</interfacename> 
-        implementation that can read and write JSON using Jackson's 
-        <interfacename>ObjectMapper</interfacename>. JSON mapping can be 
-        customized as needed through the use of Jackson's provided annotations. When 
-        further control is needed, a custom 
-        <interfacename>ObjectMapper</interfacename> can be injected through 
-        the <literal>ObjectMapper</literal> property for cases where custom 
-        JSON serializers/deserializers need to be provided for specific types. 
-        By default this converter supports (<literal>application/json</literal>).</para>
+
+        <para>Jackson의 <interfacename>ObjectMapper</interfacename>를 사용해서
+        JSON을 읽고 쓸 수 있는 <interfacename>HttpMessageConverter</interfacename>
+        구현체다. 필요할 때 Jackson이 제공하는 어노테이션을 사용해서 JSON 매핑을 커스터마이징할
+        수 있다. 더 세밀한 제어가 필요한 경우 해당 타입에 커스텀 JSON
+        직렬화/역직렬화(serializers/deserializers)가 필요한 곳에
+        <literal>ObjectMapper</literal> 프로퍼티로 커스텀
+        <interfacename>ObjectMapper</interfacename>를 주입할 수 있다. 기본적으로
+        이 컨버터는 <literal>application/json</literal>를 지원한다.</para>
       </section>
 
       <section id="rest-source-converter">
         <title>SourceHttpMessageConverter</title>
 
-        <para>An <interfacename>HttpMessageConverter</interfacename>
-        implementation that can read and write
-        <classname>javax.xml.transform.Source</classname> from the HTTP
-        request and response. Only <classname>DOMSource</classname>,
-        <classname>SAXSource</classname>, and
-        <classname>StreamSource</classname> are supported. By default, this
-        converter supports (<literal>text/xml</literal>) and
-        (<literal>application/xml</literal>).</para>
+        <para>HTTP 요청과 응답에서
+        <classname>javax.xml.transform.Source</classname>를 읽고 쓸 수 있는
+        <interfacename>HttpMessageConverter</interfacename> 구현체다.
+        <classname>DOMSource</classname>, <classname>SAXSource</classname>,
+        <classname>StreamSource</classname>를 지원한다. 기본적으로 이 컨버터는
+        <literal>text/xml</literal>과 <literal>application/xml</literal>를
+        지원한다.</para>
       </section>
 
       <section id="rest-buffered-image-converter">
         <title>BufferedImageHttpMessageConverter</title>
 
-        <para>An <interfacename>HttpMessageConverter</interfacename>
-        implementation that can read and write
-        <classname>java.awt.image.BufferedImage</classname> from the HTTP
-        request and response. This converter reads and writes the media type
-        supported by the Java I/O API.</para>
+        <para>HTTP 요청과 응답에서
+        <classname>java.awt.image.BufferedImage</classname>를 읽고 쓸 수 있는
+        <interfacename>HttpMessageConverter</interfacename> 구현체다. 이 컨버터는
+        Java I/O API가 지원하는 미디어타입을 읽고 쓴다.</para>
       </section>
     </section>
   </section>
