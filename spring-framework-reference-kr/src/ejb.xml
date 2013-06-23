@@ -3,110 +3,94 @@
  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <chapter id="ejb">
-	<title>Enterprise JavaBeans (EJB) integration</title>
+	<title>엔터프라이즈 자바빈(EJB) 통합</title>
 
 	<section id="ejb-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
     <para>
-      As a lightweight container, Spring is often considered an EJB
-      replacement. We do believe that for many if not most applications and use
-      cases, Spring as a container, combined with its rich supporting
-      functionality in the area of transactions, ORM and JDBC access, is a better
-      choice than implementing equivalent functionality via an EJB container and
-      EJBs.
+      경량 컨테이너인 스프링를 때로는 EJB의 대안으로 생각한다. 대부분의 어플리션과 유즈케이스는
+      아니지만 트랜잭션, ORM, JDBC 접근의 영역에서 풍부한 기능을 지원하도록 통합하는 많은 경우에
+      스프링을 컨테이너로 사용하는 EJB 컨테이너와 EJB로 동일한 기능을 구현하는 것보다 더 낫다고
+      생각한다.
       </para>
     <para>
-      However, it is important to note that using Spring does not prevent
-      you from using EJBs. In fact, Spring makes it much easier to access EJBs and
-      implement EJBs and functionality within them. Additionally, using Spring to
-      access services provided by EJBs allows the implementation of those services
-      to later transparently be switched between local EJB, remote EJB, or POJO
-      (plain old Java object) variants, without the client code having to
-      be changed.
+      하지만 스프링을 사용하는 것이 EJB의 사용을 막는 것은 아니라는 것이 중요하다. 사실 스프링은
+      EJB에 접근하고 EJB와 EJB의 기능을 구현하기 쉽게 한다. 게다가 EJB가 제공하는 서비스에
+      접근하는데 스프링을 사용하는 것은 이러한 서비스의 구현을 나중에 클라이언트 코드를 변경하지
+      않고도 로컬 EJB, 원격 EJB, POJO (plain old Java object)의 변형으로 투명하게
+      바꿀수 있게 한다.
       </para>
     <para>
-      In this chapter, we look at how Spring can help you access and
-      implement EJBs. Spring provides particular value when accessing stateless
-      session beans (SLSBs), so we'll begin by discussing this.
+      이번 장에서 스프링이 EJB 접근과 구현을 어떻게 도와주는지를 살펴본다. 스프링은 상태가 없는
+      세션 빈(SLSBs, stateless session beans)에 접근할 때 특정 값을 제공하므로
+      이 부분부터 얘기해 보겠다.
     </para>
 	</section>
 
 	<section id="ejb-access">
-		<title>Accessing EJBs</title>
+		<title>EJB에 접근하기</title>
 
 		<section id="ejb-access-concepts">
-			<title>Concepts</title>
+			<title>개념</title>
 			<para>
-				To invoke a method on a local or remote stateless session bean,
-				client code must normally perform a JNDI lookup to obtain the (local or
-				remote) EJB Home object, then use a 'create' method call on that object
-				to obtain the actual (local or remote) EJB object. One or more methods
-				are then invoked on the EJB.
+				로컬 혹은 원격의 상태가 없는 세션 빈의 메서드를 호출하려면 클라이언트 코드는 보통
+        (로컬이나 원격) EJB Home 객체를 획득하는데 JNDI 검색을 수행해야 하고 실제
+        (로컬 혹은 원격) EJB 객체를 획득하려고 해당 객체의 'create' 메서드를 호출한다.
       </para>
 			<para>
-				To avoid repeated low-level code, many EJB applications use the
-				Service Locator and Business Delegate patterns. These are better than
-				spraying JNDI lookups throughout client code, but their usual
-				implementations have significant disadvantages. For example:
+				반복되는 저수준 코드를 피하려고 많은 EJB 어플리케이션은 Service Locator 패턴과
+        Business Delegate 패턴을 사용한다. 클라이언트 코드 곳곳에서 JNDI 검색을 하는 것보다
+        이 방법이 낫지만 일반적인 구현체는 중대한 결점을 가진다. 예를 들면 다음과 같다.
             </para>
 			<itemizedlist>
 				<listitem>
 					<para>
-						Typically code using EJBs depends on Service Locator or
-						Business Delegate singletons, making it hard to test.
+						Service Locator나 Business Delegate 싱글톤에 의존하는 EJB를 사용하는
+            일반적인 코드는 테스트하기가 어렵다.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						In the case of the Service Locator pattern used without a
-						Business Delegate, application code still ends up having to invoke
-						the create() method on an EJB home, and deal with the resulting
-						exceptions. Thus it remains tied to the EJB API and the complexity
-						of the EJB programming model.
+						Business Delegate 없이 Service Locator 패턴을 사용한 경우 어플리케이션 코드는
+            여전히 EJB home의 create() 메서드를 호출하게 되고 예외를 다룬다. 그래서
+            어플리케이션 코드가 EJB API와 복잡한 EJB 프로그래밍 코델에 묶이게 된다.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						Implementing the Business Delegate pattern typically results
-						in significant code duplication, where we have to write numerous
-						methods that simply call the same method on the EJB.
+						Business Delegate 패턴의 구현은 보통 EJB의 같은 메서드를 호출하는 다수의
+            메서드를 작성해야 하는 곳에 상당한 코드중복을 유발한다.
 					</para>
 				</listitem>
 			</itemizedlist>
 			<para>
-				The Spring approach is to allow the creation and use of proxy objects,
-				normally configured inside a Spring container, which act as codeless
-				business delegates. You do not need	to write another Service Locator, another
-				JNDI lookup, or duplicate methods in a hand-coded Business Delegate unless
-				you are actually adding real value in such code.
+				스프링의 접근은 코드없이 business delegates처럼 동작하는 프록시 객체(보통 스프링
+        컨테이너에 설정한)를 생성하고 사용할 수 있게 한다.이러한 코드에 실제 값을 추가하지 않고
+        별도의 Service Locator나 JNDI 검색, 하드코딩된 Business Delegate의 중복된
+        메서드를 작성할 필요가 없다.
 			</para>
 		</section>
 
 		<section id="ejb-access-local">
-			<title>Accessing local SLSBs</title>
+			<title>로컬 SLSBs에 접근하기</title>
 			<para>
-				Assume that we have a web controller that needs to use a local
-				EJB. We’ll follow best practice and use the EJB Business Methods
-				Interface pattern, so that the EJB’s local interface extends a non
-				EJB-specific business methods interface. Let’s call this business
-				methods interface <classname>MyComponent</classname>.
+				로컬 EJB를 사용해야 하는 웹 컨트롤러가 있다고 해보자. 베스트 프렉티스를 따르고
+        EJB Business Methods Interface 패턴을 사용할 것이므로 EJB의 로컬 인터페이스는
+        EJB에 특화되지 않은 비즈니스 메서드 인터페이스를 확장한다. 이 비즈니스 인터페이스를
+        <classname>MyComponent</classname>라고 하자.
 			</para>
 			<programlisting language="java"><![CDATA[public interface MyComponent {
     ...
 }]]></programlisting>
 			<para>
-				One of the main reasons to use the Business Methods Interface pattern
-				is to ensure that synchronization between method signatures in local
-				interface and bean implementation class is automatic. Another reason is
-				that it later makes it much easier for us to switch to a POJO (plain old
-				Java object) implementation of the service if it makes sense to do so.
-				Of course we’ll also need to implement the local home interface and
-				provide an implementation class that implements <classname>SessionBean</classname>
-				and the <classname>MyComponent</classname> business methods interface. Now the
-				only Java coding we’ll  need to do to hook up our web tier controller to the
-				EJB implementation is to expose a setter method of type <classname>MyComponent</classname>
-				on the controller. This will save the reference as an instance variable in the
-				controller:
+				Business Methods Interface 패턴을 사용하는 주요 이유 중 하나는 로컬 인터페이스의
+        메서드 시그니처와 빈 구현 클래스간의 동기화를 자동으로 보장하기 때문이다. 다른 이유로는 나중에
+        필요하다면 서비스의 구현을 POJO(plain old Java object)로 바꾸기 아주 쉽기 때문이다.
+        물론 로컬 홈(home) 인터페이스를 구현해야 하고 <classname>SessionBean</classname>과
+        <classname>MyComponent</classname> 비즈니스 메서드 인터페이스를 구현하는 구현
+        클래스를 제공해야 할 것이다. 이제 웹계층 컨트롤러를 EJB 구현체와 연결하기 우해서 필요한
+        Java 코딩은 컨트롤러에 <classname>MyComponent</classname> 타입의 setter
+        메서드를 노출하는 것 뿐이다. 컨트롤러에 인스턴스 변수에 대한 참조를 아낄 수 있다.
 			</para>
 			<programlisting language="java"><![CDATA[private MyComponent myComponent;
 
@@ -114,13 +98,11 @@ public void setMyComponent(MyComponent myComponent) {
     this.myComponent = myComponent;
 }]]></programlisting>
 			<para>
-				We can subsequently use this instance variable in any business
-				method in the controller. Now assuming we are obtaining our controller
-				object out of a Spring container, we can (in the same context) configure a
-				<classname>LocalStatelessSessionProxyFactoryBean</classname> instance, which
-				will be the EJB proxy object. The configuration of the proxy, and setting of
-				the <literal>myComponent</literal> property of the controller is done
-				with a configuration entry such as:
+				이 다음부터는 컨트롤러의 어떤 비즈니스 메서드에서도 이 인스턴스 변수를 사용할 수 있다. 이제
+        스프링 컨테이너 외부의 컨트롤러 객체를 획득한다고 가정하면 EJB 프록시 객체가 될
+        <classname>LocalStatelessSessionProxyFactoryBean</classname> 인스턴스를
+        (같은 컨텍스트내에서)설정할 수 있다. 프록시의 설정(컨트롤러의
+        <literal>myComponent</literal> 프로퍼티의 설정)은 다음과 같은 설정으로 한다.
 			</para>
 			<programlisting language="xml"><![CDATA[<bean id="myComponent"
       class="org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean">
@@ -132,24 +114,19 @@ public void setMyComponent(MyComponent myComponent) {
   <property name="myComponent" ref="myComponent"/>
 </bean>]]></programlisting>
 			<para>
-				There’s a lot of work happening behind the scenes, courtesy of
-				the Spring AOP framework, although you aren’t forced to work with AOP
-				concepts to enjoy the results. The <literal>myComponent</literal> bean
-				definition creates a proxy for the EJB, which implements the business
-				method interface. The EJB local home is cached on startup, so there’s
-				only a single JNDI lookup. Each time the EJB is invoked, the proxy
-				invokes the <literal>classname</literal> method on the local EJB and
-				invokes the	corresponding business method on the EJB.
+				AOP 개념을 사용하도록 하지 않았더라도 내부에서 스프링 AOP 프레임워크덕에 많은 작업이
+        이뤄진다. <literal>myComponent</literal> 빈 정의는 비즈니스 메서드 인터페이스를
+        구현하는 EJB의 프록시를 생성한다. EJB 로컬 홈(home)은 구동시에 캐싱되므로 딱 하나의
+        JNDI 검색만 존재한다. EJB가 호출될 때마다 프록시는 로컬 EJB의
+        <literal>classname</literal> 메서드와 EJB에서 대응되는 비즈니스 메서드를 호출한다.
 			</para>
 			<para>
-				The <literal>myController</literal> bean definition sets the
-				<literal>myComponent</literal> property of the controller class to the
-				EJB proxy.
+				<literal>myController</literal> 빈 정의는 컨트롤러 클래스의
+        <literal>myComponent</literal> 프로퍼티를 EJB 프록시로 설정한다.
 			</para>
       <para>
-        Alternatively (and preferably in case of many such proxy definitions),
-        consider using the <literal>&lt;jee:local-slsb&gt;</literal>
-        configuration element in Spring's "jee" namespace:
+        아니면 (많은 프록시 정의가 있는 경우에는) 스프링의 "jee" 네임스페이스의
+        <literal>&lt;jee:local-slsb&gt;</literal> 설정요소를 사용하는 것을 고려해봐라.
       </para>
       <programlisting language="xml"><![CDATA[<jee:local-slsb id="myComponent" jndi-name="ejb/myBean"
       business-interface="com.mycom.MyComponent"/>
@@ -158,142 +135,120 @@ public void setMyComponent(MyComponent myComponent) {
   <property name="myComponent" ref="myComponent"/>
 </bean>]]></programlisting>
 			<para>
-				This EJB access mechanism delivers huge simplification of
-				application code: the web tier code (or other EJB client code) has no
-				dependence on the use of EJB. If we want to replace this EJB reference
-				with a POJO or a mock object or other test stub, we could simply change
-				the <literal>myComponent</literal> bean definition without changing a
-				line of Java code. Additionally, we haven’t had to write a single line of
-				JNDI lookup or other EJB plumbing code as part of our application.
+				이 EJB 접근 메카니즘은 어플리케이션 코드를 엄청나게 간소화 한다. 웹계층 코드(또는 다른
+        EJB 클라이언트 코드)는 EJB 사용에 대한 의존성을 같지 않는다. 이 EJB 참조를 POJO나
+        목(mock) 객체, 테스트 스텁등으로 교체하고자 한다면 자바 코드를 변경하지 않고
+        <literal>myComponent</literal> 빈 정의를 변경하면 된다. 게다가 JNDI 검색이나
+        어플리케이션의 다른 EJB관련 코드를 한줄도 작성할 필요가 없다.
 			</para>
 			<para>
-				Benchmarks and experience in real applications indicate that the
-				performance overhead of this approach (which involves reflective
-				invocation of the target EJB) is minimal, and is typically undetectable
-				in typical use. Remember that we don’t want to make fine-grained calls
-				to EJBs anyway, as there’s a cost associated with the EJB infrastructure
-				in the application server.
+				실제 어플리케이션의 벤치마크와 경험에 따르면 이 접근(대상 EJB의 리플렉션
+        호출(reflective invocation)을 포함해서)의 성능 부하(performance overhead)가
+        최소이고 일반적인 사용해서는 발견할 수 없는 정도임을 나타낸다. 어플리케이션 서버의 EJB
+        인프라와 관련된 비용때문에 어떤 식으로든 EJB에 세밀한 호출을 원치 않는다는 점을 기억해라.
 			</para>
 			<para>
-				There is one caveat with regards to the JNDI lookup. In a bean
-				container, this class is normally best used as a singleton (there simply
-				is no reason to make it a prototype). However, if that bean container
-				pre-instantiates singletons (as do the various XML
-				<classname>ApplicationContext</classname> variants)
-				you may have a problem if the bean container is loaded before the EJB
-				container loads the target EJB. That is because the JNDI lookup will be
-				performed in the <literal>init()</literal> method of this class and then
-				cached, but the EJB will not have been bound at the target location yet.
-				The solution is to not pre-instantiate this factory object, but allow it
-				to be created on first use. In the XML containers, this is controlled via
-				the <literal>lazy-init</literal> attribute.
+				JNDI 검색과 관련해서 한가지 주의할 점이 있다. 빈 컨테이너에서 이 클래스는 싱글톤으로
+        사용하기 가장 좋다.(프로토타입으로 만들 이유가 없다.) 하지만 해당 빈 컨테이너가 싱글턴을 미리
+        인스턴스화했다면(다양한 XML <classname>ApplicationContext</classname>에 따라서)
+        EJB 컨테이너가 대상 EJB를 로그하기 전에 빈 컨테이너가 로드되는 문제가 있을 것이다. JNDI
+        검색이 이 클래스의 <literal>init()</literal> 메서드에서 수행된 후 캐시되지만 EJB는
+        아직 대상 로케이션에 바인딩되지 않았기 때문에 이 문제가 발생한다. 이 팩토리 객체를 미리
+        인스턴스화 하지 않고 처음 사용할 때 생성하도록 해서 해결할 수 있다. XML 컨테이너에서
+        <literal>lazy-init</literal> 속성으로 이를 제어한다.
 			</para>
 			<para>
-				Although this will not be of interest to the majority of Spring
-				users, those doing programmatic AOP work with EJBs may want to look at
-				<classname>LocalSlsbInvokerInterceptor</classname>.
+				대부분의 스프링 사용자들은 관심이 없겠지만 EJB와 동작하는 프로그래밍적인 AOP를
+        사용하려면 <classname>LocalSlsbInvokerInterceptor</classname>를 참고해라.
 			</para>
 		</section>
 
 		<section id="ejb-access-remote">
-			<title>Accessing remote SLSBs</title>
+			<title>원격 SLSB 접근</title>
 			<para>
-				Accessing remote EJBs is essentially identical to accessing local
-				EJBs, except that the
-				<classname>SimpleRemoteStatelessSessionProxyFactoryBean</classname> or
-        <literal>&lt;jee:remote-slsb&gt;</literal> configuration element is used.
-				Of course, with or without Spring, remote invocation semantics apply; a
-				call to a method on an object in another VM in another computer does
-				sometimes have to be treated differently in terms of usage scenarios and
-				failure handling.
+				원격 EJB에 접근하는 것은
+        <classname>SimpleRemoteStatelessSessionProxyFactoryBean</classname>나
+        <literal>&lt;jee:remote-slsb&gt;</literal> 설정 요소를 사용하는 것외에는
+        본질적으로 로컬 EJB에 접근하는 것과 같다. 물론 스프링을 사용하든지 사용하지 않는지 간에
+        원격 호출의 개념이 적용된다. 즉, 다른 컴퓨터의 VM에서 객체의 메서드를 호출하려면 사용
+        시나리오와 실패처리를 다르게 처리해야 한다.
 			</para>
 			<para>
-				Spring's EJB client support adds one more advantage over the
-				non-Spring approach. Normally it is problematic for EJB client code to
-				be easily switched back and forth between calling EJBs locally or
-				remotely. This is because the remote interface methods must declare that
-				they throw <classname>RemoteException</classname>, and client code must deal
-				with this, while the local interface methods don't. Client code
-				written for local EJBs which needs to be moved to remote EJBs
-				typically has to be modified to add handling for the remote exceptions,
-				and client code written for remote EJBs which needs to be moved to local
-				EJBs, can either stay the same but do a lot of unnecessary handling of
-				remote exceptions, or needs to be modified to remove that code. With the
-				Spring remote EJB proxy, you can instead not declare any thrown
-				<classname>RemoteException</classname> in your Business Method Interface and
-				implementing EJB code, have a remote interface which is identical except
-				that it does throw <classname>RemoteException</classname>, and rely on the
-				proxy to dynamically treat the two interfaces as if they were the same.
-				That is, client code does not have to deal with the checked
-				<classname>RemoteException</classname> class. Any actual
-				<classname>RemoteException</classname> that is thrown during the EJB
-				invocation will be re-thrown as the non-checked
-				<classname>RemoteAccessException</classname> class, which is a subclass of
-				<classname>RuntimeException</classname>. The target service can then be
-				switched at will between a local EJB or remote EJB (or even plain Java
-				object) implementation, without the client code knowing or caring. Of
-				course, this is optional; there is nothing stopping you from declaring
-				<classname>RemoteExceptions</classname> in your business interface.
+				스프링의 EJB 클라이언트는 스프링을 사용하지 않은 접근보다 더 많은 장점을 제공한다. 보통
+        EJB 클라이언트 코드를 로컬 EJB 호출과 원격 EJB 호출간에 변경하는 것은 문제의 소지가 있다.
+        이는 원격 인터페이스 메서드가 <classname>RemoteException</classname>를 던지도록
+        선언해야 하고 클라이언트 코드는 이를 다뤄야(로컬 인터페이스 메서드는 다루지 않는다) 하기
+        때문이다. 로컬 EJB용으로 작성한 클라이언트 코드를 원격 EJB로 바꾸어야 한다면 보통 원격
+        예외에 대한 처리를 추가해야 하고 원격 EJB용으로 작성한 클라이언트 코드를 로컬 EJB로 변경해야
+        한다면 바꾸지 않고 놔두어도 되지만 불필요한 다수의 원격 예외처리를 하거나 이러한 부분을
+        제거해야 한다. 스프링 원격 EJB 프록시를 사용하면 Business Method Interface에
+        <classname>RemoteException</classname>를 던지도록 선언해서 EJB 코드를
+        구현하지(<classname>RemoteException</classname>을 던지는 부분을 제외하고는 동일한
+        원격 인터페이스를 가지면서) 않고 두 인터페이스를 동일한 것처럼 동적으로 다루도록 프록시에
+        의존할 수 있다. 즉, 클라이언트 코드든 체크드
+        <classname>RemoteException</classname> 클래스를 다루 않아야 한다. EJB 호출중에
+        던져진 실제 <classname>RemoteException</classname>은 체크드가 아닌
+        <classname>RemoteAccessException</classname>
+        클래스(<classname>RuntimeException</classname>의 하위클래스)로 다시 던져질
+        것이다. 대상 서비스를 클라이언트 코드가 인지하거나 신경쓸 필요없이 로컬 EJB와 원격 EJB(또는
+        평범한 자바 객체더라도) 구현간에 변경할 수 있다. 물론 이는 선택사항이므로 비즈니스
+        인터페이스에 <classname>RemoteExceptions</classname>를 선언하지 않을 이유는 없다.
 			</para>
 		</section>
 
     <section id="ejb-access-ejb2-ejb3">
-      <title>Accessing EJB 2.x SLSBs versus EJB 3 SLSBs</title>
+      <title>EJB 2.x SLSBs 접근과 EJB 3 SLSBs 접근 비교</title>
       <para>
-        Accessing EJB 2.x Session Beans and EJB 3 Session Beans via Spring
-        is largely transparent. Spring's EJB accessors, including the
-        <literal>&lt;jee:local-slsb&gt;</literal> and <literal>&lt;jee:remote-slsb&gt;</literal>
-        facilities, transparently adapt to the actual component at runtime.
-        They handle a home interface if found (EJB 2.x style), or perform straight
-        component invocations if no home interface is available (EJB 3 style).
+        스프링의 EJB 2.x Session Bean 접근과 EJB 3 Session Bean 접근은 아주 투명하다.
+        <literal>&lt;jee:local-slsb&gt;</literal>와
+        <literal>&lt;jee:remote-slsb&gt;</literal>를 포함해서 스프링의 EJB 접근자는
+        투명하게 런타임에서 실제 컴포넌트에 맞게 맞춰진다. home 인터페이스를 찾으면(EJB 2.x 방식)
+        home 인터페이스를 처리하고 home 인터페이스가 없으면(EJB 3 방식) 바로 컴포넌트를 호출한다.
       </para>
       <para>
-        Note: For EJB 3 Session Beans, you could effectively use a
-        <classname>JndiObjectFactoryBean</classname> / <literal>&lt;jee:jndi-lookup&gt;</literal>
-        as well, since fully usable component references are exposed for plain
-        JNDI lookups there. Defining explicit <literal>&lt;jee:local-slsb&gt;</literal>
-        / <literal>&lt;jee:remote-slsb&gt;</literal> lookups simply provides
-        consistent and more explicit EJB access configuration.
+        Note: 평범한 JNDI 검색에 사용할 수 있는 컴포넌트 참조가 완전히 노출되므로 EJB 3
+        Session Bean에서 <classname>JndiObjectFactoryBean</classname> /
+        <literal>&lt;jee:jndi-lookup&gt;</literal>를 효과적으로 사용할 수 있다.
+        명시적으로 <literal>&lt;jee:local-slsb&gt;</literal> /
+        <literal>&lt;jee:remote-slsb&gt;</literal> 검색을 정의하면 일관성있고 더
+        명확한 EJB 접근 설정을 할 수 있다.
       </para>
     </section>
 	</section>
 
 	<section id="ejb-implementation">
-		<title>Using Spring's EJB implementation support classes</title>
+		<title>EJB 구현을 지원하는 스프링 클래스 사용하기</title>
 
     <section id="ejb-implementation-ejb2">
-      <title>EJB 2.x base classes</title>
+      <title>EJB 2.x에 기반한 클래스</title>
       <para>
-        Spring provides convenience classes to help you implement EJBs.
-        These are designed to encourage the good practice of putting business
-        logic behind EJBs in POJOs, leaving EJBs responsible for transaction
-        demarcation and (optionally) remoting.
+        스프링은 EJB를 쉽게 구현하도로고 편리한 클래스를 제공한다. 이 클래스들은 EJB가 트랜잭션
+        경계와 (추가적으로) 원격을 담당하고 POJO로 EJB뒤에 비즈니스 로직을 좋은 방법을 권장하도록
+        설계되었다.
       </para>
       <para>
-        To implement a Stateless or Stateful session bean, or a Message Driven
-        bean, you need only derive your implementation class from
+        상태를 보관하든 보관하지 않든 세션 빈이나 Message Driven 빈을 구현하려면
         <classname>AbstractStatelessSessionBean</classname>,
-        <classname>AbstractStatefulSessionBean</classname>, and
-        <classname>AbstractMessageDrivenBean</classname>/<classname>AbstractJmsMessageDrivenBean</classname>,
-        respectively.
+        <classname>AbstractStatefulSessionBean</classname>,
+        <classname>AbstractMessageDrivenBean</classname>/<classname>AbstractJmsMessageDrivenBean</classname>를
+        각각 상속받아서만 구현해야 한다.
       </para>
       <para>
-        Consider an example Stateless Session bean which actually delegates
-        the implementation to a plain java service object. We have the business
-        interface:
+        실제로 구현을 평범한 자바 서비스 객체레 위임하는 상태없는 세션 빈의 예제를 생각해 보다.
+        다음과 같은 비즈니스 인터페이스를 가지고 있다.
       </para>
       <programlisting language="java"><![CDATA[public interface MyComponent {
     public void myMethod(...);
     ...
 }]]></programlisting>
-      <para>We also have the plain Java implementation object:</para>
+      <para>다음과 같은 펑범한 자바 구현 개체도 있다고 하자.</para>
       <programlisting language="java"><![CDATA[public class MyComponentImpl implements MyComponent {
     public String myMethod(...) {
         ...
     }
     ...
 }]]></programlisting>
-      <para>And finally the Stateless Session Bean itself:</para>
+      <para>다음은 상태없는 세션 빈이다.</para>
       <programlisting language="java"><![CDATA[public class MyFacadeEJB extends AbstractStatelessSessionBean
         implements MyFacadeLocal {
 
@@ -315,51 +270,43 @@ public void setMyComponent(MyComponent myComponent) {
     ...
 }]]></programlisting>
       <para>
-        The Spring EJB support base classes will by default create and load
-        a Spring IoC container as part of their lifecycle, which is then available
-        to the EJB (for example, as used in the code above to obtain the POJO
-        service object). The loading is	done via a strategy object which is a subclass of
-        <classname>BeanFactoryLocator</classname>. The actual implementation of
-        <classname>BeanFactoryLocator</classname> used by default is
-        <classname>ContextJndiBeanFactoryLocator</classname>, which creates the
-        ApplicationContext from a resource locations specified as a JNDI
-        environment variable (in the case of the EJB classes, at
-        <literal>java:comp/env/ejb/BeanFactoryPath</literal>). If there is a need
-        to change the BeanFactory/ApplicationContext loading strategy, the default
-        <classname>BeanFactoryLocator</classname> implementation used may be overridden
-        by calling the <literal>setBeanFactoryLocator()</literal> method, either
-        in <literal>setSessionContext()</literal>, or in the actual constructor of
-        the EJB. Please see the Javadocs for more details.
+        스프링 EJB 지원 기반(base) 클래스들은 기본적으로 생명주기의 일부로 스프링 IoC 컨테이너를
+        생성하고 로드해서 EJB에서사용할 수 있게 한다.(예를 들면 앞의 코드에서 POJO 서비스 객체를
+        얻으려고 사용했듯이) <classname>BeanFactoryLocator</classname>의 하위클래스인
+        전략(strategy) 객체로 IoC 컨테이너를 로드한다. 기본적으로 사용하는
+        <classname>BeanFactoryLocator</classname>의 실제 구현체는 JNDI 환경변수(EJB
+        클래스에서는 <literal>java:comp/env/ejb/BeanFactoryPath</literal>)로 지정한
+        리소스 위치에서 ApplicationContext를 생성하는
+        <classname>ContextJndiBeanFactoryLocator</classname>이다.
+        BeanFactory/ApplicationContext 로딩전략을 변경해야 한다면
+        <literal>setBeanFactoryLocator()</literal> 메서드나 EJB의 진짜 생성자에서
+        <literal>setBeanFactoryLocator()</literal> 메서드를 호출해서 기본
+        <classname>BeanFactoryLocator</classname> 구현체를 오버라이드한다.
+        자세한 내용은 자바독을 참고해라.
       </para>
       <para>
-        As described in the Javadocs, Stateful Session beans expecting to be
-        passivated and reactivated as part of their lifecycle, and which use a
-        non-serializable container instance (which is the normal case) will have
-        to manually call <literal>unloadBeanFactory()</literal> and
-        <literal>loadBeanFactory()</literal> from <literal>ejbPassivate()</literal>
-        and <literal>ejbActivate()</literal>, respectively, to unload and reload the
-        BeanFactory on passivation and activation, since it can not be saved by
-        the EJB container.
+        자바독에 나와있듯이 생명주기내에서 보호하거나(passivated) 재가동(reactivated)해야
+        하면서 직렬화할 수 없는 컨테이너 인스턴스를 사용하는 상태를 가진 세션빈은 EJB 컨테이너가
+        저장할 수 없으므로 보호와 활성화에서 BeanFactory를 내리거나 다시 로드하려면
+        <literal>ejbPassivate()</literal>와 <literal>ejbActivate()</literal>에서
+        <literal>unloadBeanFactory()</literal>와
+        <literal>loadBeanFactory()</literal>를 수동으로 각각 호출해야 할 것이다.
       </para>
       <para>
-        The default behavior of the
-        <classname>ContextJndiBeanFactoryLocator</classname> class is to load an
-        <classname>ApplicationContext</classname> for use by an EJB, and is
-        adequate for some situations. However, it is problematic when the
-        <classname>ApplicationContext</classname> is loading a number of beans,
-        or the initialization of those beans is time consuming or memory
-        intensive (such as a Hibernate <classname>SessionFactory</classname>
-        initialization, for example), since every EJB will have their own copy.
-        In this case, the user may want to override the default
-        <classname>ContextJndiBeanFactoryLocator</classname> usage and use
-        another <classname>BeanFactoryLocator</classname> variant, such as the
-        <classname>ContextSingletonBeanFactoryLocator</classname> which can load
-        and use a shared container to be used by multiple EJBs or other clients.
-        Doing this is relatively simple, by adding code similar to this to the
-        EJB:
+        <classname>ContextJndiBeanFactoryLocator</classname> 클래스의 기본동작은
+        EJB가 사용하는 <classname>ApplicationContext</classname>를 로드하는 것이고 이는
+        일부의 상황에서는 적합하다. 하지만 <classname>ApplicationContext</classname>가
+        다수의 빈을 로딩하거나 초기화하는데 시간이 많이 걸리거나 메모리를 많이 쓰는(하이버네이트
+        <classname>SessionFactory</classname> 초가화 등) 경우 각 EJB가 자신만의
+        복사본을 갖기 때문에 문제가 될 수 있다. 이러한 경우 기본
+        <classname>ContextJndiBeanFactoryLocator</classname> 사용을 오버라이드하고
+        여러 EJB나 다른 클라이언트가 사용할 공유 컨테이너를 로딩해서 사용할 수 있는
+        <classname>ContextSingletonBeanFactoryLocator</classname>같은 다른
+        <classname>BeanFactoryLocator</classname>를 사용하길 원할 것이다. 이 작업은
+        상대적으로 간단한데 EJB에 이를 위한 코드를 추가해서 할 수 있다.
       </para>
       <programlisting language="java"><![CDATA[   /**
-    * Override default BeanFactoryLocator implementation
+    * 기본 BeanFactoryLocator 구현을 오버라이드한다
     * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)
     */
    public void setSessionContext(SessionContext sessionContext) {
@@ -368,11 +315,10 @@ public void setMyComponent(MyComponent myComponent) {
        setBeanFactoryLocatorKey(ServicesConstants.PRIMARY_CONTEXT_ID);
    }]]></programlisting>
       <para>
-        You would then need to create a bean definition file named <literal>beanRefContext.xml</literal>.
-        This file defines all bean factories (usually in the form of application contexts) that may be used
-        in the EJB. In many cases, this file will only contain a single bean definition such as this (where
-        <literal>businessApplicationContext.xml</literal> contains the bean	definitions for all business
-        service POJOs):
+        그 다음 <literal>beanRefContext.xml</literal> 파일에 빈 정의를 생성해야 한다. 이 파일은 EJB에서 사용할 모든
+        빈 팩토리를 정의한다.(보통은 어플리케이션 컨텍스트의 형식이다) 대다수의 경우 이 파일은 다음과 같은
+        (<literal>businessApplicationContext.xml</literal>는 모든 비즈니스 서비스 POJO의 빈 정의를 담고 있다.)
+        하나의 빈 정의만 담고 있을 것이다.
       </para>
       <programlisting language="xml"><![CDATA[<beans>
     <bean id="businessBeanFactory" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -380,57 +326,54 @@ public void setMyComponent(MyComponent myComponent) {
     </bean>
 </beans>]]></programlisting>
       <para>
-        In the above example, the <literal>ServicesConstants.PRIMARY_CONTEXT_ID</literal> constant
-        would be defined as follows:
+        위의 예제에서 <literal>ServicesConstants.PRIMARY_CONTEXT_ID</literal> 상수는 다음과 같이 정의될 것이다.
         </para>
         <programlisting language="java"><![CDATA[public static final String ServicesConstants.PRIMARY_CONTEXT_ID = "businessBeanFactory";]]></programlisting>
         <para>
-        Please see the respective Javadocs for the <classname>BeanFactoryLocator</classname> and
-        <classname>ContextSingletonBeanFactoryLocator</classname> classes for more information on
-        their usage.
+        사용방법에 대한 자세한 내용은 <classname>BeanFactoryLocator</classname>와
+        <classname>ContextSingletonBeanFactoryLocator</classname>의 자바독을 참고해라.
       </para>
     </section>
 
     <section id="ejb-implementation-ejb3">
-      <title>EJB 3 injection interceptor</title>
+      <title>EJB 3 주입 인터셉터</title>
       <para>
-        For EJB 3 Session Beans and Message-Driven Beans, Spring provides a convenient
-        interceptor that resolves Spring 2.5's <literal>@Autowired</literal> annotation
-        in the EJB component class:
-        <classname>org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor</classname>.
-        This interceptor can be applied through an <code>@Interceptors</code> annotation
-        in the EJB component class, or through an <literal>interceptor-binding</literal>
-        XML element in the EJB deployment descriptor.
+        EJB 3 Session Bean과 Message-Driven Bean을 위해서 스프링은 EJB 컴포넌트 클래스에서
+        스프링 2.5의 <literal>@Autowired</literal> 어노테이션을 처리하는 편리한 인터셉터
+        <classname>org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor</classname>를
+        제공한다. EJB 컴포넌트 클래스에서 <code>@Interceptors</code> 어노테이션을 사용하거나 EJB 배포 디스크립터
+        (deployment descriptor)에서 <literal>interceptor-binding</literal> XML 요소를
+        사용해서 이 인터셉터를 적용할 수 있다.
       </para>
       <programlisting language="java"><![CDATA[@Stateless
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class MyFacadeEJB implements MyFacadeLocal {
 
-    // automatically injected with a matching Spring bean
+    // 일치하는 스프링 빈을 자동으로 주입한다
     @Autowired
     private MyComponent myComp;
 
-    // for business method, delegate to POJO service impl.
+    // 비즈니스 메서드를 위해서 POJO 서비스 구현에 위임한다.
     public String myFacadeMethod(...) {
         return myComp.myMethod(...);
     }
     ...
 }]]></programlisting>
       <para>
-        <classname>SpringBeanAutowiringInterceptor</classname> by default obtains target
-        beans from a <classname>ContextSingletonBeanFactoryLocator</classname>, with the
-        context defined in a bean definition file named <literal>beanRefContext.xml</literal>.
-        By default, a single context definition is expected, which is obtained by type rather
-        than by name. However, if you need to choose between multiple context definitions,
-        a specific locator key is required. The locator key (i.e. the name of the context
-        definition in <literal>beanRefContext.xml</literal>) can be explicitly specified
-        either through overriding the <literal>getBeanFactoryLocatorKey</literal> method
-        in a custom <classname>SpringBeanAutowiringInterceptor</classname> subclass.
+        기본적으로 <classname>SpringBeanAutowiringInterceptor</classname>는 <classname>ContextSingletonBeanFactoryLocator</classname>에서
+        <literal>beanRefContext.xml</literal> 빈 정의 파일에 정의된 컨텍스트와 대상 빈을 가져온다.
+        기본값은 이름이 아니라 타입으로 가져오는 단일 컨텍스트 정의이지만 여러 컨텍스트 정의에서 선택해야 한다면
+        특정 로케이터(locator) 키가 필요하다. 로케이터 키(예를 들면
+        <literal>beanRefContext.xml</literal>의 컨텍스트 정의 이름)는 커스텀
+        <classname>SpringBeanAutowiringInterceptor</classname> 하위클래스의
+        <literal>getBeanFactoryLocatorKey</literal> 메서드를 오버라이딩해서 명시적으로도
+        지정할 수 있다.
       </para>
       <para>
-        Alternatively, consider overriding <classname>SpringBeanAutowiringInterceptor</classname>'s
-        <literal>getBeanFactory</literal> method, e.g. obtaining a shared
-        <interfacename>ApplicationContext</interfacename> from a custom holder class.
+        아니면 <classname>SpringBeanAutowiringInterceptor</classname>의
+        <literal>getBeanFactory</literal> 메서드를 오버라이딩 하는 것을 고려해라. 예를 들면
+        커스텀 소유(holder) 클래스에서 공유된
+        <interfacename>ApplicationContext</interfacename>를 가져오는 식이다.
       </para>
     </section>
 
