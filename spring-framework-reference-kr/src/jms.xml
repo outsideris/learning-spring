@@ -5,368 +5,300 @@
   <title>JMS (Java Message Service)</title>
 
   <section id="jms-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>Spring provides a JMS integration framework that simplifies the use
-    of the JMS API much like Spring's integration does for the JDBC
-    API.</para>
+    <para>스프링은 JDBC API를 통합했듯이 JMS API도 사용하기 쉽게 JMS 통합 프레임워크를
+    제공한다.</para>
 
-    <para>JMS can be roughly divided into two areas of functionality, namely
-    the production and consumption of messages. The
-    <classname>JmsTemplate</classname> class is used for message production
-    and synchronous message reception. For asynchronous reception similar to
-    Java EE's message-driven bean style, Spring provides a number of message
-    listener containers that are used to create Message-Driven POJOs
-    (MDPs).</para>
+    <para>JMS는 기능적으로 대략 두 부분으로 나눌 수 있는데 메시지의 생산(production)과
+    소비(consumption)이다. <classname>JmsTemplate</classname> 클래스는 메시지 생산과
+    동기적인 메시지 수신에 사용한다. Java EE의 메시지주도 빈(bean) 방식과 유사한 비동기적인 수신에
+    대해서 스프링은 메시지주도 POJO(MDP, Message-Driven POJOs)를 생성하는데 사용하는 다수의
+    메시지 리스너 컨테이너를 제공한다.</para>
 
-    <para>The package <literal>org.springframework.jms.core</literal> provides
-    the core functionality for using JMS. It contains JMS template classes
-    that simplify the use of the JMS by handling the creation and release of
-    resources, much like the <classname>JdbcTemplate</classname> does for
-    JDBC. The design principle common to Spring template classes is to provide
-    helper methods to perform common operations and for more sophisticated
-    usage, delegate the essence of the processing task to user implemented
-    callback interfaces. The JMS template follows the same design. The classes
-    offer various convenience methods for the sending of messages, consuming a
-    message synchronously, and exposing the JMS session and message producer
-    to the user.</para>
+    <para><literal>org.springframework.jms.core</literal> 패키지는 JMS 사용에
+    핵심적인 기능을 제공한다. 이 패키지에 <classname>JdbcTemplate</classname>가 JDBC에
+    하듯이 리소스의 생성과 소멸을 다뤄줌으로써 JMS를 간편하게 사용하게 하는 JMS 템플릿 클래스가 있다.
+    스프링 템플릿 클래스와 공통되는 설계 원리는 더 세련된 사용방법을 위해서 공통되는 작업을 수행하는
+    헬퍼 메서드를 제공하고 작업을 처리하는 부분을 콜백 인터페이스를 구현한 사용자에게 맡기는 것이다.
+    이 클래스는 동기적으로 메시지를 보내고 메시지를 소비ㅎ고 JMS 세션와 메시지 생산자(producer)를
+    사용자에게 노출하는 다양한 편의 메서드를 제공한다.</para>
 
-    <para>The package <literal>org.springframework.jms.support</literal>
-    provides <classname>JMSException</classname> translation functionality.
-    The translation converts the checked <classname>JMSException</classname>
-    hierarchy to a mirrored hierarchy of unchecked exceptions. If there are
-    any provider specific subclasses of the checked
-    <classname>javax.jms.JMSException</classname>, this exception is wrapped
-    in the unchecked <classname>UncategorizedJmsException</classname>.</para>
+    <para><literal>org.springframework.jms.support</literal> 패키지는
+    <classname>JMSException</classname> 변환 기능을 제공한다. 이 변환기능은 체크드
+    <classname>JMSException</classname> 계층을 동일한 계층의 언체크드 예외로 변환한다.
+    프로바이더에 특화된 체크드 <classname>javax.jms.JMSException</classname>의
+    하위클래스가 있다면 이 예외는 언체크드
+    <classname>UncategorizedJmsException</classname>로 감싸진다.</para>
 
-    <para>The package
-    <literal>org.springframework.jms.support.converter</literal> provides a
-    <interfacename>MessageConverter</interfacename> abstraction to convert
-    between Java objects and JMS messages.</para>
+    <para><literal>org.springframework.jms.support.converter</literal> 패키지는
+    Java 객체와 JMS 메시지간에 변환을 하는
+    <interfacename>MessageConverter</interfacename> 추상화를 제공한다.</para>
 
-    <para>The package
-    <literal>org.springframework.jms.support.destination</literal> provides
-    various strategies for managing JMS destinations, such as providing a
-    service locator for destinations stored in JNDI.</para>
+    <para><literal>org.springframework.jms.support.destination</literal>
+    패키지는 JNDI에 저장된 목적지에 대한 서비스 로케이터를 제공하듯이 JMS 목적지를 관리하는
+    다양한 전략을 제공한다.</para>
 
-    <para>Finally, the package
-    <literal>org.springframework.jms.connection</literal> provides an
-    implementation of the <classname>ConnectionFactory</classname> suitable
-    for use in standalone applications. It also contains an implementation of
-    Spring's <interfacename>PlatformTransactionManager</interfacename> for JMS
-    (the cunningly named <classname>JmsTransactionManager</classname>). This
-    allows for seamless integration of JMS as a transactional resource into
-    Spring's transaction management mechanisms.</para>
+    <para>마지막으로 <literal>org.springframework.jms.connection</literal> 패키지는
+    독립 어플리케이션에서 사용하는데 적합한 <classname>ConnectionFactory</classname>의
+    구현체를 제공한다. 이 패키지에는 JMS를 위한 스프링
+    <interfacename>PlatformTransactionManager</interfacename>의 구현체도 있다.(이
+    이름은 <classname>JmsTransactionManager</classname>이다) 이는 JMS를 트랜잭션
+    리소스처럼 스프링의 트랜잭션 관리 메카니즘으로 어려움없이 통합할 수 있게 한다.</para>
   </section>
 
   <section id="jms-using">
-    <title>Using Spring JMS</title>
+    <title>스프링 JMS 사용</title>
 
     <section id="jms-jmstemplate">
       <title><classname>JmsTemplate</classname></title>
 
-      <para>The <classname>JmsTemplate</classname> class is the central class
-      in the JMS core package. It simplifies the use of JMS since it handles
-      the creation and release of resources when sending or synchronously
-      receiving messages.</para>
+      <para><classname>JmsTemplate</classname> 클래스는 JMS 코어 패키지의 핵심 클래스다.
+      <classname>JmsTemplate</classname> 클래스는 메시지를 보내거나 동기적으로 메시지를
+      받을 때 리소르를 생성하고 제거하는 처리를 해주므로 JMS의 사용을 간단하게 해준다.</para>
 
-      <para>Code that uses the <classname>JmsTemplate</classname> only needs
-      to implement callback interfaces giving them a clearly defined high
-      level contract. The <classname>MessageCreator</classname> callback
-      interface creates a message given a
-      <interfacename>Session</interfacename> provided by the calling code in
-      <classname>JmsTemplate</classname>. In order to allow for more complex
-      usage of the JMS API, the callback
-      <classname>SessionCallback</classname> provides the user with the JMS
-      session and the callback <classname>ProducerCallback</classname> exposes
-      a <interfacename>Session</interfacename> and
-      <interfacename>MessageProducer</interfacename> pair.</para>
+      <para><classname>JmsTemplate</classname>을 사용하는 코드는 고수준의 계약을 명확하게
+      정의해주는 콜백 인터페이스만 구현하면 된다. <classname>MessageCreator</classname>
+      콜백 인터페이스는 <classname>JmsTemplate</classname>에서 코드를 호출해서 제공한
+      <interfacename>Session</interfacename>의 메시지를 생성한다. JMS API의 더 복잡한
+      사용을 위해서 <classname>SessionCallback</classname> 콜백은 JMS 세션을 가진
+      사용자와 <interfacename>Session</interfacename>과
+      <interfacename>MessageProducer</interfacename> 쌍을 노출하는
+      <classname>ProducerCallback</classname> 콜백을 노출한다.</para>
 
-      <para>The JMS API exposes two types of send methods, one that takes
-      delivery mode, priority, and time-to-live as Quality of Service (QOS)
-      parameters and one that takes no QOS parameters which uses default
-      values. Since there are many send methods in
-      <classname>JmsTemplate</classname>, the setting of the QOS parameters
-      have been exposed as bean properties to avoid duplication in the number
-      of send methods. Similarly, the timeout value for synchronous receive
-      calls is set using the property
-      <classname>setReceiveTimeout</classname>.</para>
+      <para>JMS API는 두 종류의 send 메서드를 노출하는데 하나는 전송모드, 중요도, 서비스품질
+      (QOS, Quality of Service)로 time-to-live를 받고 하나는 QOS 파라미터를 받지 않고
+      기본값을 사용한다. <classname>JmsTemplate</classname>에 다수의 send 메서드가
+      있으므로 QOS 파라미터를 설정하는 것은 다수의 send 메서드의 중복을 피하기 위해 빈 프로퍼티로
+      노출된다. 비슷하게 동기적인 receive 호출의 타임아웃값은
+      <classname>setReceiveTimeout</classname> 프로퍼티로 설정한다.</para>
 
-      <para>Some JMS providers allow the setting of default QOS values
-      administratively through the configuration of the ConnectionFactory.
-      This has the effect that a call to
-      <classname>MessageProducer</classname>'s send method
-      <methodname>send(Destination destination, Message message)</methodname>
-      will use different QOS default values than those specified in the JMS
-      specification. In order to provide consistent management of QOS values,
-      the <classname>JmsTemplate</classname> must therefore be specifically
-      enabled to use its own QOS values by setting the boolean property
-      <property>isExplicitQosEnabled</property> to
-      <literal>true</literal>.</para>
+      <para>일부 JMS 프로바이더는 관리상(administratively) ConnectionFactory의 설정으로
+      기본 QOS 값을 설정할 수 있게 한다. <classname>MessageProducer</classname>의
+      send 메서드
+      <methodname>send(Destination destination, Message message)</methodname>를
+      호출해서 JMS 명세서에 나온 것과는 다른 QOS 기본값을 사용하게 할 것이다. 일관된 QOS 값의
+      관리를 위해서 <classname>JmsTemplate</classname>은 특히
+      <property>isExplicitQosEnabled</property> 프로퍼티를
+      <literal>true</literal>로 설정해서 자신만의 QOS 값을 사용하도록 되어야 한다.</para>
 
       <note>
-        <para>Instances of the <classname>JmsTemplate</classname> class are
-        <emphasis>thread-safe once configured</emphasis>. This is important
-        because it means that you can configure a single instance of a
-        <classname>JmsTemplate</classname> and then safely inject this
-        <emphasis>shared</emphasis> reference into multiple collaborators. To
-        be clear, the <classname>JmsTemplate</classname> is stateful, in that
-        it maintains a reference to a
-        <interfacename>ConnectionFactory</interfacename>, but this state is
-        <emphasis>not</emphasis> conversational state.</para>
+        <para><classname>JmsTemplate</classname> 클래스의 인스턴스는
+        <emphasis>설정되고 나면 스레드 세이프하다</emphasis>. 이는 하나의
+        <classname>JmsTemplate</classname> 인스턴스를 설정해서
+        <emphasis>공유되는</emphasis> 참조로 여러 협력객체에 안전하게 주입할 수 있다는
+        의미이므로 중요하다. 좀 더 분명하게 <classname>JmsTemplate</classname>은 상태를
+        가지지만(<interfacename>ConnectionFactory</interfacename>에 대한 참조를
+        유지한다는 점에서) 이 상태는 대화식 상태는 <emphasis>아니다</emphasis>.</para>
       </note>
     </section>
 
     <section id="jms-connections">
-      <title>Connections</title>
+      <title>연결</title>
 
-      <para>The <classname>JmsTemplate</classname> requires a reference to a
-      <classname>ConnectionFactory</classname>. The
-      <classname>ConnectionFactory</classname> is part of the JMS
-      specification and serves as the entry point for working with JMS. It is
-      used by the client application as a factory to create connections with
-      the JMS provider and encapsulates various configuration parameters, many
-      of which are vendor specific such as SSL configuration options.</para>
+      <para><classname>JmsTemplate</classname>는
+      <classname>ConnectionFactory</classname>에 대한 참조를 필요로 한다.
+      <classname>ConnectionFactory</classname>는 JMS 명세에 포함되어 있고 JMS와
+      동작하는 진입점으로 제공된다. 클라이언트 어플리케이션이
+      <classname>ConnectionFactory</classname>를 JMS 프로바이더의 연결을 생성하는
+      팩토리로 사용하고 다양한 설정 파라미터(대부분은 SSL 설정옵션 같은 벤더에 특화된 설정이다.)를
+      캡슐화한다.</para>
 
-      <para>When using JMS inside an EJB, the vendor provides implementations
-      of the JMS interfaces so that they can participate in declarative
-      transaction management and perform pooling of connections and sessions.
-      In order to use this implementation, Java EE containers typically
-      require that you declare a JMS connection factory as a
-      <property>resource-ref</property> inside the EJB or servlet deployment
-      descriptors. To ensure the use of these features with the
-      <classname>JmsTemplate</classname> inside an EJB, the client application
-      should ensure that it references the managed implementation of the
-      <classname>ConnectionFactory</classname>.</para>
+      <para>EJB에서 JMS를 사용하는 경우 벤더가 JMS 인터페이스의 구현체를 제공하므로 구현체가
+      선언적인 트랜잭션 관리에 참여하고 연결과 세션의 풀링을 수행한다. 이 구현체를 사용하려면 Java
+      EE 컨테이너는 보통 EJB내의 <property>resource-ref</property>로 JMS 커넥션 팩토리나
+      서블릭 배포 디스크립터를 선언하도록 요구한다. EJB에서 이 기능과
+      <classname>JmsTemplate</classname>를 함께 사용하려면 클라이언트 어플리케이션이
+      <classname>ConnectionFactory</classname>의 관리된 구현체를 참조한다는 것을
+      보장해야 한다.</para>
 
       <section>
-        <title>Caching Messaging Resources</title>
+        <title>메시징 리소스 캐싱</title>
 
-        <para>The standard API involves creating many intermediate objects. To
-        send a message the following 'API' walk is performed</para>
+        <para>표준 API에는 다수의 중간객체의 생성하는 API가 포함되어 있다. 메시지를 보내려면
+        다음의 'API'가 실행된다.</para>
 
         <programlisting>ConnectionFactory-&gt;Connection-&gt;Session-&gt;MessageProducer-&gt;send</programlisting>
 
-        <para>Between the ConnectionFactory and the Send operation there are
-        three intermediate objects that are created and destroyed. To optimise
-        the resource usage and increase performance two implementations of
-        IConnectionFactory are provided.</para>
+        <para>ConnectionFactory와 Send 작업사이에는 생성되고 소멸되는 세개의 중간 객체가
+        있다. 리소스의 사용을 최적화하고 성능을 높히기 위해 IConnectionFactory의 두 구현체를
+        제공한다.</para>
       </section>
 
       <section>
         <title>SingleConnectionFactory</title>
 
-        <para>Spring provides an implementation of the
-        <classname>ConnectionFactory</classname> interface,
-        <classname>SingleConnectionFactory</classname>, that will return the
-        same <classname>Connection</classname> on all
-        <methodname>createConnection()</methodname> calls and ignore calls to
-        <methodname>close()</methodname>. This is useful for testing and
-        standalone environments so that the same connection can be used for
-        multiple <classname>JmsTemplate</classname> calls that may span any
-        number of transactions. <classname>SingleConnectionFactory</classname>
-        takes a reference to a standard
-        <classname>ConnectionFactory</classname> that would typically come
-        from JNDI.</para>
+        <para>스프링은 <classname>ConnectionFactory</classname> 인터페이스의 구현체로
+        <classname>SingleConnectionFactory</classname>를 제공하고
+        <classname>SingleConnectionFactory</classname>는 모든
+        <methodname>createConnection()</methodname> 호출에서 같은
+        <classname>Connection</classname>을 반환하고
+        <methodname>close()</methodname> 호출은 무시할 것이다. 이는 다수의 트랜잭션이
+        걸친 여러 <classname>JmsTemplate</classname> 호출에 같은 연결을 사용할 수
+        있으므로 테스트와 독립적인 환경에 유용하다.
+        <classname>SingleConnectionFactory</classname>는 일반적으로 JNDI에서 받은
+        표준 <classname>ConnectionFactory</classname>에 대한 참조를 받는다.</para>
       </section>
 
       <section>
         <title>CachingConnectionFactory</title>
 
-        <para>The <classname>CachingConnectionFactory</classname> extends the
-        functionality of <classname>SingleConnectionFactory</classname> and
-        adds the caching of Sessions, MessageProducers, and MessageConsumers.
-        The initial cache size is set to 1, use the property
-        <property>SessionCacheSize</property> to increase the number of cached
-        sessions. Note that the number of actual cached sessions will be more
-        than that number as sessions are cached based on their acknowledgment
-        mode, so there can be up to 4 cached session instances when
-        <property>SessionCacheSize</property> is set to one, one for each
-        AcknowledgementMode. MessageProducers and MessageConsumers are cached
-        within their owning session and also take into account the unique
-        properties of the producers and consumers when caching.
-        MessageProducers are cached based on their destination.
-        MessageConsumers are cached based on a key composed of the
-        destination, selector, noLocal delivery flag, and the durable
-        subscription name (if creating durable consumers).</para>
+        <para><classname>CachingConnectionFactory</classname>는
+        <classname>SingleConnectionFactory</classname>의 기능을 확장하고 Session,
+        MessageProducer, MessageConsumer에 캐싱을 추가한다. 초기 캐시크기는 1이고 캐시되는
+        세션의 수를 증가시키려면 <property>SessionCacheSize</property> 프로퍼티를
+        사용해라. 실제 캐시된 세션의 수는 승인 모드(acknowledgment mode)에 기반해서 캐시된
+        세션의 수보다 많을 것이므로 <property>SessionCacheSize</property>를 1로 설정한
+        경우(각 AcknowledgementMode마다 1) 캐시된 세션 인스턴스는 4까지 될 수 있다.
+        MessageProducer와 MessageConsumer는 이들이 소유한 세션에 캐시되고 캐싱할 때
+        생산자(producer)와 소비자(consumer)의 유일한 프로퍼티를 고려한다. MessageProducer는
+        목적지에 기반해서 캐시된다. MessageConsumer는 목적지, 셀렉터, noLocal deliver
+        플래그, (durable consumer를 생성한다면)장기 구독 이름(durable subscription
+        name)로 구성된 키에 기반한 캐시된다.</para>
       </section>
     </section>
 
     <section id="jms-destinations">
-      <title>Destination Management</title>
+      <title>목적지 관리</title>
 
-      <para>Destinations, like ConnectionFactories, are JMS administered
-      objects that can be stored and retrieved in JNDI. When configuring a
-      Spring application context you can use the JNDI factory class
-      <classname>JndiObjectFactoryBean</classname> /
-      <literal>&lt;jee:jndi-lookup&gt;</literal> to perform dependency
-      injection on your object's references to JMS destinations. However,
-      often this strategy is cumbersome if there are a large number of
-      destinations in the application or if there are advanced destination
-      management features unique to the JMS provider. Examples of such
-      advanced destination management would be the creation of dynamic
-      destinations or support for a hierarchical namespace of destinations.
-      The <classname>JmsTemplate</classname> delegates the resolution of a
-      destination name to a JMS destination object to an implementation of the
-      interface <classname>DestinationResolver</classname>.
-      <classname>DynamicDestinationResolver</classname> is the default
-      implementation used by <classname>JmsTemplate</classname> and
-      accommodates resolving dynamic destinations. A
-      <classname>JndiDestinationResolver</classname> is also provided that
-      acts as a service locator for destinations contained in JNDI and
-      optionally falls back to the behavior contained in
-      <classname>DynamicDestinationResolver</classname>.</para>
+      <para>ConnectionFactory같은 목적지는 JNDI로 저장하고 획득할 수 있는 JMS가 관리하는
+      객체다. 스프링 어플리케이션 컨텍스트를 설정할 때 JMS 목적지에 대한 객체의 참조에 의존성 주입을
+      하기 위해 JNDI 팰토리 클래스 <classname>JndiObjectFactoryBean</classname> /
+      <literal>&lt;jee:jndi-lookup&gt;</literal>를 사용할 수 있다. 하지만 어플리케이션에
+      아주 많은 목적지가 있거나 JMS 프로바이더에 특화되 고급 목적지 관리기능이 있다면 이 전력을
+      다루기 어려울 수 있다. 고급 목적지 관리에는 동적 목적지 생성이나 목적지의 계층적 네임스페이스
+      지원등이 있다. <classname>JmsTemplate</classname>은 목적지 처리를 JMS 목적지 객체나
+      <classname>DestinationResolver</classname> 인터페이스의 구현체에 위임한다.
+      <classname>JmsTemplate</classname>이 기본 구현체로
+      <classname>DynamicDestinationResolver</classname>를 사용하고 동적 목적지를
+      처리한다. 제공된 <classname>JndiDestinationResolver</classname>는 JNDI에 있는
+      목적지의 서비스 로케이터처럼 동작하고 선택적으로
+      <classname>DynamicDestinationResolver</classname>의 동작으로 장애 복구를
+      한다.</para>
 
-      <para>Quite often the destinations used in a JMS application are only
-      known at runtime and therefore cannot be administratively created when
-      the application is deployed. This is often because there is shared
-      application logic between interacting system components that create
-      destinations at runtime according to a well-known naming convention.
-      Even though the creation of dynamic destinations is not part of the JMS
-      specification, most vendors have provided this functionality. Dynamic
-      destinations are created with a name defined by the user which
-      differentiates them from temporary destinations and are often not
-      registered in JNDI. The API used to create dynamic destinations varies
-      from provider to provider since the properties associated with the
-      destination are vendor specific. However, a simple implementation choice
-      that is sometimes made by vendors is to disregard the warnings in the
-      JMS specification and to use the <classname>TopicSession</classname>
-      method <methodname>createTopic(String topicName)</methodname> or the
-      <classname>QueueSession</classname> method
-      <methodname>createQueue(String queueName)</methodname> to create a new
-      destination with default destination properties. Depending on the vendor
-      implementation, <classname>DynamicDestinationResolver</classname> may
-      then also create a physical destination instead of only resolving
-      one.</para>
+      <para>드물기는 하지만 JMS 어플리케이션이 상요하는 목적지를 런타임에서만 알 수 있는 경우에는
+      어플리케이션을 배포할 때 생성할 수 없다. 이러한 상황은 상호장용하는 시스템 컴포넌트가 잘 알려진
+      작명관례에 따라 런타임에서 목적지를 생성하고 이 시스템 컴포넌트간에 어플리케이션 로직을 공유하기
+      때문에 발생한다. 동적 목적지생성이 JMS 명세에 나와있지 않지만 대부분의 벤더는 이 기능을
+      제공하고 있다. 동적 목적 목적지는 임시 목적지와 구별할 수 있는 사용자가 정의한 이름으로 생성되고
+      JNDI에 등록되지 않기도 한다. 목적지와 관련된 프로퍼티가 벤더에 특화되어 있으므로 동적 목적지를
+      생성하는 API는 프로바이더마다 다양하다. 하지만 벤더가 만든 간단한 구현체는 JMS 명세의 경고를
+      무시하고 <classname>TopicSession</classname> 메서드
+      <methodname>createTopic(String topicName)</methodname>나
+      <classname>QueueSession</classname> 메서드
+      <methodname>createQueue(String queueName)</methodname>를 기본 목적지
+      프로퍼티로 새로운 목적지를 생성하는데 사용한다. 벤더 구현체에 따라서는
+      <classname>DynamicDestinationResolver</classname>가 목적지를 처리하는 것이 아닌
+      물리적인 목적지를 생성하기도 한다.</para>
 
-      <para>The boolean property <property>pubSubDomain</property> is used to
-      configure the <classname>JmsTemplate</classname> with knowledge of what
-      JMS domain is being used. By default the value of this property is
-      false, indicating that the point-to-point domain, Queues, will be used.
-      This property used by <classname>JmsTemplate</classname> determines the
-      behavior of dynamic destination resolution via implementations of the
-      <interfacename>DestinationResolver</interfacename> interface.</para>
+      <para>불리언 프로퍼티인 <property>pubSubDomain</property>를
+      <classname>JmsTemplate</classname>이 어떤 JMS 도메인을 사용하는지 설정하는데
+      사용한다. 이 프로퍼티의 기본값은 false로 point-to-point 도메인인 Queue를 사용할 것임을
+      나타낸다. <classname>JmsTemplate</classname>이 사용하는 이 프로퍼티는
+      <interfacename>DestinationResolver</interfacename> 인터페이스의 구현체로 동적
+      목적지 처리의 동작을 결정한다.</para>
 
-      <para>You can also configure the <classname>JmsTemplate</classname> with
-      a default destination via the property
-      <property>defaultDestination</property>. The default destination will be
-      used with send and receive operations that do not refer to a specific
-      destination.</para>
+      <para><property>defaultDestination</property> 프로퍼티를 사용해서 기본 목적지로
+      <classname>JmsTemplate</classname>를 설정할 수도 있다. 기본 목적지는 목적지를
+      명시하지 않은 보내기/받기 작업에 사용할 것인다.</para>
     </section>
 
     <section id="jms-mdp">
-      <title>Message Listener Containers</title>
+      <title>메시지 리스너 컨테이너</title>
 
-      <para>One of the most common uses of JMS messages in the EJB world is to
-      drive message-driven beans (MDBs). Spring offers a solution to create
-      message-driven POJOs (MDPs) in a way that does not tie a user to an EJB
-      container. (See <xref linkend="jms-asynchronousMessageReception" />
-      for detailed coverage of Spring's MDP support.)</para>
+      <para>EJB에서 JMS 메시지의 가장 일반적인 경우는 메시지주도 빈(MDB, message-driven
+      beans)를 사용하는 것이다. 스프링은 사용자가 EJB 컨테이너에 의존하지 않는 방법으로 메시지
+      주도 POJO(MDP, message-driven POJO)를 생성하는 방법을 제공한다. (스프링의 MDP 지원의
+      자세한 내용은 <xref linkend="jms-asynchronousMessageReception" />를
+      참고해라.)</para>
 
-      <para>A message listener container is used to receive messages from a
-      JMS message queue and drive the MessageListener that is injected into
-      it. The listener container is responsible for all threading of message
-      reception and dispatches into the listener for processing. A message
-      listener container is the intermediary between an MDP and a messaging
-      provider, and takes care of registering to receive messages,
-      participating in transactions, resource acquisition and release,
-      exception conversion and suchlike. This allows you as an application
-      developer to write the (possibly complex) business logic associated with
-      receiving a message (and possibly responding to it), and delegates
-      boilerplate JMS infrastructure concerns to the framework.</para>
+      <para>메시지 리스너 컨테이너는 JMS 메시지 큐에서 메시지를 받고 큐에 주입할
+      MessageListener를 생성하는데 사용한다. 리스너 컨테이너는 메시지 접수와 처리할 리스너로
+      디스패치하는 모든 스레드를 책임진다. 메시지 리스너 컨테이너는 MDP와 메시지 프로바이더 사이의
+      중개자의 역할을 하고 받은 메시지의 등록, 트랙잭셤 참여, 리소스 획득과 릴리즈, 예외 변환등을
+      담당한다. 이를 통해서 어플리케이션 개발자는 메시지를 받는(그리고 응답을 해야할 수도 있다)
+      비즈니스 로직(복잡할 수도 있다.)을 작석할 수 있고 JMS 인프라스트럭처의 보일러플레이트에 대한
+      걱정을 프레임워크에 위임할 수 있다.</para>
 
-      <para>There are two standard JMS message listener containers packaged
-      with Spring, each with its specialised feature set.</para>
+      <para>스프링에는 두개의 표준 JMS 메시지 리스너 컨테이너가 있고 각 컨테이너는
+      전문화된 기능을 가진다.</para>
 
       <section id="jms-mdp-simple">
         <title>SimpleMessageListenerContainer</title>
 
-        <para>This message listener container is the simpler of the two
-        standard flavors. It creates a fixed number of JMS sessions and
-        consumers at startup, registers the listener using the standard JMS
-        <methodname>MessageConsumer.setMessageListener()</methodname> method,
-        and leaves it up the JMS provider to perform listener callbacks.
-        This variant does not allow for dynamic adaption to runtime demands or
-        for participation in externally managed transactions. Compatibility-wise,
-        it stays very close to the spirit of the standalone JMS specification
-        - but is generally not compatible with Java EE's JMS restrictions.</para>
+        <para>이 메시지 리스너 컨테이너는 두 표준보다 간단하다. 구동할 때 고정된 수의 JSM 세션과
+        컨슈머를 생성하고 표준 JMS
+        <methodname>MessageConsumer.setMessageListener()</methodname> 메서드를
+        사용해서 리스너를 등록하고 JMS 프로바이더나 리스너 콜백을 실행하도록 한다. 이 컨테이너는
+        동적으로 런타임 요구사항에 맞출 수 없고 외부에서 관리하는 트랜잭션에 참여할 수는 없다.
+        호환성을 위해서 독립적인 JMS 명세서에 아주 가깝지만 보통 Java EE의 JMS 제약사항에는
+        호환되지 않는다.</para>
       </section>
 
       <section id="jms-mdp-default">
         <title>DefaultMessageListenerContainer</title>
 
-        <para>This message listener container is the one used in most cases.
-        In contrast to <classname>SimpleMessageListenerContainer</classname>,
-        this container variant does allow for dynamic adaption to runtime
-        demands and is able to participate in externally managed transactions.
-        Each received message is registered with an XA transaction when
-        configured with a <classname>JtaTransactionManager</classname>; so
-        processing may take advantage of XA transaction semantics. This
-        listener container strikes a good balance between low requirements on
-        the JMS provider, advanced functionality such as transaction
-        participation, and compatibility with Java EE environments.</para>
+        <para>이 메시지 리스너 컨테이너는 가장 많이 사용하는 것 중 하나이다.
+        <classname>SimpleMessageListenerContainer</classname>와는 달리 런타임
+        요구사항을 동적으로 맞출 수 있고 외부에서 관리하는 트랜잭션에 참여할 수 있다.
+        <classname>JtaTransactionManager</classname>를 설정한 경우 받는 각각의
+        메시지를 XA 트랜잭션에 등록하므로 처리할 때 XA 트랜잭션의 장점을 가질 수 있다. 이 리스너
+        컨테이너는 JMS 프로바이저의 낮은 요구사항과 트랜잭션 참여같은 고급 기능과 Java EE
+        환경에 호환성 간의 균형을 잘 맞추고 있다.</para>
       </section>
     </section>
 
     <section id="jms-tx">
       <title>Transaction management</title>
 
-      <para>Spring provides a <classname>JmsTransactionManager</classname>
-      that manages transactions for a single JMS
-      <classname>ConnectionFactory</classname>. This allows JMS applications
-      to leverage the managed transaction features of Spring as described in
-      <xref linkend="transaction" />. The
-      <classname>JmsTransactionManager</classname> performs local resource
-      transactions, binding a JMS Connection/Session pair from the specified
-      <classname>ConnectionFactory</classname> to the thread.
-      <classname>JmsTemplate</classname> automatically detects such
-      transactional resources and operates on them accordingly.</para>
+      <para>스프링은 단일 JMS <classname>ConnectionFactory</classname>의 트랜잭션을
+      관리하는 <classname>JmsTransactionManager</classname>를 제공한다.
+      <classname>JmsTransactionManager</classname>는
+      <xref linkend="transaction" />에서 설명한 스프링이 관리하는 트랜잭션 기능을 JMS
+      어플리케이션이 사용하도록 한다. <classname>JmsTransactionManager</classname>는
+      로컬 리소스 트랜잭션을 수행하고 JMS 연결/세션 쌍을 지정한
+      <classname>ConnectionFactory</classname>에서 스레드로 바인딩한다.
+      <classname>JmsTemplate</classname>는 자동으로 이러한 트랜잭션이 가능한 리소스를
+      탐지해서 적절하게 리소스상에서 작업을 실행한다.</para>
 
-      <para>In a Java EE environment, the
-      <classname>ConnectionFactory</classname> will pool Connections and
-      Sessions, so those resources are efficiently reused across transactions.
-      In a standalone environment, using Spring's
-      <classname>SingleConnectionFactory</classname> will result in a shared
-      JMS <classname>Connection</classname>, with each transaction having its
-      own independent <classname>Session</classname>. Alternatively, consider
-      the use of a provider-specific pooling adapter such as ActiveMQ's
-      <classname>PooledConnectionFactory</classname> class.</para>
+      <para>Java EE 환경에서 <classname>ConnectionFactory</classname>는 연결과 세션의
+      풀을 사용하므로 이러한 리소스를 트랜잭션사이에서 효율적으로 재사용한다. 독립적인 환경에서 스프링의
+      <classname>SingleConnectionFactory</classname>를 사용하면 공유된 JMS
+      <classname>Connection</classname>를 사용하게 되고 각 트랜잭션은 자신만의 독립적인
+      <classname>Session</classname>을 갖게 된다. 아니면 ActiveMQ의
+      <classname>PooledConnectionFactory</classname> 클래스처럼 프로바이더에 특화된
+      풀링(pooling) 어댑터를 사용하는 것을 고려해 봐라.</para>
 
-      <para><classname>JmsTemplate</classname> can also be used with the
-      <classname>JtaTransactionManager</classname> and an XA-capable JMS
-      <classname>ConnectionFactory</classname> for performing distributed
-      transactions. Note that this requires the use of a JTA transaction
-      manager as well as a properly XA-configured ConnectionFactory! (Check
-      your Java EE server's / JMS provider's documentation.)</para>
+      <para><classname>JmsTemplate</classname>를
+      <classname>JtaTransactionManager</classname>나 분산 트랜잭션을 위해서 XA 기능을
+      가진 JMS <classname>ConnectionFactory</classname>와 함께 사용할 수도 있다.
+      이 경우 XA로 잘 설정한 ConnectionFactory같은 JTA 트랜잭션 관리자를 사용해야 한다!
+      (사용하는 Java EE 서버나 JMS 프로바이더의 문서를 참고해라.)</para>
 
-      <para>Reusing code across a managed and unmanaged transactional
-      environment can be confusing when using the JMS API to create a
-      <classname>Session</classname> from a <classname>Connection</classname>.
-      This is because the JMS API has only one factory method to create a
-      <classname>Session</classname> and it requires values for the
-      transaction and acknowledgement modes. In a managed environment, setting
-      these values is the responsibility of the environment's transactional
-      infrastructure, so these values are ignored by the vendor's wrapper to
-      the JMS Connection. When using the <classname>JmsTemplate</classname> in
-      an unmanaged environment you can specify these values through the use of
-      the properties <literal>sessionTransacted</literal> and
-      <literal>sessionAcknowledgeMode</literal>. When using a
-      <classname>PlatformTransactionManager</classname> with
-      <classname>JmsTemplate</classname>, the template will always be given a
-      transactional JMS <classname>Session</classname>.</para>
+      <para><classname>Connection</classname>에서
+      <classname>Session</classname>을 생성하려고 JMS API를 사용하는 경우 관리하는
+      트랜잭션 환경과 관리하지 않는 트랜잭션 환경사이에서 코드를 재사용하는 것이 혼란스러울 수 있다.
+      이는 JMS API가 <classname>Session</classname>을 생성하는 팩토리 메서드를 딱 하나만
+      가지고 있고 트랜잭션과 승낙(acknowledgement) 모드에 대한 값을 필요로 하기 때문이다.
+      관리되는 환경에서는 해당 환경의 트랜잭션 인프라가 이러한 값을 설정하므로 JMS 연결을 감싸는
+      벤더의 랩퍼는 이러한 값을 무시한다. 관리되지 않는 환경에서
+      <classname>JmsTemplate</classname>을 사용하는 경우
+      <literal>sessionTransacted</literal>와
+      <literal>sessionAcknowledgeMode</literal> 프로퍼티를 사용해서 이러한 값을 지정할
+      수 있다. <classname>PlatformTransactionManager</classname>와
+      <classname>JmsTemplate</classname>를 같이 사용하는 경우 템플릿은 항상 트랜잭션이
+      가능한 JMS <classname>Session</classname>을 가질 것이다.</para>
     </section>
   </section>
 
   <section id="jms-sending">
-    <title>Sending a <interfacename>Message</interfacename></title>
+    <title><interfacename>Message</interfacename> 전송</title>
 
-    <para>The <classname>JmsTemplate</classname> contains many convenience
-    methods to send a message. There are send methods that specify the
-    destination using a <classname>javax.jms.Destination</classname> object
-    and those that specify the destination using a string for use in a JNDI
-    lookup. The send method that takes no destination argument uses the
-    default destination. Here is an example that sends a message to a queue
-    using the 1.0.2 implementation.</para>
+    <para><classname>JmsTemplate</classname>에는 메시지 전송과 관련해서 편리한 메서드가
+    많이 있다. <classname>javax.jms.Destination</classname> 객체로 목적지를 지정하는
+    전송메서드와 JNDI 검색에 사용하는 문자열로 목적지를 지정하는 전송메서드가 있다. 목적지 인자를
+    받지 않는 전송 메서드는 기본 목적지를 사용한다. 1.0.2 구현체를 사용해서 큐에 메시지를 보내는
+    예제가 다음에 나와 있다.</para>
 
     <programlisting language="java">import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -399,64 +331,55 @@ public class JmsQueueSender {
     }
 }</programlisting>
 
-    <para>This example uses the <classname>MessageCreator</classname> callback
-    to create a text message from the supplied <classname>Session</classname>
-    object. The <classname>JmsTemplate</classname> is constructed by passing a
-    reference to a <classname>ConnectionFactory</classname>. As an alternative,
-    a zero argument constructor and <property>connectionFactory</property>
-    is provided and can be used for constructing the instance in JavaBean style
-    (using a BeanFactory or plain Java code). Alternatively, consider deriving
-    from Spring's <classname>JmsGatewaySupport</classname> convenience base class,
-    which provides pre-built bean properties for JMS configuration.</para>
+    <para>이 예제는 제공된 <classname>Session</classname> 객체에서 텍스트 메시지를 생성하기
+    위해 <classname>MessageCreator</classname> 콜백을 사용한다.
+    <classname>ConnectionFactory</classname>에 대한 참조를 전달해서
+    <classname>JmsTemplate</classname>을 생성한다. 아니면 인자가 없는 생성자와
+    <property>connectionFactory</property>를 제공하면 JavaBean 형식의 인스턴스를
+    생성하는데 사용할 수 있다.(BeanFactory나 일반적인 자바코드를 사용해서) 또는 스프링의
+    <classname>JmsGatewaySupport</classname> 기잔 클래스에서 생성하는 것을 생각해 볼 수
+    있는데 <classname>JmsGatewaySupport</classname>는 JMS 설정에 대한 빈 프로퍼티를
+    미리 만들어서 제공한다.</para>
 
-    <para>The method <methodname>send(String destinationName, MessageCreator
-    creator)</methodname> lets you send a message using the string name of
-    the destination. If these names are registered in JNDI, you should set the
-    <property>destinationResolver</property> property of the template to an
-    instance of <classname>JndiDestinationResolver</classname>.</para>
+    <para><methodname>send(String destinationName, MessageCreator
+    creator)</methodname> 메서드로 목적지의 문자열 이름을 사용해서 메시지를 전송할 수 있다.
+    이 목적지 이름이 JNDI에 등록되어 있는 경우
+    <classname>JndiDestinationResolver</classname> 인스턴스에 템플릿의
+    <property>destinationResolver</property> 프로퍼티를 설정해야 한다.</para>
 
-    <para>If you created the <classname>JmsTemplate</classname> and specified
-    a default destination, the <methodname>send(MessageCreator c)</methodname>
-    sends a message to that destination.</para>
+    <para><classname>JmsTemplate</classname>를 생성하고 기본 목적지를 지정했다면
+    <methodname>send(MessageCreator c)</methodname>는 이 목적지로 메시지를
+    전송한다.</para>
 
     <section id="jms-msg-conversion">
-      <title>Using Message Converters</title>
+      <title>메시지 컨버터의 사용</title>
 
-      <para>In order to facilitate the sending of domain model objects, the
-      <classname>JmsTemplate</classname> has various send methods that take a
-      Java object as an argument for a message's data content. The overloaded
-      methods <methodname>convertAndSend()</methodname> and
-      <methodname>receiveAndConvert()</methodname> in
-      <classname>JmsTemplate</classname> delegate the conversion process to an
-      instance of the <literal>MessageConverter</literal> interface. This
-      interface defines a simple contract to convert between Java objects and
-      JMS messages. The default implementation
-      <classname>SimpleMessageConverter</classname> supports conversion
-      between <classname>String</classname> and
-      <classname>TextMessage</classname>, <classname>byte[]</classname> and
-      <classname>BytesMesssage</classname>, and
-      <classname>java.util.Map</classname> and
-      <classname>MapMessage</classname>. By using the converter, you and your
-      application code can focus on the business object that is being sent or
-      received via JMS and not be concerned with the details of how it is
-      represented as a JMS message.</para>
+      <para>도메인 모델 객체를 전송하기 쉽도록 <classname>JmsTemplate</classname>에는
+      메시지의 데이터 내용에 대한 자바 객체를 인자로 받는 다양한 전송 메서드가 있다.
+      <classname>JmsTemplate</classname>에서 오버로드된
+      <methodname>convertAndSend()</methodname>와
+      <methodname>receiveAndConvert()</methodname>는 변환 과정을
+      <literal>MessageConverter</literal> 인터페이스의 인스턴스로 위임한다.
+      <literal>MessageConverter</literal> 인터페이스는 자바 객체와 JMS 메시지간의 변환에
+      대한 간단한 조건을 정의하고 있다. 기본 구현체
+      <classname>SimpleMessageConverter</classname>는
+      <classname>String</classname>과 <classname>TextMessage</classname>,
+      <classname>byte[]</classname>와 <classname>BytesMesssage</classname>,
+      <classname>java.util.Map</classname>와 <classname>MapMessage</classname>간의
+      변환을 지원한다. 컨버터를 사용함으로써 JMS로 보내고 받는 비즈니스 객체에만 집중할 수 있고
+      JMS 메시지로 어떻게 표현되는지에 대한 자세한 내용은 신경쓰지 않아도 된다.</para>
 
-      <para>The sandbox currently includes a
-      <classname>MapMessageConverter</classname> which uses reflection to
-      convert between a JavaBean and a <classname>MapMessage</classname>.
-      Other popular implementation choices you might implement yourself are
-      Converters that use an existing XML marshalling package, such as JAXB,
-      Castor, XMLBeans, or XStream, to create a
-      <interfacename>TextMessage</interfacename> representing the
-      object.</para>
+      <para>최근의 샌드박스에는 자바빈과 <classname>MapMessage</classname>를 변환하는데
+      리플렉션을 사용하는 <classname>MapMessageConverter</classname>가 포함되어 있다.
+      직접 구현혈만한 다른 구현체 중에서 인기있는 것은 객체를 나타내는
+      <interfacename>TextMessage</interfacename>를 생성하는데 JAXB, Castor,
+      XMLBeans, XStream같은 이미 존재하는 XML 마샬링 패키지를 사용하는 컨버터이다.</para>
 
-      <para>To accommodate the setting of a message's properties, headers, and
-      body that can not be generically encapsulated inside a converter class,
-      the <interfacename>MessagePostProcessor</interfacename> interface gives
-      you access to the message after it has been converted, but before it is
-      sent. The example below demonstrates how to modify a message header and
-      a property after a <interfacename>java.util.Map</interfacename> is
-      converted to a message.</para>
+      <para>일반적으로 컨버터 클래스내에 캡슐화될 수 없는 메시지의 프로퍼티, 헤더, 바디를 설정하기
+      위해서 <interfacename>MessagePostProcessor</interfacename> 인터페이스는 메시지가
+      변환되고 나서 전송되기 전에 접근할 수 있게 해준다. 아래 예제는
+      <interfacename>java.util.Map</interfacename>가 메시지로 변환된 후에 메시지 헤더와
+      프로퍼티를 어떻게 수정하는지 보여준다.</para>
 
       <programlisting language="java">public void sendWithConversion() {
     Map map = new HashMap();
@@ -471,7 +394,7 @@ public class JmsQueueSender {
     });
 }</programlisting>
 
-      <para>This results in a message of the form:</para>
+      <para>이는 메시지 형식이 된다.</para>
 
       <programlisting>MapMessage={
     Header={
@@ -484,59 +407,53 @@ public class JmsQueueSender {
     Fields={
         Name={String:Mark}
         Age={Integer:47}
-    } 
+    }
 }</programlisting>
     </section>
 
     <section id="jms-callbacks">
-      <title><interfacename>SessionCallback</interfacename> and
+      <title><interfacename>SessionCallback</interfacename>과
       <interfacename>ProducerCallback</interfacename></title>
 
-      <para>While the send operations cover many common usage scenarios, there
-      are cases when you want to perform multiple operations on a JMS
-      <interfacename>Session</interfacename> or
-      <interfacename>MessageProducer</interfacename>. The
-      <interfacename>SessionCallback</interfacename> and
-      <interfacename>ProducerCallback</interfacename> expose the JMS
-      <interfacename>Session</interfacename> and
+      <para>전송 작업이 다수의 일반적인 사용사례를 다룰 수 있지만 JMS
+      <interfacename>Session</interfacename>이나
+      <interfacename>MessageProducer</interfacename>에서 다수의 작업을 수행하고자
+      하는 경우가 있다. <interfacename>SessionCallback</interfacename>와
+      <interfacename>ProducerCallback</interfacename>는 JMS
+      <interfacename>Session</interfacename>과
       <interfacename>Session</interfacename> /
-      <interfacename>MessageProducer</interfacename> pair respectively. The
-      <methodname>execute()</methodname> methods on
-      <classname>JmsTemplate</classname> execute these callback
-      methods.</para>
+      <interfacename>MessageProducer</interfacename> 쌍을 각각 노축한다.
+      <classname>JmsTemplate</classname>의 <methodname>execute()</methodname>
+      메서드는 이러한 콜백 메서드를 실행한다.</para>
     </section>
   </section>
 
   <section id="jms-receiving">
-    <title>Receiving a message</title>
+    <title>메시지 수신</title>
 
     <section id="jms-receiving-sync">
-      <title>Synchronous Reception</title>
+      <title>동기 수신</title>
 
-      <para>While JMS is typically associated with asynchronous processing, it
-      is possible to consume messages synchronously. The overloaded
-      <methodname>receive(..)</methodname> methods provide this functionality.
-      During a synchronous receive, the calling thread blocks until a message
-      becomes available. This can be a dangerous operation since the calling
-      thread can potentially be blocked indefinitely. The property
-      <property>receiveTimeout</property> specifies how long the receiver
-      should wait before giving up waiting for a message.</para>
+      <para>JMS가 보통 비동기 처리와 관련되어 있지만 동기적으로 메시지를 처리할 수도 있다.
+      <methodname>receive(..)</methodname> 메서드를 오버로드해서 동기적으로 처리할 수 있다.
+      동기적으로 메시지를 받는 동안 호출하는 스레드는 메시지를 이용할 수 있을 때까지 블럭킹된다.
+      호출하는 스레드가 불명확하게 블럭킹될 가능성이 있으므로 이는 위험한 작업이 될 수 있다.
+      <property>receiveTimeout</property> 프로퍼티는 리시버가 메시지를 얼마나 오랫동안
+      기다려야 하는지를 지정한다.</para>
     </section>
 
     <section id="jms-asynchronousMessageReception">
-      <title>Asynchronous Reception - Message-Driven POJOs</title>
+      <title>비동기 수신 - 메시지 주도 POJO</title>
 
-      <para>In a fashion similar to a Message-Driven Bean (MDB) in the EJB
-      world, the Message-Driven POJO (MDP) acts as a receiver for JMS
-      messages. The one restriction (but see also below for the discussion of
-      the <classname>MessageListenerAdapter</classname> class) on an MDP is
-      that it must implement the
-      <interfacename>javax.jms.MessageListener</interfacename> interface.
-      Please also be aware that in the case where your POJO will be receiving
-      messages on multiple threads, it is important to ensure that your
-      implementation is thread-safe.</para>
+      <para>EJB의 메시지 주도 빈(MDB, Message-Driven Bean)과 비슷한 방법으로 메시지 주도
+      POJO(MDP, Message-Driven POJO)는 JMS 메시지에 대해서 리시버로 동작한다.
+      <interfacename>javax.jms.MessageListener</interfacename> 인터페이스를 반드시
+      구현해야 한다는 점이 MDP가 가진 하나의 제약사항(하지만 아래의
+      <classname>MessageListenerAdapter</classname> 클래스에 대한 논의를 참고해라.)이다.
+      POJO가 여러 스레드에서 메시지를 받는 경우라면 스레드세이프하게 구현해야 한다는 점이 중요하다는
+      것을 기억해야 한다.</para>
 
-      <para>Below is a simple implementation of an MDP:</para>
+      <para>아래는 MDP 구현체의 간단한 예시이다.</para>
 
       <programlisting language="java">import javax.jms.JMSException;
 import javax.jms.Message;
@@ -560,39 +477,37 @@ public class ExampleListener implements MessageListener {
     }
 }</programlisting>
 
-      <para>Once you've implemented your
-      <interfacename>MessageListener</interfacename>, it's time to create a
-      message listener container.</para>
+      <para><interfacename>MessageListener</interfacename>를 구현했으면
+      메시지 리스너 컨테이너를 만들 차례다.</para>
 
-      <para>Find below an example of how to define and configure one of the
-      message listener containers that ships with Spring (in this case the
-      <classname>DefaultMessageListenerContainer</classname>).</para>
+      <para>스프링이 제공하는 메시지 리스너 컨테이너중 하나를 어떻게 정의하고 설정했는지
+      아래 예제를 참고해라.(이 경우에는
+      <classname>DefaultMessageListenerContainer</classname>)</para>
 
-      <programlisting language="xml"><lineannotation>&lt;!-- this is the Message Driven POJO (MDP) --&gt;</lineannotation>
+      <programlisting language="xml"><lineannotation>&lt;!-- 메시지 주도 POJO(MDP) --&gt;</lineannotation>
 &lt;bean id="messageListener" class="jmsexample.ExampleListener" /&gt;
 
-<lineannotation>&lt;!-- and this is the message listener container --&gt;</lineannotation>
+<lineannotation>&lt;!-- 메시지 리스너 컨테이너 --&gt;</lineannotation>
 &lt;bean id="jmsContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer"&gt;
     &lt;property name="connectionFactory" ref="connectionFactory"/&gt;
     &lt;property name="destination" ref="destination"/&gt;
     <emphasis role="bold">&lt;property name="messageListener" ref="messageListener" /&gt;</emphasis>
 &lt;/bean&gt;</programlisting>
 
-      <para>Please refer to the Spring Javadoc of the various message listener
-      containers for a full description of the features supported by each
-      implementation.</para>
+      <para>다양한 메시지 리스너 컨테이너의 각 구현체가 지원하는 기능과 자세한 내용은 스프링
+      자바독을 참고해라.</para>
     </section>
 
     <section id="jms-receiving-async-session-aware-message-listener">
-      <title>The <interfacename>SessionAwareMessageListener</interfacename>
-      interface</title>
+      <title><interfacename>SessionAwareMessageListener</interfacename>
+      인터페이스</title>
 
-      <para>The <interfacename>SessionAwareMessageListener</interfacename>
-      interface is a Spring-specific interface that provides a similar
-      contract to the JMS <interfacename>MessageListener</interfacename>
-      interface, but also provides the message handling method with access to
-      the JMS <interfacename>Session</interfacename> from which the
-      <interfacename>Message</interfacename> was received.</para>
+      <para><interfacename>SessionAwareMessageListener</interfacename>
+      인터페이스는 스프링에 특화된 인터페이스로 JMS
+      <interfacename>MessageListener</interfacename>와 비슷한 계약(contract)을
+      제공하지만 <interfacename>Message</interfacename>를 받은 JMS
+      <interfacename>Session</interfacename>에 접근해서 메시지를 처리할 수 있는 메서드도
+      제공한다.</para>
 
       <programlisting language="java">package org.springframework.jms.listener;
 
@@ -601,49 +516,41 @@ public interface SessionAwareMessageListener {
     void onMessage(Message message, Session session) <emphasis role="bold">throws JMSException</emphasis>;
 }</programlisting>
 
-      <para>You can choose to have your MDPs implement this interface (in
-      preference to the standard JMS
-      <interfacename>MessageListener</interfacename> interface) if you want
-      your MDPs to be able to respond to any received messages (using the
-      <interfacename>Session</interfacename> supplied in the
-      <literal>onMessage(Message, Session)</literal> method). All of the
-      message listener container implementations that ship with Spring have
-      support for MDPs that implement either the
-      <interfacename>MessageListener</interfacename> or
-      <interfacename>SessionAwareMessageListener</interfacename> interface.
-      Classes that implement the
-      <interfacename>SessionAwareMessageListener</interfacename> come with the
-      caveat that they are then tied to Spring through the interface. The
-      choice of whether or not to use it is left entirely up to you as an
-      application developer or architect.</para>
+      <para>구현한 MDP가 어떤 메시지에도 응답할 수 있기를
+      (<literal>onMessage(Message, Session)</literal> 메서드에서 제공된
+      <interfacename>Session</interfacename>을 사용해서) 원한다면 MDP가 이 인터페이스
+      (표준 JMS <interfacename>MessageListener</interfacename> 인터페이스를 선호하는
+      경우)를 구현하도록 할 수 있다. 스프링이 제공하는 모든 메시지 리스너 컨테이너 구현체는
+      <interfacename>MessageListener</interfacename>나
+      <interfacename>SessionAwareMessageListener</interfacename> 인터페이스를
+      구현한 MDP를 지원한다.
+      <interfacename>SessionAwareMessageListener</interfacename>를 구현한 클래스는
+      이 인터페이스로 스프링에 의존성을 가진다는 것을 유의해야 한다. 이를 사용할 것인지 아닌지는
+      어플리케이션 개발자나 아키텍쳐의 선택이다.</para>
 
-      <para>Please note that the <literal>'onMessage(..)'</literal> method of
-      the <interfacename>SessionAwareMessageListener</interfacename> interface
-      throws <classname>JMSException</classname>. In contrast to the standard
-      JMS <interfacename>MessageListener</interfacename> interface, when using
-      the <interfacename>SessionAwareMessageListener</interfacename>
-      interface, it is the responsibility of the client code to handle any
-      exceptions thrown.</para>
+      <para><interfacename>SessionAwareMessageListener</interfacename>
+      인터페이스의 <literal>'onMessage(..)'</literal> 메서드가
+      <classname>JMSException</classname>를 던진다는 것을 기억해라. 표준 JMS
+      <interfacename>MessageListener</interfacename> 인터페이스와는 달리
+      <interfacename>SessionAwareMessageListener</interfacename> 인터페이스를
+      사용했을 때 던저진 예외를 처리하는 것은 클라이언트 코드의 몫이다.</para>
     </section>
 
     <section id="jms-receiving-async-message-listener-adapter">
-      <title>The <classname>MessageListenerAdapter</classname></title>
+      <title><classname>MessageListenerAdapter</classname></title>
 
-      <para>The <classname>MessageListenerAdapter</classname> class is the
-      final component in Spring's asynchronous messaging support: in a
-      nutshell, it allows you to expose almost <emphasis>any</emphasis> class
-      as a MDP (there are of course some constraints).</para>
+      <para><classname>MessageListenerAdapter</classname> 클래스는 스프링에서 비동기
+      메시지를 지원하는 마지막 컴포넌트다. 간단히 말하면 이 클래스는 거의
+      <emphasis>모든</emphasis> 클래스를 MDP로 노출하도록 해준다.
+      (물론 몇가지 제약사항이 있다.)</para>
 
-      <para>Consider the following interface definition. Notice that although
-      the interface extends neither the
-      <interfacename>MessageListener</interfacename> nor
-      <interfacename>SessionAwareMessageListener</interfacename> interfaces,
-      it can still be used as a MDP via the use of the
-      <classname>MessageListenerAdapter</classname> class. Notice also how the
-      various message handling methods are strongly typed according to the
-      <emphasis>contents</emphasis> of the various
-      <interfacename>Message</interfacename> types that they can receive and
-      handle.</para>
+      <para>다음의 인터페이스 정의를 보자. 이 인터페이스가
+      <interfacename>MessageListener</interfacename>나
+      <interfacename>SessionAwareMessageListener</interfacename>를 상속하지
+      않았음에도 <classname>MessageListenerAdapter</classname>를 사용해서 MDP로
+      사용할 수 있다. 다양한 메시지 처리 메서드가 어떻게 받아서 처리할 수 있는 다양한
+      <interfacename>Message</interfacename>의 <emphasis>내용</emphasis>에 따라
+      타입을 지정하는지도 참고해라.</para>
 
       <programlisting language="java">public interface MessageDelegate {
 
@@ -657,38 +564,36 @@ public interface SessionAwareMessageListener {
 }</programlisting>
 
       <programlisting language="java">public class DefaultMessageDelegate implements MessageDelegate {
-    <lineannotation>// implementation elided for clarity...</lineannotation>
+    <lineannotation>// 구현부는 생략했다...</lineannotation>
 }</programlisting>
 
-      <para>In particular, note how the above implementation of the
-      <interfacename>MessageDelegate</interfacename> interface (the above
-      <classname>DefaultMessageDelegate</classname> class) has
-      <emphasis>no</emphasis> JMS dependencies at all. It truly is a POJO that
-      we will make into an MDP via the following configuration.</para>
+      <para>특히 <interfacename>MessageDelegate</interfacename> 인터페이스의 구현체
+      (위의 <classname>DefaultMessageDelegate</classname> 클래스)가 어떻게 JSM에 대한
+      의존성은 전혀 갖지 <emphasis>않는지</emphasis> 봐라. 이는 다음의 설정으로 MDP로 만들
+      POJO다.</para>
 
-      <programlisting language="xml"><lineannotation>&lt;!-- this is the Message Driven POJO (MDP) --&gt;</lineannotation>
+      <programlisting language="xml"><lineannotation>&lt;!-- 메시지 주도 POJO (MDP) --&gt;</lineannotation>
 <emphasis role="bold">&lt;bean id="messageListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter"&gt;
     &lt;constructor-arg&gt;
         &lt;bean class="jmsexample.DefaultMessageDelegate"/&gt;
     &lt;/constructor-arg&gt;
 &lt;/bean&gt;</emphasis>
 
-<lineannotation>&lt;!-- and this is the message listener container... --&gt;</lineannotation>
+<lineannotation>&lt;!-- 메시지 리스너 컨테이너... --&gt;</lineannotation>
 &lt;bean id="jmsContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer"&gt;
     &lt;property name="connectionFactory" ref="connectionFactory"/&gt;
     &lt;property name="destination" ref="destination"/&gt;
     <emphasis role="bold">&lt;property name="messageListener" ref="messageListener" /&gt;</emphasis>
 &lt;/bean&gt;</programlisting>
 
-      <para>Below is an example of another MDP that can only handle the
-      receiving of JMS <interfacename>TextMessage</interfacename> messages.
-      Notice how the message handling method is actually called
-      <literal>'receive'</literal> (the name of the message handling method in
-      a <classname>MessageListenerAdapter</classname> defaults to
-      <literal>'handleMessage'</literal>), but it is configurable (as you will
-      see below). Notice also how the <literal>'receive(..)'</literal> method
-      is strongly typed to receive and respond only to JMS
-      <interfacename>TextMessage</interfacename> messages.</para>
+      <para>다음은 또다른 MDP의 예시로 JMS <interfacename>TextMessage</interfacename>
+      메시지만 받아서 처리할 수 있다. 어떻게 메시지 처리 메서드가 실제로는
+      <literal>'receive'</literal>로
+      (<classname>MessageListenerAdapter</classname>의 메시지 처리 메서드의 이름은
+      기본적으로 <literal>'handleMessage'</literal>이다.) 호출되게 설정하는지 참고해라.
+      <literal>'receive(..)'</literal> 메서드가 JMS
+      <interfacename>TextMessage</interfacename> 메시지에만 받고 응답하도록 타입을
+      지정하는 방법도 참고해라.</para>
 
       <programlisting language="java">public interface TextMessageDelegate {
 
@@ -696,81 +601,70 @@ public interface SessionAwareMessageListener {
 }</programlisting>
 
       <programlisting language="java">public class DefaultTextMessageDelegate implements TextMessageDelegate {
-    <lineannotation>// implementation elided for clarity...</lineannotation>
+    <lineannotation>// 구현부는 생략했다...</lineannotation>
 }</programlisting>
 
-      <para>The configuration of the attendant
-      <classname>MessageListenerAdapter</classname> would look like
-      this:</para>
+      <para><classname>MessageListenerAdapter</classname>의 설정은 다음과
+      같을 것이다.</para>
 
       <programlisting language="xml">&lt;bean id="messageListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter"&gt;
     &lt;constructor-arg&gt;
         &lt;bean class="jmsexample.DefaultTextMessageDelegate"/&gt;
     &lt;/constructor-arg&gt;
     &lt;property name="defaultListenerMethod" value="receive"/&gt;
-    <lineannotation>&lt;!-- we <emphasis role="bold">don't</emphasis> want automatic message context extraction --&gt;</lineannotation>
+    <lineannotation>&lt;!-- 자동 메시지 컨텍스트 추출을 원하지 <emphasis role="bold">않는다</emphasis> --&gt;</lineannotation>
     &lt;property name="messageConverter"&gt;
         &lt;null/&gt;
     &lt;/property&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>Please note that if the above <literal>'messageListener'</literal>
-      receives a JMS <interfacename>Message</interfacename> of a type other
-      than <interfacename>TextMessage</interfacename>, an
-      <classname>IllegalStateException</classname> will be thrown (and
-      subsequently swallowed). Another of the capabilities of the
-      <classname>MessageListenerAdapter</classname> class is the ability to
-      automatically send back a response
-      <interfacename>Message</interfacename> if a handler method returns a
-      non-void value. Consider the interface and class:</para>
+      <para>위의 <literal>'messageListener'</literal>가
+      <interfacename>TextMessage</interfacename>가 아닌 다른 타입의 JMS
+      <interfacename>Message</interfacename>를 받는다면
+      <classname>IllegalStateException</classname>가 던져질 것이다.(그리고 이어진
+      메시지는 무시할 것이다.) 핸들러 메서드가 void가 아닌 값을 반환하는 경우 자동적으로 응답
+      <interfacename>Message</interfacename>를 다시 보내는 것은
+      <classname>MessageListenerAdapter</classname>클래스의 또다른 기능이다.
+      다음 인터페이스와 클래스를 보자.</para>
 
       <programlisting language="java">public interface ResponsiveTextMessageDelegate {
 
-    <lineannotation><emphasis role="bold">// notice the return type...</emphasis></lineannotation>
+    <lineannotation><emphasis role="bold">// 반환 타입을 잘 봐라...</emphasis></lineannotation>
     String receive(TextMessage message);
 }</programlisting>
 
       <programlisting language="java">public class DefaultResponsiveTextMessageDelegate implements ResponsiveTextMessageDelegate {
-    <lineannotation>// implementation elided for clarity...</lineannotation>
+    <lineannotation>// 구현부는 생략했다...</lineannotation>
 }</programlisting>
 
-      <para>If the above
-      <classname>DefaultResponsiveTextMessageDelegate</classname> is used in
-      conjunction with a <classname>MessageListenerAdapter</classname> then
-      any non-null value that is returned from the execution of the
-      <literal>'receive(..)'</literal> method will (in the default
-      configuration) be converted into a
-      <interfacename>TextMessage</interfacename>. The resulting
-      <interfacename>TextMessage</interfacename> will then be sent to the
-      <interfacename>Destination</interfacename> (if one exists) defined in
-      the JMS Reply-To property of the original
-      <interfacename>Message</interfacename>, or the default
-      <interfacename>Destination</interfacename> set on the
-      <classname>MessageListenerAdapter</classname> (if one has been
-      configured); if no <interfacename>Destination</interfacename> is found
-      then an <classname>InvalidDestinationException</classname> will be
-      thrown (and please note that this exception <emphasis>will
-      not</emphasis> be swallowed and <emphasis>will</emphasis> propagate up
-      the call stack).</para>
+      <para>위의 <classname>DefaultResponsiveTextMessageDelegate</classname>를
+      <classname>MessageListenerAdapter</classname>와 함께 사용한 경우
+      <literal>'receive(..)'</literal> 메서드의 실행후 반환된 null이 아닌 모든 값은
+      <interfacename>TextMessage</interfacename>로 변환될 것이다.(기본 설정에 따라)
+      그 다음 변환된 <interfacename>TextMessage</interfacename>는 원래의
+      <interfacename>Message</interfacename>의 JMS Reply-To 프로퍼티에 정의된(존재하는
+      경우) <interfacename>Destination</interfacename>이나
+      <classname>MessageListenerAdapter</classname>에 설정된 기본
+      <interfacename>Destination</interfacename>(설정되었다면)으로 보내진다.
+      <interfacename>Destination</interfacename>가 없다면
+      <classname>InvalidDestinationException</classname>가 던져질 것이다.(이 예외는
+      무시되지 <emphasis>않고</emphasis> 호출 스택에
+      <emphasis>추가될 것이다</emphasis>.)</para>
     </section>
 
     <section id="jms-tx-participation">
-      <title>Processing messages within transactions</title>
+      <title>트랜잭션에서의 메시지 처리</title>
 
-      <para>Invoking a message listener within a transaction only requires
-      reconfiguration of the listener container.</para>
+      <para>트랜잭션에서 메시지 리스너를 호출하려면 리스너 컨테이너만 재설정하면 된다.</para>
 
-      <para>Local resource transactions can simply be activated through the
-      <literal>sessionTransacted</literal> flag on the listener container
-      definition. Each message listener invocation will then operate within an
-      active JMS transaction, with message reception rolled back in case of
-      listener execution failure. Sending a response message (via
-      <interfacename>SessionAwareMessageListener</interfacename>) will be part
-      of the same local transaction, but any other resource operations (such
-      as database access) will operate independently. This usually requires
-      duplicate message detection in the listener implementation, covering the
-      case where database processing has committed but message processing
-      failed to commit.</para>
+      <para>리스너 컨테이너 정의의 <literal>sessionTransacted</literal> 플래그로 로컬
+      리소스 트랜잭션은 활성화할 수 있다. 로컬 리소스 트랜잭션을 활성화하면 활성화된 JMS
+      트랜잭션내에서 각 메시지 리스너 호출을 할 수 있고 리스너 실행이 실패한 경우 메시지 수신이
+      롤백된다. 응답 메시지 전송
+      (<interfacename>SessionAwareMessageListener</interfacename>로)도 같은 로컬
+      트랜잭션에 포함되어 있지만 다른 리소스에 대한 작업(데이터베이스 접근 같은)은 독립적으로 수행될
+      것이다. 이는 데이터베이스 처리는 커밋되었지만 메시지 처리는 커밋이 실패한 경우를 포함해서
+      리스너 구현체에서 중복 메시지 탐지를 해야 한다.</para>
 
       <programlisting language="xml">&lt;bean id="jmsContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer"&gt;
     &lt;property name="connectionFactory" ref="connectionFactory"/&gt;
@@ -779,27 +673,23 @@ public interface SessionAwareMessageListener {
     <emphasis role="bold">&lt;property name="sessionTransacted" value="true"/&gt;</emphasis>
 &lt;/bean&gt;</programlisting>
 
-      <para>For participating in an externally managed transaction, you will
-      need to configure a transaction manager and use a listener container
-      which supports externally managed transactions: typically
-      <classname>DefaultMessageListenerContainer</classname>.</para>
+      <para>외부에서 관리하는 트랜잭션에 참여하려면 트랜잭션 관리자를 설정하고 외부 관리 트랜잭션을
+      지원하는 리스너 컨테이너(보통
+      <classname>DefaultMessageListenerContainer</classname>)를 사용해야 한다.</para>
 
-      <para>To configure a message listener container for XA transaction
-      participation, you'll want to configure a
-      <classname>JtaTransactionManager</classname> (which, by default,
-      delegates to the Java EE server's transaction subsystem). Note that the
-      underlying JMS ConnectionFactory needs to be XA-capable and properly
-      registered with your JTA transaction coordinator! (Check your Java EE
-      server's configuration of JNDI resources.) This allows message reception
-      as well as e.g. database access to be part of the same transaction (with
-      unified commit semantics, at the expense of XA transaction log
-      overhead).</para>
+      <para>XA 트랜잭션에 참가하도록 메시지 리스너 컨테이너를 설정하려면
+      <classname>JtaTransactionManager</classname>(이 트랜잭션 관리자는 기본적으로
+      Java EE 서버의 트랜잭션 하위시스템에 위임한다.)를 설정해야 한다. 여기서 의존 JMS
+      ConnectionFactory는 XA 기능이 있어야 하고 JTA 트랜잭션 코디네이터(JTA transaction
+      coordinator)가 적절히 등록되어 있어야 한다! (Java EE 서버의 JNDI 리소스 설정을
+      확인해라.) 이는 메시지 수신이 데이터베이스 접근과 함께 같은 트랜잭션에 있도록 한다.(통일된
+      커밋 개념을 가지지만 XA 트랜잭션 로그 비용이 크다.)</para>
 
       <programlisting language="xml">&lt;bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager"/&gt;
 </programlisting>
 
-      <para>Then you just need to add it to our earlier container
-      configuration. The container will take care of the rest.</para>
+      <para>앞에서 본 컨테이터 설정에 위 부분을 추가하면 된다. 컨테이너가 나머지를
+      관리할 것이다.</para>
 
       <programlisting language="xml">&lt;bean id="jmsContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer"&gt;
     &lt;property name="connectionFactory" ref="connectionFactory"/&gt;
@@ -811,17 +701,15 @@ public interface SessionAwareMessageListener {
   </section>
 
   <section id="jms-jca-message-endpoint-manager">
-    <title>Support for JCA Message Endpoints</title>
+    <title>JCA 메시지 종점(Message Endpoints)에 대한 지원</title>
 
-    <para>Beginning with version 2.5, Spring also provides support for a
-    JCA-based <interfacename>MessageListener</interfacename> container. The
-    <classname>JmsMessageEndpointManager</classname> will attempt to
-    automatically determine the <interfacename>ActivationSpec</interfacename>
-    class name from the provider's
-    <interfacename>ResourceAdapter</interfacename> class name. Therefore, it
-    is typically possible to just provide Spring's generic
-    <classname>JmsActivationSpecConfig</classname> as shown in the following
-    example.</para>
+    <para>스프링 2.5부터 JCA에 기반한 <interfacename>MessageListener</interfacename>
+    컨테이너도 지원하기 시작했다. <classname>JmsMessageEndpointManager</classname>는
+    프로바이더의 <interfacename>ResourceAdapter</interfacename> 클래스 이름으로
+    <interfacename>ActivationSpec</interfacename> 클래스 이름을 자동적으로 결정하려고
+    할 것이다. 그래서 다음 예제에서 보듯이 스프링의 지네릭
+    <classname>JmsActivationSpecConfig</classname>을 제공하는 것이
+    보통 가능하다.</para>
 
     <programlisting language="xml">&lt;bean class="org.springframework.jms.listener.endpoint.JmsMessageEndpointManager"&gt;
     &lt;property name="resourceAdapter" ref="resourceAdapter"/&gt;
@@ -833,11 +721,10 @@ public interface SessionAwareMessageListener {
     &lt;property name="messageListener" ref="myMessageListener"/&gt;
 &lt;/bean&gt;</programlisting>
 
-    <para>Alternatively, you may set up a
-    <classname>JmsMessageEndpointManager</classname> with a given
-    <interfacename>ActivationSpec</interfacename> object. The
-    <interfacename>ActivationSpec</interfacename> object may also come from a
-    JNDI lookup (using <literal>&lt;jee:jndi-lookup&gt;</literal>).</para>
+    <para>또는 주어진 <interfacename>ActivationSpec</interfacename> 객체에
+    <classname>JmsMessageEndpointManager</classname>를 설정할 수 있다.
+    <interfacename>ActivationSpec</interfacename> 객체도 JNDI 검색
+    (<literal>&lt;jee:jndi-lookup&gt;</literal>를 사용해서)에서 올 것이다.</para>
 
     <programlisting language="xml">&lt;bean class="org.springframework.jms.listener.endpoint.JmsMessageEndpointManager"&gt;
     &lt;property name="resourceAdapter" ref="resourceAdapter"/&gt;
@@ -850,9 +737,9 @@ public interface SessionAwareMessageListener {
     &lt;property name="messageListener" ref="myMessageListener"/&gt;
 &lt;/bean&gt;</programlisting>
 
-    <para>Using Spring's <classname>ResourceAdapterFactoryBean</classname>,
-    the target <interfacename>ResourceAdapter</interfacename> may be
-    configured locally as depicted in the following example.</para>
+    <para>예제에서 설명한대로 스프링의
+    <classname>ResourceAdapterFactoryBean</classname>를 사용하면 로컬로 대상
+    <interfacename>ResourceAdapter</interfacename>를 설정한다.</para>
 
     <programlisting language="xml">&lt;bean id="resourceAdapter" class="org.springframework.jca.support.ResourceAdapterFactoryBean"&gt;
     &lt;property name="resourceAdapter"&gt;
@@ -865,52 +752,45 @@ public interface SessionAwareMessageListener {
     &lt;/property&gt;
 &lt;/bean&gt;</programlisting>
 
-    <para>The specified <interfacename>WorkManager</interfacename> may also
-    point to an environment-specific thread pool - typically through
-    <classname>SimpleTaskWorkManager's</classname> "asyncTaskExecutor"
-    property. Consider defining a shared thread pool for all your
-    <interfacename>ResourceAdapter</interfacename> instances if you happen to
-    use multiple adapters.</para>
+    <para>지정한 <interfacename>WorkManager</interfacename>도 환경에 특화된 스레드
+    풀을 가리킬 것이다.(보통 <classname>SimpleTaskWorkManager's</classname>
+    "asyncTaskExecutor" 프로퍼티를 통해서) 다중 아답터를 사용한다면 모든
+    <interfacename>ResourceAdapter</interfacename> 인스턴스에 공유 스레드 풀을
+    정의하는 것을 고려해 봐라.</para>
 
-    <para>In some environments (e.g. WebLogic 9 or above), the entire
-    <interfacename>ResourceAdapter</interfacename> object may be obtained from
-    JNDI instead (using <literal>&lt;jee:jndi-lookup&gt;</literal>). The
-    Spring-based message listeners can then interact with the server-hosted
-    <interfacename>ResourceAdapter</interfacename>, also using the server's
-    built-in <interfacename>WorkManager</interfacename>.</para>
+    <para>일부 환경(WebLogic 9 이상 등)에서는 JNDI
+    (<literal>&lt;jee:jndi-lookup&gt;</literal>를 사용해서)에서 전체
+    <interfacename>ResourceAdapter</interfacename> 객체를 가져올 것이다. 스프링 기반의
+    메시지 리스너는 서버가 제공하는 <interfacename>ResourceAdapter</interfacename>와
+    상호작용할 수 있고 서버에 내장된 <interfacename>WorkManager</interfacename>도
+    사용할 수 있다.</para>
 
-    <para>Please consult the JavaDoc for
-    <classname>JmsMessageEndpointManager</classname>,
-    <classname>JmsActivationSpecConfig</classname>, and
-    <classname>ResourceAdapterFactoryBean</classname> for more details.</para>
+    <para>자세한 내용은 <classname>JmsMessageEndpointManager</classname>,
+    <classname>JmsActivationSpecConfig</classname>,
+    <classname>ResourceAdapterFactoryBean</classname>의 JavaDoc를 참고해라.</para>
 
-    <para>Spring also provides a generic JCA message endpoint manager which is
-    not tied to JMS:
-    <classname>org.springframework.jca.endpoint.GenericMessageEndpointManager</classname>.
-    This component allows for using any message listener type (e.g. a CCI
-    MessageListener) and any provider-specific ActivationSpec object. Check
-    out your JCA provider's documentation to find out about the actual
-    capabilities of your connector, and consult
-    <classname>GenericMessageEndpointManager</classname>'s JavaDoc for the
-    Spring-specific configuration details.</para>
+    <para>스프링은 JMS에 의존하지 않는 일반적인 JCA 메시지 엔트포인트 관리자
+    <classname>org.springframework.jca.endpoint.GenericMessageEndpointManager</classname>도
+    제공한다. 이 컴포넌트로 모든 종류의 메시지 리스너(CCI MessageListener등)와 프로바이더에
+    특화된 ActivationSpec 객체를 사용할 수 있다. 사용하는 커넥터의 실제 기능은 JCA 프로바이더의
+    문서를 참고하고 스프링에 특화된 자세한 설정은
+    <classname>GenericMessageEndpointManager</classname> JavaDoc을
+    참고해라.</para>
 
     <note>
-      <para>JCA-based message endpoint management is very analogous to EJB 2.1
-      Message-Driven Beans; it uses the same underlying resource provider
-      contract. Like with EJB 2.1 MDBs, any message listener interface
-      supported by your JCA provider can be used in the Spring context as
-      well. Spring nevertheless provides explicit 'convenience' support for
-      JMS, simply because JMS is the most common endpoint API used with the
-      JCA endpoint management contract.</para>
+      <para>JCA 기반의 메시지 엔드포인트 관리는 EJB 2.1 메시지 주도 빈과 아주 비슷하다. JCA
+      기반의 메시지 엔드포인트 관리도 같은 의존 리소스 프로바이더 규약을 사용한다. EJB 2.1
+      MDB에서처럼 JCA 프로바이더가 지원하는 모든 메시지 리스너 인터페이스는 스프링 컨텍스트에서도
+      사용할 수 있다. 하지만 JMS가 JCA 엔드포인트 관리 규약에서 사용하는 가장 일반적인 엔드포인트
+      API이므로 스프링의 JMS 지원이 확실히 '편리하다'.</para>
     </note>
   </section>
 
   <section id="jms-namespace">
-    <title>JMS Namespace Support</title>
+    <title>JMS 네임스페이스 지원</title>
 
-    <para>Spring 2.5 introduces an XML namespace for simplifying JMS
-    configuration. To use the JMS namespace elements you will need to
-    reference the JMS schema:</para>
+    <para>스프링 2.5에는 JMS 설정을 간략히 할 수 있는 XML 네임스페이스가 도입되었다.
+    JMS 네임스페이스 요소를 사용하려면 JMS 스키마를 참조해야 한다.</para>
 
     <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans xmlns="http://www.springframework.org/schema/beans"
@@ -920,15 +800,15 @@ public interface SessionAwareMessageListener {
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 <emphasis role="bold">http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd"</emphasis>&gt;
 
-<lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> definitions here --&gt;</lineannotation>
+<lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> 설정 --&gt;</lineannotation>
 
 &lt;/beans&gt;</programlisting>
 
-    <para>The namespace consists of two top-level elements:
-    <literal>&lt;listener-container/&gt;</literal> and
-    <literal>&lt;jca-listener-container/&gt;</literal> both of which may
-    contain one or more <literal>&lt;listener/&gt;</literal> child elements.
-    Here is an example of a basic configuration for two listeners.</para>
+    <para>네임스페이스는 두개의 최상위 요소
+    <literal>&lt;listener-container/&gt;</literal>와
+    <literal>&lt;jca-listener-container/&gt;</literal>로 구성되어 있고 둘 다 하나
+    이상의 <literal>&lt;listener/&gt;</literal> 자식 요소를 가질 것이다. 다음은
+    두 리스터의 기본 설정에 대한 예제이다.</para>
 
     <programlisting language="xml">&lt;jms:listener-container&gt;
 
@@ -938,17 +818,15 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
 &lt;/jms:listener-container&gt;</programlisting>
 
-    <para>The example above is equivalent to creating two distinct listener
-    container bean definitions and two distinct
-    <classname>MessageListenerAdapter</classname> bean definitions as
-    demonstrated in <xref linkend="jms-receiving-async-message-listener-adapter" />.
-    In addition to the attributes shown above, the <literal>listener</literal> element
-    may contain several optional ones. The following table describes all available
-    attributes:</para>
+    <para>위의 예제는
+    <xref linkend="jms-receiving-async-message-listener-adapter" />에서 보여준
+    두 리스너 컨테이너 빈 정의와 두 <classname>MessageListenerAdapter</classname> 빈
+    정의를 생성하는 예제와 같다. 위에서 보여준 속성을 조금 더 설명하자면
+    <literal>listener</literal> 요소는 여러가지 선택적인 값을 포함할 수 있다.
+    다음 표에 사용가능한 모든 속성이 나와 있다.</para>
 
     <table id="jms-namespace-listener-tbl">
-      <title>Attributes of the JMS <literal>&lt;listener&gt;</literal>
-      element</title>
+      <title>JMS <literal>&lt;listener&gt;</literal> 요소의 속성</title>
 
       <tgroup cols="2">
         <colspec colname="c1" colwidth="2*" />
@@ -957,9 +835,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
         <thead>
           <row>
-            <entry>Attribute</entry>
+            <entry>속성</entry>
 
-            <entry>Description</entry>
+            <entry>설명</entry>
           </row>
         </thead>
 
@@ -967,72 +845,66 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
           <row>
             <entry>id</entry>
 
-            <entry><para>A bean name for the hosting listener container. If
-            not specified, a bean name will be automatically
-            generated.</para></entry>
+            <entry><para>제공하는 리스너 컨테이너의 빈(bean) 이름. 지정하지 않을 경우
+            빈 이름을 자동으로 생성한다.</para></entry>
           </row>
 
           <row>
             <entry>destination <emphasis
-            role="bold">(required)</emphasis></entry>
+            role="bold">(필수)</emphasis></entry>
 
-            <entry><para>The destination name for this listener, resolved
-            through the <interfacename>DestinationResolver</interfacename>
-            strategy.</para></entry>
+            <entry><para>해당 리스너의 목적지 이름으로
+            <interfacename>DestinationResolver</interfacename> 전략으로
+            처리한다.</para></entry>
           </row>
 
           <row>
-            <entry>ref <emphasis role="bold">(required)</emphasis></entry>
+            <entry>ref <emphasis role="bold">(필수)</emphasis></entry>
 
-            <entry><para>The bean name of the handler object.</para></entry>
+            <entry><para>핸들러 객체의 빈 이름.</para></entry>
           </row>
 
           <row>
             <entry>method</entry>
 
-            <entry><para>The name of the handler method to invoke. If the
-            <literal>ref</literal> points to a
-            <interfacename>MessageListener</interfacename> or Spring
-            <interfacename>SessionAwareMessageListener</interfacename>, this
-            attribute may be omitted.</para></entry>
+            <entry><para>호출할 핸들러 메서드의 이름. <literal>ref</literal>가
+            <interfacename>MessageListener</interfacename>나 스프링
+            <interfacename>SessionAwareMessageListener</interfacename>를
+            가리킨다면 이 속성을 제외할 것이다.</para></entry>
           </row>
 
           <row>
             <entry>response-destination</entry>
 
-            <entry><para>The name of the default response destination to send
-            response messages to. This will be applied in case of a request
-            message that does not carry a "JMSReplyTo" field. The type of this
-            destination will be determined by the listener-container's
-            "destination-type" attribute. Note: This only applies to a
-            listener method with a return value, for which each result object
-            will be converted into a response message.</para></entry>
+            <entry><para>응답 메시지를 보낼 기본 응답 목적지의 이름. 이 이름은 요청 메시지에
+            "JMSReplyTo" 필드가 없는 경우에 적용될 것이다. 이 목적지의 타입은 리스너 컨테이너의
+            "destination-type" 속성으로 결정한다. Note: 이 값은 각 최종 객체가 응답
+            메시지로 잘 변환되도록 반환 값을 가진 리스너 메서드에만 적용한다.</para></entry>
           </row>
 
           <row>
             <entry>subscription</entry>
 
-            <entry><para>The name of the durable subscription, if
-            any.</para></entry>
+            <entry><para>존재한다면 지속가능한(durable)
+            구독의 이름.</para></entry>
           </row>
 
           <row>
             <entry>selector</entry>
 
-            <entry><para>An optional message selector for this
-            listener.</para></entry>
+            <entry><para>해당 리스너에 대한 선택적인 메시지
+            선택자.</para></entry>
           </row>
         </tbody>
       </tgroup>
     </table>
 
-    <para>The <literal>&lt;listener-container/&gt;</literal> element also
-    accepts several optional attributes. This allows for customization of the
-    various strategies (for example, <property>taskExecutor</property> and
-    <property>destinationResolver</property>) as well as basic JMS settings
-    and resource references. Using these attributes, it is possible to define
-    highly-customized listener containers while still benefiting from the
-    convenience of the namespace.</para>
+    <para><literal>&lt;listener-container/&gt;</literal> 요소도 여러가지 선택적인
+    속성을 받는다. 그래서 기본 JMS 설정과 리소스 참조, 다양한 전략(예를 들면
+    <property>taskExecutor</property>와
+    <property>destinationResolver</property>)을 커스터마이징할 수 있다. 이러한 속성을
+    사용해서 편리한 네임스페이스의 장점을 이용하면서 리스너 컨테이너를 커스터마이징해서
+    정의할 수 있다.</para>
 
     <programlisting language="xml">&lt;jms:listener-container connection-factory="myConnectionFactory"
                         task-executor="myTaskExecutor"
@@ -1046,16 +918,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
 &lt;/jms:listener-container&gt;</programlisting>
 
-    <para>The following table describes all available attributes. Consult the
-    class-level Javadoc of the
-    <classname>AbstractMessageListenerContainer</classname> and its concrete
-    subclasses for more details on the individual properties. The Javadoc also
-    provides a discussion of transaction choices and message redelivery
-    scenarios.</para>
+    <para>다음 표에 사용할 수 있는 모든 속성이 나와 있다. 각 프로퍼티의 자세한 내용은
+    <classname>AbstractMessageListenerContainer</classname>와 그 하위 클래스의
+    클래스 수준 JavaDoc을 참고해라. Javadoc에는 트랜잭션 선택과 메시지 반환 시나리오에 대한
+    논의도 나와 있다.</para>
 
     <table id="jms-namespace-listener-container-tbl">
-      <title>Attributes of the JMS
-      <literal>&lt;listener-container&gt;</literal> element</title>
+      <title>JMS <literal>&lt;listener-container&gt;</literal>
+      요소의 속성</title>
 
       <tgroup cols="2">
         <colspec colname="c1" colwidth="2*" />
@@ -1064,9 +934,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
         <thead>
           <row>
-            <entry>Attribute</entry>
+            <entry>속성</entry>
 
-            <entry>Description</entry>
+            <entry>설명</entry>
           </row>
         </thead>
 
@@ -1074,128 +944,117 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
           <row>
             <entry>container-type</entry>
 
-            <entry><para>The type of this listener container. Available
-            options are: <literal>default</literal>,
-            <literal>simple</literal>, <literal>default102</literal>, or
-            <literal>simple102</literal> (the default value is
-            <literal>'default'</literal>).</para></entry>
+            <entry><para>해당 리스너 컨테이터의 타입. 사용할 수 있는 옵션은
+            <literal>default</literal>, <literal>simple</literal>,
+            <literal>default102</literal>, <literal>simple102</literal>가
+            있다.(기본값은 <literal>'default'</literal>이다.)</para></entry>
           </row>
 
           <row>
             <entry>connection-factory</entry>
 
-            <entry><para>A reference to the JMS
-            <interfacename>ConnectionFactory</interfacename> bean (the default
-            bean name is
-            <literal>'connectionFactory'</literal>).</para></entry>
+            <entry><para>JMS <interfacename>ConnectionFactory</interfacename>
+            빈에 대한 참조(기반 빈 이름은
+            <literal>'connectionFactory'</literal>이다.)</para></entry>
           </row>
 
           <row>
             <entry>task-executor</entry>
 
-            <entry><para>A reference to the Spring
-            <interfacename>TaskExecutor</interfacename> for the JMS listener
-            invokers.</para></entry>
+            <entry><para>JMS 리스너 인보커에 대한 스프링
+            <interfacename>TaskExecutor</interfacename> 참조.</para></entry>
           </row>
 
           <row>
             <entry>destination-resolver</entry>
 
-            <entry><para>A reference to the
-            <interfacename>DestinationResolver</interfacename> strategy for
-            resolving JMS
-            <interfacename>Destinations</interfacename>.</para></entry>
+            <entry><para>JMS <interfacename>Destinations</interfacename> 처리의
+            <interfacename>DestinationResolver</interfacename> 전략에
+            대한 참조.</para></entry>
           </row>
 
           <row>
             <entry>message-converter</entry>
 
-            <entry><para>A reference to the
-            <interfacename>MessageConverter</interfacename> strategy for
-            converting JMS Messages to listener method arguments. Default is a
-            <classname>SimpleMessageConverter</classname>.</para></entry>
+            <entry><para>JMS 메시지를 리스너 메시지 인자로 변환하는
+            <interfacename>MessageConverter</interfacename> 전략에 대한 참조.
+            기본값은 <classname>SimpleMessageConverter</classname>이다.
+          </para></entry>
           </row>
 
           <row>
             <entry>destination-type</entry>
 
-            <entry><para>The JMS destination type for this listener:
-            <literal>queue</literal>, <literal>topic</literal> or
-            <literal>durableTopic</literal>. The default is
-            <literal>queue</literal>.</para></entry>
+            <entry><para>해당 리스너에 대한 JMS 목적지 타입으로
+            <literal>queue</literal>, <literal>topic</literal>,
+            <literal>durableTopic</literal>가 있다. 기본값은
+            <literal>queue</literal>이다.</para></entry>
           </row>
 
           <row>
             <entry>client-id</entry>
 
-            <entry><para>The JMS client id for this listener container. Needs
-            to be specified when using durable subscriptions.</para></entry>
+            <entry><para>해당 리스너 컨테이너에 대한 JMS 클라이언트 아이디.
+            지속가능한 구독을 사용하는 경우에는 지정해야 한다.</para></entry>
           </row>
 
           <row>
             <entry>cache</entry>
 
-            <entry><para>The cache level for JMS resources:
-            <literal>none</literal>, <literal>connection</literal>,
-            <literal>session</literal>, <literal>consumer</literal> or
-            <literal>auto</literal>. By default (<literal>auto</literal>), the
-            cache level will effectively be "consumer", unless an external
-            transaction manager has been specified - in which case the
-            effective default will be <literal>none</literal> (assuming
-            Java EE-style transaction management where the given
-            ConnectionFactory is an XA-aware pool).</para></entry>
+            <entry><para>JMS 리소스에 대한 캐시 수준으로 <literal>none</literal>,
+            <literal>connection</literal>, <literal>session</literal>,
+            <literal>consumer</literal>, <literal>auto</literal>의 값을 사용할
+            수 있다. 기본값(<literal>auto</literal>)에서 외부 트랜잭션 관리자를 지정하지
+            않는 한 캐시 수준은 사실상 "consumer"가 될 것이다. 외부 트랜잭션 관리자를 지정한
+            경우 기본값이 <literal>none</literal>가 될 것이다.(주어진
+            ConnectionFactory의 Java EE 방식 트랜잭션 관리가 XA식 풀(pool)이라고
+            가정한다.)</para></entry>
           </row>
 
           <row>
             <entry>acknowledge</entry>
 
-            <entry><para>The native JMS acknowledge mode:
+            <entry><para>네이티브 JMS 확인(acknowledge) 모드로
             <literal>auto</literal>, <literal>client</literal>,
-            <literal>dups-ok</literal> or <literal>transacted</literal>. A
-            value of <literal>transacted</literal> activates a locally
-            transacted <interfacename>Session</interfacename>. As an
-            alternative, specify the <literal>transaction-manager</literal>
-            attribute described below. Default is
-            <literal>auto</literal>.</para></entry>
+            <literal>dups-ok</literal>, <literal>transacted</literal>의 값을
+            사용할 수 있다. <literal>transacted</literal>의 값은 로컬 트랜잭션이 적용된
+            <interfacename>Session</interfacename>을 활성화한다. 아니면 아래에서
+            설명하는 <literal>transaction-manager</literal> 속성을 지정해라.
+            기본값은 <literal>auto</literal>이다.</para></entry>
           </row>
 
           <row>
             <entry>transaction-manager</entry>
 
-            <entry><para>A reference to an external
-            <interfacename>PlatformTransactionManager</interfacename>
-            (typically an XA-based transaction coordinator, e.g. Spring's
-            <classname>JtaTransactionManager</classname>). If not specified,
-            native acknowledging will be used (see "acknowledge"
-            attribute).</para></entry>
+            <entry><para>외부
+            <interfacename>PlatformTransactionManager</interfacename>(보통
+            XA기반 트랜잭션 코디네이터로 예를 들면 스프링의
+            <classname>JtaTransactionManager</classname>이다)에 대한 참조.
+            지정하지 않은 경우 네이티브 확인을 사용한다. ("acknowledge" 속성
+            참고)</para></entry>
           </row>
 
           <row>
             <entry>concurrency</entry>
 
-            <entry><para>The number of concurrent sessions/consumers to start
-            for each listener. Can either be a simple number indicating the
-            maximum number (e.g. "5") or a range indicating the lower as well
-            as the upper limit (e.g. "3-5"). Note that a specified minimum is
-            just a hint and might be ignored at runtime. Default is 1; keep
-            concurrency limited to 1 in case of a topic listener or if queue
-            ordering is important; consider raising it for general
-            queues.</para></entry>
+            <entry><para>각 리스너를 시작할때 동시에 사용할 세션/컨슈머의 수. 최대 수를 숫자로
+            지정하거나(예: "5") 최대/최소 범위를 지정(예: "3-5")할 수 있다. 지정한 최소값은
+            힌트값으로만 사용하고 런타임에서는 무시한다. 기본값은 1이다. 토픽(topic) 리스너이거나
+            큐의 순서가 중요한 경우에는 concurrency를 1로 지정하고 일반적인 큐에는 1 이상으로
+            지정하는 것을 고려해봐라.</para></entry>
           </row>
 
           <row>
             <entry>prefetch</entry>
 
-            <entry><para>The maximum number of messages to load into a single
-            session. Note that raising this number might lead to starvation of
-            concurrent consumers!</para></entry>
+            <entry><para>단일 세션에 로드할 최대 메시지의 수. 동시성 컨슈머의
+            기아상태(starvation)를 유도하려면 이 값을 더 크게 지정해라!</para></entry>
           </row>
         </tbody>
       </tgroup>
     </table>
 
-    <para>Configuring a JCA-based listener container with the "jms" schema
-    support is very similar.</para>
+    <para>"jms" 스키마를 지원하는 JCA 기반 리스너 컨테이너를 설정하는 것은 아주 비슷하다.</para>
 
     <programlisting language="xml">&lt;jms:jca-listener-container resource-adapter="myResourceAdapter"
                             destination-resolver="myDestinationResolver"
@@ -1206,12 +1065,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
 &lt;/jms:jca-listener-container&gt;</programlisting>
 
-    <para>The available configuration options for the JCA variant are
-    described in the following table:</para>
+    <para>다양한 JCA에서 사용할 수 있는 설정 옵션은 다음 표에 나와 있다.</para>
 
     <table id="jms-namespace-jca-listener-container-tbl">
-      <title>Attributes of the JMS
-      <literal>&lt;jca-listener-container/&gt;</literal> element</title>
+      <title>JMS <literal>&lt;jca-listener-container/&gt;</literal>
+      요소의 속성</title>
 
       <tgroup cols="2">
         <colspec colname="c1" colwidth="2*" />
@@ -1220,9 +1078,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
         <thead>
           <row>
-            <entry>Attribute</entry>
+            <entry>속성</entry>
 
-            <entry>Description</entry>
+            <entry>설명</entry>
           </row>
         </thead>
 
@@ -1230,96 +1088,88 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
           <row>
             <entry>resource-adapter</entry>
 
-            <entry><para>A reference to the JCA
-            <interfacename>ResourceAdapter</interfacename> bean (the default
-            bean name is <literal>'resourceAdapter'</literal>).</para></entry>
+            <entry><para>JCA <interfacename>ResourceAdapter</interfacename>
+            빈에 대한 참조(기본 빈 이름은
+            <literal>'resourceAdapter'</literal>다).</para></entry>
           </row>
 
           <row>
             <entry>activation-spec-factory</entry>
 
-            <entry><para>A reference to the
-            <interfacename>JmsActivationSpecFactory</interfacename>. The
-            default is to autodetect the JMS provider and its
-            <interfacename>ActivationSpec</interfacename> class (see
-            <classname>DefaultJmsActivationSpecFactory</classname>)</para></entry>
+            <entry><para><interfacename>JmsActivationSpecFactory</interfacename>에
+            대한 참조. JMS 프로바이더와 프로바이더의
+            <interfacename>ActivationSpec</interfacename> 클래스를 자동으로 탐지하는
+            것이 기본값이다.(<classname>DefaultJmsActivationSpecFactory</classname>
+            참고)</para></entry>
           </row>
 
           <row>
             <entry>destination-resolver</entry>
 
-            <entry><para>A reference to the
-            <interfacename>DestinationResolver</interfacename> strategy for
-            resolving JMS <interfacename>Destinations</interfacename>.
+            <entry><para>JMS <interfacename>Destinations</interfacename> 처리의
+            <interfacename>DestinationResolver</interfacename> 전략에 대한 참조.
             </para></entry>
           </row>
 
           <row>
             <entry>message-converter</entry>
 
-            <entry><para>A reference to the
-            <interfacename>MessageConverter</interfacename> strategy for
-            converting JMS Messages to listener method arguments. Default is a
-            <classname>SimpleMessageConverter</classname>.</para></entry>
+            <entry><para>JMS 메시지를 리스너 메시드의 인자로 변환하는
+            <interfacename>MessageConverter</interfacename> 전략에 대한 참조.
+            기본값은 <classname>SimpleMessageConverter</classname>이다.
+          </para></entry>
           </row>
 
           <row>
             <entry>destination-type</entry>
 
-            <entry><para>The JMS destination type for this listener:
-            <literal>queue</literal>, <literal>topic</literal> or
-            <literal>durableTopic</literal>. The default is
-            <literal>queue</literal>.</para></entry>
+            <entry><para>해당 리스너의 JMS 목적지 종류로 <literal>queue</literal>,
+            <literal>topic</literal>, <literal>durableTopic</literal>가 있다.
+            기본값은 <literal>queue</literal>다.</para></entry>
           </row>
 
           <row>
             <entry>client-id</entry>
 
-            <entry><para>The JMS client id for this listener container. Needs
-            to be specified when using durable subscriptions.</para></entry>
+            <entry><para>해당 리스너 컨테이너에 대한 JMS 클라이언트 아이디.
+            지속가능한 구독을 사용하는 경우 지정해야 한다.</para></entry>
           </row>
 
           <row>
             <entry>acknowledge</entry>
 
-            <entry><para>The native JMS acknowledge mode:
-            <literal>auto</literal>, <literal>client</literal>,
-            <literal>dups-ok</literal> or <literal>transacted</literal>. A
-            value of <literal>transacted</literal> activates a locally
-            transacted <interfacename>Session</interfacename>. As an
-            alternative, specify the <literal>transaction-manager</literal>
-            attribute described below. Default is
-            <literal>auto</literal>.</para></entry>
+            <entry><para>네이티브 JMS 승인 모드로 <literal>auto</literal>,
+            <literal>client</literal>, <literal>dups-ok</literal>,
+            <literal>transacted</literal>가 있다. <literal>transacted</literal>의
+            값은 로컬로 트랜잭션이 적용되 <interfacename>Session</interfacename>를
+            활성화시킨다. 아니면 아래에서 설명한 <literal>transaction-manager</literal>를
+            지정해라. 기본값은 <literal>auto</literal>다.</para></entry>
           </row>
 
           <row>
             <entry>transaction-manager</entry>
 
-            <entry><para>A reference to a Spring
-            <classname>JtaTransactionManager</classname> or a
-            <interfacename>javax.transaction.TransactionManager</interfacename>
-            for kicking off an XA transaction for each incoming message. If
-            not specified, native acknowledging will be used (see the
-            "acknowledge" attribute).</para></entry>
+            <entry><para>들어오는 각 메시지에 XA 트랜잭션을 시작하는 스프링
+            <classname>JtaTransactionManager</classname>나
+            <interfacename>javax.transaction.TransactionManager</interfacename>에
+            대한 참조. 지정하지 않으면 네이티브 승인을 사용한다.("acknowledge" 속성
+            참조)</para></entry>
           </row>
 
           <row>
             <entry>concurrency</entry>
 
-            <entry><para>The number of concurrent sessions/consumers to start
-            for each listener. Can either be a simple number indicating the
-            maximum number (e.g. "5") or a range indicating the lower as well
-            as the upper limit (e.g. "3-5"). Note that a specified minimum is
-            just a hint and will typically be ignored at runtime when using a
-            JCA listener container. Default is 1.</para></entry>
+            <entry><para>각 리스너에 동시에 시작할 세션/컨슈머의 수. 최대 수를 숫자로
+            지정하거나(예: "5") 최대/최소 범위를 지정(예: "3-5")할 수 있다. 지정한 최소값은
+            힌트값으로만 사용하고 JCA 리스너 컨테이너를 사용하는 경우 런타인에서는 보통 무시한다.
+            기본값은 1이다.</para></entry>
           </row>
 
           <row>
             <entry>prefetch</entry>
 
-            <entry><para>The maximum number of messages to load into a single
-            session. Note that raising this number might lead to starvation of
-            concurrent consumers!</para></entry>
+            <entry><para>단일 세션에 로드할 메시지의 최대 수. 동시성 컨슈머의
+            기아상태(starvation)를 유도하려면 이 값을 더 크게 지정해라!</para></entry>
           </row>
         </tbody>
       </tgroup>
