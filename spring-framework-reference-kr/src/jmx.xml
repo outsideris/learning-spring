@@ -6,61 +6,52 @@
   <title>JMX</title>
 
   <section id="jmx-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>The JMX support in Spring provides you with the features to easily
-    and transparently integrate your Spring application into a JMX
-    infrastructure.</para>
+    <para>스프링은 스프링 애플리케이션을 JMX 인프라에 쉽고 투명하게 통합할 수 있도록
+    지원한다.</para>
 
     <sidebar>
       <title>JMX?</title>
 
-      <para>This chapter is not an introduction to JMX... it doesn't try to
-      explain the motivations of why one might want to use JMX (or indeed what
-      the letters JMX actually stand for). If you are new to JMX, check out
-      <xref linkend="jmx-resources" /> at the end of this chapter.</para>
+      <para>이번 장은 JMX를 소개하는 장이 아니므로 왜 JMX가 필요한가에 대해서는 설명하지
+      않는다(또는 JMX가 무엇의 약자인지) JMX를 처음 본다면 이 장 마지막의
+      <xref linkend="jmx-resources" />를 봐라.</para>
     </sidebar>
 
-    <para>Specifically, Spring's JMX support provides four core
-    features:</para>
+    <para>특히 스프링의 JMX 지원은 네 가지 핵심 기능을 제공한다.</para>
 
     <itemizedlist>
       <listitem>
-        <para>The automatic registration of <emphasis>any</emphasis> Spring
-        bean as a JMX MBean</para>
+        <para><emphasis>어떤</emphasis> 스프링 빈이라도 JMX MBean으로 자동
+        등록</para>
       </listitem>
 
       <listitem>
-        <para>A flexible mechanism for controlling the management interface of
-        your beans</para>
+        <para>빈 관리 인터페이스를 제어하는 유연한 메커니즘</para>
       </listitem>
 
       <listitem>
-        <para>The declarative exposure of MBeans over remote, JSR-160
-        connectors</para>
+        <para>선언적으로 원격(JSR-160 커넥터)에 MBean을 노출</para>
       </listitem>
 
       <listitem>
-        <para>The simple proxying of both local and remote MBean
-        resources</para>
+        <para>로컬/원격 MBean 리소스를 간단하게 프록시 함</para>
       </listitem>
     </itemizedlist>
 
-    <para>These features are designed to work without coupling your
-    application components to either Spring or JMX interfaces and classes.
-    Indeed, for the most part your application classes need not be aware of
-    either Spring or JMX in order to take advantage of the Spring JMX
-    features.</para>
+    <para>이 기능들은 애플리케이션 컴포넌트가 스프링이나 JMX 인터페이스 혹은 클래스에
+    의존하지 않고 동작하도록 설계되었다. 사실 애플리케이션 클래스 대부분은 스프링의 JMX
+    좋은 기능을 위해서 스프링이나 JMX를 인지할 필요가 없다.</para>
   </section>
 
   <section id="jmx-exporting">
-    <title>Exporting your beans to JMX</title>
+    <title>빈을 JMX에 내보내기</title>
 
-    <para>The core class in Spring's JMX framework is the
-    <classname>MBeanExporter</classname>. This class is responsible for taking
-    your Spring beans and registering them with a JMX
-    <interfacename>MBeanServer</interfacename>. For example, consider the following
-    class:</para>
+    <para><classname>MBeanExporter</classname>이 스프링 JMX 프레임워크의 핵심 클래스다.
+    <classname>MBeanExporter</classname>이 스프링 빈을 가져와서 JMX
+    <interfacename>MBeanServer</interfacename>에 등록한다. 예시로 다음 클래스를
+    생각해 보자.</para>
 
     <programlisting language="java"><![CDATA[package org.springframework.jmx;
 
@@ -77,7 +68,7 @@ public class JmxTestBean implements IJmxTestBean {
     public void setAge(int age) {
         this.age = age;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -95,14 +86,13 @@ public class JmxTestBean implements IJmxTestBean {
     }
 }]]></programlisting>
 
-    <para>To expose the properties and methods of this bean as attributes and
-    operations of an MBean you simply configure an instance of the
-    <classname>MBeanExporter</classname> class in your configuration file and
-    pass in the bean as shown below:</para>
+    <para>이 빈의 프로퍼티와 메서드를 MBean의 속성과 오퍼레이션으로 노출하려면 다음과 같이
+    설정파일에 <classname>MBeanExporter</classname> 클래스의 인스턴스를 설정하고 빈을
+    전달하면 된다.</para>
 
     <programlisting language="xml"><![CDATA[<beans>
 
-  ]]><lineannotation>&lt;!-- this bean must <emphasis role="bold">not</emphasis> be lazily initialized if the exporting is to happen --&gt;</lineannotation><![CDATA[
+  ]]><lineannotation>&lt;!-- 내보내려면 이 빈을 지연초기화 하지 <emphasis role="bold">않아야</emphasis> 한다 --&gt;</lineannotation><![CDATA[
   <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter"]]> <emphasis
         role="bold">lazy-init="false"</emphasis><![CDATA[>
     <property name="beans">
@@ -119,55 +109,49 @@ public class JmxTestBean implements IJmxTestBean {
 
 </beans>]]></programlisting>
 
-    <para>The pertinent bean definition from the above configuration snippet
-    is the <literal>exporter</literal> bean. The <literal>beans</literal>
-    property tells the <classname>MBeanExporter</classname> exactly which of
-    your beans must be exported to the JMX <interfacename>MBeanServer</interfacename>.
-    In the default configuration, the key of each entry in the
-    <literal>beans</literal> <interfacename>Map</interfacename> is used as the
-    <classname>ObjectName</classname> for the bean referenced by the
-    corresponding entry value. This behavior can be changed as described in
-    <xref linkend="jmx-naming"/>.</para>
+    <para>위 설정 예시에서 적절한 빈 정의는 <literal>exporter</literal> 빈이다.
+    <literal>beans</literal> 프로퍼티가 빈 중에 정확히 어떤 빈을 JMX
+    <interfacename>MBeanServer</interfacename>에 내보내야 하는지
+    <classname>MBeanExporter</classname>에 알려준다. 기본 설정에서
+    <literal>beans</literal> <interfacename>Map</interfacename>의 각 요소의 키를
+    해당 값이 참조하는 빈의 <classname>ObjectName</classname>으로 사용한다.
+    <xref linkend="jmx-naming"/>에서 설명했듯이 이 동작은 변경할 수 있다.</para>
 
-    <para>With this configuration the <literal>testBean</literal> bean is
-    exposed as an MBean under the <classname>ObjectName</classname>
-    <literal>bean:name=testBean1</literal>. By default, all
-    <emphasis>public</emphasis> properties of the bean are exposed as
-    attributes and all <emphasis>public</emphasis> methods (bar those
-    inherited from the <classname>Object</classname> class) are exposed as
-    operations.</para>
+    <para>이 설정에서 <literal>testBean</literal> 빈은
+    <classname>ObjectName</classname> <literal>bean:name=testBean1</literal>의
+    MBean으로 노출한다. 기본적으로 빈의 모든 <emphasis>public</emphasis> 프로퍼티는
+    속성(attribute)로 노출하고 <emphasis>public</emphasis> 메서드
+    (<classname>Object</classname> 클래스에서 상속받은 메서드 포함)는 오퍼레이션으로
+    노출한다.</para>
 
     <section id="jmx-exporting-mbeanserver">
-      <title>Creating an <interfacename>MBeanServer</interfacename></title>
+      <title><interfacename>MBeanServer</interfacename> 생성</title>
 
-      <para>The above configuration assumes that the application is running in
-      an environment that has one (and only one)
-      <interfacename>MBeanServer</interfacename> already running. In this case, Spring
-      will attempt to locate the running <interfacename>MBeanServer</interfacename>
-      and register your beans with that server (if any). This behavior is
-      useful when your application is running inside a container such as
-      Tomcat or IBM WebSphere that has its own
-      <interfacename>MBeanServer</interfacename>.</para>
+      <para>위의 설정은 하나의(유일한) <interfacename>MBeanServer</interfacename>가
+      동작하고 있는 환경에서 애플리케이션이 돌아가고 있다고 가정한다. 이럴 때 스프링은 돌아가고
+      있는 <interfacename>MBeanServer</interfacename>을 찾아내서 (찾았다면) 해당 서버에
+      빈을 등록하려고 할 것이다. Tomcat이나 IBM WebSphere처럼
+      <interfacename>MBeanServer</interfacename>를 가진 컨테이너에서 애플리케이션을
+      돌리는 경우 이 동작이 유용하다.</para>
 
-      <para>However, this approach is of no use in a standalone environment,
-      or when running inside a container that does not provide an
-      <interfacename>MBeanServer</interfacename>. To address this you can create an
-      <interfacename>MBeanServer</interfacename> instance declaratively by adding an
-      instance of the
+      <para>하지만 독립적인 환경이나 <interfacename>MBeanServer</interfacename>를
+      제공하지 않는 컨테이너를 사용하는 경우에는 이 접근을 사용하지 않는다. 설정에
       <classname>org.springframework.jmx.support.MBeanServerFactoryBean</classname>
-      class to your configuration. You can also ensure that a specific
-      <interfacename>MBeanServer</interfacename> is used by setting the value of the
-      <classname>MBeanExporter</classname>'s <literal>server</literal>
-      property to the <interfacename>MBeanServer</interfacename> value returned by an
-      <classname>MBeanServerFactoryBean</classname>; for example:</para>
+      클래스의 인스턴스를 추가해서 선언적으로 <interfacename>MBeanServer</interfacename>
+      인스턴스를 생성해서 이 문제를 해결할 수 있다. <classname>MBeanExporter</classname>의
+      <literal>server</literal> 프로퍼티를
+      <classname>MBeanServerFactoryBean</classname>이 반환한
+      <interfacename>MBeanServer</interfacename> 값으로 설정해서 특정
+      <interfacename>MBeanServer</interfacename>를 사용한다는 것을 보장할 수도 있다.
+      예를 들면 다음과 같다.</para>
 
       <programlisting language="xml"><![CDATA[<beans>
 
   <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean"/>
 
   ]]><lineannotation>&lt;!--
-    this bean needs to be eagerly pre-instantiated in order for the exporting to occur;
-    this means that it must <emphasis role="bold">not</emphasis> be marked as lazily initialized
+    내보내기가 동작하도록 이 빈을 최대한 미리 인스턴스화할 필요가 있다;
+    즉 이 빈은 지연 초기화로 지정하지 <emphasis role="bold">않아야</emphasis> 한다.
   --&gt;</lineannotation><![CDATA[
   <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
     <property name="beans">
@@ -185,79 +169,78 @@ public class JmxTestBean implements IJmxTestBean {
 
 </beans>]]></programlisting>
 
-      <para>Here an instance of <interfacename>MBeanServer</interfacename> is created
-      by the <classname>MBeanServerFactoryBean</classname> and is supplied to
-      the <classname>MBeanExporter</classname> via the server property. When
-      you supply your own <interfacename>MBeanServer</interfacename> instance, the
-      <classname>MBeanExporter</classname> will not attempt to locate a
-      running <interfacename>MBeanServer</interfacename> and will use the supplied
-      <interfacename>MBeanServer</interfacename> instance. For this to work correctly,
-      you must (of course) have a JMX implementation on your classpath.</para>
+      <para>여기서 <classname>MBeanServerFactoryBean</classname>이
+      <interfacename>MBeanServer</interfacename>의 인스턴스를 생성했고 server 프로퍼티로
+      <classname>MBeanExporter</classname>에 전달했다. 자신의
+      <interfacename>MBeanServer</interfacename> 인스턴스를 전달했을 때
+      <classname>MBeanExporter</classname>가 동작하고 있는
+      <interfacename>MBeanServer</interfacename>를 찾지 않고 전달받은
+      <interfacename>MBeanServer</interfacename> 인스턴스를 사용할 것이다. 이 부분이
+      제대로 동작하려면 클래스패스에 JMX 구현체가 당연히 있어야 한다.</para>
     </section>
 
     <section id="jmx-mbean-server">
-      <title>Reusing an existing <interfacename>MBeanServer</interfacename></title>
+      <title>이미 존재하는 <interfacename>MBeanServer</interfacename>의 재사용</title>
 
-      <para>If no server is specified, the <classname>MBeanExporter</classname>
-      tries to automatically detect a running <interfacename>MBeanServer</interfacename>.
-      This works in most environment where only one
-      <interfacename>MBeanServer</interfacename> instance is used, however when multiple
-      instances exist, the exporter might pick the wrong server. In such
-      cases, one should use the <interfacename>MBeanServer</interfacename>
-      <literal>agentId</literal> to indicate which instance to be used:</para>
+      <para>서버를 지정하지 않으면 자동으로 <classname>MBeanExporter</classname>가
+      돌아가고 있는 <interfacename>MBeanServer</interfacename>를 탐지하려고 할 것이다.
+      딱 하나의 <interfacename>MBeanServer</interfacename> 인스턴스만 사용하는 대부분의
+      환경에서는 잘 동작할 것이지만 여러 인스턴스가 존재한다면 익스포터가 잘못된 서버를 선택할 수도
+      있다. 이럴 때 사용할 인스턴스를 나타내는
+      <interfacename>MBeanServer</interfacename> <literal>agentId</literal>를
+      사용해야 한다.</para>
 
       <programlisting language="xml"><![CDATA[<beans>
    <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
-     ]]><lineannotation>&lt;!-- indicate to first look for a server --&gt;</lineannotation><![CDATA[
+     ]]><lineannotation>&lt;!-- 제일 먼저 찾을 서버를 지정한다 --&gt;</lineannotation><![CDATA[
      <property name="locateExistingServerIfPossible" value="true"/>
-     ]]><lineannotation>&lt;!-- search for the <interfacename>MBeanServer</interfacename> instance with the given agentId --&gt;</lineannotation><![CDATA[
+     ]]><lineannotation>&lt;!-- 주어진 agentId로 <interfacename>MBeanServer</interfacename> 인스턴스를 찾는다 --&gt;</lineannotation><![CDATA[
      <property name="agentId" value="]]><emphasis><![CDATA[<MBeanServer instance agentId>]]></emphasis><![CDATA["/>
    </bean>
-   
+
    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
      <property name="server" ref="mbeanServer"/>
    ...
    </bean>
 </beans>]]></programlisting>
 
-      <para>For platforms/cases where the existing <interfacename>MBeanServer</interfacename>
-      has a dynamic (or unknown) <literal>agentId</literal> which is retrieved through lookup
-      methods, one should use <link linkend="beans-factory-class-static-factory-method">factory-method</link>:</para>
+      <para>기존의 <interfacename>MBeanServer</interfacename>가 검색 메서드로 얻은
+      동적(혹은 모르는) <literal>agentId</literal>를 가진 경우는
+      <link linkend="beans-factory-class-static-factory-method">factory-method</link>를
+      사용해야 한다.</para>
 
       <programlisting language="xml"><![CDATA[<beans>
    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
      <property name="server">
-       ]]><lineannotation>&lt;!-- Custom <literal>MBeanServerLocator</literal> --&gt;</lineannotation><![CDATA[
+       ]]><lineannotation>&lt;!-- 커스텀 <literal>MBeanServerLocator</literal> --&gt;</lineannotation><![CDATA[
        <bean class="platform.package.MBeanServerLocator" factory-method="locateMBeanServer"/>
      </property>
-     
-     ]]><lineannotation>&lt;!-- other beans here --&gt;</lineannotation><![CDATA[
-     
+
+     ]]><lineannotation>&lt;!-- 다른 빈 정의 --&gt;</lineannotation><![CDATA[
+
    </bean>
 </beans>]]></programlisting>
     </section>
 
     <section id="jmx-exporting-lazy">
-      <title>Lazy-initialized MBeans</title>
+      <title>지연 초기화된 MBean</title>
 
-      <para>If you configure a bean with the
-      <classname>MBeanExporter</classname> that is also configured for lazy
-      initialization, then the <classname>MBeanExporter</classname> will
-      <emphasis role="bold">not</emphasis> break this contract and will avoid
-      instantiating the bean. Instead, it will register a proxy with
-      the <interfacename>MBeanServer</interfacename> and will defer obtaining the bean
-      from the container until the first invocation on the proxy occurs.</para>
+      <para>지연 초기화로 설정된 <classname>MBeanExporter</classname>로 지연 초기화된
+      빈을 설정하는 경우 <classname>MBeanExporter</classname>이 해당 규약을 깨뜨리지
+      <emphasis role="bold">않을</emphasis> 것이고 빈을 인스턴스화하지 않을 것이다. 대신
+      <classname>MBeanExporter</classname>는
+      <interfacename>MBeanServer</interfacename>에 프록시를 등록하고 프록시에서 첫 호출이
+      발생할 때까지 컨테이너에서 빈을 가져오는 것을 미룰 것이다.</para>
     </section>
 
     <section id="jmx-exporting-auto">
-      <title>Automatic registration of MBeans</title>
+      <title>MBean의 자동 등록</title>
 
-      <para>Any beans that are exported through the
-      <classname>MBeanExporter</classname> and are already valid MBeans are
-      registered as-is with the <interfacename>MBeanServer</interfacename> without
-      further intervention from Spring. MBeans can be automatically detected
-      by the <classname>MBeanExporter</classname> by setting the
-      <literal>autodetect</literal> property to <literal>true</literal>:</para>
+      <para><classname>MBeanExporter</classname>로 익스포트했고 유효한 MBean인 모든 빈은
+      스프링이 추가로 개입하지 않고 그대로 <interfacename>MBeanServer</interfacename>에
+      등록된다. <literal>autodetect</literal> 프로퍼티를 <literal>true</literal>로
+      설정해서 <classname>MBeanExporter</classname>가 자동으로 MBean을 탐지할 수
+      있다.</para>
 
       <programlisting language="xml"><![CDATA[<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
   <property name="autodetect" value="true"/>
@@ -265,37 +248,33 @@ public class JmxTestBean implements IJmxTestBean {
 
 <bean name="spring:mbean=true" class="org.springframework.jmx.export.TestDynamicMBean"/>]]></programlisting>
 
-      <para>Here, the bean called <literal>spring:mbean=true</literal> is
-      already a valid JMX MBean and will be automatically registered by
-      Spring. By default, beans that are autodetected for JMX registration
-      have their bean name used as the <classname>ObjectName</classname>. This
-      behavior can be overridden as detailed in <xref linkend="jmx-naming" />.</para>
+      <para>이 예제에서 <literal>spring:mbean=true</literal>인 빈은 이미 유효한 JMX
+      MBean이고 스프링이 자동으로 등록할 것이다. 기본적으로 JMX에 자동탐지돼서 등록한 빈은
+      <classname>ObjectName</classname>을 빈 이름으로 사용한다. 이 동작은
+      <xref linkend="jmx-naming" />에서 설명한 대로 변경할 수 있다.</para>
     </section>
 
     <section id="jmx-exporting-registration-behavior">
-      <title>Controlling the registration behavior</title>
+      <title>등록과정의 제어</title>
 
-      <para>Consider the scenario where a Spring
-      <classname>MBeanExporter</classname> attempts to register an
-      <classname>MBean</classname> with an <interfacename>MBeanServer</interfacename>
-      using the <classname>ObjectName</classname>
-      <literal>'bean:name=testBean1'</literal>. If an
-      <classname>MBean</classname> instance has already been registered under
-      that same <classname>ObjectName</classname>, the default behavior is to
-      fail (and throw an
-      <exceptionname>InstanceAlreadyExistsException</exceptionname>).</para>
+      <para>스프링 <classname>MBeanExporter</classname>가
+      <literal>'bean:name=testBean1'</literal>이라는
+      <classname>ObjectName</classname>으로
+      <interfacename>MBeanServer</interfacename>에 <classname>MBean</classname>을
+      등록하려고 하는 시나리오를 생각해 보자. <classname>MBean</classname> 인스턴스가 이미
+      같은 <classname>ObjectName</classname>으로 등록되어 있다면 기본 동작은 실패한다.
+      (<exceptionname>InstanceAlreadyExistsException</exceptionname>를
+      던진다.)</para>
 
-      <para>It is possible to control the behavior of exactly what happens
-      when an <classname>MBean</classname> is registered with an
-      <interfacename>MBeanServer</interfacename>. Spring's JMX support allows for
-      three different registration behaviors to control the registration
-      behavior when the registration process finds that an
-      <classname>MBean</classname> has already been registered under the same
-      <classname>ObjectName</classname>; these registration behaviors are
-      summarized on the following table:</para>
+      <para><classname>MBean</classname>을
+      <interfacename>MBeanServer</interfacename>에 등록했을 때 일어나는 동작을 제어할 수
+      있다. 스프링의 JMX 지원으로 등록과정에서 <classname>MBean</classname>이 이미 같은
+      <classname>ObjectName</classname>으로 등록되었다는 점을 발견했을 때 등록 동작을
+      제어할 수 있는 세 가지 등록 동작을 이용할 수 있다. 이 등록 동작은 다음 표에
+      정리되어 있다.</para>
 
       <table id="jmx-registration-behaviors">
-          <title>Registration Behaviors</title>
+          <title>등록 동작</title>
 
           <tgroup cols="2">
             <colspec align="left" />
@@ -306,9 +285,9 @@ public class JmxTestBean implements IJmxTestBean {
 
             <thead>
               <row>
-                <entry align="center">Registration behavior</entry>
+                <entry align="center">등록 동작</entry>
 
-                <entry align="center">Explanation</entry>
+                <entry align="center">설명</entry>
               </row>
             </thead>
 
@@ -316,59 +295,52 @@ public class JmxTestBean implements IJmxTestBean {
               <row>
                 <entry><para><literal>REGISTRATION_FAIL_ON_EXISTING</literal></para></entry>
 
-                <entry><para> This is the default registration behavior. If an
-                <classname>MBean</classname> instance has already been
-                registered under the same <classname>ObjectName</classname>,
-                the <classname>MBean</classname> that is being registered will
-                not be registered and an
-                <exceptionname>InstanceAlreadyExistsException</exceptionname> will be
-                thrown. The existing <classname>MBean</classname> is
-                unaffected. </para></entry>
+                <entry><para> 기본 등록 동작이다. <classname>MBean</classname>
+                인스턴스가 같은 <classname>ObjectName</classname>으로 이미 등록되어
+                있다면 등록하려던 <classname>MBean</classname>을 등록하지 않고
+                <exceptionname>InstanceAlreadyExistsException</exceptionname>를
+                던질 것이다. 존재하는 <classname>MBean</classname>에는 영향을 주지
+                않는다. </para></entry>
               </row>
 
               <row>
                 <entry><para><literal>REGISTRATION_IGNORE_EXISTING</literal></para></entry>
 
-                <entry><para> If an <classname>MBean</classname> instance has
-                already been registered under the same
-                <classname>ObjectName</classname>, the
-                <classname>MBean</classname> that is being registered will
-                <emphasis>not</emphasis> be registered. The existing
-                <classname>MBean</classname> is unaffected, and no
-                <exceptionname>Exception</exceptionname> will be thrown. </para>
-                <para> This is useful in settings where multiple applications
-                want to share a common <classname>MBean</classname> in a
-                shared <interfacename>MBeanServer</interfacename>. </para></entry>
+                <entry><para> <classname>MBean</classname> 인스턴스가 같은
+                <classname>ObjectName</classname>으로 이미 등록되어 있다면 등록하려던
+                <classname>MBean</classname>을 등록하지 <emphasis>않는다</emphasis>.
+                기존의 <classname>MBean</classname>에는 영향을 주지 않고
+                <exceptionname>Exception</exceptionname>도 던지지 않는다. </para>
+                <para> 이 동작은 공유된
+                <interfacename>MBeanServer</interfacename>에서 여러 애플리케이션이
+                공통적인 <classname>MBean</classname>을 공유할 때 유용하다.
+                </para></entry>
               </row>
 
               <row>
                 <entry><para><literal>REGISTRATION_REPLACE_EXISTING</literal></para></entry>
 
-                <entry><para> If an <classname>MBean</classname> instance has
-                already been registered under the same
-                <classname>ObjectName</classname>, the existing
-                <classname>MBean</classname> that was previously registered
-                will be unregistered and the new <classname>MBean</classname>
-                will be registered in its place (the new
-                <classname>MBean</classname> effectively replaces the previous
-                instance). </para></entry>
+                <entry><para> <classname>MBean</classname> 인스턴스가 같은
+                <classname>ObjectName</classname>으로 이미 등록되어 있다면 미리
+                등록되어 있던 <classname>MBean</classname>이 등록 해지되고 새로운
+                <classname>MBean</classname>이 해당 위치에 등록될 것이다. (이전의
+                인스턴스를 새로운 <classname>MBean</classname>이 효율적으로 바꿔치기
+                한다.) </para></entry>
               </row>
             </tbody>
           </tgroup>
         </table>
 
-      <para>The above values are defined as constants on the
-      <classname>MBeanRegistrationSupport</classname> class (the
-      <classname>MBeanExporter</classname> class derives from this
-      superclass). If you want to change the default registration behavior,
-      you simply need to set the value of the
-      <literal>registrationBehaviorName</literal> property on your
-      <classname>MBeanExporter</classname> definition to one of those
-      values.</para>
+      <para>위의 값은 <classname>MBeanRegistrationSupport</classname>
+      클래스(<classname>MBeanExporter</classname> 클래스는 이 슈퍼클래스에서
+      파생된 클래스다.)에 상수로 정의되어 있다. 기존 등록동작을 바꾸고자 한다면
+      <classname>MBeanExporter</classname> 정의에서
+      <literal>registrationBehaviorName</literal> 프로퍼티의 값을
+      변경하면 된다.</para>
 
-      <para>The following example illustrates how to effect a change from the
-      default registration behavior to the
-      <literal>REGISTRATION_REPLACE_EXISTING</literal> behavior:</para>
+      <para>다음 예제는 기본 등록 동작을
+      <literal>REGISTRATION_REPLACE_EXISTING</literal>로 변경이 어떻게
+      영향을 주는지 보여준다.</para>
 
       <programlisting language="xml"><![CDATA[<beans>
 
@@ -391,61 +363,51 @@ public class JmxTestBean implements IJmxTestBean {
   </section>
 
   <section id="jmx-interface">
-    <title>Controlling the management interface of your beans</title>
+    <title>빈의 관리 인터페이스 제어하기</title>
 
-    <para>In the previous example, you had little control over the management
-    interface of your bean; <emphasis>all</emphasis> of the
-    <emphasis>public</emphasis> properties and methods of each exported bean
-    was exposed as JMX attributes and operations respectively. To exercise
-    finer-grained control over exactly which properties and methods of your
-    exported beans are actually exposed as JMX attributes and operations,
-    Spring JMX provides a comprehensive and extensible mechanism for
-    controlling the management interfaces of your beans.</para>
+    <para>이전 예제에서 빈의 관리(management) 인터페이스로 약간의 제어를 했다. 익스포트한
+    <emphasis>모든</emphasis> <emphasis>public</emphasis> 프로퍼티와 메서드는
+    JMX 속성과 동작으로 각각 노출된다. 익스포트한 빈의 어떤 프로퍼티와 메서드가 JMX 속성과
+    동작으로 노출되는지 세밀하게 제어하기 위해서 스프링 JMX는 빈의 관리 인터페이스를 제어하는
+    광범위하고 확장 가능한 메커니즘을 제공한다.</para>
 
     <section id="jmx-interface-assembler">
-      <title>The <interfacename>MBeanInfoAssembler</interfacename>
-      Interface</title>
+      <title><interfacename>MBeanInfoAssembler</interfacename> 인터페이스</title>
 
-      <para>Behind the scenes, the <classname>MBeanExporter</classname>
-      delegates to an implementation of the
+      <para>내부적으로 <classname>MBeanExporter</classname>는 노출될 각 빈의 관리
+      인터페이스를 정의하는 역할을 하는
       <classname>org.springframework.jmx.export.assembler.MBeanInfoAssembler</classname>
-      interface which is responsible for defining the management interface of
-      each bean that is being exposed. The default implementation,
-      <classname>org.springframework.jmx.export.assembler.SimpleReflectiveMBeanInfoAssembler</classname>,
-      simply defines a management interface that exposes all public properties
-      and methods (as you saw in the previous examples). Spring provides two
-      additional implementations of the
-      <interfacename>MBeanInfoAssembler</interfacename> interface that allow
-      you to control the generated management interface using either
-      source-level metadata or any arbitrary interface.</para>
+      인터페이스의 구현체에 위임한다. 기본 구현체인
+      <classname>org.springframework.jmx.export.assembler.SimpleReflectiveMBeanInfoAssembler</classname>는
+      모든 퍼블릭 프로퍼티와 메서드를 노출하는(이전 예제에서 본 것처럼) 관리 인터페이스를 정의한다.
+      스프링은 소스수준의 메타데이터나 다른 임의의 인터페이스를 사용해서 생성한 관리 인터페이스를
+      제어할 수 있는 <interfacename>MBeanInfoAssembler</interfacename>
+      인터페이스의 두 구현체를 추가적으로 제공한다.</para>
     </section>
 
     <section id="jmx-interface-metadata">
-      <title>Using Source-Level Metadata (JDK 5.0 annotations)</title>
+      <title>소스 수준의 메타데이터 사용하기 (JDK 5.0 어노테이션)</title>
 
-      <para>Using the <classname>MetadataMBeanInfoAssembler</classname> you
-      can define the management interfaces for your beans using source level
-      metadata. The reading of metadata is encapsulated by the
+      <para><classname>MetadataMBeanInfoAssembler</classname>를 사용해서 소스
+      수준의 메타데이터를 사용하는 빈에 대한 관리 인터페이스를 정의할 수 있다. 메타데이터는
       <classname>org.springframework.jmx.export.metadata.JmxAttributeSource</classname>
-      interface. Spring JMX provides a default implementation which uses JDK 5.0 annotations, namely
-      <classname>org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource</classname>. The
-      <classname>MetadataMBeanInfoAssembler</classname>
-      <emphasis>must</emphasis> be configured with an implementation instance
-      of the <classname>JmxAttributeSource</classname> interface for it to
-      function correctly (there is <emphasis>no</emphasis> default).</para>
+      인터페이스로 캡슐화해서 읽는다. 스프링 JMX는 JDK 5.0 어노테이션
+      (<classname>org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource</classname>)을 사용하는 기본 구현체를 제공한다.
+      <classname>MetadataMBeanInfoAssembler</classname>가 제대로 동작하기 위해서는
+      <classname>JmxAttributeSource</classname> 인터페이스의 구현체 인스턴스로
+      설정<emphasis>해야 한다</emphasis>.(기본값이 존재하지
+      <emphasis>않는다</emphasis>.)</para>
 
-      <para>To mark a bean for export to JMX, you should annotate the bean
-      class with the <classname>ManagedResource</classname> annotation. Each
-      method you wish to expose as an operation must be marked with the
-      <classname>ManagedOperation</classname> annotation and each property you
-      wish to expose must be marked with the
-      <classname>ManagedAttribute</classname> annotation. When marking
-      properties you can omit either the annotation of the getter or the
-      setter to create a write-only or read-only attribute
-      respectively.</para>
+      <para>JMX로 내보내도록 빈을 표시하려면 빈 클래스에
+      <classname>ManagedResource</classname> 어노테이션을 붙여야 한다.
+      동작(operation)으로 노출하려는 각 메서드는
+      <classname>ManagedOperation</classname> 어노테이션을 붙여야 하고 노출하려는
+      각 프로퍼티는 <classname>ManagedAttribute</classname> 어노테이션을 붙여야
+      한다. 프로퍼티에 어노테이션을 붙일 때는 읽기 전용이나 쓰기 전용 속성을 만들기 위해서
+      getter나 setter의 어노테이션을 생략할 수 있다.</para>
 
-      <para>The example below shows the annotated version of the 
-        <classname>JmxTestBean</classname> class that you saw earlier:</para>
+      <para>아래 예제는 앞에서 본 <classname>JmxTestBean</classname>
+        클래스의 어노테이션을 사용한 버전이다.</para>
       <programlisting language="java"><![CDATA[package org.springframework.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -495,33 +457,28 @@ public class AnnotationTestBean implements IJmxTestBean {
   }
 }]]></programlisting>
 
-      <para>Here you can see that the <classname>JmxTestBean</classname> class
-      is marked with the <classname>ManagedResource</classname> annotation and
-        that this <classname>ManagedResource</classname> annotation is configured
-      with a set of properties. These properties can be used to configure
-      various aspects of the MBean that is generated by the
-      <classname>MBeanExporter</classname>, and are explained in greater
-      detail later in section entitled <xref
-      linkend="jmx-interface-metadata-types" />.</para>
+      <para>이 예제에서 <classname>JmxTestBean</classname> 클래스에
+      <classname>ManagedResource</classname> 어노테이션이 붙어있는 것을 볼 수 있고
+      이 <classname>ManagedResource</classname> 어노테이션은 여러 가지 프로터티들로
+      설정되어 있다. <classname>MBeanExporter</classname>가 생성하는 MBean의 다양한
+      관점을 설정하는데 이러한 프로퍼티를 설정할 수 있고 더 자세한 내용은 나중에
+      <xref linkend="jmx-interface-metadata-types" />부분에서 설명한다.</para>
 
-      <para>You will also notice that both the <literal>age</literal> and
-      <literal>name</literal> properties are annotated with the
-      <classname>ManagedAttribute</classname> annotation, but in the case of
-      the <literal>age</literal> property, only the getter is marked. This
-      will cause both of these properties to be included in the management
-      interface as attributes, but the <literal>age</literal> attribute will
-      be read-only.</para>
+      <para><literal>age</literal>와 <literal>name</literal> 프로퍼티도
+      <classname>ManagedAttribute</classname> 어노테이션이 붙을 것을 볼 수 있는데
+      여기서 <literal>age</literal>에는 getter에만 어노테이션이 붙어 있다. 이
+      어노테이션을 붙임으로써 두 프로퍼티 모두 관리 인터페이스의 속성으로 포함되지만
+      <literal>age</literal>는 읽기 전용이다.</para>
 
-      <para>Finally, you will notice that the <literal>add(int, int)</literal>
-      method is marked with the <classname>ManagedOperation</classname>
-      attribute whereas the <literal>dontExposeMe()</literal> method is not.
-      This will cause the management interface to contain only one operation,
-      <literal>add(int, int)</literal>, when using the
-      <classname>MetadataMBeanInfoAssembler</classname>.</para>
+      <para>마지막으로 <literal>add(int, int)</literal> 메서드에는
+      <classname>ManagedOperation</classname> 어노테이션이 붙어있지만
+      <literal>dontExposeMe()</literal> 메서드에는 붙어있지 않다. 그래서 관리
+      인터페이스는 <classname>MetadataMBeanInfoAssembler</classname>를
+      사용할 때 <literal>add(int, int)</literal> 오퍼레이션만 가진다.</para>
 
-      <para>The configuration below shows how you configure the
-      <classname>MBeanExporter</classname> to use the
-      <classname>MetadataMBeanInfoAssembler</classname>:</para>
+      <para><classname>MetadataMBeanInfoAssembler</classname>를 사용하는
+      <classname>MBeanExporter</classname>를 설정하는 방법이 아래 설정에
+      나와 있다.</para>
       <programlisting language="xml"><![CDATA[<beans>
     <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
         <property name="assembler" ref="assembler"/>
@@ -532,13 +489,13 @@ public class AnnotationTestBean implements IJmxTestBean {
     <bean id="jmxAttributeSource"
           class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
 
-    ]]><lineannotation>&lt;!-- will create management interface using annotation metadata --&gt;</lineannotation><![CDATA[
+    ]]><lineannotation>&lt;!-- 어노테이션의 메타데이터를 사용해서 관리 인터페이스를 생성할 것이다 --&gt;</lineannotation><![CDATA[
     <bean id="assembler"
           class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
         <property name="attributeSource" ref="jmxAttributeSource"/>
     </bean>
 
-    ]]><lineannotation>&lt;!-- will pick up the <classname>ObjectName</classname> from the annotation --&gt;</lineannotation><![CDATA[
+    ]]><lineannotation>&lt;!-- 어노테이션에서 <classname>ObjectName</classname>을 선택할 것이다 --&gt;</lineannotation><![CDATA[
     <bean id="namingStrategy"
           class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
         <property name="attributeSource" ref="jmxAttributeSource"/>
@@ -549,25 +506,22 @@ public class AnnotationTestBean implements IJmxTestBean {
         <property name="age" value="100"/>
     </bean>
 </beans>]]></programlisting>
-      
 
-      <para>Here you can see that an
-      <classname>MetadataMBeanInfoAssembler</classname> bean has been
-      configured with an instance of the
-        <classname>AnnotationJmxAttributeSource</classname> class and passed to
-      the <classname>MBeanExporter</classname> through the assembler property.
-      This is all that is required to take advantage of metadata-driven
-      management interfaces for your Spring-exposed MBeans.</para>
+
+      <para>여기서 <classname>MetadataMBeanInfoAssembler</classname> 빈이
+      <classname>AnnotationJmxAttributeSource</classname> 클래스의 인스턴스로
+      설정되었고 assembler 프로퍼티로 <classname>MBeanExporter</classname>에 전달되는
+      것을 볼 수 있다. 이것이 스프링이 노출한 MBean의 메타데이터 주도 관리 인터페이스의 장점을
+      취하는 데 필요한 전부이다.</para>
     </section>
 
     <section id="jmx-interface-metadata-types">
-      <title>Source-Level Metadata Types</title>
+      <title>소스 수준의 메타데이터 타입</title>
 
-      <para>The following source level metadata types are available for use in
-      Spring JMX:</para>
+      <para>다음 소스 수준의 메타데이터 타입을 스프링 JMX에서 사용할 수 있다.</para>
 
       <para><table id="jmx-metadata-types">
-          <title>Source-Level Metadata Types</title>
+          <title>소스 수준의 메타데이터 타입</title>
 
           <tgroup cols="3">
             <colspec align="left" />
@@ -578,18 +532,17 @@ public class AnnotationTestBean implements IJmxTestBean {
 
             <thead>
               <row>
-                <entry align="center">Purpose</entry>
+                <entry align="center">목적</entry>
 
-                <entry align="center">Annotation</entry>
+                <entry align="center">어노테이션</entry>
 
-                <entry align="center">Annotation Type</entry>
+                <entry align="center">어노테이션 타입</entry>
               </row>
             </thead>
 
             <tbody>
               <row>
-                <entry>Mark all instances of a <classname>Class</classname> as
-                JMX managed resources</entry>
+                <entry><classname>Class</classname>의 모든 인스턴스를 JMX가 관리하는 리소스로 표시한다.</entry>
 
                 <entry><literal>@ManagedResource</literal></entry>
 
@@ -597,7 +550,7 @@ public class AnnotationTestBean implements IJmxTestBean {
               </row>
 
               <row>
-                <entry>Mark a method as a JMX operation</entry>
+                <entry>메서드를 JMX 동작으로 표시한다.</entry>
 
                 <entry><literal>@ManagedOperation</literal></entry>
 
@@ -605,18 +558,17 @@ public class AnnotationTestBean implements IJmxTestBean {
               </row>
 
               <row>
-                <entry>Mark a getter or setter as one half of a JMX
-                attribute</entry>
+                <entry>getter나 setter를 JMX 속성의 절반으로 표시한다.</entry>
 
                 <entry><classname>@ManagedAttribute</classname></entry>
 
-                <entry>Method (only getters and setters)</entry>
+                <entry>Method (getter와 setter 전용)</entry>
               </row>
 
               <row>
-                <entry>Define descriptions for operation parameters</entry>
+                <entry>동작(operation) 파라미터에 대한 디스크립션을 정의한다.</entry>
 
-                <entry><classname>@ManagedOperationParameter</classname> and
+                <entry><classname>@ManagedOperationParameter</classname>와
                 <classname>@ManagedOperationParameters</classname></entry>
 
                 <entry>Method</entry>
@@ -625,11 +577,10 @@ public class AnnotationTestBean implements IJmxTestBean {
           </tgroup>
         </table></para>
 
-      <para>The following configuration parameters are available for use on
-      these source-level metadata types:</para>
+      <para>소스 수준의 메타데이터 타입에서 다음 설정 파라미터를 사용할 수 있다.</para>
 
       <para><table id="jmx-metadata-parameters">
-          <title>Source-Level Metadata Parameters</title>
+          <title>소스 수준의 메타데이터 파라미터</title>
 
           <tgroup cols="3">
             <colspec align="left" />
@@ -640,11 +591,11 @@ public class AnnotationTestBean implements IJmxTestBean {
 
             <thead>
               <row>
-                <entry align="center">Parameter</entry>
+                <entry align="center">파라미터</entry>
 
-                <entry align="center">Description</entry>
+                <entry align="center">설명</entry>
 
-                <entry align="center">Applies to</entry>
+                <entry align="center">적용 대상</entry>
               </row>
             </thead>
 
@@ -652,9 +603,9 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><classname>ObjectName</classname></entry>
 
-                <entry>Used by <classname>MetadataNamingStrategy</classname>
-                to determine the <classname>ObjectName</classname> of a
-                managed resource</entry>
+                <entry>관리하는 리소스의 <classname>ObjectName</classname>을
+                결정하기 위해서 <classname>MetadataNamingStrategy</classname>가
+                사용한다.</entry>
 
                 <entry><classname>ManagedResource</classname></entry>
               </row>
@@ -662,8 +613,7 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>description</literal></entry>
 
-                <entry>Sets the friendly description of the resource,
-                attribute or operation</entry>
+                <entry>리소스, 속성, 동작의 디스크립션을 설정한다.</entry>
 
                 <entry><classname>ManagedResource</classname>,
                 <classname>ManagedAttribute</classname>,
@@ -674,8 +624,8 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>currencyTimeLimit</literal></entry>
 
-                <entry>Sets the value of the
-                <literal>currencyTimeLimit</literal> descriptor field</entry>
+                <entry><literal>currencyTimeLimit</literal> 디스크립터 필드의
+                값을 설정한다</entry>
 
                 <entry><classname>ManagedResource</classname>,
                 <classname>ManagedAttribute</classname></entry>
@@ -684,8 +634,8 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>defaultValue</literal></entry>
 
-                <entry>Sets the value of the <literal>defaultValue</literal>
-                descriptor field</entry>
+                <entry><literal>defaultValue</literal> 디스크립터 필드의 값을
+                설정한다</entry>
 
                 <entry><classname>ManagedAttribute</classname></entry>
               </row>
@@ -693,8 +643,8 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>log</literal></entry>
 
-                <entry>Sets the value of the <literal>log</literal> descriptor
-                field</entry>
+                <entry><literal>log</literal> 디스크립터 필드의 값을
+                설정한다</entry>
 
                 <entry><classname>ManagedResource</classname></entry>
               </row>
@@ -702,8 +652,8 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>logFile</literal></entry>
 
-                <entry>Sets the value of the <literal>logFile</literal>
-                descriptor field</entry>
+                <entry><literal>logFile</literal> 디스크립터 필드의 값을
+                설정한다</entry>
 
                 <entry><classname>ManagedResource</classname></entry>
               </row>
@@ -711,8 +661,8 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>persistPolicy</literal></entry>
 
-                <entry>Sets the value of the <literal>persistPolicy</literal>
-                descriptor field</entry>
+                <entry><literal>persistPolicy</literal> 디스크립터 필드의 값을
+                설정한다</entry>
 
                 <entry><classname>ManagedResource</classname></entry>
               </row>
@@ -720,8 +670,8 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>persistPeriod</literal></entry>
 
-                <entry>Sets the value of the <literal>persistPeriod</literal>
-                descriptor field</entry>
+                <entry><literal>persistPeriod</literal> 디스크립터 필드의 값을
+                설정한다</entry>
 
                 <entry><classname>ManagedResource</classname></entry>
               </row>
@@ -729,8 +679,8 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>persistLocation</literal></entry>
 
-                <entry>Sets the value of the
-                <literal>persistLocation</literal> descriptor field</entry>
+                <entry><literal>persistLocation</literal> 디스크립터 필드의 값을
+                설정한다</entry>
 
                 <entry><classname>ManagedResource</classname></entry>
               </row>
@@ -738,8 +688,8 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>persistName</literal></entry>
 
-                <entry>Sets the value of the <literal>persistName</literal>
-                descriptor field</entry>
+                <entry><literal>persistName</literal> 디스크립터 필드의 값을
+                설정한다</entry>
 
                 <entry><classname>ManagedResource</classname></entry>
               </row>
@@ -747,7 +697,7 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>name</literal></entry>
 
-                <entry>Sets the display name of an operation parameter</entry>
+                <entry>동작(operation) 파라미터의 표시 이름을 설정한다</entry>
 
                 <entry><literal>ManagedOperationParameter</literal></entry>
               </row>
@@ -755,7 +705,7 @@ public class AnnotationTestBean implements IJmxTestBean {
               <row>
                 <entry><literal>index</literal></entry>
 
-                <entry>Sets the index of an operation parameter</entry>
+                <entry>동작 파라미터의 인덱스를 설정한다</entry>
 
                 <entry><literal>ManagedOperationParameter</literal></entry>
               </row>
@@ -765,30 +715,27 @@ public class AnnotationTestBean implements IJmxTestBean {
     </section>
 
     <section id="jmx-interface-autodetect">
-      <title>The <classname>AutodetectCapableMBeanInfoAssembler</classname>
-      interface</title>
+      <title><classname>AutodetectCapableMBeanInfoAssembler</classname>
+      인터페이스</title>
 
-      <para>To simplify configuration even further, Spring introduces the
-      <classname>AutodetectCapableMBeanInfoAssembler</classname> interface
-      which extends the <interfacename>MBeanInfoAssembler</interfacename>
-      interface to add support for autodetection of MBean resources. If you
-      configure the <classname>MBeanExporter</classname> with an instance of
-      <classname>AutodetectCapableMBeanInfoAssembler</classname> then it is
-      allowed to "vote" on the inclusion of beans for exposure to JMX.</para>
+      <para>더 간단한 설정을 위해서 스프링은
+      <interfacename>MBeanInfoAssembler</interfacename> 인터페이스를 확장해서
+      MBean 리소스를 자동탐지를 지원하려고
+      <classname>AutodetectCapableMBeanInfoAssembler</classname> 인터페이스를
+      도입했다. <classname>AutodetectCapableMBeanInfoAssembler</classname>
+      인스턴스로 <classname>MBeanExporter</classname>를 설정하면 JMX에 노출하기 위해
+      빈에 "투표(vote)"할 수 있다.</para>
 
-      <para>Out of the box, the only implementation of the
-      <classname>AutodetectCapableMBeanInfo</classname> interface is the
-      <classname>MetadataMBeanInfoAssembler</classname> which will vote to
-      include any bean which is marked with the
-      <classname>ManagedResource</classname> attribute. The default approach
-      in this case is to use the bean name as the
-      <classname>ObjectName</classname> which results in a configuration like
-      this:</para>
+      <para><classname>AutodetectCapableMBeanInfo</classname> 인터페이스의
+      유일한 구현체인 <classname>MetadataMBeanInfoAssembler</classname>는
+      <classname>ManagedResource</classname> 속성으로 표시된 모든 빈을 포함하도록
+      투표한다. 이 경우 기본 접근은 다음과 같은 설정의 빈 이름을
+      <classname>ObjectName</classname>으로 사용하는 것이다.</para>
 
       <programlisting language="xml"><![CDATA[<beans>
 
   <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
-    ]]><lineannotation>&lt;!-- notice how no <literal>'beans'</literal> are explicitly configured here --&gt;</lineannotation><![CDATA[
+    ]]><lineannotation>&lt;!-- 어떤 <literal>'beans'</literal>도 명시적으로 선언하지 않았다. --&gt;</lineannotation><![CDATA[
     <property name="autodetect" value="true"/>
     <property name="assembler" ref="assembler"/>
   </bean>
@@ -806,37 +753,32 @@ public class AnnotationTestBean implements IJmxTestBean {
 
 </beans>]]></programlisting>
 
-      <para>Notice that in this configuration no beans are passed to the
-      <classname>MBeanExporter</classname>; however, the
-      <classname>JmxTestBean</classname> will still be registered since it is
-      marked with the <classname>ManagedResource</classname> attribute and the
-      <classname>MetadataMBeanInfoAssembler</classname> detects this and votes
-      to include it. The only problem with this approach is that the name of
-      the <classname>JmxTestBean</classname> now has business meaning. You can
-      address this issue by changing the default behavior for
-      <classname>ObjectName</classname> creation as defined in
-      <xref linkend="jmx-naming" />.</para>
+      <para>이 설정에서 어떤 빈도 <classname>MBeanExporter</classname>에 전달하지 않았다.
+      하지만 <classname>ManagedResource</classname> 속성으로 표시되었고
+      <classname>MetadataMBeanInfoAssembler</classname>가
+      <classname>ManagedResource</classname>를 탐지해서 포함하도록 투표하므로
+      <classname>JmxTestBean</classname>가 등록될 것이다. 이 접근방법의 유일한 문제점은
+      <classname>JmxTestBean</classname>의 이름이 비즈니스적인 의미를 갖게 되었다는 점이다.
+      <xref linkend="jmx-naming" />에서 정의된 것처럼
+      <classname>ObjectName</classname>를 생성하는 기본 동작을 변경해서 이 문제를 해결할
+      수 있다.</para>
     </section>
 
     <section id="jmx-interface-java">
-      <title>Defining management interfaces using Java interfaces</title>
+      <title>자바 인터페이스를 사용한 관리 인터페이스 정의</title>
 
-      <para>In addition to the
-      <classname>MetadataMBeanInfoAssembler</classname>, Spring also includes
-      the <classname>InterfaceBasedMBeanInfoAssembler</classname> which allows
-      you to constrain the methods and properties that are exposed based on
-      the set of methods defined in a collection of interfaces.</para>
+      <para><classname>MetadataMBeanInfoAssembler</classname>에 추가로 스프링도
+      인터페이스 컬렉션에 정의된 메서드 세트에 기반을 둬서 노출되는 메서드와 프로퍼티에 제약을 가할 수
+      있는 <classname>InterfaceBasedMBeanInfoAssembler</classname>를 포함하고
+      있다.</para>
 
-      <para>Although the standard mechanism for exposing MBeans is to use
-      interfaces and a simple naming scheme, the
-      <classname>InterfaceBasedMBeanInfoAssembler</classname> extends this
-      functionality by removing the need for naming conventions, allowing you
-      to use more than one interface and removing the need for your beans to
-      implement the MBean interfaces.</para>
+      <para>MBean을 노출하는 표준 메커니즘이 인터페이스와 간단한 작명 계획을 사용하기는 하지만
+      <classname>InterfaceBasedMBeanInfoAssembler</classname>는 작명 관례에
+      대한 요구사항을 제거해서 이 기능을 확장함으로써 하나 이상의 인터페이스를 사용하고 빈이
+      MBean 인터페이스를 구현하지 않아도 되게 한다.</para>
 
-      <para>Consider this interface that is used to define a management
-      interface for the <classname>JmxTestBean</classname> class that you saw
-      earlier:</para>
+      <para>앞에서 본 <classname>JmxTestBean</classname> 클래스에 대한 관리
+      인터페이스를 정의할 때 이 인터페이스의 사용을 고려해 봐라.</para>
 
       <programlisting language="java"><![CDATA[public interface IJmxTestBean {
 
@@ -853,10 +795,9 @@ public class AnnotationTestBean implements IJmxTestBean {
   public String getName();
 }]]></programlisting>
 
-      <para>This interface defines the methods and properties that will be
-      exposed as operations and attributes on the JMX MBean. The code below
-      shows how to configure Spring JMX to use this interface as the
-      definition for the management interface:</para>
+      <para>이 인터페이스는 JMX MBean의 동작과 속성으로 노출될 메서드와 프로퍼티를 정의한다.
+      아래 코드는 관리 인터페이스의 정의로 이 인터페이스를 사용하도록 스프링 JMX를 설정하는
+      방법을 보여준다.</para>
 
       <programlisting language="xml"><![CDATA[<beans>
 
@@ -882,41 +823,34 @@ public class AnnotationTestBean implements IJmxTestBean {
 
 </beans>]]></programlisting>
 
-      <para>Here you can see that the
-      <classname>InterfaceBasedMBeanInfoAssembler</classname> is configured to
-      use the <interfacename>IJmxTestBean</interfacename> interface when
-      constructing the management interface for any bean. It is important to
-      understand that beans processed by the
-      <classname>InterfaceBasedMBeanInfoAssembler</classname> are
-      <emphasis>not</emphasis> required to implement the interface used to
-      generate the JMX management interface.</para>
+      <para>모든 빈에 대한 관리 인터페이스를 생성할 때
+      <interfacename>IJmxTestBean</interfacename> 인터페이스를 사용하도록 설정한
+      <classname>InterfaceBasedMBeanInfoAssembler</classname>를 볼 수 있다.
+      <classname>InterfaceBasedMBeanInfoAssembler</classname>가 처리한 빈은
+      JMX 관리 인터페이스를 생성하는 데 사용하는 인터페이스를 구현할 필요가 없다는 점을 이해하는
+      것이 중요하다.</para>
 
-      <para>In the case above, the <interfacename>IJmxTestBean</interfacename>
-      interface is used to construct all management interfaces for all beans.
-      In many cases this is not the desired behavior and you may want to use
-      different interfaces for different beans. In this case, you can pass
-      <classname>InterfaceBasedMBeanInfoAssembler</classname> a
-      <classname>Properties</classname> instance via the
-      <literal>interfaceMappings</literal> property, where the key of each
-      entry is the bean name and the value of each entry is a comma-separated
-      list of interface names to use for that bean.</para>
+      <para>위의 경우 모든 빈에 대한 모든 관리 인터페이스를 생성하는데
+      <interfacename>IJmxTestBean</interfacename> 인터페이스를 사용한다. 많은 경우
+      이는 원하는 동작이 아니고 빈마다 다른 인터페이스를 사용하길 원할 것이다. 이러면
+      <literal>interfaceMappings</literal> 프로퍼티로(각 엔트리는 빈의 이름이고 엔트리의
+      값은 해당 빈에 사용할 인터페이스 이름을 콤마로 구분한 목록이다.)
+      <classname>InterfaceBasedMBeanInfoAssembler</classname>
+      <classname>Properties</classname> 인스턴스를 전달할 수 있다.</para>
 
-      <para>If no management interface is specified through either the
-      <literal>managedInterfaces</literal> or
-      <literal>interfaceMappings</literal> properties, then the
-      <classname>InterfaceBasedMBeanInfoAssembler</classname> will reflect on
-      the bean and use all of the interfaces implemented by that bean to
-      create the management interface.</para>
+      <para><literal>managedInterfaces</literal>와
+      <literal>interfaceMappings</literal> 프로퍼티로 지정한 관리 인터페이스가 없으면
+      <classname>InterfaceBasedMBeanInfoAssembler</classname>가 빈에 반영되고
+      관리인터페이스를 생성하는 해당 빈이 구현한 모든 인터페이스를 사용할 것이다.</para>
     </section>
 
     <section id="jmx-interface-methodnames">
-      <title>Using
-      <classname>MethodNameBasedMBeanInfoAssembler</classname></title>
+      <title>
+      <classname>MethodNameBasedMBeanInfoAssembler</classname> 사용하기</title>
 
-      <para>The <classname>MethodNameBasedMBeanInfoAssembler</classname>
-      allows you to specify a list of method names that will be exposed to JMX
-      as attributes and operations. The code below shows a sample
-      configuration for this:</para>
+      <para><classname>MethodNameBasedMBeanInfoAssembler</classname>로 JMX가
+      속성과 동작으로 노출할 메서드명의 목록을 지정할 수 있다. 아래 코드는 이에 대한 설정 예시를
+      보여 준다.</para>
 
       <programlisting language="xml"><![CDATA[<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
     <property name="beans">
@@ -933,55 +867,48 @@ public class AnnotationTestBean implements IJmxTestBean {
     </property>
 </bean>]]></programlisting>
 
-      <para>Here you can see that the methods <literal>add</literal> and
-      <literal>myOperation</literal> will be exposed as JMX operations and
-      <literal>getName()</literal>, <literal>setName(String)</literal> and
-      <literal>getAge()</literal> will be exposed as the appropriate half of a
-      JMX attribute. In the code above, the method mappings apply to beans
-      that are exposed to JMX. To control method exposure on a bean-by-bean
-      basis, use the <literal>methodMappings</literal> property of
-      <classname>MethodNameMBeanInfoAssembler</classname> to map bean names to
-      lists of method names.</para>
+      <para>이 코드에서 <literal>add</literal>와 <literal>myOperation</literal>
+      메서드가 JMX 동작으로 노출되고 <literal>getName()</literal>,
+      <literal>setName(String)</literal>, <literal>getAge()</literal>는 JMX
+      속성으로 노출되는 것을 볼 수 있다. 위 코드에서 메서드는 JMX에 노출되는 빈에 매핑된다. 빈과
+      빈(bean-by-bean)의 메서드 노출을 제어하려면 빈 이름을 메서드 이름의 목록에 매핑하기 위해
+      <classname>MethodNameMBeanInfoAssembler</classname>의
+      <literal>methodMappings</literal> 프로퍼티를 사용해라.</para>
     </section>
   </section>
 
   <section id="jmx-naming">
-    <title>Controlling the <classname>ObjectName</classname>s for your beans</title>
+    <title>빈의 <classname>ObjectName</classname> 제어</title>
 
-    <para>Behind the scenes, the <classname>MBeanExporter</classname>
-    delegates to an implementation of the
-    <classname>ObjectNamingStrategy</classname> to obtain
-    <classname>ObjectName</classname>s for each of the beans it is
-    registering. The default implementation,
-    <classname>KeyNamingStrategy</classname>, will, by default, use the key of
-    the <literal>beans</literal> <interfacename>Map</interfacename> as the
-    <classname>ObjectName</classname>. In addition, the
-    <classname>KeyNamingStrategy</classname> can map the key of the
-    <literal>beans</literal> <interfacename>Map</interfacename> to an entry in a
-    <classname>Properties</classname> file (or files) to resolve the
-    <classname>ObjectName</classname>. In addition to the
-    <classname>KeyNamingStrategy</classname>, Spring provides two additional
-    <classname>ObjectNamingStrategy</classname> implementations: the
-    <classname>IdentityNamingStrategy</classname> that builds an
-    <classname>ObjectName</classname> based on the JVM identity of the bean
-    and the <classname>MetadataNamingStrategy</classname> that uses source
-    level metadata to obtain the <classname>ObjectName</classname>.</para>
+    <para>내부적으로 <classname>MBeanExporter</classname>는
+    <classname>ObjectNamingStrategy</classname> 구현체에 등록하는 각 빈의
+    <classname>ObjectName</classname>을 가져오는 전략을 위임한다. 기본 구현체
+    <classname>KeyNamingStrategy</classname>는 <literal>beans</literal>
+    <interfacename>Map</interfacename>의 키를 <classname>ObjectName</classname>로
+    사용한다. 그리고 <classname>KeyNamingStrategy</classname>는
+    <literal>beans</literal> <interfacename>Map</interfacename>의 키를
+    <classname>Properties</classname>의 항목에 매핑해서
+    <classname>ObjectName</classname>을 처리할 수 있다.
+    <classname>KeyNamingStrategy</classname>외에도 스프링은 두 가지
+    <classname>ObjectNamingStrategy</classname> 구현체를 더 제공하고 있다.
+    <classname>IdentityNamingStrategy</classname>는 빈의 JVM 아이디(identity)에
+    기반해서 <classname>ObjectName</classname>을 만들고
+    <classname>MetadataNamingStrategy</classname>은 소스 수준의 메타데이터를 사용해서
+    <classname>ObjectName</classname>를 얻는다.</para>
 
     <section id="jmx-naming-properties">
-      <title>Reading <classname>ObjectName</classname>s from <classname>Properties</classname></title>
+      <title><classname>Properties</classname>에서 <classname>ObjectName</classname> 읽어오기</title>
 
-      <para>You can configure your own
-      <classname>KeyNamingStrategy</classname> instance and configure it to
-      read <classname>ObjectName</classname>s from a
-      <classname>Properties</classname> instance rather than use bean key. The
-      <classname>KeyNamingStrategy</classname> will attempt to locate an entry
-      in the <classname>Properties</classname> with a key corresponding to the
-      bean key. If no entry is found or if the
-      <classname>Properties</classname> instance is <literal>null</literal>
-      then the bean key itself is used.</para>
+      <para>자신만의 <classname>KeyNamingStrategy</classname> 인스턴스를 설정해서 빈의
+      키를 사용하는 대신 <classname>Properties</classname> 인스턴스에서
+      <classname>ObjectName</classname>을 읽어오도록 구성할 수 있다.
+      <classname>KeyNamingStrategy</classname>는 빈 키에 대응되는 키를 가진
+      <classname>Properties</classname>의 요소를 찾으려고 할 것이다. 일치하는 항목이 없거나
+      <classname>Properties</classname> 인스턴스가 <literal>null</literal>이라면
+      빈 키 자체를 사용한다.</para>
 
-      <para>The code below shows a sample configuration for the
-      <classname>KeyNamingStrategy</classname>:</para>
+      <para>아래 코드는 <classname>KeyNamingStrategy</classname>의 설정 예시를
+      보여준다.</para>
 
       <programlisting language="xml"><![CDATA[<beans>
 
@@ -1008,34 +935,31 @@ public class AnnotationTestBean implements IJmxTestBean {
     <property name="mappingLocations">
       <value>names1.properties,names2.properties</value>
     </property>
-  </bean
+  </bean>
 
 </beans>]]></programlisting>
 
-      <para>Here an instance of <classname>KeyNamingStrategy</classname> is
-      configured with a <classname>Properties</classname> instance that is
-      merged from the <classname>Properties</classname> instance defined by
-      the mapping property and the properties files located in the paths
-      defined by the mappings property. In this configuration, the
-      <literal>testBean</literal> bean will be given the
-      <classname>ObjectName</classname> <literal>bean:name=testBean1</literal>
-      since this is the entry in the <classname>Properties</classname>
-      instance that has a key corresponding to the bean key.</para>
+      <para>여기서 <classname>KeyNamingStrategy</classname> 인스턴스는 매핑 프로퍼티와
+      매핑 프로퍼티에 정의된 경로에 있는 프로퍼티 파일로 정의된
+      <classname>Properties</classname> 인스턴스와 합쳐진
+      <classname>Properties</classname> 인스턴스로 구성된다. 이 구성에서
+      <literal>testBean</literal> 빈은 <classname>ObjectName</classname>
+      <literal>bean:name=testBean1</literal>을 받을 것이다. 이는 이 값이
+      <classname>Properties</classname> 인스턴스에서 빈 키에 대응되는 키를 가진
+      항목이기 때문이다.</para>
 
-      <para>If no entry in the <classname>Properties</classname> instance can
-      be found then the bean key name is used as the
-      <classname>ObjectName</classname>.</para>
+      <para><classname>Properties</classname> 인스턴스에 항목이 없다면 빈 키의 이름을
+      <classname>ObjectName</classname>으로 사용한다.</para>
     </section>
 
     <section id="jmx-naming-metadata">
-      <title>Using the <classname>MetadataNamingStrategy</classname></title>
+      <title><classname>MetadataNamingStrategy</classname>의 사용</title>
 
-      <para>The <classname>MetadataNamingStrategy</classname> uses
-      the <literal>objectName</literal> property of the
-      <classname>ManagedResource</classname> attribute on each bean to create
-      the <classname>ObjectName</classname>. The code below shows the
-      configuration for the
-      <classname>MetadataNamingStrategy</classname>:</para>
+      <para><classname>MetadataNamingStrategy</classname>는
+      <classname>ObjectName</classname>을 사용하기 위해 각 빈의
+      <classname>ManagedResource</classname>속성의 <literal>objectName</literal>
+      프로퍼티를 사용한다. 아래 코드는
+      <classname>MetadataNamingStrategy</classname>의 설정 예시를 보여준다.</para>
 
       <programlisting language="xml"><![CDATA[<beans>
 
@@ -1062,13 +986,11 @@ public class AnnotationTestBean implements IJmxTestBean {
 
 </beans>]]></programlisting>
 
-      <para>If no <literal>objectName</literal> has been provided for
-      the <classname>ManagedResource</classname> attribute, then an
-      <classname>ObjectName</classname> will be created with the
-      following format:
-      <emphasis>[fully-qualified-package-name]:type=[short-classname],name=[bean-name]</emphasis>.
-      For example, the generated <classname>ObjectName</classname> for the
-      following bean would be: <emphasis>com.foo:type=MyClass,name=myBean</emphasis>.
+      <para><classname>ManagedResource</classname> 속성에 제공된
+      <literal>objectName</literal>이 없다면 <classname>ObjectName</classname>은
+      <emphasis>[fully-qualified-package-name]:type=[short-classname],name=[bean-name]</emphasis>의
+      형식으로 생성될 것이다. 예를 들어 다음 빈에 생성된 <classname>ObjectName</classname>은
+      <emphasis>com.foo:type=MyClass,name=myBean</emphasis>가 될 것이다.
       </para>
 
       <programlisting language="xml"><![CDATA[<bean id="myBean" class="com.foo.MyClass"/>]]></programlisting>
@@ -1076,95 +998,87 @@ public class AnnotationTestBean implements IJmxTestBean {
     </section>
 
     <section id="jmx-context-mbeanexport">
-      <title>The <literal>&lt;context:mbean-export/&gt;</literal> element</title>
-      <para>If you are using at least Java 5, then a convenience subclass of
-      <classname>MBeanExporter</classname> is available:
-      <classname>AnnotationMBeanExporter</classname>.
-      When defining an instance of this subclass, the <literal>namingStrategy</literal>,
-      <literal>assembler</literal>, and <literal>attributeSource</literal>
-      configuration is no longer needed, since it will always use standard Java
-      annotation-based metadata (autodetection is always enabled as well). In fact,
-      an even simpler syntax is supported by Spring's
-      '<literal>context</literal>' namespace.. Rather than defining an
-      <classname>MBeanExporter</classname> bean, just provide this single element:</para>
+      <title><literal>&lt;context:mbean-export/&gt;</literal> 요소</title>
+      <para>Java 5 이상을 사용한다면 <classname>MBeanExporter</classname>의 편리한 하위
+      클래스 <classname>AnnotationMBeanExporter</classname>를 사용할 수 있다. 이 하위
+      클래스의 인스턴스를 정의하면 표준 자바 어노테이션 기반의 메타데이터를 항상 사용할 것이므로
+      (자동탐지도 항상 활성화된다.) <literal>namingStrategy</literal>,
+      <literal>assembler</literal>, <literal>attributeSource</literal> 설정이
+      더는 필요 없다. 게다가 스프링의 '<literal>context</literal>' 네임스페이스가 지원하는
+      더 간단한 문법도 가능하다. <classname>MBeanExporter</classname> 빈을 정의하는 대신
+      다음의 요소를 지정하면 된다.</para>
 
       <programlisting language="xml"><![CDATA[<context:mbean-export/>]]></programlisting>
 
-      <para>You can provide a reference to a particular MBean server if
-      necessary, and the <literal>defaultDomain</literal> attribute
-      (a property of <classname>AnnotationMBeanExporter</classname>)
-      accepts an alternate value for the generated MBean
-      <classname>ObjectNames</classname>' domains. This would be used
-      in place of the fully qualified package name as described in the
-      previous section on
-      <link linkend="jmx-naming-metadata"><classname>MetadataNamingStrategy</classname></link>.
+      <para>필요하다면 특정 MBean 서버에 대한 참조를 제공할 수도 있고
+      <literal>defaultDomain</literal> 속성
+      (<classname>AnnotationMBeanExporter</classname>의 프로퍼티)은 생성된 Mbean
+      <classname>ObjectNames</classname>의 도메인의 대체 값을 받는다. 이전
+      <link linkend="jmx-naming-metadata"><classname>MetadataNamingStrategy</classname></link>
+      부분에서 설명한 대로 이는 정규화된 패키지 명에 사용한다.
       </para>
 
       <programlisting language="xml"><![CDATA[<context:mbean-export server="myMBeanServer" default-domain="myDomain"/>]]></programlisting>.
 
       <note>
-        <para>Do not use interface-based AOP proxies in combination with autodetection of
-        JMX annotations in your bean classes. Interface-based proxies 'hide' the target class,
-        which also hides the JMX managed resource annotations. Hence, use target-class proxies
-        in that case: through setting the 'proxy-target-class' flag on <literal>&lt;aop:config/&gt;</literal>,
-        <literal>&lt;tx:annotation-driven/&gt;</literal>, etc. Otherwise, your JMX beans
-        might be silently ignored at startup...</para>
+        <para>빈(bean) 클래스에서 JMX 어노테이션의 자동탐지와 함께 인터페이스 기반의 AOP 프록시는 사용하지
+        말아라. 인터페이스 기반의 프록시는 대상 클래스를 '숨기고' JMX가 관리하는 리소스 어노테이션도 숨긴다.
+        그러므로 이러면 대상 클래스(target-class) 프록시를 사용해야 한다.
+        <literal>&lt;aop:config/&gt;</literal>나
+        <literal>&lt;tx:annotation-driven/&gt;</literal> 등의 'proxy-target-class' 플래그를
+        설정하더라도 JMX 빈은 구동 시 이를 경고 없이 무시할 것이다.</para>
       </note>
 
     </section>
   </section>
 
   <section id="jmx-jsr160">
-    <title>JSR-160 Connectors</title>
+    <title>JSR-160 커넥터</title>
 
-    <para>For remote access, Spring JMX module offers two
-    <classname>FactoryBean</classname> implementations inside the
-    <literal>org.springframework.jmx.support</literal> package for creating
-    both server- and client-side connectors.</para>
+    <para>리모트 접근을 위해서 스프링 JMX 모듈은 서버 측과 클라이언트 측 커넥터를 생성하는
+    <literal>org.springframework.jmx.support</literal> 패키지에서
+    <classname>FactoryBean</classname>의 두 가지 구현체를 제공한다. </para>
 
     <section id="jmx-jsr160-server">
-      <title>Server-side Connectors</title>
+      <title>서버측 커넥터</title>
 
-      <para>To have Spring JMX create, start and expose a JSR-160
-      <classname>JMXConnectorServer</classname> use the following
-      configuration:</para>
+      <para>스프링 JMX가 JSR-160 <classname>JMXConnectorServer</classname>를
+      생성해서 구동하고 노출하게 하려면 다음 설정을 사용해라.</para>
 
       <programlisting language="xml">&lt;bean id="serverConnector" class="org.springframework.jmx.support.ConnectorServerFactoryBean"/&gt;</programlisting>
 
-      <para>By default <literal>ConnectorServerFactoryBean</literal> creates a
-      <classname>JMXConnectorServer</classname> bound to
-      <literal>"service:jmx:jmxmp://localhost:9875"</literal>. The
-      <literal>serverConnector</literal> bean thus exposes the local
-      <interfacename>MBeanServer</interfacename> to clients through the JMXMP protocol
-      on localhost, port 9875. Note that the JMXMP protocol is marked as
-      optional by the JSR 160 specification: currently, the main open-source
-      JMX implementation, MX4J, and the one provided with J2SE 5.0 do
-      <emphasis>not</emphasis> support JMXMP.</para>
+      <para>기본적으로 <literal>ConnectorServerFactoryBean</literal>는
+      <classname>JMXConnectorServer</classname>을
+      <literal>"service:jmx:jmxmp://localhost:9875"</literal>에 바인딩해서 생성한다.
+      그러므로 <literal>serverConnector</literal> 빈은
+      <interfacename>MBeanServer</interfacename>를 localhost의 JMXMP 프로토콜과
+      9875 포트로 노출한다. JMXMP 프로토콜은 JSR-160 명세에 선택사항으로 나와 있다. 현재로서는
+      주요 오픈 소스 JMX 구현체인 MX4J와 J2SE 5.0이 제공하는 구현체가 JMXMP를 지원하지
+      <emphasis>않는다</emphasis>.</para>
 
-      <para>To specify another URL and register the
-      <classname>JMXConnectorServer</classname> itself with the
-      <interfacename>MBeanServer</interfacename> use the <literal>serviceUrl</literal>
-      and <classname>ObjectName</classname> properties respectively:</para>
+      <para>다른 URL을 지정해서 <classname>JMXConnectorServer</classname> 자체를
+      <interfacename>MBeanServer</interfacename>에 등록하려면
+      <literal>serviceUrl</literal>과 <classname>ObjectName</classname>
+      프로퍼티를 각각 사용해라.</para>
 
       <programlisting language="xml"><![CDATA[<bean id="serverConnector"
       class="org.springframework.jmx.support.ConnectorServerFactoryBean">
   <property name="objectName" value="connector:name=rmi"/>
-  <property name="serviceUrl" 
+  <property name="serviceUrl"
             value="service:jmx:rmi://localhost/jndi/rmi://localhost:1099/myconnector"/>
 </bean>]]></programlisting>
 
-      <para>If the <classname>ObjectName</classname> property is set Spring
-      will automatically register your connector with the
-      <interfacename>MBeanServer</interfacename> under that
-      <classname>ObjectName</classname>. The example below shows the full set
-      of parameters which you can pass to the
-      <classname>ConnectorServerFactoryBean</classname> when creating a
-      JMXConnector:</para>
+      <para><classname>ObjectName</classname> 프로퍼티를 설정하면 스프링이 해당
+      <classname>ObjectName</classname>의
+      <interfacename>MBeanServer</interfacename>에 커넥터를 자동으로 등록할 것이다.
+      다음 예제는 JMXConnector 생성 시
+      <classname>ConnectorServerFactoryBean</classname>에 전달할 수 있는 전체
+      파라미터를 보여주고 있다.</para>
 
       <programlisting language="xml"><![CDATA[<bean id="serverConnector"
       class="org.springframework.jmx.support.ConnectorServerFactoryBean">
   <property name="objectName" value="connector:name=iiop"/>
-  <property name="serviceUrl" 
+  <property name="serviceUrl"
                value="service:jmx:iiop://localhost/jndi/iiop://localhost:900/myconnector"/>
   <property name="threaded" value="true"/>
   <property name="daemon" value="true"/>
@@ -1175,12 +1089,10 @@ public class AnnotationTestBean implements IJmxTestBean {
   </property>
 </bean>]]></programlisting>
 
-      <para>Note that when using a RMI-based connector you need the lookup
-      service (tnameserv or rmiregistry) to be started in order for the name
-      registration to complete. If you are using Spring to export remote
-      services for you via RMI, then Spring will already have constructed an
-      RMI registry. If not, you can easily start a registry using the
-      following snippet of configuration:</para>
+      <para>RMI에 기반을 둔 커넥터를 사용한다면 이름 등록과정이 완료된 후 시작되도록 검색
+      서비스(tnameserv나 rmiregistry)가 필요하다. RMI로 원격 서비스를 내보내도록 스프링을
+      사용하고 있다면 스프링은 이미 RMI 레지스트리를 생성했을 것이다. RIM로 원격서비스를 내보내도록
+      하고 있지 않다면 다음의 설정을 사용해서 간단하게 레지스트리를 시작할 수 있다.</para>
 
       <programlisting language="xml"><![CDATA[<bean id="registry" class="org.springframework.remoting.rmi.RmiRegistryFactoryBean">
   <property name="port" value="1099"/>
@@ -1188,12 +1100,11 @@ public class AnnotationTestBean implements IJmxTestBean {
     </section>
 
     <section id="jmx-jsr160-client">
-      <title>Client-side Connectors</title>
+      <title>클라이언트측 커넥터</title>
 
-      <para>To create an <classname>MBeanServerConnection</classname> to a
-      remote JSR-160 enabled <interfacename>MBeanServer</interfacename> use the
-      <classname>MBeanServerConnectionFactoryBean</classname> as shown
-      below:</para>
+      <para>원격 JSR-160를 사용하는 <interfacename>MBeanServer</interfacename>에
+      <classname>MBeanServerConnection</classname>를 생성하려면 다음과 같이
+      <classname>MBeanServerConnectionFactoryBean</classname>를 사용해라.</para>
 
       <programlisting language="xml"><![CDATA[<bean id="clientConnector" class="org.springframework.jmx.support.MBeanServerConnectionFactoryBean">
   <property name="serviceUrl" value="service:jmx:rmi://localhost/jndi/rmi://localhost:1099/jmxrmi"/>
@@ -1201,58 +1112,51 @@ public class AnnotationTestBean implements IJmxTestBean {
     </section>
 
     <section id="jmx-jsr160-protocols">
-      <title>JMX over Burlap/Hessian/SOAP</title>
+      <title>Burlap/Hessian/SOAP에서의 JMX</title>
 
-      <para>JSR-160 permits extensions to the way in which communication is
-      done between the client and the server. The examples above are using the
-      mandatory RMI-based implementation required by the JSR-160 specification
-      (IIOP and JRMP) and the (optional) JMXMP. By using other providers or
-      JMX implementations (such as <ulink
-      url="http://mx4j.sourceforge.net">MX4J</ulink>) you can take advantage
-      of protocols like SOAP, Hessian, Burlap over simple HTTP or SSL and
-      others:</para>
+      <para>JSR-160은 클라이언트와 서버 간의 통신을 수행하는 방법에 확장 포인트를 허용하고 있다.
+      앞의 예제는 JSR-160 명세에 명시된 의무적인 RMI 기반의 구현체(IIOP와 JRMP)와 (선택적인)
+      JMXMP를 사용하고 있다. 다른 프로바이더나 JMX 구현체
+      (<ulink url="http://mx4j.sourceforge.net">MX4J</ulink>와 같은)를 사용해서
+      HTTP나 SSL등을 사용하는 SOAP, Hessian, Burlap 같은 프로토콜의 장점을 취할 수
+      있다.</para>
 
       <programlisting language="xml"><![CDATA[<bean id="serverConnector" class="org.springframework.jmx.support.ConnectorServerFactoryBean">
   <property name="objectName" value="connector:name=burlap"/>
   <property name="serviceUrl" value="service:jmx:burlap://localhost:9874"/>
 </bean>]]></programlisting>
 
-      <para>In the case of the above example, MX4J 3.0.0 was used; see the
-      official MX4J documentation for more information.</para>
+      <para>앞의 예제에서는 MX4J 3.0.0을 사용했다. 자세한 내용은 MX4J 공식 문서를 참고해라.</para>
     </section>
   </section>
 
   <section id="jmx-proxy">
-    <title>Accessing MBeans via Proxies</title>
+    <title>프록시를 통한 MBean 접근</title>
 
-    <para>Spring JMX allows you to create proxies that re-route calls to
-    MBeans registered in a local or remote <interfacename>MBeanServer</interfacename>.
-    These proxies provide you with a standard Java interface through which you
-    can interact with your MBeans. The code below shows how to configure a
-    proxy for an MBean running in a local
-    <interfacename>MBeanServer</interfacename>:</para>
+    <para>스프링 JMX에서는 로컬이나 원격 <interfacename>MBeanServer</interfacename>에
+    등록된 MBean 호출을 다시 라우팅하는 프록시를 생성할 수 있다. 이러한 프록시는 MBean과 상호작용할
+    수 있는 표준 자바 인터페이스를 제공한다. 다음 코드는 로컬
+    <interfacename>MBeanServer</interfacename>에서 동작 중인 MBean에 대한 프록시를
+    구성하는 방법을 보여준다.</para>
 
     <programlisting language="xml"><![CDATA[<bean id="proxy" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
     <property name="objectName" value="bean:name=testBean"/>
     <property name="proxyInterface" value="org.springframework.jmx.IJmxTestBean"/>
 </bean>]]></programlisting>
 
-    <para>Here you can see that a proxy is created for the MBean registered
-    under the <classname>ObjectName</classname>:
-    <literal>bean:name=testBean</literal>. The set of interfaces that the
-    proxy will implement is controlled by the
-    <literal>proxyInterfaces</literal> property and the rules for mapping
-    methods and properties on these interfaces to operations and attributes on
-    the MBean are the same rules used by the
-    <classname>InterfaceBasedMBeanInfoAssembler</classname>.</para>
+    <para><classname>ObjectName</classname>:
+    <literal>bean:name=testBean</literal>으로 등록된 MBean에 프록시가 생성된 것을 볼
+    수 있다. 프록시가 구현하는 인터페이스들은 <literal>proxyInterfaces</literal> 프로퍼티로
+    제어하고 이 인터페이스들의 메서드와 프로퍼티를 MBean의 동작과 속성으로 매핑하는 규칙은
+    <classname>InterfaceBasedMBeanInfoAssembler</classname>에서 사용한 규칙과
+    동일하다.</para>
 
-    <para>The <classname>MBeanProxyFactoryBean</classname> can create a proxy
-    to any MBean that is accessible via an
-    <classname>MBeanServerConnection</classname>. By default, the local
-    <interfacename>MBeanServer</interfacename> is located and used, but you can
-    override this and provide an <classname>MBeanServerConnection</classname>
-    pointing to a remote <interfacename>MBeanServer</interfacename> to cater for
-    proxies pointing to remote MBeans:</para>
+    <para><classname>MBeanProxyFactoryBean</classname>은
+    <classname>MBeanServerConnection</classname>로 접근할 수 있는 모든 MBean에 대해서
+    프록시를 생성할 수 있다. 기본적으로 로컬 <interfacename>MBeanServer</interfacename>를
+    사용하지만 이를 오버라이드해서 원격 MBean을 가리키는 프록시에 대한 원격
+    <interfacename>MBeanServer</interfacename>를 가리키는
+    <classname>MBeanServerConnection</classname>를 제공할 수 있다.</para>
 
     <programlisting language="xml"><![CDATA[<bean id="clientConnector"
       class="org.springframework.jmx.support.MBeanServerConnectionFactoryBean">
@@ -1265,32 +1169,28 @@ public class AnnotationTestBean implements IJmxTestBean {
   <property name="server" ref="clientConnector"/>
 </bean>]]></programlisting>
 
-    <para>Here you can see that we create an
-    <classname>MBeanServerConnection</classname> pointing to a remote machine
-    using the <classname>MBeanServerConnectionFactoryBean</classname>. This
-    <classname>MBeanServerConnection</classname> is then passed to the
-    <classname>MBeanProxyFactoryBean</classname> via the
-    <literal>server</literal> property. The proxy that is created will forward
-    all invocations to the <interfacename>MBeanServer</interfacename> via this
-    <classname>MBeanServerConnection</classname>.</para>
+    <para>위 예제에서 <classname>MBeanServerConnectionFactoryBean</classname>를
+    사용하는 원격 머신을 가리키는 <classname>MBeanServerConnection</classname>를 생성한
+    것을 볼 수 있다. <literal>server</literal> 프로퍼티로 이
+    <classname>MBeanServerConnection</classname>을
+    <classname>MBeanProxyFactoryBean</classname>에 전달한다. 생성한 프록시는 이
+    <classname>MBeanServerConnection</classname>를 사용해서 모든 호출을
+    <interfacename>MBeanServer</interfacename>로 보낼 것이다.</para>
   </section>
 
   <section id="jmx-notifications">
-    <title>Notifications</title>
+    <title>알림(Notification)</title>
 
-    <para>Spring's JMX offering includes comprehensive support for JMX
-    notifications.</para>
+    <para>스프링의 JMX는 JMX 알림도 광범위하게 지원하고 있다.</para>
 
     <section id="jmx-notifications-listeners">
-      <title>Registering Listeners for Notifications</title>
+      <title>알림에 대한 리스너 등록</title>
 
-      <para>Spring's JMX support makes it very easy to register any number of
-      <classname>NotificationListeners</classname> with any number of MBeans
-      (this includes MBeans exported by Spring's
-      <classname>MBeanExporter</classname> and MBeans registered via some
-      other mechanism). By way of an example, consider the scenario where one
-	  would like to be informed (via a <classname>Notification</classname>)
-	  each and every time an attribute of a target MBean changes.</para>
+      <para>스프링의 JMX는 다수의 MBean(이는 스프링의
+      <classname>MBeanExporter</classname>가 내보낸 MBean과 다른 메커니즘으로 등록된
+      MBean을 포함한다.)을 가진 다수의 <classname>NotificationListeners</classname>을
+      아주 쉽게 등록할 수 있도록 지원한다. 예제를 통해서 대상 MBean의 속성이 변경될 때마다 알림을
+      받는(<classname>Notification</classname>으로) 시나리오를 생각해 보자.</para>
 
       <programlisting language="java"><![CDATA[package com.example;
 
@@ -1336,18 +1236,15 @@ public class ConsoleLoggingNotificationListener
 
 </beans>]]></programlisting>
 
-		<para>With the above configuration in place, every time a JMX
-		<classname>Notification</classname> is broadcast from the target MBean
-		(<literal>bean:name=testBean1</literal>), the
-		<classname>ConsoleLoggingNotificationListener</classname> bean that was
-		registered as a listener via the
-		<literal>notificationListenerMappings</literal> property will be
-		notified. The <classname>ConsoleLoggingNotificationListener</classname>
-		bean can then take whatever action it deems appropriate in response to
-		the <classname>Notification</classname>.</para>
+		<para>위 설정에서 대상 MBean(<literal>bean:name=testBean1</literal>)이 JMX
+    <classname>Notification</classname>를 브로드캐스트할 때마다
+    <literal>notificationListenerMappings</literal> 프로퍼티에 리스너로 등록한
+    <classname>ConsoleLoggingNotificationListener</classname> 빈이 알림을 받을
+    것이다. <classname>ConsoleLoggingNotificationListener</classname> 빈은
+    <classname>Notification</classname>의 응답으로 적절한 모든 액션을 받을 수
+    있다.</para>
 
-		<para>You can also use straight bean names as the link between exported beans
-		and listeners:</para>
+    <para>내보낸 빈과 리스너간의 연결로 빈 이름을 직접 사용할 수도 있다.</para>
 
 		<programlisting language="xml"><![CDATA[<beans>
 
@@ -1373,11 +1270,10 @@ public class ConsoleLoggingNotificationListener
 
 </beans>]]></programlisting>
 
-		<para>If one wants to register a single <classname>NotificationListener</classname>
-		instance for all of the beans that the enclosing <classname>MBeanExporter</classname>
-		is exporting, one can use the special wildcard <literal>'*'</literal> (sans quotes)
-		as the key for an entry in the <literal>notificationListenerMappings</literal>
-		property map; for example:</para>
+    <para><classname>MBeanExporter</classname>가 내보내는 모든 빈에 하나의
+    <classname>NotificationListener</classname> 인스턴스를 등록하고 싶다면
+    <literal>notificationListenerMappings</literal> 프로퍼티 맵의 엔트리에 키로
+    <literal>'*'</literal> (따옴표 없이)를 와일드카드로 사용할 수 있다. 예를 들면 다음과 같다.</para>
 
 		<programlisting language="xml"><![CDATA[<property name="notificationListenerMappings">
   <map>
@@ -1387,26 +1283,22 @@ public class ConsoleLoggingNotificationListener
   </map>
 </property>]]></programlisting>
 
-      <para>If one needs to do the inverse (that is, register a number of distinct
-      listeners against an MBean), then one has to use the
-      <literal>notificationListeners</literal> list property instead (and in
-      preference to the <literal>notificationListenerMappings</literal>
-      property). This time, instead of configuring simply a
-      <classname>NotificationListener</classname> for a single MBean, one
-      configures <classname>NotificationListenerBean</classname> instances...
-      a <classname>NotificationListenerBean</classname> encapsulates a
-      <classname>NotificationListener</classname> and the
-      <classname>ObjectName</classname> (or
-      <classname>ObjectNames</classname>) that it is to be registered against
-      in an <interfacename>MBeanServer</interfacename>. The
-      <classname>NotificationListenerBean</classname> also encapsulates a
-      number of other properties such as a
-      <classname>NotificationFilter</classname> and an arbitrary handback
-      object that can be used in advanced JMX notification scenarios.</para>
+      <para>반대로 해야 한다면(즉, MBean에 다수의 리스너를 등록한다면)
+      <literal>notificationListeners</literal> 리스트 프로퍼티(그리고
+      <literal>notificationListenerMappings</literal> 프로퍼티에 대한 설정에)를 대신
+      사용해야 한다. 이때 단일 MBean의 <classname>NotificationListener</classname>를
+      설정하는 대신 <classname>NotificationListenerBean</classname> 인스턴스를 설정해라.
+      <classname>NotificationListenerBean</classname>은
+      <classname>NotificationListener</classname>와
+      <classname>ObjectName</classname>(또는
+      <classname>ObjectNames</classname>)을 은닉화하고 이는
+      <interfacename>MBeanServer</interfacename>에 등록된다.
+      <classname>NotificationListenerBean</classname>은
+      <classname>NotificationFilter</classname>와 고급 JMX 알림 시나리오에서 사용할
+      수 있는 임의의 handback 객체 같은 다수의 프로퍼티들도 은닉화한다.</para>
 
-      <para>The configuration when using
-      <classname>NotificationListenerBean</classname> instances is not wildly
-      different to what was presented previously:</para>
+      <para><classname>NotificationListenerBean</classname> 인스턴스를 사용할 때의
+      설정은 이전에 본 설정과 크게 다르지 않다.</para>
 
       <programlisting language="xml"><![CDATA[<beans>
 
@@ -1439,15 +1331,13 @@ public class ConsoleLoggingNotificationListener
 
 </beans>]]></programlisting>
 
-      <para>The above example is equivalent to the first notification example.
-      Lets assume then that we want to be given a handback object every time a
-      <classname>Notification</classname> is raised, and that additionally we
-      want to filter out extraneous <classname>Notifications</classname> by
-      supplying a <classname>NotificationFilter</classname>. (For a full
-      discussion of just what a handback object is, and indeed what a
-      <classname>NotificationFilter</classname> is, please do consult that
-      section of the JMX specification (1.2) entitled <literal>'The JMX
-      Notification Model'</literal>.)</para>
+      <para>위의 예제는 첫 알림 예제와 같다. <classname>Notification</classname>이
+      발생할 때마다 handback 객체를 주고 해당
+      <classname>NotificationFilter</classname>로 관련 없는
+      <classname>Notifications</classname>을 필터링하기를 원한다고 해보자. (handback
+      객체가 무엇이고 <classname>NotificationFilter</classname>가 무엇인지에 대해서는
+      JMX 명세서(1.2)의 <literal>'The JMX Notification Model'</literal> 부분을
+      참고하기 바란다.)</para>
 
       <programlisting language="xml"><![CDATA[<beans>
 
@@ -1464,7 +1354,7 @@ public class ConsoleLoggingNotificationListener
                 <constructor-arg ref="customerNotificationListener"/>
                 <property name="mappedObjectNames">
                     <list>
-                        ]]><lineannotation>&lt;!-- handles notifications from two distinct MBeans --&gt;</lineannotation><![CDATA[
+                        ]]><lineannotation>&lt;!-- 별개의 두 MBean에서 받은 알림을 처리한다 --&gt;</lineannotation><![CDATA[
                         <value>bean:name=testBean1</value>
                         <value>bean:name=testBean2</value>
                     </list>
@@ -1479,8 +1369,8 @@ public class ConsoleLoggingNotificationListener
         </list>
     </property>
   </bean>
-  
-  ]]><lineannotation>&lt;!-- implements both the <interfacename>NotificationListener</interfacename> and <interfacename>NotificationFilter</interfacename> interfaces --&gt;</lineannotation><![CDATA[
+
+  ]]><lineannotation>&lt;!-- <interfacename>NotificationListener</interfacename>와 <interfacename>NotificationFilter</interfacename> 인터페이스를 구현한다 --&gt;</lineannotation><![CDATA[
   <bean id="customerNotificationListener" class="com.example.ConsoleLoggingNotificationListener"/>
 
   <bean id="testBean1" class="org.springframework.jmx.JmxTestBean">
@@ -1497,63 +1387,54 @@ public class ConsoleLoggingNotificationListener
     </section>
 
     <section id="jmx-notifications-publishing">
-      <title>Publishing Notifications</title>
+      <title>알림 발행하기</title>
 
-      <para>Spring provides support not just for registering to receive
-      <classname>Notifications</classname>, but also for publishing
-      <classname>Notifications</classname>.</para>
+      <para>스프링은 <classname>Notifications</classname>을 받기 위한 등록뿐 아니라
+      <classname>Notifications</classname>을 보내기 위한 등록도 지원한다.</para>
 
       <note>
-        <para>Please note that this section is really only relevant to Spring
-        managed beans that have been exposed as MBeans via an
-        <classname>MBeanExporter</classname>; any existing, user-defined
-        MBeans should use the standard JMX APIs for notification publication.</para>
+        <para>이 부분은 <classname>MBeanExporter</classname>를 통해 MBean으로 노출된
+        스프링이 관리하는 빈에 대해서만 관련된 부분이다. 이미 존재하거나 사용자가 정의한 모든
+        MBean은 표준 JMX API를 사용해서 알림을 발행해야 한다.</para>
       </note>
 
-      <para>The key interface in Spring's JMX notification publication support
-      is the <classname>NotificationPublisher</classname> interface (defined
-      in the <literal>org.springframework.jmx.export.notification</literal>
-      package). Any bean that is going to be exported as an MBean via an
-      <classname>MBeanExporter</classname> instance can implement the related
-      <classname>NotificationPublisherAware</classname> interface to gain
-      access to a <classname>NotificationPublisher</classname> instance. The
-      <classname>NotificationPublisherAware</classname> interface simply
-      supplies an instance of a <classname>NotificationPublisher</classname>
-      to the implementing bean via a simple setter method, which the bean can
-      then use to publish <classname>Notifications</classname>.</para>
+      <para>스프링의 JMX 알림 발행 지원에서 핵심 인터페이스는
+      <classname>NotificationPublisher</classname> 인터페이스다.
+      (<literal>org.springframework.jmx.export.notification</literal> 패키지에
+      정의되어 있다.) <classname>MBeanExporter</classname> 인스턴스를 통해서 MBean으로
+      내보내질 모든 빈은 <classname>NotificationPublisher</classname> 인스턴스에 접근할
+      수 있도록 <classname>NotificationPublisherAware</classname> 인터페이스를 구현할
+      수 있다. <classname>NotificationPublisherAware</classname> 인터페이스는 해당
+      빈이 <classname>Notifications</classname>을 발행하는 데 사용할 수 있는 간단한 setter
+      메서드로 구현한 빈에 <classname>NotificationPublisher</classname> 인스턴스를
+      제공한다.</para>
 
-      <para>As stated in the Javadoc for the
-      <classname>NotificationPublisher</classname> class, managed beans that
-      are publishing events via the
-      <classname>NotificationPublisher</classname> mechanism are
-      <emphasis>not</emphasis> responsible for the state management of any
-      notification listeners and the like ... Spring's JMX support will take
-      care of handling all the JMX infrastructure issues. All one need do as
-      an application developer is implement the
-      <classname>NotificationPublisherAware</classname> interface and start
-      publishing events using the supplied
-      <classname>NotificationPublisher</classname> instance. Note that the
-      <classname>NotificationPublisher</classname> will be set
-      <emphasis>after</emphasis> the managed bean has been registered with an
-      <interfacename>MBeanServer</interfacename>.</para>
+      <para><classname>NotificationPublisher</classname> 클래스의 Javadoc에 나온 대로
+      <classname>NotificationPublisher</classname> 메커니즘으로 이벤트를 발행하면서
+      관리되고 있는 빈은 어떤 알림 리스너 등에 대해서도 상태관리를 책임지지
+      <emphasis>않는다</emphasis>. 스프링의 JMX 지원은 JMX 인프라스트럭처와 관련된 모든
+      이슈의 처리를 담당한다. 애플리케이션 개발자가 해야 하는 일은
+      <classname>NotificationPublisherAware</classname> 인터페이스를 구현하고 제공된
+      <classname>NotificationPublisher</classname> 인스턴스를 사용해서 이벤트를 발행하는
+      것뿐이다. 관리되는 빈이 <interfacename>MBeanServer</interfacename>에 등록된
+      <emphasis>후에</emphasis> <classname>NotificationPublisher</classname>가
+      설정된다는 점에 주의해라.</para>
 
-      <para>Using a <classname>NotificationPublisher</classname> instance is
-      quite straightforward... one simply creates a JMX
-      <classname>Notification</classname> instance (or an instance of an
-      appropriate <classname>Notification</classname> subclass), populates
-      the notification with the data pertinent to the event that is to be
-      published, and one then invokes the
-      <methodname>sendNotification(Notification)</methodname> on the
-      <classname>NotificationPublisher</classname> instance, passing in the
-      <classname>Notification</classname>.</para>
+      <para><classname>NotificationPublisher</classname> 인스턴스의 사용은 아주
+      직관적이다. 그냥 <classname>Notification</classname> 인스턴스(또는
+      <classname>Notification</classname>의 적절한 하위클래스의 인스턴스)를 만들고 발행할
+      이벤트와 관련된 데이터로 알림을 만든 후
+      <classname>NotificationPublisher</classname> 인스턴스의
+      <methodname>sendNotification(Notification)</methodname>를 호출해서
+      <classname>Notification</classname>을 전달하면 된다.</para>
 
-      <para>Find below a simple example... in this scenario, exported
-      instances of the <classname>JmxTestBean</classname> are going to publish
-      a <classname>NotificationEvent</classname> every time the
-      <literal>add(int, int)</literal> operation is invoked.</para>
+      <para>아래의 간단한 예제를 보자. 이 시나리오에서 내보내진
+      <classname>JmxTestBean</classname> 인스턴스는
+      <literal>add(int, int)</literal>가 호출될 때마다
+      <classname>NotificationEvent</classname>를 발행할 것이다.</para>
 
       <programlisting language="java"><![CDATA[package org.springframework.jmx;
-			
+
 import org.springframework.jmx.export.notification.NotificationPublisherAware;
 import org.springframework.jmx.export.notification.NotificationPublisher;
 import javax.management.Notification;
@@ -1565,7 +1446,7 @@ public class JmxTestBean implements IJmxTestBean, NotificationPublisherAware {
     private boolean isSuperman;
     private NotificationPublisher publisher;
 
-    ]]><lineannotation>// other getters and setters omitted for clarity</lineannotation><![CDATA[
+    ]]><lineannotation>// 다른 getter와 setter는 생략했다</lineannotation><![CDATA[
 
     public int add(int x, int y) {
         int answer = x + y;
@@ -1576,47 +1457,45 @@ public class JmxTestBean implements IJmxTestBean, NotificationPublisherAware {
     public void dontExposeMe() {
         throw new RuntimeException();
     }
-    
+
     public void setNotificationPublisher(NotificationPublisher notificationPublisher) {
         this.publisher = notificationPublisher;
     }
 }]]></programlisting>
 
-      <para>The <classname>NotificationPublisher</classname> interface and the
-      machinery to get it all working is one of the nicer features of Spring's JMX support.
-	  It does however come with the price tag of coupling your classes to both Spring and JMX; as
-	  always, the advice here is to be pragmatic... if you need the functionality offered by the
-      <classname>NotificationPublisher</classname> and you can accept the coupling to both Spring
-	  and JMX, then do so.</para>
+      <para><classname>NotificationPublisher</classname> 인터페이스와 관련된 부분이
+      모두 잘 동작한다는 점이 스프링의 JMX 지원을 좋은 점중 하나다. 하지만 클래스가 스프링과 JMX에
+    모두 의존성을 갖게 된다는 단점이 있다. 언제나 그렇듯이 이에 대한 조언은 현실적인 조언뿐이다.
+    <classname>NotificationPublisher</classname>이 제공하는 기능이 필요하고 스프링과 JMX에
+    대한 의존성을 받아들일 수 있다면 사용해도 좋다.</para>
     </section>
   </section>
 
   <section id="jmx-resources">
-    <title>Further Resources</title>
+    <title>추가 자료</title>
 
-    <para>This section contains links to further resources about JMX.</para>
+    <para>이번 장에서는 JMX에 대한 추가자료와 관련된 링크를 제공한다.</para>
 
     <itemizedlist>
       <listitem>
-        <para>The <ulink url="http://java.sun.com/products/JavaManagement/">JMX homepage</ulink> at Sun</para>
+        <para>Sun사의 <ulink url="http://java.sun.com/products/JavaManagement/">JMX 홈페이지</ulink></para>
       </listitem>
 
       <listitem>
-        <para>The <ulink url="http://jcp.org/aboutJava/communityprocess/final/jsr003/index3.html">JMX specification</ulink> (JSR-000003)</para>
+        <para><ulink url="http://jcp.org/aboutJava/communityprocess/final/jsr003/index3.html">JMX 명세서</ulink> (JSR-000003)</para>
       </listitem>
 
       <listitem>
-        <para>The <ulink url="http://jcp.org/aboutJava/communityprocess/final/jsr160/index.html">JMX Remote API specification</ulink> (JSR-000160)</para>
+        <para><ulink url="http://jcp.org/aboutJava/communityprocess/final/jsr160/index.html">JMX 원격 API 명세서</ulink> (JSR-000160)</para>
       </listitem>
 
       <listitem>
-        <para>The <ulink url="http://mx4j.sourceforge.net/">MX4J
-        homepage</ulink> (an Open Source implementation of various JMX
-        specs)</para>
+        <para><ulink url="http://mx4j.sourceforge.net/">MX4J
+        홈페이지</ulink> (다양한 JMX 명세에 대한 오픈소스 구현체)</para>
       </listitem>
 
       <listitem>
-        <para><ulink url="http://java.sun.com/developer/technicalArticles/J2SE/jmx.html">Getting Started with JMX</ulink> - an introductory article from Sun.</para>
+        <para><ulink url="http://java.sun.com/developer/technicalArticles/J2SE/jmx.html">JMX 시작하기</ulink> - Sun에서 만든 소개글.</para>
       </listitem>
     </itemizedlist>
   </section>
