@@ -5,113 +5,97 @@
   <title>JCA CCI</title>
 
   <section id="cci-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>Java EE provides a specification to standardize access to enterprise
-    information systems (EIS): the JCA (J2EE Connector Architecture). This
-    specification is divided into several different parts:</para>
+    <para>Java EE는 엔터프라이즈 인포메이션 시스템(EIS, Enterprise Information
+    Systems)에 대한 표준화된 접근의 명세 JCA(J2EE Connector Architecture)를 제공한다.
+    이 명세는 여러 부분으로 나누어져 있다.</para>
 
     <itemizedlist>
       <listitem>
-        <para>SPI (Service provider interfaces) that the connector provider
-        must implement. These interfaces constitute a resource adapter which
-        can be deployed on a Java EE application server. In such a scenario, the
-        server manages connection pooling, transaction and security (managed
-        mode). The application server is also responsible for managing the
-        configuration, which is held outside the client application. A
-        connector can be used without an application server as well; in this
-        case, the application must configure it directly (non-managed
-        mode).</para>
+        <para>커넥터 프로바이더인 SPI (Service provider interfaces)는 반드시 구현해야
+        한다. 이러한 인터페이스는 Java EE 애플리케이션 서버에 배포할 수 있는 리소스 어댑터다. 이런
+        시나리오에서 서버는 커넥션 풀, 트랜잭션, 보안(관리 모드)를 관리한다. 애플리케이션 서버는
+        클라이언트 애플리케이션 외부에 있는 구성도 관리한다. 애플리케이션 서버 없이도 커넥터를
+        사용할 수 있는데 이 경우에는 애플리케이션이 커넥터를 직접 구성해야 한다.(비관리 모드)</para>
       </listitem>
 
       <listitem>
-        <para>CCI (Common Client Interface) that an application can use to
-        interact with the connector and thus communicate with an EIS. An API
-        for local transaction demarcation is provided as well.</para>
+        <para>애플리케이션이 사용할 수 있는 CCI (Common Client Interface) 는 커넥터와
+        상호작용하므로 EIS로 통신한다. 로컬 트랜잭션 경계에 대한 API도 제공된다.</para>
       </listitem>
     </itemizedlist>
 
-    <para>The aim of the Spring CCI support is to provide classes to access a
-    CCI connector in typical Spring style, leveraging the Spring Framework's
-    general resource and transaction management facilities.</para>
+    <para>스프링 CCI 지원은 스프링 프레임워크의 일반적인 리소스 관리와 트랜잭션 관리 기능을
+    사용하면서 일반적인 스프링 방식으로 CCI 커넥터에 접근하는 클래스를 제공한다. </para>
 
     <note>
-      <para>The client side of connectors doesn't alway use CCI. Some
-      connectors expose their own APIs, only providing JCA resource adapter to
-      use the system contracts of a Java EE container (connection pooling, global
-      transactions, security). Spring does not offer special support for such
-      connector-specific APIs.</para>
+      <para>커넥터의 클라이언트 측이 항상 CCI를 사용하는 것은 아니다. 어떤 커넥터는 자신만의
+      API를 가지고 Java EE 컨테이너의 시스템 규약(커넥션 풀링, 전역 트랜잭션, 보안)을 사용하는
+      JCA 리소스 어댑터만 제공하기도 한다. 이렇게 커넥터에 특화된 API를 스프링이 따로
+      지원하진 않는다.</para>
     </note>
   </section>
 
   <section id="cci-config">
-    <title>Configuring CCI</title>
+    <title>CCI 구성</title>
 
     <section id="cci-config-connector">
-      <title>Connector configuration</title>
+      <title>커넥터 구성</title>
 
-      <para>The base resource to use JCA CCI is the
-      <interfacename>ConnectionFactory</interfacename> interface. The
-      connector used must provide an implementation of this interface.</para>
+      <para>JCA CCI를 사용하는 기반은
+      <interfacename>ConnectionFactory</interfacename> 인터페이스다. 사용하는 커넥터는
+      반드시 이 인터페이스의 구현체를 제공해야 한다.</para>
 
-      <para>To use your connector, you can deploy it on your application
-      server and fetch the <interfacename>ConnectionFactory</interfacename>
-      from the server's JNDI environment (managed mode). The connector must be
-      packaged as a RAR file (resource adapter archive) and contain a
-      <filename>ra.xml</filename> file to describe its deployment
-      characteristics. The actual name of the resource is specified when you
-      deploy it. To access it within Spring, simply use Spring's
-      <classname>JndiObjectFactoryBean</classname> /
-      <literal>&lt;jee:jndi-lookup&gt;</literal> fetch the factory by its JNDI
-      name.</para>
+      <para>커넥터를 사용하려면 애플리케이션 서버에 커넥터를 배포하고 서버의 JNDI 환경에서
+      <interfacename>ConnectionFactory</interfacename>를 가져올 수 있어야 한다.(관리
+      모드) 커넥터를 RAR 파일(resource adapter archive)로 패키징해야 하고 배포와 관련된
+      정보를 담고 있는 <filename>ra.xml</filename>이 포함되어 있어야 한다. 리소스의 실제
+      이름은 배포할 때 지정한다. 스프링 내에서 커넥터에 접근하려면 JNDI 이름으로 팩토리를 가져오는
+      스프링의 <classname>JndiObjectFactoryBean</classname> /
+      <literal>&lt;jee:jndi-lookup&gt;</literal>를 사용하면 된다.</para>
 
-      <para>Another way to use a connector is to embed it in your application
-      (non-managed mode), not using an application server to deploy and
-      configure it. Spring offers the possibility to configure a connector as
-      a bean, through a provided <literal>FactoryBean</literal>
-      (<classname>LocalConnectionFactoryBean</classname>). In this manner, you
-      only need the connector library in the classpath (no RAR file and no
-      <filename>ra.xml</filename> descriptor needed). The library must be
-      extracted from the connector's RAR file, if necessary.</para>
+      <para>어플리케이션서버를 사용해서 배포하고 구성하는 대신 애플리케이션에 커넥터를 내장시키는
+      것도 커넥터를 사용하는 또 하나의 방법이다.(비관리 모드) 스프링에서는 제공된
+      <literal>FactoryBean</literal>으로 커넥터를 빈으로 구성할 수 있다. 이 방법을 사용할
+      때는 클래스패스에 커넥터 라이브러리만 넣으면 된다.(RAR 파일이나
+      <filename>ra.xml</filename> 디스크립터가 필요 없다.) 필요하다만 커넥터의 RAR 파일에서
+      라이브러리만 추출해야 한다.</para>
 
-      <para>Once you have got access to your
-      <interfacename>ConnectionFactory</interfacename> instance, you can
-      inject it into your components. These components can either be coded
-      against the plain CCI API or leverage Spring's support classes for CCI
-      access (e.g. <classname>CciTemplate</classname>).</para>
+      <para>일단 <interfacename>ConnectionFactory</interfacename> 인스턴스에 접근하고
+      나면 컴포넌트에 주입할 수 있다. 이러한 컴포넌트는 평범한 CCI API를 기반으로 작성하거나
+      스프링의 CCI 접근 지원 클래스(<classname>CciTemplate</classname> 같은)를
+      기반으로 작성할 수 있다.</para>
 
       <note>
-        <para>When you use a connector in non-managed mode, you can't use
-        global transactions because the resource is never enlisted / delisted
-        in the current global transaction of the current thread. The resource
-        is simply not aware of any global Java EE transactions that might be
-        running.</para>
+        <para>비관리 모드에서 커넥터를 사용할 때는 현재 스레드의 현재 전역 트랜잭션에 리소스가
+        절대 추가되거나 빠지지 않으므로 전역 트랜잭션을 사용할 수 없다. 리소스는 어떤 전역
+        Java EE 트랜잭션도 인지하지 못한다.</para>
       </note>
     </section>
 
     <section id="cci-config-connectionfactory">
-      <title><interfacename>ConnectionFactory</interfacename> configuration in
-      Spring</title>
+      <title>스프링에서 <interfacename>ConnectionFactory</interfacename>의
+      구성</title>
 
-      <para>In order to make connections to the EIS, you need to obtain a
-      <interfacename>ConnectionFactory</interfacename> from the application
-      server if you are in a managed mode, or directly from Spring if you are
-      in a non-managed mode.</para>
+      <para>EIS에 연결하려고 할 때 관리 모드인 경우에는 애플리케이션 서버에서
+      <interfacename>ConnectionFactory</interfacename>를 얻어야 하고 비관리 모드인
+      경우에는 스프링에서 직접 <interfacename>ConnectionFactory</interfacename>를
+      가져와야 한다.</para>
 
-      <para>In a managed mode, you access a
-      <interfacename>ConnectionFactory</interfacename> from JNDI; its
-      properties will be configured in the application server.</para>
+      <para>관리 모드에서는 JNDI에서
+      <interfacename>ConnectionFactory</interfacename>에 접근한다.
+      <interfacename>ConnectionFactory</interfacename>의 프로퍼티는 애플리케이션
+      서버에서 설정할 것이다.</para>
 
       <programlisting language="xml">&lt;jee:jndi-lookup id="eciConnectionFactory" jndi-name="eis/cicseci"/&gt;</programlisting>
 
-      <para>In non-managed mode, you must configure the
-      <interfacename>ConnectionFactory</interfacename> you want to use in the
-      configuration of Spring as a JavaBean. The
-      <classname>LocalConnectionFactoryBean</classname> class offers this
-      setup style, passing in the
-      <classname>ManagedConnectionFactory</classname> implementation of your
-      connector, exposing the application-level CCI
-      <interfacename>ConnectionFactory</interfacename>.</para>
+      <para>비관리 모드에서는 스프링 설정에서 사용할
+      <interfacename>ConnectionFactory</interfacename>를 JavaBean으로 설정해야 한다.
+      <classname>LocalConnectionFactoryBean</classname> 클래스가 커넥터의
+      <classname>ManagedConnectionFactory</classname> 구현체를 전달하고 애플리케이션
+      수준의 CCI <interfacename>ConnectionFactory</interfacename>를 노출시켜서
+      이러한 설정 방법을 제공한다.</para>
 
       <programlisting language="xml">&lt;bean id="eciManagedConnectionFactory" class="com.ibm.connector2.cics.ECIManagedConnectionFactory"&gt;
   &lt;property name="serverName" value="TXSERIES"/&gt;
@@ -124,33 +108,30 @@
 &lt;/bean&gt;</programlisting>
 
       <note>
-        <para>You can't directly instantiate a specific
-        <interfacename>ConnectionFactory</interfacename>. You need to go
-        through the corresponding implementation of the
-        <classname>ManagedConnectionFactory</classname> interface for your
-        connector. This interface is part of the JCA SPI specification.</para>
+        <para>특정 <interfacename>ConnectionFactory</interfacename>를 직접
+        인스턴스화 할 수는 없다. 커넥터에 대한
+        <classname>ManagedConnectionFactory</classname> 인터페이스의 대응되는 구현체를
+        통해야 한다. 이 인터페이스는 JCA SPI 명세에 포함된 내용이다.</para>
       </note>
     </section>
 
     <section id="cci-config-cci-connections">
-      <title>Configuring CCI connections</title>
+      <title>CCI 연결 구성</title>
 
-      <para>JCA CCI allow the developer to configure the connections to the
-      EIS using the <interfacename>ConnectionSpec</interfacename>
-      implementation of your connector. In order to configure its properties,
-      you need to wrap the target connection factory with a dedicated adapter,
-      <classname>ConnectionSpecConnectionFactoryAdapter</classname>. So, the
-      dedicated <interfacename>ConnectionSpec</interfacename> can be
-      configured with the property <literal>connectionSpec</literal> (as an
-      inner bean).</para>
+      <para>개발자는 JCA CCI를 사용해서 커넥터의
+      <interfacename>ConnectionSpec</interfacename> 구현체를 사용해서 EIS에 대한 연결을
+      구성할 수 있다. <interfacename>ConnectionSpec</interfacename>의 프로퍼티를
+      설정하려면 전용 어댑터
+      <classname>ConnectionSpecConnectionFactoryAdapter</classname>로 대상 커넥션
+      팩토리를 감싸야 한다. 그래서 전용 <interfacename>ConnectionSpec</interfacename>를
+      <literal>connectionSpec</literal> 프로퍼티(내부 빈으로)로 설정할 수 있다.</para>
 
-      <para>This property is not mandatory because the CCI
-      <interfacename>ConnectionFactory</interfacename> interface defines two
-      different methods to obtain a CCI connection. Some of the
-      <interfacename>ConnectionSpec</interfacename> properties can often be
-      configured in the application server (in managed mode) or on the
-      corresponding local <classname>ManagedConnectionFactory</classname>
-      implementation.</para>
+      <para>CCI <interfacename>ConnectionFactory</interfacename> 인터페이스는 CCI
+      연결을 얻는 두 가지 방법을 정의하고 있으므로 이 프로퍼티는 의무사항은 아니다.
+      <interfacename>ConnectionSpec</interfacename> 프로퍼티 중 일부는 애플리케이션
+      서버에서 설정하거나(관리모드에서) 대응되는 로컬
+      <classname>ManagedConnectionFactory</classname> 구현체에서
+      설정할 수 있다.</para>
 
       <programlisting language="java">public interface ConnectionFactory implements Serializable, Referenceable {
   ...
@@ -159,14 +140,12 @@
   ...
 }</programlisting>
 
-      <para>Spring provides a
-      <classname>ConnectionSpecConnectionFactoryAdapter</classname> that
-      allows for specifying a <interfacename>ConnectionSpec</interfacename>
-      instance to use for all operations on a given factory. If the adapter's
-      <literal>connectionSpec</literal> property is specified, the adapter
-      uses the <literal>getConnection</literal> variant without argument, else
-      the one with the <interfacename>ConnectionSpec</interfacename>
-      argument.</para>
+      <para>스프링은 해당 팩토리의 모든 동작을 사용할 수 있도록
+      <interfacename>ConnectionSpec</interfacename> 인스턴스를 지정할 수 있는
+      <classname>ConnectionSpecConnectionFactoryAdapter</classname>를 제공한다.
+      이 어댑터의 <literal>connectionSpec</literal> 프로퍼티를 지정했다면 어댑터는 인자 없이
+      <literal>getConnection</literal> 계열을 사용하고 지정하지 않았다면
+      <interfacename>ConnectionSpec</interfacename> 인자와 함께 사용한다.</para>
 
       <programlisting language="xml">&lt;bean id="managedConnectionFactory"
     class="com.sun.connector.cciblackbox.CciLocalTxManagedConnectionFactory"&gt;
@@ -192,15 +171,14 @@
     </section>
 
     <section id="cci-config-single-connection">
-      <title>Using a single CCI connection</title>
+      <title>단일 CCI 연결의 사용</title>
 
-      <para>If you want to use a single CCI connection, Spring provides a
-      further <interfacename>ConnectionFactory</interfacename> adapter to
-      manage this. The <classname>SingleConnectionFactory</classname> adapter
-      class will open a single connection lazily and close it when this bean
-      is destroyed at application shutdown. This class will expose special
-      <interfacename>Connection</interfacename> proxies that behave
-      accordingly, all sharing the same underlying physical connection.</para>
+      <para>단일 CCI 연결을 사용하고 싶은 경우를 위해서 스프링은
+      <interfacename>ConnectionFactory</interfacename> 어댑터로 이를 관리할 수 있게
+      한다. <classname>SingleConnectionFactory</classname> 어댑터 클래스가 단일 연결을
+      지연해서 열고 애플리케이션 종료 시 해당 빈이 파괴될 때 연결을 닫는다. 이 클래스는 물리적 연결에
+      기반을 둬서 같은 연결을 공유하면서 상황에 따라 적절하게 동작하는 전용
+      <interfacename>Connection</interfacename> 프록시를 노출할 것이다.</para>
 
       <programlisting language="xml">&lt;bean id="eciManagedConnectionFactory"
     class="com.ibm.connector2.cics.ECIManagedConnectionFactory"&gt;
@@ -220,48 +198,44 @@
 &lt;/bean&gt;</programlisting>
 
       <note>
-        <para>This <interfacename>ConnectionFactory</interfacename> adapter
-        cannot directly be configured with a
-        <interfacename>ConnectionSpec</interfacename>. Use an intermediary
-        <classname>ConnectionSpecConnectionFactoryAdapter</classname> that the
-        <classname>SingleConnectionFactory</classname> talks to if you require
-        a single connection for a specific
-        <interfacename>ConnectionSpec</interfacename>.</para>
+        <para>이 <interfacename>ConnectionFactory</interfacename> 어댑터는
+        <interfacename>ConnectionSpec</interfacename>로 직접 설정할 수 없다. 특정
+        <interfacename>ConnectionSpec</interfacename>에 대한 단일 커넥션이 필요한
+        경우에는 <classname>SingleConnectionFactory</classname>와 통신하는
+        <classname>ConnectionSpecConnectionFactoryAdapter</classname>로 중개해서
+        사용해라.</para>
       </note>
     </section>
   </section>
 
   <section id="cci-using">
-    <title>Using Spring's CCI access support</title>
+    <title>스프링의 CCI 접근에 대한 지원 사용하기</title>
 
     <section id="cci-record-creator">
-      <title>Record conversion</title>
+      <title>레코드(Record) 변환</title>
 
-      <para>One of the aims of the JCA CCI support is to provide convenient
-      facilities for manipulating CCI records. The developer can specify the
-      strategy to create records and extract datas from records, for use with
-      Spring's <classname>CciTemplate</classname>. The following interfaces
-      will configure the strategy to use input and output records if you don't
-      want to work with records directly in your application.</para>
+      <para>JCA CCI 지원 중 하나는 CCI 레코드를 편리하게 조작할 수 있도록 하는 것이다. 개발자는
+      스프링의 <classname>CciTemplate</classname>를 사용해서 레코드를 생성하고 레코드에서
+      데이터를 추출하는 전략을 지정할 수 있다. 다음 인터페이스들은 애플리케이션에서 레코드를 직접
+      다루길 원하지 않는 경우 입력과 출력 레코드를 사용하는 전략을 설정할 것이다.</para>
 
-      <para>In order to create an input <interfacename>Record</interfacename>,
-      the developer can use a dedicated implementation of the
-      <interfacename>RecordCreator</interfacename> interface.</para>
+      <para>입력 <interfacename>Record</interfacename>를 생성하기 위해 개발자가
+      <interfacename>RecordCreator</interfacename> 인터페이스의 전용 구현체를
+      사용할 수 있다.</para>
 
       <programlisting language="java">public interface RecordCreator {
 
   Record createRecord(RecordFactory recordFactory) throws ResourceException, DataAccessException;
 }</programlisting>
 
-      <para>As you can see, the <literal>createRecord(..)</literal> method
-      receives a <interfacename>RecordFactory</interfacename> instance as
-      parameter, which corresponds to the
-      <interfacename>RecordFactory</interfacename> of the
-      <interfacename>ConnectionFactory</interfacename> used. This reference
-      can be used to create <interfacename>IndexedRecord</interfacename> or
-      <interfacename>MappedRecord</interfacename> instances. The following
-      sample shows how to use the <interfacename>RecordCreator</interfacename>
-      interface and indexed/mapped records.</para>
+      <para>여기서 보듯이 <literal>createRecord(..)</literal> 메서드는 파라미터로
+      <interfacename>RecordFactory</interfacename>를 받는다. 이 파라미터는 사용한
+      <interfacename>ConnectionFactory</interfacename>의
+      <interfacename>RecordFactory</interfacename>를 가리키는데
+      <interfacename>IndexedRecord</interfacename>나
+      <interfacename>MappedRecord</interfacename>를 생성하는 데 사용한다. 다음 예제는
+      <interfacename>RecordCreator</interfacename> 인터페이스와 색인 되거나(indexed)
+      매핑된(mapped) 레코드를 사용하는 방법을 보여준다.</para>
 
       <programlisting language="java">public class MyRecordCreator implements RecordCreator {
 
@@ -272,19 +246,18 @@
   }
 }</programlisting>
 
-      <para>An output <interfacename>Record</interfacename> can be used to
-      receive data back from the EIS. Hence, a specific implementation of the
-      <interfacename>RecordExtractor</interfacename> interface can be passed
-      to Spring's <classname>CciTemplate</classname> for extracting data from
-      the output <interfacename>Record</interfacename>.</para>
+      <para>EIS에서 다시 데이터를 받을 때 출력 <interfacename>Record</interfacename>를
+      사용할 수도 있다. 그러므로 출력 <interfacename>Record</interfacename>의 데이터를
+      추출하기 위해 <interfacename>RecordExtractor</interfacename> 인터페이스의 특정
+      구현체를 스프링 <classname>CciTemplate</classname>에 전달할 수 있다.</para>
 
       <programlisting language="java">public interface RecordExtractor {
 
   Object extractData(Record record) throws ResourceException, SQLException, DataAccessException;
 }</programlisting>
 
-      <para>The following sample shows how to use the
-      <interfacename>RecordExtractor</interfacename> interface.</para>
+      <para>다음 예제는 <interfacename>RecordExtractor</interfacename> 인터페이스를
+      사용하는 방법을 보여준다.</para>
 
       <programlisting language="java">public class MyRecordExtractor implements RecordExtractor {
 
@@ -299,21 +272,19 @@
     </section>
 
     <section id="cci-using-template">
-      <title>The <classname>CciTemplate</classname></title>
+      <title><classname>CciTemplate</classname></title>
 
-      <para>The <classname>CciTemplate</classname> is the central class of the
-      core CCI support package
-      (<literal>org.springframework.jca.cci.core</literal>). It simplifies the
-      use of CCI since it handles the creation and release of resources. This
-      helps to avoid common errors like forgetting to always close the
-      connection. It cares for the lifecycle of connection and interaction
-      objects, letting application code focus on generating input records from
-      application data and extracting application data from output
-      records.</para>
+      <para><classname>CciTemplate</classname>은 핵심 CCI 지원 패키지
+      (<literal>org.springframework.jca.cci.core</literal>)의 중심이 되는 클래스다.
+      <classname>CciTemplate</classname>는 리소스의 생성과 해제를 관리해서 CCI를 쉽게
+      사용할 수 있도록 한다. 그리고 연결을 닫는 것을 잊어버리는 등의 일반적인 오류를 피할 수 있게
+      해준다. <classname>CciTemplate</classname>는 연결과 상호작용(interaction) 객체의
+      생명주기를 관리해서 애플리케이션 코드는 애플리케이션에서 입력 레코드를 생성하고 출력 레코드에서
+      애플리케이션 데이터를 추출하는 데 집중하도록 한다.</para>
 
-      <para>The JCA CCI specification defines two distinct methods to call
-      operations on an EIS. The CCI <interfacename>Interaction</interfacename>
-      interface provides two execute method signatures:</para>
+      <para>JCA CCI 명세는 EIS에서 작업을 호출하는 별개의 두 메서드를 정의하고 있다. CCI
+      <interfacename>Interaction</interfacename> 인터페이스는
+      두 가지 execute 메서드 시그니처를 제공한다.</para>
 
       <programlisting language="java">public interface javax.resource.cci.Interaction {
   ...
@@ -323,34 +294,31 @@
   ...
 }</programlisting>
 
-      <para>Depending on the template method called,
-      <classname>CciTemplate</classname> will know which
-      <literal>execute</literal> method to call on the interaction. In any
-      case, a correctly initialized
-      <interfacename>InteractionSpec</interfacename> instance is
-      mandatory.</para>
+      <para>호출된 템플릿 메서드에 따라 <classname>CciTemplate</classname>이 상호작용에
+      어떤 <literal>execute</literal> 메서드를 호출할지 알 수 있다. 어떤 경우에든 제대로
+      초기화된 <interfacename>InteractionSpec</interfacename> 인스턴스가
+      필요하다.</para>
 
-      <para><literal>CciTemplate.execute(..)</literal> can be used in two
-      ways:</para>
+      <para><literal>CciTemplate.execute(..)</literal>는 두 가지로 사용할 수
+      있다.</para>
 
       <itemizedlist>
         <listitem>
-          <para>With direct <interfacename>Record</interfacename> arguments.
-          In this case, you simply need to pass the CCI input record in, and
-          the returned object be the corresponding CCI output record.</para>
+          <para>직접 <interfacename>Record</interfacename> 인자로 사용하는 방법.
+          이 경우 CCI 입력 레코드를 전달해야 하고 반환된 객체는 CCI 출력 레코드에
+          대응된다.</para>
         </listitem>
 
         <listitem>
-          <para>With application objects, using record mapping. In this case,
-          you need to provide corresponding
-          <interfacename>RecordCreator</interfacename> and
-          <interfacename>RecordExtractor</interfacename> instances.</para>
+          <para>레코드 매핑을 사용해서 애플리케이션 객체를 사용하는 방법. 이 경우에는 대응되는
+          <interfacename>RecordCreator</interfacename>와
+          <interfacename>RecordExtractor</interfacename> 인스턴스를 제공해야 한다.</para>
         </listitem>
       </itemizedlist>
 
-      <para>With the first approach, the following methods of the template
-      will be used. These methods directly correspond to those on the
-      <interfacename>Interaction</interfacename> interface.</para>
+      <para>첫번째 방법을 사용하면 템플릿의 다음 메서드를 사용할 것이다. 이 메서드들은
+      <interfacename>Interaction</interfacename> 인터페이스의 메서드들과 직접
+      대응된다.</para>
 
       <programlisting language="java">public class CciTemplate implements CciOperations {
 
@@ -362,11 +330,9 @@
 
 }</programlisting>
 
-      <para>With the second approach, we need to specify the record creation
-      and record extraction strategies as arguments. The interfaces used are
-      those describe in the previous section on record conversion. The
-      corresponding <classname>CciTemplate</classname> methods are the
-      following:</para>
+      <para>두번째 방법을 사용하면 인자로 레코드 생성 전략과 레코드 추출 전략을 지정해야 한다.
+      레코드 변환에 사용하는 인터페이스는 이전 장에서 설명했다. 대응되는
+      <classname>CciTemplate</classname> 메서드는 다음과 같다.</para>
 
       <programlisting language="java">public class CciTemplate implements CciOperations {
 
@@ -381,22 +347,21 @@
 
 }</programlisting>
 
-      <para>Unless the <literal>outputRecordCreator</literal> property is set
-      on the template (see the following section), every method will call the
-      corresponding <literal>execute</literal> method of the CCI
-      <interfacename>Interaction</interfacename> with two parameters:
-      <interfacename>InteractionSpec</interfacename> and input
-      <interfacename>Record</interfacename>, receiving an output
-      <interfacename>Record</interfacename> as return value.</para>
+      <para>템플릿에 <literal>outputRecordCreator</literal> 프로퍼티를 설정하지
+      않으면(다음 장 참고) 모든 메서드가 적절한 CCI
+      <interfacename>Interaction</interfacename>의 <literal>execute</literal>
+      메서드를 두 개의 파라미터 <interfacename>InteractionSpec</interfacename>와 입력
+      <interfacename>Record</interfacename>로 호출할 것이고 이 메서드는 출력
+      <interfacename>Record</interfacename>를 반환한다.</para>
 
-      <para><classname>CciTemplate</classname> also provides methods to create
-      <literal>IndexRecord</literal> and <literal>MappedRecord</literal>
-      outside a <interfacename>RecordCreator</interfacename> implementation,
-      through its <literal>createIndexRecord(..)</literal> and
-      <literal>createMappedRecord(..)</literal> methods. This can be used
-      within DAO implementations to create
-      <interfacename>Record</interfacename> instances to pass into
-      corresponding <literal>CciTemplate.execute(..)</literal> methods.</para>
+      <para><classname>CciTemplate</classname>은
+      <interfacename>RecordCreator</interfacename> 구현체 외부에서
+      <literal>IndexRecord</literal>와 <literal>MappedRecord</literal>를 생성하는
+      <literal>createIndexRecord(..)</literal>와
+      <literal>createMappedRecord(..)</literal> 메서드도 제공한다. 해당
+      <literal>CciTemplate.execute(..)</literal> 메서드에 전달할
+      <interfacename>Record</interfacename> 인스턴스를 생성하기 위해서 DAO 구현체 내에서
+      이 메서드를 사용할 수 있다.</para>
 
       <programlisting language="java">public class CciTemplate implements CciOperations {
 
@@ -408,18 +373,17 @@
     </section>
 
     <section id="cci-using-dao">
-      <title>DAO support</title>
+      <title>DAO 지원</title>
 
-      <para>Spring's CCI support provides a abstract class for DAOs,
-      supporting injection of a
-      <interfacename>ConnectionFactory</interfacename> or a
-      <classname>CciTemplate</classname> instances. The name of the class is
-      <classname>CciDaoSupport</classname>: It provides simple
-      <literal>setConnectionFactory</literal> and
-      <literal>setCciTemplate</literal> methods. Internally, this class will
-      create a <classname>CciTemplate</classname> instance for a passed-in
-      <interfacename>ConnectionFactory</interfacename>, exposing it to
-      concrete data access implementations in subclasses.</para>
+      <para>스프링의 CCI 지원은 DAO에 대한 추상 클래스를 제공하고
+      <interfacename>ConnectionFactory</interfacename>나
+      <classname>CciTemplate</classname> 인스턴스의 주입을 지원한다. 클래스 이름은
+      <classname>CciDaoSupport</classname>이고
+      <literal>setConnectionFactory</literal>와
+      <literal>setCciTemplate</literal> 메서드를 제공한다. 내부적으로 이 클래스는
+      하위클래스에서 데이터 접근 구현체를 구현할 수 있게 <classname>CciTemplate</classname>
+      인스턴스를 노출하는 해당 <interfacename>ConnectionFactory</interfacename>를
+      위해서 <classname>CciTemplate</classname> 인스턴스를 생성할 것이다.</para>
 
       <programlisting language="java">public abstract class CciDaoSupport {
 
@@ -433,31 +397,27 @@
     </section>
 
     <section id="automatic-output-generation">
-      <title>Automatic output record generation</title>
+      <title>출력 레코드 자동 생성</title>
 
-      <para>If the connector used only supports the
-      <methodname>Interaction.execute(..)</methodname> method with input and
-      output records as parameters (that is, it requires the desired output
-      record to be passed in instead of returning an appropriate output
-      record), you can set the <literal>outputRecordCreator</literal> property
-      of the <classname>CciTemplate</classname> to automatically generate an
-      output record to be filled by the JCA connector when the response is
-      received. This record will be then returned to the caller of the
-      template.</para>
+      <para>사용한 커넥터가 입력 레코드와 출력 레코드를 파라미터로 받는
+      <methodname>Interaction.execute(..)</methodname> 메서드(즉, 이 메서드는 적절한
+      출력 레코드를 반환하지 않고 원하는 출력 레코드를 전달해야 한다.)만 지원한다면 응답을 받을 때
+      JCA 커넥터가 작성하는 출력 레코드를 자동으로 생성할 수 있게
+      <classname>CciTemplate</classname>의
+      <literal>outputRecordCreator</literal> 프로퍼티를 설정할 수 있다. 그러면
+      템플릿의 호출자에게 이 레코드를 반환할 것이다.</para>
 
-      <para>This property simply holds an implementation of the
-      <interfacename>RecordCreator</interfacename> interface, used for that
-      purpose. The <interfacename>RecordCreator</interfacename> interface has
-      already been discussed in <xref linkend="cci-record-creator" />. The
-      <literal>outputRecordCreator</literal> property must be directly
-      specified on the <classname>CciTemplate</classname>. This could be done
-      in the application code like so:</para>
+      <para>위 목적에 맞게 이 프로퍼티에는 <interfacename>RecordCreator</interfacename>
+      인터페이스의 구현체가 담겨 있다. <interfacename>RecordCreator</interfacename>
+      인터페이스는 <xref linkend="cci-record-creator" />에서 이미 설명했다.
+      <literal>outputRecordCreator</literal> 프로퍼티는
+      <classname>CciTemplate</classname>에서 직접 지정해야 한다. 애플리케이션 코드에서는
+      다음과 같이 작성한다.</para>
 
       <programlisting language="java">cciTemplate.setOutputRecordCreator(new EciOutputRecordCreator());</programlisting>
 
-      <para>Or (recommended) in the Spring configuration, if the
-      <classname>CciTemplate</classname> is configured as a dedicated bean
-      instance:</para>
+      <para>아니면 스프링 설정에서 전용 빈 인스턴스로 <classname>CciTemplate</classname>을
+      설정한다.(추천하는 방법)</para>
 
       <programlisting language="xml">&lt;bean id="eciOutputRecordCreator" class="eci.EciOutputRecordCreator"/&gt;
 
@@ -467,31 +427,30 @@
 &lt;/bean&gt;</programlisting>
 
       <note>
-        <para>As the <classname>CciTemplate</classname> class is thread-safe,
-        it will usually be configured as a shared instance.</para>
+        <para><classname>CciTemplate</classname> 클래스가 스레드 세이프 하므로 공유하는
+        인스턴스로 설정하는 게 일반적이다.</para>
       </note>
     </section>
 
     <section id="template-summary">
-      <title>Summary</title>
+      <title>요약</title>
 
-      <para>The following table summarizes the mechanisms of the
-      <classname>CciTemplate</classname> class and the corresponding methods
-      called on the CCI <interfacename>Interaction</interfacename>
-      interface:<table frame="all" id="cci-interaction-execute-methods">
-          <title>Usage of <interfacename>Interaction</interfacename> execute
-          methods</title>
+      <para>다음 표는 <classname>CciTemplate</classname> 클래스의 메커니즘과 CCI
+      <interfacename>Interaction</interfacename> 인터페이스에서 호출되는 해당 메서드를
+      요약해서 보여주고 있다.<table frame="all" id="cci-interaction-execute-methods">
+          <title><interfacename>Interaction</interfacename> execute 메서드의
+          사용방법</title>
 
           <tgroup cols="3">
             <thead>
               <row>
-                <entry align="center">CciTemplate method signature</entry>
+                <entry align="center">CciTemplate 메서드 시그니처</entry>
 
                 <entry align="center">CciTemplate outputRecordCreator
-                property</entry>
+                프로퍼티</entry>
 
-                <entry align="center">execute method called on the CCI
-                Interaction</entry>
+                <entry align="center">CCI Interaction에서 호출되는 execute
+                메서드</entry>
               </row>
             </thead>
 
@@ -500,7 +459,7 @@
                 <entry align="center">Record execute(InteractionSpec,
                 Record)</entry>
 
-                <entry align="center">not set</entry>
+                <entry align="center">설정안함</entry>
 
                 <entry align="center">Record execute(InteractionSpec,
                 Record)</entry>
@@ -510,7 +469,7 @@
                 <entry align="center">Record execute(InteractionSpec,
                 Record)</entry>
 
-                <entry align="center">set</entry>
+                <entry align="center">설정함</entry>
 
                 <entry align="center">boolean execute(InteractionSpec, Record,
                 Record)</entry>
@@ -520,7 +479,7 @@
                 <entry align="center">void execute(InteractionSpec, Record,
                 Record)</entry>
 
-                <entry align="center">not set</entry>
+                <entry align="center">설정안함</entry>
 
                 <entry align="center">void execute(InteractionSpec, Record,
                 Record)</entry>
@@ -530,7 +489,7 @@
                 <entry align="center">void execute(InteractionSpec, Record,
                 Record)</entry>
 
-                <entry align="center">set</entry>
+                <entry align="center">설정함</entry>
 
                 <entry align="center">void execute(InteractionSpec, Record,
                 Record)</entry>
@@ -540,7 +499,7 @@
                 <entry align="center">Record execute(InteractionSpec,
                 RecordCreator)</entry>
 
-                <entry align="center">not set</entry>
+                <entry align="center">설정안함</entry>
 
                 <entry align="center">Record execute(InteractionSpec,
                 Record)</entry>
@@ -550,7 +509,7 @@
                 <entry align="center">Record execute(InteractionSpec,
                 RecordCreator)</entry>
 
-                <entry align="center">set</entry>
+                <entry align="center">설정함</entry>
 
                 <entry align="center">void execute(InteractionSpec, Record,
                 Record)</entry>
@@ -560,7 +519,7 @@
                 <entry align="center">Record execute(InteractionSpec, Record,
                 RecordExtractor)</entry>
 
-                <entry align="center">not set</entry>
+                <entry align="center">설정안함</entry>
 
                 <entry align="center">Record execute(InteractionSpec,
                 Record)</entry>
@@ -570,7 +529,7 @@
                 <entry align="center">Record execute(InteractionSpec, Record,
                 RecordExtractor)</entry>
 
-                <entry align="center">set</entry>
+                <entry align="center">설정함</entry>
 
                 <entry align="center">void execute(InteractionSpec, Record,
                 Record)</entry>
@@ -580,7 +539,7 @@
                 <entry align="center">Record execute(InteractionSpec,
                 RecordCreator, RecordExtractor)</entry>
 
-                <entry align="center">not set</entry>
+                <entry align="center">설정안함</entry>
 
                 <entry align="center">Record execute(InteractionSpec,
                 Record)</entry>
@@ -590,7 +549,7 @@
                 <entry align="center">Record execute(InteractionSpec,
                 RecordCreator, RecordExtractor)</entry>
 
-                <entry align="center">set</entry>
+                <entry align="center">설정함</entry>
 
                 <entry align="center">void execute(InteractionSpec, Record,
                 Record)</entry>
@@ -601,24 +560,21 @@
     </section>
 
     <section id="cci-straight">
-      <title>Using a CCI <interfacename>Connection</interfacename> and
-      <interfacename>Interaction</interfacename> directly</title>
+      <title>CCI <interfacename>Connection</interfacename>와
+      <interfacename>Interaction</interfacename>을 직접 사용하기</title>
 
-      <para><classname>CciTemplate</classname> also offers the possibility to
-      work directly with CCI connections and interactions, in the same manner
-      as <classname>JdbcTemplate</classname> and
-      <classname>JmsTemplate</classname>. This is useful when you want to
-      perform multiple operations on a CCI connection or interaction, for
-      example.</para>
+      <para><classname>CciTemplate</classname>도
+      <classname>JdbcTemplate</classname>나 <classname>JmsTemplate</classname>와
+      같은 방식으로 직접 CCI 연결과 상호작용을 할 수 있게 지원한다. 이는 CCI 연결이나 상호작용에서
+      여러 작업을 수행하고자 할 때 유용하다.</para>
 
-      <para>The interface <interfacename>ConnectionCallback</interfacename>
-      provides a CCI <interfacename>Connection</interfacename> as argument, in
-      order to perform custom operations on it, plus the CCI
-      <interfacename>ConnectionFactory</interfacename> which the
-      <interfacename>Connection</interfacename> was created with. The latter
-      can be useful for example to get an associated
-      <interfacename>RecordFactory</interfacename> instance and create
-      indexed/mapped records, for example.</para>
+      <para><interfacename>ConnectionCallback</interfacename> 인터페이스는 CCI
+      <interfacename>Connection</interfacename>에서 임의의 작업을 할 수 있도록 인자로
+      CCI <interfacename>Connection</interfacename>을 제공한다. 아니면
+      <interfacename>Connection</interfacename>를 생성한 CCI
+      <interfacename>ConnectionFactory</interfacename>을 제공할 수도 있다. 후자의
+      경우는 관련 <interfacename>RecordFactory</interfacename> 인스턴스를 가져와서
+      색인 된/매핑된 레코드를 생성할 때 유용하게 사용할 수 있다.</para>
 
       <programlisting language="java">public interface ConnectionCallback {
 
@@ -626,10 +582,10 @@
       throws ResourceException, SQLException, DataAccessException;
 }</programlisting>
 
-      <para>The interface <interfacename>InteractionCallback</interfacename>
-      provides the CCI <interfacename>Interaction</interfacename>, in order to
-      perform custom operations on it, plus the corresponding CCI
-      <interfacename>ConnectionFactory</interfacename>.</para>
+      <para><interfacename>InteractionCallback</interfacename> 인터페이스는 CCI
+      <interfacename>Interaction</interfacename>에서 임의의 작업을 할 수 있도록 CCI
+      <interfacename>Interaction</interfacename>를 제공하고 대응되는 CCI
+      <interfacename>ConnectionFactory</interfacename>를 제공할 수도 있다.</para>
 
       <programlisting language="java">public interface InteractionCallback {
 
@@ -638,31 +594,28 @@
 }</programlisting>
 
       <note>
-        <para><interfacename>InteractionSpec</interfacename> objects can
-        either be shared across multiple template calls or newly created
-        inside every callback method. This is completely up to the DAO
-        implementation.</para>
+        <para><interfacename>InteractionSpec</interfacename> 객체는 여러 템플릿
+        호출 간에 공유할 수도 있고 콜백 메서드마다 내부에서 새로 생성할 수도 있다.
+        어떻게 되느냐는 오로지 DAO 구현체에 달려있다.</para>
       </note>
     </section>
 
     <section id="cci-template-example">
-      <title>Example for <classname>CciTemplate</classname> usage</title>
+      <title><classname>CciTemplate</classname> 사용 예제</title>
 
-      <para>In this section, the usage of the
-      <classname>CciTemplate</classname> will be shown to acces to a CICS with
-      ECI mode, with the IBM CICS ECI connector.</para>
+      <para>이번 장의 <classname>CciTemplate</classname> 사용방법은 IBM CICS ECI
+      커넥터를 사용해서 ECI 모드로 CICS에 접근하는 방법을 보여준다.</para>
 
-      <para>Firstly, some initializations on the CCI
-      <interfacename>InteractionSpec</interfacename> must be done to specify
-      which CICS program to access and how to interact with it.</para>
+      <para>우선 접근할 CICS 프로그램을 지정하고 CICS 프로그램과 상호작용하는 방법을 지정할 수
+      있도록 CCI <interfacename>InteractionSpec</interfacename>의 초기화가
+      이뤄져야 한다.</para>
 
       <programlisting language="java">ECIInteractionSpec interactionSpec = new ECIInteractionSpec();
 interactionSpec.setFunctionName("MYPROG");
 interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);</programlisting>
 
-      <para>Then the program can use CCI via Spring's template and specify
-      mappings between custom objects and CCI
-      <literal>Records</literal>.</para>
+      <para>이 프로그램은 스프링의 템플릿을 사용해서 CCI를 사용할 수 있고 커스텀 객체와
+      CCI <literal>Records</literal>간의 매핑을 지정할 수 있다.</para>
 
       <programlisting language="java">public class MyDaoImpl extends CciDaoSupport implements MyDao {
 
@@ -689,8 +642,8 @@ interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);</progr
   }
 }</programlisting>
 
-      <para>As discussed previously, callbacks can be used to work directly on
-      CCI connections or interactions.</para>
+      <para>앞에서 얘기했듯이 CCI 연결과 상호작용에서 직접 동작하도록 콜백을 사용할 수
+      있다.</para>
 
       <programlisting language="java">public class MyDaoImpl extends CciDaoSupport implements MyDao {
 
@@ -699,8 +652,8 @@ interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);</progr
         new ConnectionCallback() {
           public Object doInConnection(Connection connection, ConnectionFactory factory)
               throws ResourceException {
-              
-            <lineannotation>// do something...</lineannotation>
+
+            <lineannotation>// 여기서 작업을 수행한다...</lineannotation>
           }
         });
     }
@@ -709,17 +662,18 @@ interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);</progr
 }</programlisting>
 
       <note>
-        <para>With a <interfacename>ConnectionCallback</interfacename>, the
-        <interfacename>Connection</interfacename> used will be managed and
-        closed by the <classname>CciTemplate</classname>, but any interactions
-        created on the connection must be managed by the callback
-        implementation.</para>
+        <para><interfacename>ConnectionCallback</interfacename>에서 사용한
+        <interfacename>Connection</interfacename>를 관리할 것이고
+        <classname>CciTemplate</classname>가
+        <interfacename>Connection</interfacename>를 닫을 것이지만 연결에서 생성한
+        모든 상호작용을 콜백 구현체에서 관리해야 한다.</para>
       </note>
 
-      <para>For a more specific callback, you can implement an
-      <interfacename>InteractionCallback</interfacename>. The passed-in
-      <interfacename>Interaction</interfacename> will be managed and closed by
-      the <classname>CciTemplate</classname> in this case.</para>
+      <para>더 상세한 콜백이 필요하다면
+      <interfacename>InteractionCallback</interfacename>를 구현할 수 있다. 이 경우
+      전달한 <interfacename>Interaction</interfacename>를 관리할 것이고
+      <classname>CciTemplate</classname>가
+      <interfacename>Interaction</interfacename>를 닫을 것이다.</para>
 
       <programlisting language="java">public class MyDaoImpl extends CciDaoSupport implements MyDao {
 
@@ -741,8 +695,7 @@ interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);</progr
   }
 }</programlisting>
 
-      <para>For the examples above, the corresponding configuration of the
-      involved Spring beans could look like this in non-managed mode:</para>
+      <para>위 예제에 포함된 스프링 빈의 해당 설정은 비관리 모드에서는 다음과 같을 것이다.</para>
 
       <programlisting language="xml">&lt;bean id="managedConnectionFactory" class="com.ibm.connector2.cics.ECIManagedConnectionFactory"&gt;
   &lt;property name="serverName" value="TXSERIES"/&gt;
@@ -759,8 +712,7 @@ interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);</progr
   &lt;property name="connectionFactory" ref="connectionFactory"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>In managed mode (that is, in a Java EE environment), the
-      configuration could look as follows:</para>
+      <para>관리모드(즉, Java EE 환경)에서는 설정이 다음과 같을 것이다.</para>
 
       <programlisting language="xml">&lt;jee:jndi-lookup id="connectionFactory" jndi-name="eis/cicseci"/&gt;
 
@@ -771,47 +723,41 @@ interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);</progr
   </section>
 
   <section id="cci-object">
-    <title>Modeling CCI access as operation objects</title>
+    <title>operation 객체로 CCI 접근 모델링하기</title>
 
-    <para>The <literal>org.springframework.jca.cci.object</literal> package
-    contains support classes that allow you to access the EIS in a different
-    style: through reusable operation objects, analogous to Spring's JDBC
-    operation objects (see JDBC chapter). This will usually encapsulate the
-    CCI API: an application-level input object will be passed to the operation
-    object, so it can construct the input record and then convert the received
-    record data to an application-level output object and return it.</para>
+    <para><literal>org.springframework.jca.cci.object</literal> 패키지에서는 다른
+    방법으로 EIS에 접근할 수 있는 지원 클래스가 있다. 이는 스프링의 JDBC operation 객체(JDBC
+    장을 봐라)와 유사한 재사용 가능한 operation 객체를 통해서 이뤄지고 보통 CCI API를 은닉화할
+    것이다. 이는 애플리케이션 수준의 입력 객체를 operation 객체에 전달할 것이므로 입력 레코드를
+    구성하고 받은 레코드 데이터를 애플리케이션 수준의 출력 객체로 변환해서 반환할 수 있다.</para>
 
-    <para><emphasis>Note</emphasis>: This approach is internally based on the
-    <classname>CciTemplate</classname> class and the
+    <para><emphasis>Note</emphasis>: 이 접근방법은 내부적으로
+    <classname>CciTemplate</classname> 클래스와
     <interfacename>RecordCreator</interfacename> /
-    <interfacename>RecordExtractor</interfacename> interfaces, reusing the
-    machinery of Spring's core CCI support.</para>
+    <interfacename>RecordExtractor</interfacename> 인터페이스에 기반을 두고 있고
+    스프링의 핵심 CCI 지원 기능을 재사용한다.</para>
 
     <section id="cci-object-mapping-record">
       <title><classname>MappingRecordOperation</classname></title>
 
-      <para><classname>MappingRecordOperation</classname> essentially performs
-      the same work as <classname>CciTemplate</classname>, but represents a
-      specific, pre-configured operation as an object. It provides two
-      template methods to specify how to convert an input object to a input
-      record, and how to convert an output record to an output object (record
-      mapping):</para>
+      <para><classname>MappingRecordOperation</classname>는 본래
+      <classname>CciTemplate</classname>와 같은 작업을 하지만 미리 구성한 특정 작업을
+      객체로 나타낸다. <classname>MappingRecordOperation</classname>는 입력 객체를
+      입력 레코드로 변환하는(레코드 매핑) 방법을 지정하는 두 가지 템플릿 메서드를 제공한다.</para>
 
       <itemizedlist>
         <listitem>
-          <para><literal>createInputRecord(..)</literal> to specify how to
-          convert an input object to an input
-          <interfacename>Record</interfacename></para>
+          <para>입력 객체를 입력 <interfacename>Record</interfacename>로 변환하는
+          방법을 지정하는 <literal>createInputRecord(..)</literal></para>
         </listitem>
 
         <listitem>
-          <para><literal>extractOutputData(..)</literal> to specify how to
-          extract an output object from an output
-          <interfacename>Record</interfacename></para>
+          <para>출력 <interfacename>Record</interfacename>에서 출력 객체를
+          추출하는 방법을 지정하는 <literal>extractOutputData(..)</literal></para>
         </listitem>
       </itemizedlist>
 
-      <para>Here are the signatures of these methods:</para>
+      <para>이 메서드들의 시그니처는 다음에 나와 있다.</para>
 
       <programlisting language="java">public abstract class MappingRecordOperation extends EisOperation {
   ...
@@ -823,9 +769,8 @@ interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);</progr
   ...
 }</programlisting>
 
-      <para>Thereafter, in order to execute an EIS operation, you need to use
-      a single execute method, passing in an application-level input object
-      and receiving an application-level output object as result:</para>
+      <para>EIS 작업을 실행하려면 단일 execute 메서드를 사용해야 하고 애플리케이션 수준의
+      입력 객체를 전달해서 그 결과로 애플리케이션 수준의 출력 객체를 받는다.</para>
 
       <programlisting language="java">public abstract class MappingRecordOperation extends EisOperation {
   ...
@@ -833,13 +778,13 @@ interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);</progr
   ...
 }</programlisting>
 
-      <para>As you can see, contrary to the <classname>CciTemplate</classname>
-      class, this <methodname>execute(..)</methodname> method does not have an
-      <interfacename>InteractionSpec</interfacename> as argument. Instead, the
-      <interfacename>InteractionSpec</interfacename> is global to the
-      operation. The following constructor must be used to instantiate an
-      operation object with a specific
-      <interfacename>InteractionSpec</interfacename>:</para>
+      <para>여기서 보듯이 <classname>CciTemplate</classname> 클래스와는 반대로
+      <methodname>execute(..)</methodname> 메서드는 인자로
+      <interfacename>InteractionSpec</interfacename>를 갖지 않는다. 대신에
+      <interfacename>InteractionSpec</interfacename>는 작업(operation)에 대해서
+      전역적이다. 작업(operation) 객체를 특정
+      <interfacename>InteractionSpec</interfacename>로 인스턴스화 하는데
+      다음의 생성자를 반드시 사용해야 한다.</para>
 
       <programlisting language="java">InteractionSpec spec = ...;
 MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnectionFactory(), spec);
@@ -849,16 +794,15 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
     <section id="cci-object-mapping-comm-area">
       <title><classname>MappingCommAreaOperation</classname></title>
 
-      <para>Some connectors use records based on a COMMAREA which represents
-      an array of bytes containing parameters to send to the EIS and data
-      returned by it. Spring provides a special operation class for working
-      directly on COMMAREA rather than on records. The
-      <classname>MappingCommAreaOperation</classname> class extends the
-      <classname>MappingRecordOperation</classname> class to provide such
-      special COMMAREA support. It implicitly uses the
-      <classname>CommAreaRecord</classname> class as input and output record
-      type, and provides two new methods to convert an input object into an
-      input COMMAREA and the output COMMAREA into an output object.</para>
+      <para>일부 커넥터는 EIS에 전송할 파라미터와 EIS에서 반환받은 데이터를 담고 있는 바이트
+      배열을 나타내는 COMMAREA에 기반을 둬서 레코드를 사용한다. 레코드 대신 COMMAREA와 직접
+      동작하는 특수한 오퍼레이션 클래스를 스프링이 제공하고 있다.
+      <classname>MappingCommAreaOperation</classname> 클래스는 COMMAREA 등을
+      지원하기 위해 <classname>MappingRecordOperation</classname> 클래스를 상속받는다.
+      <classname>MappingCommAreaOperation</classname>는 암묵적으로 입력과 출력 레코드로
+      <classname>CommAreaRecord</classname> 클래스를 사용하고 입력 객체를 입력
+      COMMAREA로 변환하고 출력 COMMAREA를 출력 객체로 변환하는 새로운 두 메서드를
+      제공한다.</para>
 
       <programlisting language="java">public abstract class MappingCommAreaOperation extends MappingRecordOperation {
   ...
@@ -872,38 +816,38 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
     </section>
 
     <section id="cci-automatic-record-gen">
-      <title>Automatic output record generation</title>
+      <title>출력 레코드 자동 생성</title>
 
-      <para>As every <classname>MappingRecordOperation</classname> subclass is
-      based on CciTemplate internally, the same way to automatically generate
-      output records as with <classname>CciTemplate</classname> is available.
-      Every operation object provides a corresponding
-      <literal>setOutputRecordCreator(..)</literal> method. For further
-      information, see <xref linkend="automatic-output-generation" />.</para>
+      <para>모든 <classname>MappingRecordOperation</classname> 하위클래스가 내부적으로
+      CciTemplate에 기반을 두고 있으므로 <classname>CciTemplate</classname>와 같을 방법으로
+      출력 레코드를 자동 생성할 수 있다. 각 작업 객체는 이에 대응되는
+      <literal>setOutputRecordCreator(..)</literal> 메서드를 제공한다. 더 자세한 내용은
+      <xref linkend="automatic-output-generation" />를 참고해라.</para>
     </section>
 
     <section id="cci-object-summary">
-      <title>Summary</title>
+      <title>요약</title>
 
-      <para>The operation object approach uses records in the same manner as
-      the <classname>CciTemplate</classname> class.</para>
+      <para>작업(operation) 객체 접근방법은 <classname>CciTemplate</classname>
+      클래스와 같은 방법으로 레코드를 사용한다.</para>
 
       <table frame="all" id="cci-interaction-methods">
-        <title>Usage of Interaction execute methods</title>
+        <title>Interaction execute 메서드의 사용방법</title>
 
         <tgroup cols="3">
           <thead>
             <row>
               <entry
               align="center"><classname>MappingRecordOperation</classname>
-              method signature</entry>
+              메서드 시그니처</entry>
 
               <entry
               align="center"><classname>MappingRecordOperation</classname>
-              <literal>outputRecordCreator</literal> property</entry>
+              <literal>outputRecordCreator</literal> 프로퍼티</entry>
 
-              <entry align="center">execute method called on the CCI
-              <interfacename>Interaction</interfacename></entry>
+              <entry align="center">CCI
+              <interfacename>Interaction</interfacename>에서 호출된
+              execute 메서드</entry>
             </row>
           </thead>
 
@@ -911,7 +855,7 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
             <row>
               <entry align="center">Object execute(Object)</entry>
 
-              <entry align="center">not set</entry>
+              <entry align="center">설정 안함</entry>
 
               <entry align="center">Record execute(InteractionSpec,
               Record)</entry>
@@ -920,7 +864,7 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
             <row>
               <entry align="center">Object execute(Object)</entry>
 
-              <entry align="center">set</entry>
+              <entry align="center">설정함</entry>
 
               <entry align="center">boolean execute(InteractionSpec, Record,
               Record)</entry>
@@ -931,24 +875,21 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
     </section>
 
     <section id="cci-objects-mappring-record-example">
-      <title>Example for <classname>MappingRecordOperation</classname>
-      usage</title>
+      <title><classname>MappingRecordOperation</classname> 사용방법의 예시</title>
 
-      <para>In this section, the usage of the
-      <classname>MappingRecordOperation</classname> will be shown to access a
-      database with the Blackbox CCI connector.</para>
+      <para>이번 장에서는 블랙박스 CCI 커넥터로 데이터베이스에 접근하는
+      <classname>MappingRecordOperation</classname>의 사용방법을 볼 것이다.</para>
 
       <note>
-        <para>The original version of this connector is provided by the Java EE
-        SDK (version 1.3), available from Sun.</para>
+        <para>이 커넥터의 원래 버전은 (Sun의) Java EE SDK (버전 1.3)에서 제공한
+        것이다.</para>
       </note>
 
-      <para>Firstly, some initializations on the CCI
-      <interfacename>InteractionSpec</interfacename> must be done to specify
-      which SQL request to execute. In this sample, we directly define the way
-      to convert the parameters of the request to a CCI record and the way to
-      convert the CCI result record to an instance of the
-      <classname>Person</classname> class.</para>
+      <para>우선, 어떤 SQL 요청을 처리할 것인지 정하기 위해 CCI
+      <interfacename>InteractionSpec</interfacename>의 일부 초기화 작업이 완료되어야
+      한다. 이 예제에서는 요청의 파라미터들을 CCI 레코드로 변환하는 방법과 CCI 결과 레코드를
+      <classname>Person</classname> 클래스의 인스턴스로 변환하는 방법을 직접
+      정의한다.</para>
 
       <programlisting language="java">public class PersonMappingOperation extends MappingRecordOperation {
 
@@ -981,9 +922,8 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
   }
 }</programlisting>
 
-      <para>Then the application can execute the operation object, with the
-      person identifier as argument. Note that operation object could be set
-      up as shared instance, as it is thread-safe.</para>
+      <para>그러면 애플리케이션이 인자로 person 식별자를 사용해서 작업 객체를 실행할 수 있다.
+      이 작업객체는 스레드 세이프 하므로 공유 인스턴스로 설정할 수도 있다.</para>
 
       <programlisting language="java">public class MyDaoImpl extends CciDaoSupport implements MyDao {
 
@@ -994,8 +934,7 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
   }
 }</programlisting>
 
-      <para>The corresponding configuration of Spring beans could look as
-      follows in non-managed mode:</para>
+      <para>비관리 모드에서 이와 같은 스프링 빈 설정은 다음과 같을 것이다.</para>
 
       <programlisting language="xml">&lt;bean id="managedConnectionFactory"
     class="com.sun.connector.cciblackbox.CciLocalTxManagedConnectionFactory"&gt;
@@ -1023,8 +962,7 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
   &lt;property name="connectionFactory" ref="connectionFactory"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>In managed mode (that is, in a Java EE environment), the
-      configuration could look as follows:</para>
+      <para>관리 모드에서는(즉, Java EE 환경) 설정이 다음과 같을 것이다.</para>
 
       <programlisting language="xml">&lt;jee:jndi-lookup id="targetConnectionFactory" jndi-name="eis/blackbox"/&gt;
 
@@ -1045,16 +983,13 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
     </section>
 
     <section id="cci-objects-mapping-comm-area-example">
-      <title>Example for <classname>MappingCommAreaOperation</classname>
-      usage</title>
+      <title><classname>MappingCommAreaOperation</classname> 사용방법의 예시</title>
 
-      <para>In this section, the usage of the
-      <classname>MappingCommAreaOperation</classname> will be shown: accessing
-      a CICS with ECI mode with the IBM CICS ECI connector.</para>
+      <para>이번 장에서는 <classname>MappingCommAreaOperation</classname>을 사용해서
+      IBM CICS ECI 커넥터로 ECI 모드에서 CICS에 접근하는 방법을 볼 것이다.</para>
 
-      <para>Firstly, the CCI <interfacename>InteractionSpec</interfacename>
-      needs to be initialized to specify which CICS program to access and how
-      to interact with it.</para>
+      <para>먼저 어떤 CICS 프로그램에 접근하고 어떻게 상호작용할 것인지 지정하기 위해
+      CCI <interfacename>InteractionSpec</interfacename>을 초기화 해야 한다.</para>
 
       <programlisting language="java">public abstract class EciMappingOperation extends MappingCommAreaOperation {
 
@@ -1075,9 +1010,9 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
   }
 }</programlisting>
 
-      <para>The abstract <classname>EciMappingOperation</classname> class can
-      then be subclassed to specify mappings between custom objects and
-      <literal>Records</literal>.</para>
+      <para>초기화하고 나면 커스텀 객체와 <literal>Records</literal>의 매핑을 위해
+      추상 <classname>EciMappingOperation</classname> 클래스가 하위 클래스가
+      될 수 있다.</para>
 
       <programlisting language="java">public class MyDaoImpl extends CciDaoSupport implements MyDao {
 
@@ -1100,8 +1035,7 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
   }
 }</programlisting>
 
-      <para>The corresponding configuration of Spring beans could look as
-      follows in non-managed mode:</para>
+      <para>비관리 모드에서 스프링 빈을 사용한 설정은 다음과 같을 것이다.</para>
 
       <programlisting language="xml">&lt;bean id="managedConnectionFactory" class="com.ibm.connector2.cics.ECIManagedConnectionFactory"&gt;
   &lt;property name="serverName" value="TXSERIES"/&gt;
@@ -1118,8 +1052,7 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
   &lt;property name="connectionFactory" ref="connectionFactory"/&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>In managed mode (that is, in a Java EE environment), the
-      configuration could look as follows:</para>
+      <para>관리모드에서는(즉, Java EE 환경) 설정이 다음과 같을 것이다.</para>
 
       <programlisting language="xml">&lt;jee:jndi-lookup id="connectionFactory" jndi-name="eis/cicseci"/&gt;
 
@@ -1130,14 +1063,12 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
   </section>
 
   <section id="cci-tx">
-    <title>Transactions</title>
+    <title>트랜잭션</title>
 
-    <para>JCA specifies several levels of transaction support for resource
-    adapters. The kind of transactions that your resource adapter supports is
-    specified in its <filename>ra.xml</filename> file. There are essentially
-    three options: none (for example with CICS EPI connector), local
-    transactions (for example with a CICS ECI connector), global transactions
-    (for example with an IMS connector).</para>
+    <para>JCA는 리소스 어댑터의 트랜잭션을 여러 단계로 지원한다. 리소스 어댑터가 지원하는 트랜잭션
+    종류는 리소스 어댑터의 <filename>ra.xml</filename> 파일에서 지정한다. 사실상 세 가지
+    옵션이 있는데 none(예시: CICS EPI 커넥터), 지역(local) 트랜잭션(예시: CICS ECI 커넥터),
+    전역(global) 트랜잭션(예시: IMS 커넥터)이다.</para>
 
     <programlisting language="xml">&lt;connector&gt;
 
@@ -1151,21 +1082,18 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
 
 &lt;connector&gt;</programlisting>
 
-    <para>For global transactions, you can use Spring's generic transaction
-    infrastructure to demarcate transactions, with
-    <classname>JtaTransactionManager</classname> as backend (delegating to the
-    Java EE server's distributed transaction coordinator underneath).</para>
+    <para>전역 트랜잭션에서는 트랜잭션의 경계를 정하기 위해
+    <classname>JtaTransactionManager</classname>를 백엔드로 사용해서(Java EE
+    서버의 분산 트랜잭션 코디네이터에 위임해서) 스프링의 제너릭 트랜잭션을 사용할 수 있다.</para>
 
-    <para>For local transactions on a single CCI
-    <interfacename>ConnectionFactory</interfacename>, Spring provides a
-    specific transaction management strategy for CCI, analogous to the
-    <classname>DataSourceTransactionManager</classname> for JDBC. The CCI API
-    defines a local transaction object and corresponding local transaction
-    demarcation methods. Spring's
-    <classname>CciLocalTransactionManager</classname> executes such local CCI
-    transactions, fully compliant with Spring's generic
-    <interfacename>PlatformTransactionManager</interfacename>
-    abstraction.</para>
+    <para>단일 CCI <interfacename>ConnectionFactory</interfacename>상의 지역
+    트랜잭션에서는 JDBC의 <classname>DataSourceTransactionManager</classname>와
+    유사하게 스프링이 CCI에 대한 구체적인 트랜잭션 관리 전략을 제공한다. CCI API는 지역 트랜잭션
+    객체와 해당 지역 트랜잭션 경계 메서드를 정의한다. 스프링의
+    <classname>CciLocalTransactionManager</classname>는 이러한 지역 CCI 트랜잭션을
+    실행하고 이는 스프링의 제너릭
+    <interfacename>PlatformTransactionManager</interfacename> 추상화와
+    완전히 호환된다.</para>
 
     <programlisting language="xml">&lt;jee:jndi-lookup id="eciConnectionFactory" jndi-name="eis/cicseci"/&gt;
 
@@ -1174,17 +1102,14 @@ MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnecti
   &lt;property name="connectionFactory" ref="eciConnectionFactory"/&gt;
 &lt;/bean&gt;</programlisting>
 
-    <para>Both transaction strategies can be used with any of Spring's
-    transaction demarcation facilities, be it declarative or programmatic.
-    This is a consequence of Spring's generic
-    <interfacename>PlatformTransactionManager</interfacename> abstraction,
-    which decouples transaction demarcation from the actual execution
-    strategy. Simply switch between
-    <classname>JtaTransactionManager</classname> and
-    <classname>CciLocalTransactionManager</classname> as needed, keeping your
-    transaction demarcation as-is.</para>
+    <para>두 트랜잭션 전략 모두 스프링의 어떤 트랜잭션 경계 기능(선언적이거나 프로그래밍적인)과도
+    사용할 수 있다. 이는 실제 실행 전략과 트랜잭션 경계를 디커플링한 스프링의 제너릭
+    <interfacename>PlatformTransactionManager</interfacename> 추상화 덕이다.
+    그래서 트랜잭션 경계는 그대로 둔 채 <classname>JtaTransactionManager</classname>와
+    <classname>CciLocalTransactionManager</classname>를 필요한대로 바꿔
+    쓸 수 있다.</para>
 
-    <para>For more information on Spring's transaction facilities, see the
-    chapter entitled <xref linkend="transaction" />.</para>
+    <para>스프링의 트랜잭션 기능에 대한 자세한 내용은 <xref linkend="transaction" />장을
+    참고해라.</para>
   </section>
 </chapter>
