@@ -2,180 +2,149 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="scheduling">
-  <title>Task Execution and Scheduling</title>
+  <title>태스크(Task) 실행과 스케줄링</title>
 
   <section id="scheduling-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
 
-    <para>The Spring Framework provides abstractions for asynchronous
-    execution and scheduling of tasks with the
-    <interfacename>TaskExecutor</interfacename> and
-    <interfacename>TaskScheduler</interfacename> interfaces, respectively.
-    Spring also features implementations of those interfaces that support
-    thread pools or delegation to CommonJ within an application server
-    environment. Ultimately the use of these implementations behind the common
-    interfaces abstracts away the differences between Java SE 5, Java SE 6 and
-    Java EE environments.</para>
+    <para>스프링 프레임워크는 <interfacename>TaskExecutor</interfacename> 인터페이스와
+    <interfacename>TaskScheduler</interfacename> 인터페이스로 태스크의 비동기 시행과
+    스케줄링에 대한 추상화를 각각 제공한다. 스프링은 이 인터페이스를 사용해서 애플리케이션 서버
+    환경내에서 CommonJ로 위임하거나 스레드 풀을 지원하는 구현체도 제공하고 있다.  그래서 공통
+    인터페이스를 사용하는 이러한 구현체들을 사용해서 Java SE5, Java SE 6, Java EE 환경 간의
+    차이점을 추상화해버린다.</para>
 
-    <para>Spring also features integration classes for supporting scheduling
-    with the <classname>Timer</classname>, part of the JDK since 1.3, and the
-    Quartz Scheduler (<ulink
-    url="http://www.opensymphony.com/quartz/"></ulink>). Both of those
-    schedulers are set up using a <interfacename>FactoryBean</interfacename>
-    with optional references to <classname>Timer</classname> or
-    <classname>Trigger</classname> instances, respectively. Furthermore, a
-    convenience class for both the Quartz Scheduler and the
-    <classname>Timer</classname> is available that allows you to invoke a
-    method of an existing target object (analogous to the normal
-    <classname>MethodInvokingFactoryBean</classname> operation).</para>
+    <para>스프링은 JDK 1.3부터 추가된 <classname>Timer</classname>와 Quartz
+    스케줄러(<ulink url="http://www.opensymphony.com/quartz/"></ulink>)를
+    사용한 스케줄링을 지원하는 통합 클래스도 제공한다. 이 두가지 스케줄러 모두
+    <interfacename>FactoryBean</interfacename>에 <classname>Timer</classname>나
+    <classname>Trigger</classname>에 대한 참조를 각각 전달해서 구성한다. 또한, 이미
+    존재하는 대상 객체의 메서드를 호출할 수 있는(일반적인
+    <classname>MethodInvokingFactoryBean</classname> 작업과 유사하다.) Quartz
+    스케줄러와 <classname>Timer</classname>에 대한 편의 클래스도 사용할 수 있다.</para>
   </section>
 
   <section id="scheduling-task-executor">
-    <title>The Spring <interfacename>TaskExecutor</interfacename>
-    abstraction</title>
+    <title>스프링 <interfacename>TaskExecutor</interfacename> 추상화</title>
 
-    <para>Spring 2.0 introduces a new abstraction for dealing with executors.
-    Executors are the Java 5 name for the concept of thread pools. The
-    "executor" naming is due to the fact that there is no guarantee that the
-    underlying implementation is actually a pool; an executor may be
-    single-threaded or even synchronous. Spring's abstraction hides
-    implementation details between Java SE 1.4, Java SE 5 and Java EE
-    environments.</para>
+    <para>스프링 2.0에는 executor를 다루는 새로운 추상화가 도입되었다. executor는 스레드 풀의
+    개념에 대해 Java 5에서 도입된 개념이다. 사용하는 구현체가 실제로 풀(pool)이라는 보장이 없기
+    때문에 "executor"라는 이름을 사용한다. executor는 싱글 스레드가 될 수도 있고 동기화가 될
+    수도 있다. 스프링의 추상화는 Java SE 1.4와 Java SE 5, Java EE 환경 사이의 자세한
+    구현부를 숨겨준다.</para>
 
-    <para>Spring's <interfacename>TaskExecutor</interfacename> interface is
-    identical to the <classname>java.util.concurrent.Executor</classname>
-    interface. In fact, its primary reason for existence is to abstract away
-    the need for Java 5 when using thread pools. The interface has a single
-    method <classname>execute(Runnable task)</classname> that accepts a task
-    for execution based on the semantics and configuration of the thread
-    pool.</para>
+    <para>스프링의 <interfacename>TaskExecutor</interfacename> 인터페이스는
+    <classname>java.util.concurrent.Executor</classname> 인터페이스와 같다. 사실
+    이 인터페이스가 존재하는 이유는 스레드 풀을 사용할 때 Java 5에 대한 요구사항을 추상화하기
+    위해서다. <interfacename>TaskExecutor</interfacename> 인터페이스는 스레드 풀의
+    의미(semantic)와 구성에 기반을 둬서 실행하려고 태스크(task)를 받는
+    <classname>execute(Runnable task)</classname> 메서드를 가진다.</para>
 
-    <para>The <interfacename>TaskExecutor</interfacename> was originally
-    created to give other Spring components an abstraction for thread pooling
-    where needed. Components such as the
-    <classname>ApplicationEventMulticaster</classname>, JMS's
-    <classname>AbstractMessageListenerContainer</classname>, and Quartz
-    integration all use the <interfacename>TaskExecutor</interfacename>
-    abstraction to pool threads. However, if your beans need thread pooling
-    behavior, it is possible to use this abstraction for your own
-    needs.</para>
+    <para><interfacename>TaskExecutor</interfacename>는 원래 스레드 풀에 대한
+    추상화가 필요한 곳에 다른 스프링 컴포넌트를 제공하기 위해 만들어진 것이다.
+    <classname>ApplicationEventMulticaster</classname>나 JSM의
+    <classname>AbstractMessageListenerContainer</classname>나 Quartz 통합 같은
+    컴포넌트들은 모두 스레드 풀에 <interfacename>TaskExecutor</interfacename> 추상화를
+    사용한다. 하지만 빈(bean)에서 스레드 풀의 동작이 필요하다면 자신의 요구사항에 맞게
+    이 추상화를 사용할 수 있다.</para>
 
     <section id="scheduling-task-executor-types">
-      <title><interfacename>TaskExecutor</interfacename> types</title>
+      <title><interfacename>TaskExecutor</interfacename>의 종류</title>
 
-      <para>There are a number of pre-built implementations of
-      <interfacename>TaskExecutor</interfacename> included with the Spring
-      distribution. In all likelihood, you shouldn't ever need to implement
-      your own.</para>
+      <para>스프링 배포본에 포함된 다수의 <interfacename>TaskExecutor</interfacename>
+      구현체들이 있다. 아마 직접 구현할 일은 거의 없을 것이다.</para>
 
       <itemizedlist>
         <listitem>
           <para><classname>SimpleAsyncTaskExecutor</classname></para>
 
-          <para>This implementation does not reuse any threads, rather it
-          starts up a new thread for each invocation. However, it does support
-          a concurrency limit which will block any invocations that are over
-          the limit until a slot has been freed up. If you're looking for true
-          pooling, keep scrolling further down the page.</para>
+          <para>이 구현에는 어떤 스레드도 재사용하지 않고 호출마다 새로운 스레드를 시작한다. 하지만
+          이 구현체는 동시접속 제한(concurrency limit)을 지원해서 제한 수가 넘어서면 빈
+          공간이 생길 때까지 모든 요청을 막을 것이다. 실제 풀링(pooling)을 원한다면 뒷부분을
+          더 봐야 한다.</para>
         </listitem>
 
         <listitem id="syncTaskExecutor">
           <para><classname>SyncTaskExecutor</classname></para>
 
-          <para>This implementation doesn't execute invocations
-          asynchronously. Instead, each invocation takes place in the calling
-          thread. It is primarily used in situations where multithreading
-          isn't necessary such as simple test cases.</para>
+          <para>이 구현체는 호출을 비동기적으로 실행하지 않고 대신, 각 호출이 호출 스레드에
+          추가된다. 간단한 테스트 케이스처럼 멀티스레드가 필요하지 않은 상황에서 주로
+          사용한다.</para>
         </listitem>
 
         <listitem id="concurrentTaskExecutor">
           <para><classname>ConcurrentTaskExecutor</classname></para>
 
-          <para>This implementation is a wrapper for a Java 5
-          <classname>java.util.concurrent.Executor</classname>. There is an
-          alternative, <classname>ThreadPoolTaskExecutor</classname>, that
-          exposes the <classname>Executor</classname> configuration parameters
-          as bean properties. It is rare to need to use the
-          <classname>ConcurrentTaskExecutor</classname> but if the <link
-          linkend="threadPoolTaskExecutor"><classname>ThreadPoolTaskExecutor</classname></link>
-          isn't robust enough for your needs, the
-          <classname>ConcurrentTaskExecutor</classname> is an
-          alternative.</para>
+          <para>이 구현체는 Java 5
+          <classname>java.util.concurrent.Executor</classname>의 래퍼다. 또 다른
+          대안은 빈 프로퍼티로 <classname>Executor</classname> 설정 파라미터를 노출하는
+          <classname>ThreadPoolTaskExecutor</classname>다.
+          <classname>ConcurrentTaskExecutor</classname>를 사용해야 하는 경우는 드물지만 <link
+          linkend="threadPoolTaskExecutor"><classname>ThreadPoolTaskExecutor</classname></link>가
+          원하는 만큼 안정적이지 않다면 <classname>ConcurrentTaskExecutor</classname>를
+          대신 사용할 수 있다.</para>
         </listitem>
 
         <listitem id="simpleThreadPoolTaskExecutor">
           <para><classname>SimpleThreadPoolTaskExecutor</classname></para>
 
-          <para>This implementation is actually a subclass of Quartz's
-          <classname>SimpleThreadPool</classname> which listens to Spring's
-          lifecycle callbacks. This is typically used when you have a thread
-          pool that may need to be shared by both Quartz and non-Quartz
-          components.</para>
+          <para>이 구현체는 실제로 Quartz <classname>SimpleThreadPool</classname>의
+          하위클래스로 스프링의 생명주기 콜백을 받는다. 이는 Quartz와 Quartz가 아닌 컴포넌트 간에
+          공유해야 하는 스레드 풀이 있는 경우에 보통 사용한다.</para>
         </listitem>
 
         <listitem id="threadPoolTaskExecutor">
           <para><classname>ThreadPoolTaskExecutor</classname></para>
 
           <sidebar>
-            <para>It is not possible to use any backport or alternate versions
-            of the <classname>java.util.concurrent</classname> package with
-            this implementation. Both Doug Lea's and Dawid Kurzyniec's
-            implementations use different package structures which will
-            prevent them from working correctly.</para>
+            <para>이 구현체는 <classname>java.util.concurrent</classname> 패키지의
+            어떤 백포트나 다른 버전과 함께 사용할 수 없다. Doug Lea의 구현체와 Dawid
+            Kurzyniec의 구현체 모두 다른 패키지 구조를 사용해서 제대로 동작하지 않을 것이다.</para>
           </sidebar>
 
-          <para>This implementation can only be used in a Java 5 environment
-          but is also the most commonly used one in that environment. It
-          exposes bean properties for configuring a
-          <classname>java.util.concurrent.ThreadPoolExecutor</classname> and
-          wraps it in a <interfacename>TaskExecutor</interfacename>. If you
-          need something advanced such as a
-          <classname>ScheduledThreadPoolExecutor</classname>, it is
-          recommended that you use a <link
-          linkend="concurrentTaskExecutor"><classname>ConcurrentTaskExecutor</classname></link>
-          instead.</para>
+          <para>이 구현체는 자바 5 환경에서만 사용할 수 있지만, 자바 5 환경에서는 가장 일반적으로
+          사용한다. 이 구현체는
+          <classname>java.util.concurrent.ThreadPoolExecutor</classname>를 구성하는
+          빈 프로퍼티를 노출하고 이를 <interfacename>TaskExecutor</interfacename>로
+          감싼다. <classname>ScheduledThreadPoolExecutor</classname>같은 고급 기능이
+          필요하다면 <link
+          linkend="concurrentTaskExecutor"><classname>ConcurrentTaskExecutor</classname></link>를
+          대신 사용하기를 권장한다.</para>
         </listitem>
 
         <listitem>
           <para><classname>TimerTaskExecutor</classname></para>
 
-          <para>This implementation uses a single
-          <classname>TimerTask</classname> as its backing implementation. It's
-          different from the <link
-          linkend="syncTaskExecutor"><classname>SyncTaskExecutor</classname></link>
-          in that the method invocations are executed in a separate thread,
-          although they are synchronous in that thread.</para>
+          <para>이 구현체는 지원 구현체로 단일 <classname>TimerTask</classname>를 사용한다.
+          <link
+          linkend="syncTaskExecutor"><classname>SyncTaskExecutor</classname></link>와
+          다른 부분은 같은 스레드에서 동기로 동작하더라도 메서드 호출을 다른 스레드에서 한다는
+          점이다.</para>
         </listitem>
 
         <listitem>
           <para><classname>WorkManagerTaskExecutor</classname></para>
 
           <sidebar>
-            <para>CommonJ is a set of specifications jointly developed between
-            BEA and IBM. These specifications are not Java EE standards, but
-            are standard across BEA's and IBM's Application Server
-            implementations.</para>
+            <para>CommonJ는 BEA와 IBM이 함께 개발한 명세다. 이 명세는 Java EE 표준은
+            아니지만, BEA와 IBM의 애플리케이션 서버 구현체의 표준이다.</para>
           </sidebar>
 
-          <para>This implementation uses the CommonJ WorkManager as its
-          backing implementation and is the central convenience class for
-          setting up a CommonJ WorkManager reference in a Spring context.
-          Similar to the <link
-          linkend="simpleThreadPoolTaskExecutor"><classname>SimpleThreadPoolTaskExecutor</classname></link>,
-          this class implements the WorkManager interface and therefore can be
-          used directly as a WorkManager as well.</para>
+          <para>이 구현체는 CommonJ WorkManager를 지원 구현체로 사용하고 스프링 컨텍스트에서
+          CommonJ WorkManager 참조를 구성하는 핵심 클래스다. <link
+          linkend="simpleThreadPoolTaskExecutor"><classname>SimpleThreadPoolTaskExecutor</classname></link>와
+          유사하게 이 클래스는 WorkManager 인터페이스를 구현했으므로 WorkManager처럼
+          직접 사용할 수 있다.</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section id="scheduling-task-executor-usage">
-      <title>Using a <interfacename>TaskExecutor</interfacename></title>
+      <title><interfacename>TaskExecutor</interfacename>의 사용</title>
 
-      <para>Spring's <interfacename>TaskExecutor</interfacename>
-      implementations are used as simple JavaBeans. In the example below, we
-      define a bean that uses the
-      <classname>ThreadPoolTaskExecutor</classname> to asynchronously print
-      out a set of messages.</para>
+      <para>스프링의 <interfacename>TaskExecutor</interfacename> 구현체를 간단한
+      JavaBean으로 사용한다. 다음 예제에서는 메시지를 비동기로 출력하려고
+      <classname>ThreadPoolTaskExecutor</classname>를 사용하는 빈을 정의했다.</para>
 
       <programlisting language="java">import org.springframework.core.task.TaskExecutor;
 
@@ -208,14 +177,13 @@ public class TaskExecutorExample {
   }
 }</programlisting>
 
-      <para>As you can see, rather than retrieving a thread from the pool and
-      executing yourself, you add your <classname>Runnable</classname> to the
-      queue and the <interfacename>TaskExecutor</interfacename> uses its
-      internal rules to decide when the task gets executed.</para>
+      <para>여기서 보듯이 풀(pool)에서 스레드를 가져와서 직접 실행하는 대신 큐에
+      <classname>Runnable</classname>를 추가하고
+      <interfacename>TaskExecutor</interfacename>가 테스트를 언제 실행할지 결정하기
+      위해 내부의 규칙을 사용한다.</para>
 
-      <para>To configure the rules that the
-      <interfacename>TaskExecutor</interfacename> will use, simple bean
-      properties have been exposed.</para>
+      <para><interfacename>TaskExecutor</interfacename>가 사용할 규칙을 설정하려고
+      빈(bean) 프로퍼티를 노출했다.</para>
 
       <programlisting language="xml">&lt;bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"&gt;
   &lt;property name="corePoolSize" value="5" /&gt;
@@ -230,13 +198,11 @@ public class TaskExecutorExample {
   </section>
 
   <section id="scheduling-task-scheduler">
-    <title>The Spring <interfacename>TaskScheduler</interfacename>
-    abstraction</title>
+    <title>스프링의 <interfacename>TaskScheduler</interfacename> 추상화</title>
 
-    <para>In addition to the <interfacename>TaskExecutor</interfacename>
-    abstraction, Spring 3.0 introduces a
-    <interfacename>TaskScheduler</interfacename> with a variety of methods for
-    scheduling tasks to run at some point in the future.</para>
+    <para><interfacename>TaskExecutor</interfacename> 추상화에 추가로 스프링 3.0에서는
+    미래의 어떤 시점에 실행할 태스크를 스케줄링하는 다양한 메서드를 가진
+    <interfacename>TaskScheduler</interfacename>를 도입되었다.</para>
 
     <programlisting language="java">public interface TaskScheduler {
 
@@ -254,26 +220,21 @@ public class TaskExecutorExample {
 
 }</programlisting>
 
-    <para>The simplest method is the one named 'schedule' that takes a
-    <interfacename>Runnable</interfacename> and <classname>Date</classname>
-    only. That will cause the task to run once after the specified time. All
-    of the other methods are capable of scheduling tasks to run repeatedly.
-    The fixed-rate and fixed-delay methods are for simple, periodic execution,
-    but the method that accepts a Trigger is much more flexible.</para>
+    <para><interfacename>Runnable</interfacename>과 <classname>Date</classname>만
+    받는 'schedule' 메서드가 가장 간단한 메서드다. 이 메서드는 지정한 시간 후에 태스크를 한번 실행할
+    것이다. 다른 모든 메서드는 반복해서 실행할 태스크를 스케줄링할 수 있다. fixed-rate 메서드와
+    fixed-delay 메서드는 간단하고 주기적인 실행을 위한 메서드이지만 훨씬 더 유연한 Trigger를
+    받을 수 있다.</para>
 
     <section id="scheduling-trigger-interface">
-      <title>The <interfacename>Trigger</interfacename> interface</title>
+      <title><interfacename>Trigger</interfacename> 인터페이스</title>
 
-      <para>The <interfacename>Trigger</interfacename> interface is
-      essentially inspired by JSR-236, which, as of Spring 3.0, has not yet
-      been officially implemented. The basic idea of the
-      <interfacename>Trigger</interfacename> is that execution times may be
-      determined based on past execution outcomes or even arbitrary
-      conditions. If these determinations do take into account the outcome of
-      the preceding execution, that information is available within a
-      <interfacename>TriggerContext</interfacename>. The
-      <interfacename>Trigger</interfacename> interface itself is quite
-      simple:</para>
+      <para><interfacename>Trigger</interfacename> 인터페이스는 기본적으로
+      JSR-236(스프링 3.0에서는 아직 공식적으로 구현되지 않았다.)의 영향을 받았다.
+      <interfacename>Trigger</interfacename> 인터페이스의 기본적인 개념은 과거의 실행
+      결과나 임의의 상황에 기반을 둬서 실행시간을 결정한다는 것이다. 이전 실행의 결과를 고려하는 경우
+      해당 정보는 <interfacename>TriggerContext</interfacename>내에 있다.
+      <interfacename>Trigger</interfacename> 인터페이스 자체는 아주 간단하다.</para>
 
       <programlisting language="java">public interface Trigger {
 
@@ -281,13 +242,13 @@ public class TaskExecutorExample {
 
 }</programlisting>
 
-      <para>As you can see, the <interfacename>TriggerContext</interfacename>
-      is the most important part. It encapsulates all of the relevant data,
-      and is open for extension in the future if necessary. The
-      <interfacename>TriggerContext</interfacename> is an interface (a
-      <classname>SimpleTriggerContext</classname> implementation is used by
-      default). Here you can see what methods are available for
-      <interfacename>Trigger</interfacename> implementations.</para>
+      <para>여기서 <interfacename>TriggerContext</interfacename>가 가장 중요한
+      부분이다. <interfacename>TriggerContext</interfacename>는 모든 관련 데이터를
+      은닉화하고 나중에 필요할 때 확장할 수 있게 열려있다.
+      <interfacename>TriggerContext</interfacename>는 인터페이스다.
+      (<classname>SimpleTriggerContext</classname> 구현체를 기본값으로 사용한다.)
+      <interfacename>Trigger</interfacename> 구현체에서 사용할 수 있는 메서드가
+      다음에 나와 있다.</para>
 
       <programlisting language="java">public interface TriggerContext {
 
@@ -301,156 +262,121 @@ public class TaskExecutorExample {
     </section>
 
     <section id="scheduling-trigger-implementations">
-      <title><interfacename>Trigger</interfacename> implementations</title>
+      <title><interfacename>Trigger</interfacename> 구현체</title>
 
-      <para>Spring provides two implementations of the
-      <interfacename>Trigger</interfacename> interface. The most interesting
-      one is the <classname>CronTrigger</classname>. It enables the scheduling
-      of tasks based on cron expressions. For example the following task is
-      being scheduled to run 15 minutes past each hour but only during the
-      9-to-5 "business hours" on weekdays.</para>
+      <para>스프링은 <interfacename>Trigger</interfacename> 인터페이스의 두 구현체를
+      제공한다. <classname>CronTrigger</classname>가 가장 흥미로운데 이는 cron 표현식으로
+      태스크를 스케줄링할 수 있다. 예를 들어 다음 태스크는 주중 "업무시간"인 9~5시 사이의 매시간
+      15분에 실행된다.</para>
 
       <programlisting language="java">scheduler.schedule(task, new CronTrigger("* 15 9-17 * * MON-FRI"));</programlisting>
 
-      <para>The other out-of-the-box implementation is a
-      <classname>PeriodicTrigger</classname> that accepts a fixed period, an
-      optional initial delay value, and a boolean to indicate whether the
-      period should be interpreted as a fixed-rate or a fixed-delay. Since the
-      <interfacename>TaskScheduler</interfacename> interface already defines
-      methods for scheduling tasks at a fixed-rate or with a fixed-delay,
-      those methods should be used directly whenever possible. The value of
-      the <classname>PeriodicTrigger</classname> implementation is that it can
-      be used within components that rely on the
-      <interfacename>Trigger</interfacename> abstraction. For example, it may
-      be convenient to allow periodic triggers, cron-based triggers, and even
-      custom trigger implementations to be used interchangeably. Such a
-      component could take advantage of dependency injection so that such
-      <interfacename>Triggers</interfacename> could be configured
-      externally.</para>
+      <para>또 다른 구현체인 <classname>PeriodicTrigger</classname>는 고정된 기간을 받고
+      선택적으로 초기 지연값과 지정한 기간을 고정된 비율로 해석할지 고정된 지연시간으로 해석할지
+      나타내는 불리언값을 받는다. <interfacename>TaskScheduler</interfacename>가 고정된
+      비율이나 고정된 지연시간으로 태스크를 스케쥴일하는 메서드를 이미 정의하고 있으므로 가능하면
+      <interfacename>TaskScheduler</interfacename>의 메서드를 직접 사용할 것이다.
+      <interfacename>Trigger</interfacename> 추상화에 의존하는 컴포넌트내에서
+      <classname>PeriodicTrigger</classname> 구현체의 값을 사용할 수 있다. 예를 들어
+      정기적인 트리거, 크론 기반의 트리거, 임의의 트리거 구현을 상호교환해서 편리하게 사용할 수 있다.
+      이러한 컴포넌트는 의존성 주입을 할 수 있으므로
+      <interfacename>Triggers</interfacename> 등을 외부에서 설정할 수도 있다.</para>
     </section>
 
     <section id="scheduling-task-scheduler-implementations">
-      <title><interfacename>TaskScheduler</interfacename>
-      implementations</title>
+      <title><interfacename>TaskScheduler</interfacename> 구현체</title>
 
-      <para>As with Spring's <interfacename>TaskExecutor</interfacename>
-      abstraction, the primary benefit of the
-      <interfacename>TaskScheduler</interfacename> is that code relying on
-      scheduling behavior need not be coupled to a particular scheduler
-      implementation. The flexibility this provides is particularly relevant
-      when running within Application Server environments where threads should
-      not be created directly by the application itself. For such cases,
-      Spring provides a <classname>TimerManagerTaskScheduler</classname> that
-      delegates to a CommonJ TimerManager instance, typically configured with
-      a JNDI-lookup.</para>
+      <para>스프링의 <interfacename>TaskExecutor</interfacename> 추상화처럼
+      <interfacename>TaskScheduler</interfacename>는 스케줄링 작업에 의존하는 코드가
+      특정 스케줄러 구현체에 의존할 필요가 없다는 것이 주요한 장점이다.
+      <interfacename>TaskScheduler</interfacename>의 유연성은 애플리케이션이 직접
+      스레드를 생성하지 않아야 하는 애플리케이션 서버 환경에서 동작하는 경우와 특히 관련이 있다.
+      이러한 경우를 위해서 스프링은 CommonJ TimerManager 인스턴스(보통 JNDI 검색으로
+      설정하는)에 위임하는 <classname>TimerManagerTaskScheduler</classname>를
+      제공한다.</para>
 
-      <para>A simpler alternative, the
-      <classname>ThreadPoolTaskScheduler</classname>, can be used whenever
-      external thread management is not a requirement. Internally, it
-      delegates to a <interfacename>ScheduledExecutorService</interfacename>
-      instance. <classname>ThreadPoolTaskScheduler</classname> actually
-      implements Spring's <interfacename>TaskExecutor</interfacename>
-      interface as well, so that a single instance can be used for
-      asynchronous execution <emphasis>as soon as possible</emphasis> as well
-      as scheduled, and potentially recurring, executions.</para>
+      <para>아니면 더 간단한 방법으로 외부 스레드 관리가 필요치 않은 경우에
+      <classname>ThreadPoolTaskScheduler</classname>를 사용할 수 있다. 내부적으로
+      <classname>ThreadPoolTaskScheduler</classname>는
+      <interfacename>ScheduledExecutorService</interfacename> 인스턴스에 위임한다.
+      사실 <classname>ThreadPoolTaskScheduler</classname>는 스프링의
+      <interfacename>TaskExecutor</interfacename> 인터페이스를 구현했으므로 스케줄된
+      대로 <emphasis>가능한한 빨리</emphasis> 비동기로 실행하는데(혹은 반복된 실행) 단일
+      인스턴스를 사용할 수 있다.</para>
     </section>
   </section>
 
   <section id="scheduling-task-namespace">
-    <title>The Task Namespace</title>
+    <title>태스크(Task) 네임스페이스</title>
 
-    <para>Beginning with Spring 3.0, there is an XML namespace for configuring
-    <interfacename>TaskExecutor</interfacename> and
-    <interfacename>TaskScheduler</interfacename> instances. It also provides a
-    convenient way to configure tasks to be scheduled with a trigger.</para>
+    <para>스프링 3.0부터 <interfacename>TaskExecutor</interfacename>와
+    <interfacename>TaskScheduler</interfacename> 인스턴스를 구성하는 XML 네임스페이스가
+    존재하고 트리거로 예약된 태스크를 구성하는 간편한 방법도 제공한다.</para>
 
     <section id="scheduling-task-namespace-scheduler">
-      <title>The 'scheduler' element</title>
+      <title>'scheduler' 엘리먼트</title>
 
-      <para>The following element will create a
-      <classname>ThreadPoolTaskScheduler</classname> instance with the
-      specified thread pool size.</para>
+      <para>아래의 엘리먼트는 지정한 크기의 스레드풀을 가진
+      <classname>ThreadPoolTaskScheduler</classname> 인스턴스를 생성한다.</para>
 
       <programlisting language="xml">&lt;task:scheduler id="scheduler" pool-size="10"/&gt;</programlisting>
 
-      <para>The value provided for the 'id' attribute will be used as the
-      prefix for thread names within the pool. The 'scheduler' element is
-      relatively straightforward. If you do not provide a 'pool-size'
-      attribute, the default thread pool will only have a single thread. There
-      are no other configuration options for the scheduler.</para>
+      <para>'id' 속성으로 제공한 값은 풀(pool)에서 스레드 이름의 접두사로 사용한다.
+      'scheduler' 엘리먼트는 비교적 직관적이다. 'pool-size' 속성을 지정하지 않았다면 기본
+      스레드풀은 하나의 스레드만 가질 것이다. scheduler에 다른 설정 옵션은 없다.</para>
     </section>
 
     <section id="scheduling-task-namespace-executor">
-      <title>The 'executor' element</title>
+      <title>'executor' 엘리먼트</title>
 
-      <para>The following will create a
-      <classname>ThreadPoolTaskExecutor</classname> instance: <programlisting
+      <para>다음은 <classname>ThreadPoolTaskExecutor</classname> 인스턴스를 생성한다. <programlisting
       language="xml">&lt;task:executor id="executor" pool-size="10"/&gt;</programlisting></para>
 
-      <para>As with the scheduler above, the value provided for the 'id'
-      attribute will be used as the prefix for thread names within the pool.
-      As far as the pool size is concerned, the 'executor' element supports
-      more configuration options than the 'scheduler' element. For one thing,
-      the thread pool for a <classname>ThreadPoolTaskExecutor</classname> is
-      itself more configurable. Rather than just a single size, an executor's
-      thread pool may have different values for the <emphasis>core</emphasis>
-      and the <emphasis>max</emphasis> size. If a single value is provided
-      then the executor will have a fixed-size thread pool (the core and max
-      sizes are the same). However, the 'executor' element's 'pool-size'
-      attribute also accepts a range in the form of "min-max". <programlisting
+      <para>앞에서 본 scheduler와 마찬가지로 'id' 속성은 풀(pool)에서 스레드 이름의 접두사로
+      사용한다. 풀의 크기에 관심이 있다면 'executor' 엘리먼트는 'scheduler' 엘리먼트보다 많은
+      설정 옵션을 지원한다. <classname>ThreadPoolTaskExecutor</classname>의 스레드풀
+      자체를 더 상세하게 설정할 수 있다. 그냥 하나의 사이즈를 지정하는 것이 아니라 executor의
+      스레드풀은 <emphasis>core</emphasis>와 <emphasis>max</emphasis> 크기에 다른
+      값을 줄 수 있다. 하나의 값을 지정한다면 executor는 고정된 크기의 스레드 풀을 가진다.(core와
+      max 크기가 같은 경우) 하지만 'executor' 엘리먼트의 'pool-size' 속성도 "min-max"
+      형식의 범위도 받을 수 있다. <programlisting
       language="xml">&lt;task:executor id="executorWithPoolSizeRange"
-	               pool-size="5-25"
-	               queue-capacity="100"/&gt;</programlisting></para>
+                 pool-size="5-25"
+                 queue-capacity="100"/&gt;</programlisting></para>
 
-      <para>As you can see from that configuration, a 'queue-capacity' value
-      has also been provided. The configuration of the thread pool should also
-      be considered in light of the executor's queue capacity. For the full
-      description of the relationship between pool size and queue capacity,
-      consult the documentation for <ulink
-      url="http://java.sun.com/javase/6/docs/api/java/util/concurrent/ThreadPoolExecutor.html">ThreadPoolExecutor</ulink>.
-      The main idea is that when a task is submitted, the executor will first
-      try to use a free thread if the number of active threads is currently
-      less than the core size. If the core size has been reached, then the
-      task will be added to the queue as long as its capacity has not yet been
-      reached. Only then, if the queue's capacity <emphasis>has</emphasis>
-      been reached, will the executor create a new thread beyond the core
-      size. If the max size has also been reached, then the executor will
-      reject the task.</para>
+      <para>이 설정에서는 'queue-capacity' 값도 지정했다. 스레드풀의 설정은 익스큐터 큐의
+      크기와도 관련된다. 풀의 크기와 큐의 크기 간의 관계에 대한 자세한 내용은 <ulink
+      url="http://java.sun.com/javase/6/docs/api/java/util/concurrent/ThreadPoolExecutor.html">ThreadPoolExecutor</ulink>
+      문서를 참고해라. 핵심 개념은 태스크를 제출했을 때 executor는 액티브 스레드의 수가 코어의
+      개수보다 적다면 놀고 있는 스레드를 먼저 사용한다는 것이다. 활성화된 스레드 수가 코어의
+      개수만큼이고 큐의 용량이 꽉 차지 않았다면 태스크를 큐에 추가할 것이다. 큐의 용량이
+      <emphasis>꽉 찼다면</emphasis> 익스큐터는 코어 개수 이상의 새로운 스레드를 생성할
+      것이다. 최대 사이즈에 이르렀다면 익스큐터는 해당 태스크를 거절한다.</para>
 
-      <para>By default, the queue is <emphasis>unbounded</emphasis>, but this
-      is rarely the desired configuration, because it can lead to
-      <classname>OutOfMemoryErrors</classname> if enough tasks are added to
-      that queue while all pool threads are busy. Furthermore, if the queue is
-      unbounded, then the max size has no effect at all. Since the executor
-      will always try the queue before creating a new thread beyond the core
-      size, a queue must have a finite capacity for the thread pool to grow
-      beyond the core size (this is why a <emphasis>fixed size</emphasis> pool
-      is the only sensible case when using an unbounded queue).</para>
+      <para>풀의 모든 스레드가 바쁜 상태일 때 해당 큐에 태스크가 추가된다면
+      <classname>OutOfMemoryErrors</classname>가 발생할 수 있으므로 보통 큐가
+      <emphasis>언바인드</emphasis>되는 것은 원하는 설정이 아닐 것이다. 게다가 큐가 언바인드되면
+      최대 사이즈는 아무런 영향을 주지 않는다. 익스큐터는 코어 개수 이상의 새로운 스레드를 생성하기
+      전에 항상 큐를 먼저 시도하므로 코어 개수보다 많이 스레드 풀을 늘리려면 큐가 반드시 정해진
+      용량을 가져야 한다.(이것이 <emphasis>고정된 크기의</emphasis> 풀이 언바인드된 큐를
+      사용하는 경우에만 합리적인 이유이다.)</para>
 
-      <para>In a moment, we will review the effects of the keep-alive setting
-      which adds yet another factor to consider when providing a pool size
-      configuration. First, let's consider the case, as mentioned above, when
-      a task is rejected. By default, when a task is rejected, a thread pool
-      executor will throw a <classname>TaskRejectedException</classname>.
-      However, the rejection policy is actually configurable. The exception is
-      thrown when using the default rejection policy which is the
-      <classname>AbortPolicy</classname> implementation. For applications
-      where some tasks can be skipped under heavy load, either the
-      <classname>DiscardPolicy</classname> or
-      <classname>DiscardOldestPolicy</classname> may be configured instead.
-      Another option that works well for applications that need to throttle
-      the submitted tasks under heavy load is the
-      <classname>CallerRunsPolicy</classname>. Instead of throwing an
-      exception or discarding tasks, that policy will simply force the thread
-      that is calling the submit method to run the task itself. The idea is
-      that such a caller will be busy while running that task and not able to
-      submit other tasks immediately. Therefore it provides a simple way to
-      throttle the incoming load while maintaining the limits of the thread
-      pool and queue. Typically this allows the executor to "catch up" on the
-      tasks it is handling and thereby frees up some capacity on the queue, in
-      the pool, or both. Any of these options can be chosen from an
-      enumeration of values available for the 'rejection-policy' attribute on
-      the 'executor' element.</para>
+      <para>이제 풀의 크기 설정을 제공하는 경우에 고려해야 한 또 다른 요소인 keep-alive 설정을
+      볼 것이다. 우선 앞에서 언급했던 태스크를 거절한 경우를 생각해 보자. 보통 태스크가 거절되면
+      스레드풀 익스큐터는 <classname>TaskRejectedException</classname>를 던질 것이지만
+      거절 정책을 설정할 수 있다. 기본 거절 정책인 <classname>AbortPolicy</classname>
+      구현체를 사용하는 경우에 <classname>TaskRejectedException</classname> 예외를
+      던진다. 과부하상태에서 일부 태스크는 건너뛸 수 있는 애플리케이션에서는
+      <classname>DiscardPolicy</classname>나
+      <classname>DiscardOldestPolicy</classname>를 대신 설정할 수 있다. 과부하상태에서
+      제출된 태스크를 제어(throttle)해야 하는 애플리케이션에서는
+      <classname>CallerRunsPolicy</classname>도 좋은 선택이다. 이 정책은 예외를 던지거나
+      태스크를 버리지 않고 스레드가 테스트 자체를 실행하는 submit 메서드를 호출하도록 강제할 것이다.
+      이 정책의 개념은 이러한 호출자는 태스크를 실행하는 동안에는 바빠서 다른 태스크를 즉시 제출하지
+      못하리라는 것이다. 그러므로 스레드 풀과 큐의 제한을 유지하면서 부하를 제거하는 간단한 방법을
+      제공한다. 보통 이를 통해서 익스큐터가 "밀려있는" 태스크를 처리할 수 있으므로 큐나 풀 용량에
+      여유가 생긴다. 'executor' 요소의 'rejection-policy' 속성에 이러한 옵션 중 어느
+      것이라도 사용할 수 있다.</para>
 
       <programlisting language="xml">&lt;task:executor id="executorWithCallerRunsPolicy"
                pool-size="5-25"
@@ -459,16 +385,13 @@ public class TaskExecutorExample {
     </section>
 
     <section id="scheduling-task-namespace-scheduled-tasks">
-      <title>The 'scheduled-tasks' element</title>
+      <title>'scheduled-tasks' 요소</title>
 
-      <para>The most powerful feature of Spring's task namespace is the
-      support for configuring tasks to be scheduled within a Spring
-      Application Context. This follows an approach similar to other
-      "method-invokers" in Spring, such as that provided by the JMS namespace
-      for configuring Message-driven POJOs. Basically a "ref" attribute can
-      point to any Spring-managed object, and the "method" attribute provides
-      the name of a method to be invoked on that object. Here is a simple
-      example.</para>
+      <para>스프링 task 네임스페이스에서 가장 강력한 기능은 스프링 애플리케이션 컨텍스트에서
+      스케줄링 되는 태스크를 설정하는 기능이다. 이 기능도 JMS 네임스페이스에서 메시지주도 POJO를
+      설정하는 것과 같은 다른 스프링의 "메서드-인보커"와 비슷한 접근을 한다. 기본적으로 "ref"
+      속성은 스프링이 관리하는 어떤 객체라도 가리킬 수 있고 "method" 속성은 해당 객체에서 호출될
+      메서드명을 지정한다. 다음은 간단한 예제이다.</para>
 
       <programlisting language="xml">&lt;task:scheduled-tasks scheduler="myScheduler"&gt;
     &lt;task:scheduled ref="someObject" method="someMethod" fixed-delay="5000"/&gt;
@@ -476,12 +399,10 @@ public class TaskExecutorExample {
 
 &lt;task:scheduler id="myScheduler" pool-size="10"/&gt;</programlisting>
 
-      <para>As you can see, the scheduler is referenced by the outer element,
-      and each individual task includes the configuration of its trigger
-      metadata. In the preceding example, that metadata defines a periodic
-      trigger with a fixed delay. It could also be configured with a
-      "fixed-rate", or for more control, a "cron" attribute could be provided
-      instead. Here's an example featuring these other options.</para>
+      <para>예제에서 보듯이 외부 요소가 schedule를 참조하고 각 task는 트리거 메타데이터의 설정을
+      가지고 있다. 앞의 예제에서 메타데이터는 고정된 지연시간을 가진 주기적인 트리거를 정의하고 있다.
+      이는 "고정된 비율(fixed-rate)"로 설정하거나 "cron"속성을 사용해서 더 세밀하게 제어할 수도
+      있다. 다음은 이러한 옵션을 사용한 예제이다.</para>
 
       <programlisting language="xml">&lt;task:scheduled-tasks scheduler="myScheduler"&gt;
     &lt;task:scheduled ref="someObject" method="someMethod" fixed-rate="5000"/&gt;
@@ -493,109 +414,91 @@ public class TaskExecutorExample {
   </section>
 
   <section id="scheduling-annotation-support">
-    <title>Annotation Support for Scheduling and Asynchronous
-    Execution</title>
+    <title>스케줄링과 비동기 실행에 대한 어노테이션 지원</title>
 
-    <para>Spring 3.0 also adds annotation support for both task scheduling and
-    asynchronous method execution.</para>
+    <para>스프링 3.0은 task 스케줄링과 비동기 메서드 실행에 대한 어노테이션도 지원한다.</para>
 
     <section id="scheduling-annotation-support-scheduled">
-      <title>The @Scheduled Annotation</title>
+      <title>@Scheduled 어노테이션</title>
 
-      <para>The @Scheduled annotation can be added to a method along with
-      trigger metadata. For example, the following method would be invoked
-      every 5 seconds with a fixed delay, meaning that the period will be
-      measured from the completion time of each preceding invocation.</para>
+      <para>트리거 메타데이터와 함께 @Scheduled 어노테이션을 메서드에 추가할 수 있다. 예를 들어
+      다음 예제는 고정된 시간이 5초마다 호출되고 이 시간은 이전 호출이 완료된 시점부터 계산될
+      것이다.</para>
 
       <programlisting language="java">@Scheduled(fixedDelay=5000)
 public void doSomething() {
-    // something that should execute periodically
+    // 주기적으로 실행될 것이다
 }</programlisting>
 
-      <para>If a fixed rate execution is desired, simply change the property
-      name specified within the annotation. The following would be executed
-      every 5 seconds measured between the successive start times of each
-      invocation.</para>
+      <para>고정된 비율로 실행하기를 원한다면 어노테이션에서 지정한 프로퍼티명만 바꿔주면 된다.
+      다음 예제는 각 호출의 연속적인 시작 시각의 간격으로 계산된 5초마다 실행될 것이다.</para>
 
       <programlisting language="java">@Scheduled(fixedRate=5000)
 public void doSomething() {
-    // something that should execute periodically
+    // 주기적으로 실행될 것이다
 }</programlisting>
 
-      <para>If simple periodic scheduling is not expressive enough, then a
-      cron expression may be provided. For example, the following will only
-      execute on weekdays.</para>
+      <para>간단한 주기 스케줄링으로 충분하지 않다면 cron 표현식을 사용할 수 있다. 다음은
+      평일에만 실행될 것이다.</para>
 
       <programlisting language="java">@Scheduled(cron="*/5 * * * * MON-FRI")
 public void doSomething() {
-    // something that should execute on weekdays only
+    // 평일에만 실행될 것이다
 }</programlisting>
 
-      <para>Notice that the methods to be scheduled must have void returns and
-      must not expect any arguments. If the method needs to interact with
-      other objects from the Application Context, then those would typically
-      have been provided through dependency injection.</para>
+      <para>스케쥴되는 메서드는 반환 타입이 반드시 void이고 아무런 인자도 받지 말아야 한다.
+      애플리케이션 컨텍스트의 다른 객체와 메서드가 상호작용해야 한다면 의존성 주입으로 제공하는
+      것이 일반적이다.</para>
 
       <note>
-        <para>Make sure that you are not initializing multiple instances of
-        the same @Scheduled annotation class at runtime, unless you do want to
-        schedule callbacks to each such instance. Related to this, make sure
-        that you do not use @Configurable on bean classes which are annotated
-        with @Scheduled and registered as regular Spring beans with the
-        container: You would get double initialization otherwise, once through
-        the container and once through the @Configurable aspect, with the
-        consequence of each @Scheduled method being invoked twice.</para>
+        <para>각 인스턴스에 대한 콜백을 스케줄링하려는 것이 아니라면 런타임시에 같은 @Scheduled
+        어노테이션 클래스의 여러 인스턴스를 초기화하지 않도록 해야 한다. 이와 관련해서 @Scheduled
+        어노테이션이 붙고 컨테이너에 일반적인 스프링 빈으로 등록된 bean 클래스에 @Configurable를
+        사용하지 말아야 한다. 그렇지 않으면 두 번 초기화되는 상황이 발생해서(한번은 컨테이너에서
+        발생하고 한번은 @Configurable 관점(aspect)에서 발생한다) 각 @Scheduled 메서드는
+        두 번 호출되게 된다.</para>
       </note>
     </section>
 
     <section id="scheduling-annotation-support-async">
-      <title>The @Async Annotation</title>
+      <title>@Async 어노테이션</title>
 
-      <para>The <interfacename>@Async</interfacename> annotation can be
-      provided on a method so that invocation of that method will occur
-      asynchronously. In other words, the caller will return immediately upon
-      invocation and the actual execution of the method will occur in a task
-      that has been submitted to a Spring
-      <interfacename>TaskExecutor</interfacename>. In the simplest case, the
-      annotation may be applied to a <literal>void</literal>-returning
-      method.</para>
+      <para><interfacename>@Async</interfacename> 어노테이션은 메서드에 사용해서
+      메서드를 비동기로 호출할 수 있다. 즉, 콜러(caller)는 호출하자마자 바로 결과를 받고 실제
+      메서드 실행은 스프링 <interfacename>TaskExecutor</interfacename>에 제출된
+      task에서 일어날 것이다. 가장 간단한 경우는 <literal>void</literal>를 반환하는
+      메서드에 @Async 어노테이션을 적용하는 것이다.</para>
 
       <programlisting language="java">@Async
 void doSomething() {
-    // this will be executed asynchronously
+    // 이 메서드는 비동기로 실행될 것이다
 }</programlisting>
 
-      <para>Unlike the methods annotated with the
-      <interfacename>@Scheduled</interfacename> annotation, these methods can
-      expect arguments, because they will be invoked in the "normal" way by
-      callers at runtime rather than from a scheduled task being managed by
-      the container. For example, the following is a legitimate application of
-      the <interfacename>@Async</interfacename> annotation.</para>
+      <para><interfacename>@Scheduled</interfacename> 어노테이션이 붙은 메서드와는 달리
+      @Async 어노테이션이 붙은 메서드는 컨테이너가 관리하는 스케쥴된 task가 아니라 런타임시에 콜러가
+      "일반적인" 방법으로 호출하기 때문에 인자를 받을 수 있다. 예를 들어 다음 코드는 유효한
+      <interfacename>@Async</interfacename> 어노테이션을 사용한 애플리케이션이다.</para>
 
       <programlisting language="java">@Async
 void doSomething(String s) {
-    // this will be executed asynchronously
+    // 이 메서드는 비동기로 실행될 것이다
 }</programlisting>
 
-      <para>Even methods that return a value can be invoked asynchronously.
-      However, such methods are required to have a
-      <interfacename>Future</interfacename> typed return value. This still
-      provides the benefit of asynchronous execution so that the caller can
-      perform other tasks prior to calling <methodname>get()</methodname> on
-      that Future.</para>
+      <para>값을 반환하는 메서드로 비동기로 호출할 수 있지만 이러한 메서드는 반환 값이
+      <interfacename>Future</interfacename> 타입이어야 한다. 이는 비동기 실행의 이점을
+      가지므로 콜러(caller)는 Future에서 <methodname>get()</methodname>를 호출하기
+      전에 다른 작업을 할 수 있다.</para>
 
       <programlisting language="java">@Async
 Future&lt;String&gt; returnSomething(int i) {
-    // this will be executed asynchronously
+    // 이 메서드는 비동기로 실행될 것이다
 }</programlisting>
 
-      <para><interfacename>@Async</interfacename> can not be used in
-      conjunction with lifecycle callbacks such as
-      <interfacename>@PostConstruct</interfacename>. To asynchonously
-      initialize Spring beans you currently have to use a separate
-      initializing Spring bean that invokes the
-      <interfacename>@Async</interfacename> annotated method on the target
-      then.</para>
+      <para><interfacename>@Async</interfacename>는
+      <interfacename>@PostConstruct</interfacename>처럼 생명주기 콜백과 동시에 사용할
+      수 없다. 현재 스프링 빈을 비동기로 초기화하려면 타겟의
+      <interfacename>@Async</interfacename> 어노테이션이 붙은 메서드를 호출하는
+      스프링 빈을 초기화하는 작업을 분리해서 사용해야 한다.</para>
 
       <programlisting language="java">public class SampleBeanImpl implements SampleBean {
 
@@ -620,11 +523,10 @@ public class SampleBeanInititalizer {
     </section>
 
     <section id="scheduling-annotation-support-namespace">
-      <title>The &lt;annotation-driven&gt; Element</title>
+      <title>&lt;annotation-driven&gt; 요소</title>
 
-      <para>To enable both @Scheduled and @Async annotations, simply include
-      the 'annotation-driven' element from the task namespace in your
-      configuration.</para>
+      <para>@Scheduled과 @Async 어노테이션을 둘 다 활성화하려면 설정에서 task 네임스페이스에
+      'annotation-driven' 요소를 추가해라.</para>
 
       <programlisting language="xml">&lt;task:annotation-driven executor="myExecutor" scheduler="myScheduler"/&gt;
 
@@ -632,32 +534,28 @@ public class SampleBeanInititalizer {
 
 &lt;task:scheduler id="myScheduler" pool-size="10"/&gt;}</programlisting>
 
-      <para>Notice that an executor reference is provided for handling those
-      tasks that correspond to methods with the @Async annotation, and the
-      scheduler reference is provided for managing those methods annotated
-      with @Scheduled.</para>
+      <para>executor 참조는 @Async 어노테이션이 붙은 메서드에 대응하는 태스크를 처리하기 위해
+      제공하고 scheduler 참조는 @Scheduled 어노테이션이 붙은 메서드를 관리하기 위해서
+      제공한다.</para>
     </section>
   </section>
 
   <section id="scheduling-quartz">
-    <title>Using the OpenSymphony Quartz Scheduler</title>
+    <title>OpenSymphony Quartz 스케쥴러의 사용</title>
 
-    <para>Quartz uses <classname>Trigger</classname>,
-    <classname>Job</classname> and <classname>JobDetail</classname> objects to
-    realize scheduling of all kinds of jobs. For the basic concepts behind
-    Quartz, have a look at <ulink
-    url="http://www.opensymphony.com/quartz"></ulink>. For convenience
-    purposes, Spring offers a couple of classes that simplify the usage of
-    Quartz within Spring-based applications.</para>
+    <para>Quartz는 모든 종류의 작업 스케줄링을 인식하는데 <classname>Trigger</classname>,
+    <classname>Job</classname>, <classname>JobDetail</classname> 객체를 사용한다.
+    Quartz의 기본 개념에 대해서는 <ulink
+    url="http://www.opensymphony.com/quartz"></ulink>를 참고해라. 스프링은 스프링에
+    기반한 애플리케이션에서 Quartz를 간단히 사용할 수 있도록 클래스 다수를 제공한다.</para>
 
     <section id="scheduling-quartz-jobdetail">
-      <title>Using the JobDetailBean</title>
+      <title>JobDetailBean의 사용</title>
 
-      <para><classname>JobDetail</classname> objects contain all information
-      needed to run a job. The Spring Framework provides a
-      <classname>JobDetailBean</classname> that makes the
-      <classname>JobDetail</classname> more of an actual JavaBean with
-      sensible defaults. Let's have a look at an example:</para>
+      <para><classname>JobDetail</classname> 객체에는 작업을 실행하는 데 필요한 모든
+      정보가 담겨있다. 스프링 프레임워크는 합리적인 기본값으로 실제 자바 빈의
+      <classname>JobDetail</classname>를 만드는
+      <classname>JobDetailBean</classname>를 제공한다. 예제를 살펴보자.</para>
 
       <programlisting language="xml">
 &lt;bean name="exampleJob" class="org.springframework.scheduling.quartz.JobDetailBean"&gt;
@@ -669,91 +567,81 @@ public class SampleBeanInititalizer {
   &lt;/property&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>The job detail bean has all information it needs to run the job
-      (<classname>ExampleJob</classname>). The timeout is specified in the job
-      data map. The job data map is available through the
-      <classname>JobExecutionContext</classname> (passed to you at execution
-      time), but the <classname>JobDetailBean</classname> also maps the
-      properties from the job data map to properties of the actual job. So in
-      this case, if the <classname>ExampleJob</classname> contains a property
-      named <literal>timeout</literal>, the
-      <classname>JobDetailBean</classname> will automatically apply it:</para>
+      <para>job detail bean에는 작업(<classname>ExampleJob</classname>)에 필요한
+      모든 정보가 담겨있다. timeout은 job data map에서 지정한다. job data map은
+      <classname>JobExecutionContext</classname>로(실싱히세 전달되는) 사용할 수 있지만
+      <classname>JobDetailBean</classname>도 job data map의 프로퍼티에서 실제 job의
+      프로퍼티로 매핑한다. 그러므로 이 예제에서 <classname>ExampleJob</classname>에
+      <literal>timeout</literal>라는 프로퍼티가 있다면
+      <classname>JobDetailBean</classname>는 자동으로 이를 적용할 것이다.</para>
 
       <programlisting language="java">package example;
 
 public class ExampleJob extends QuartzJobBean {
 
   private int timeout;
-  
+
   /**
-   * Setter called after the ExampleJob is instantiated
-   * with the value from the JobDetailBean (5)
-   */ 
+   * Setter는 ExampleJob이 JobDetailBean의 값(5)으로
+   * 인스턴스화된 후에 호출된다.
+   */
   public void setTimeout(int timeout) {
     this.timeout = timeout;
   }
-  
+
   protected void executeInternal(JobExecutionContext ctx) throws JobExecutionException {
-      <lineannotation>// do the actual work</lineannotation>
+      <lineannotation>// 실제 작업을 한다</lineannotation>
   }
 }</programlisting>
 
-      <para>All additional settings from the job detail bean are of course
-      available to you as well.</para>
+      <para>job detail bean의 부가적인 모든 설정도 당연히 사용할 수 있다.</para>
 
-      <para><emphasis>Note: Using the <literal>name</literal> and
-      <literal>group</literal> properties, you can modify the name and the
-      group of the job, respectively. By default, the name of the job matches
-      the bean name of the job detail bean (in the example above, this is
-      <literal>exampleJob</literal>).</emphasis></para>
+      <para><emphasis>Note: <literal>name</literal>와 <literal>group</literal>
+      프로퍼티를 사용해서 작업의 이름과 그룹을 변경할 수 있다. 기본적으로 작업의 이름은 작업의 bean
+      detail 빈의 이름과 일치한다.(위의 예제에서는
+      <literal>exampleJob</literal>이다.)</emphasis></para>
     </section>
 
     <section id="scheduling-quartz-method-invoking-job">
-      <title>Using the
-      <classname>MethodInvokingJobDetailFactoryBean</classname></title>
+      <title>
+      <classname>MethodInvokingJobDetailFactoryBean</classname>의 사용</title>
 
-      <para>Often you just need to invoke a method on a specific object. Using
-      the <classname>MethodInvokingJobDetailFactoryBean</classname> you can do
-      exactly this:</para>
+      <para>특정 객체의 메서드를 그냥 호출해야 할 때가 있는데
+      <classname>MethodInvokingJobDetailFactoryBean</classname>를 사용해서
+      할 수 있다.</para>
 
       <programlisting language="xml">&lt;bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"&gt;
   &lt;property name="targetObject" ref="exampleBusinessObject" /&gt;
   &lt;property name="targetMethod" value="doIt" /&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>The above example will result in the <literal>doIt</literal>
-      method being called on the <literal>exampleBusinessObject</literal>
-      method (see below):</para>
+      <para>위 예제는 <literal>exampleBusinessObject</literal>에서
+      <literal>doIt</literal> 메서드가 호출될 것이다.(다음 예제 참고)</para>
 
       <programlisting language="java">public class ExampleBusinessObject {
-  
-  <lineannotation>// properties and collaborators</lineannotation>
-  
+
+  <lineannotation>// properties와 collaborators</lineannotation>
+
   public void doIt() {
-    <lineannotation>// do the actual work</lineannotation>
+    <lineannotation>// 여기서 실제 작업을 한다</lineannotation>
   }
 }</programlisting>
 
       <programlisting language="xml">
 &lt;bean id="exampleBusinessObject" class="examples.ExampleBusinessObject"/&gt;</programlisting>
 
-      <para>Using the
-      <classname>MethodInvokingJobDetailFactoryBean</classname>, you don't
-      need to create one-line jobs that just invoke a method, and you only
-      need to create the actual business object and wire up the detail
-      object.</para>
+      <para><classname>MethodInvokingJobDetailFactoryBean</classname>를 사용하면
+      실행하기만 할 메서드를 위한 한 줄짜리 작업을 생성할 필요 없이 실제 비즈니스 객체를 생성하고
+      detail 객체와 연결하기만 하면 된다.</para>
 
-      <para>By default, Quartz Jobs are stateless, resulting in the
-      possibility of jobs interfering with each other. If you specify two
-      triggers for the same <classname>JobDetail</classname>, it might be
-      possible that before the first job has finished, the second one will
-      start. If <classname>JobDetail</classname> classes implement the
-      <interfacename>Stateful</interfacename> interface, this won't happen.
-      The second job will not start before the first one has finished. To make
-      jobs resulting from the
-      <classname>MethodInvokingJobDetailFactoryBean</classname>
-      non-concurrent, set the <literal>concurrent</literal> flag to
-      <literal>false</literal>.</para>
+      <para>기본적으로 Quartz Job은 상태를 가지지 않고 작업끼리 서로 간섭할 가능성이 있다. 같은
+      <classname>JobDetail</classname>에 대한 두 가지 트리거를 지정했다면 첫 번째 작업이
+      끝나기 전에 두 번째 작업이 시작할 가능성이 있다. <classname>JobDetail</classname>
+      클래스가 <interfacename>Stateful</interfacename> 인터페이스를 구현하면 이런 일은
+      일어나지 않고 두 번째 작업은 첫 번째 작업이 끝나기 전에는 시작되지 않는다.
+      <classname>MethodInvokingJobDetailFactoryBean</classname>로 동시성이 없는
+      작업을 만들려면 <literal>concurrent</literal> 플래그를
+      <literal>false</literal>로 설정해라.</para>
 
       <programlisting language="xml">
 &lt;bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"&gt;
@@ -763,49 +651,46 @@ public class ExampleJob extends QuartzJobBean {
 &lt;/bean&gt;</programlisting>
 
       <note>
-        <para>By default, jobs will run in a concurrent fashion.</para>
+        <para>기본적으로 작업은 동시성을 가진 채 실행될 것이다.</para>
       </note>
     </section>
 
     <section id="scheduling-quartz-cron">
-      <title>Wiring up jobs using triggers and the
-      <classname>SchedulerFactoryBean</classname></title>
+      <title>트리커와 <classname>SchedulerFactoryBean</classname>를
+      사용하는 작업의 연결</title>
 
-      <para>We've created job details and jobs. We've also reviewed the
-      convenience bean that allows you to invoke a method on a specific
-      object. Of course, we still need to schedule the jobs themselves. This
-      is done using triggers and a
-      <classname>SchedulerFactoryBean</classname>. Several triggers are
-      available within Quartz. Spring offers two subclassed triggers with
-      convenient defaults: <classname>CronTriggerBean</classname> and
-      <classname>SimpleTriggerBean</classname>.</para>
+      <para>job details와 job을 생성했고 특정 객체의 메서드를 호출할 수 있는 편리한 빈도
+      살펴봤다. 물론 아직 작업 자체를 스케줄링해야 한다. 이는 트리거와
+      <classname>SchedulerFactoryBean</classname>을 사용해서 스케줄링한다. Quartz에서는
+      다수의 트리거를 사용할 수 있고 스프링은 간편한 기본값을 가진 두 트리거 하위클래스
+      <classname>CronTriggerBean</classname>와
+      <classname>SimpleTriggerBean</classname>를 제공한다.</para>
 
-      <para>Triggers need to be scheduled. Spring offers a
-      <classname>SchedulerFactoryBean</classname> that exposes triggers to be
-      set as properties. <classname>SchedulerFactoryBean</classname> schedules
-      the actual jobs with those triggers.</para>
+      <para>트리거를 스케줄링해야 하는데 스프링은 설정할 프로퍼티로 트리거를 노출하는
+      <classname>SchedulerFactoryBean</classname>를 제공한다.
+      <classname>SchedulerFactoryBean</classname>은 이러한 트리거로
+      실제 작업을 스케줄링한다.</para>
 
-      <para>Find below a couple of examples:</para>
+      <para>다음의 두 예제를 보자.</para>
 
       <programlisting language="xml">&lt;bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean"&gt;
-    &lt;!-- see the example of method invoking job above --&gt;
+    &lt;!-- 위의 작업을 호출하는 메서드의 예제를 보자. --&gt;
     &lt;property name="jobDetail" ref="jobDetail" /&gt;
-    &lt;!-- 10 seconds --&gt;
+    &lt;!-- 10초 --&gt;
     &lt;property name="startDelay" value="10000" /&gt;
-    &lt;!-- repeat every 50 seconds --&gt;
+    &lt;!-- 50초마다 반복한다 --&gt;
     &lt;property name="repeatInterval" value="50000" /&gt;
 &lt;/bean&gt;
 
 &lt;bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean"&gt;
     &lt;property name="jobDetail" ref="exampleJob" /&gt;
-    &lt;!-- run every morning at 6 AM --&gt;
+    &lt;!-- 매일 오전 6시에 실행한다 --&gt;
     &lt;property name="cronExpression" value="0 0 6 * * ?" /&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>Now we've set up two triggers, one running every 50 seconds with a
-      starting delay of 10 seconds and one every morning at 6 AM. To finalize
-      everything, we need to set up the
-      <classname>SchedulerFactoryBean</classname>:</para>
+      <para>이제 두 가지 트리거를 설정했다. 한 트리거는 10초 후에 시작해서 50초마다 실생하고
+      다른 트리거는 매일 오전 6시에 실행한다. 이 예제가 동작하려면
+      <classname>SchedulerFactoryBean</classname>를 구성해야 한다.</para>
 
       <programlisting language="xml">&lt;bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"&gt;
     &lt;property name="triggers"&gt;
@@ -816,43 +701,41 @@ public class ExampleJob extends QuartzJobBean {
     &lt;/property&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>More properties are available for the
-      <classname>SchedulerFactoryBean</classname> for you to set, such as the
-      calendars used by the job details, properties to customize Quartz with,
-      etc. Have a look at the <ulink
+      <para>이 외에도 job details가 사용하는 calendars나 Quartz를 커스터마이징할 수 있는
+      프로퍼티 등 <classname>SchedulerFactoryBean</classname>에서 설정할 프로퍼티가
+      많이 있다. 자세한 내용은 <ulink
       url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/scheduling/quartz/SchedulerFactoryBean.html">SchedulerFactoryBean
-      Javadoc</ulink> for more information.</para>
+      Javadoc</ulink>를 참고해라.</para>
     </section>
   </section>
 
   <section id="scheduling-jdk-timer">
-    <title>Using JDK Timer support</title>
+    <title>JDK Timer 지원 사용하기</title>
 
-    <para>The other way to schedule jobs in Spring is to use JDK
-    <classname>Timer</classname> objects. You can create custom timers or use
-    the timer that invokes methods. Wiring timers is done using the
-    <classname>TimerFactoryBean</classname>.</para>
+    <para>스프링에서 작업을 스케줄링하는 또 다른 방법은 JDK <classname>Timer</classname>
+    객체를 사용하는 것이다. 커스텀 트리거를 생성하거나 메서드를 호출하는 타이머를 사용할 수 있다.
+    <classname>TimerFactoryBean</classname>를 사용해서 타이머를 연결한다.</para>
 
     <section id="scheduling-jdk-timer-creating">
-      <title>Creating custom timers</title>
+      <title>커스텀 타이머 생성</title>
 
-      <para>Using the <classname>TimerTask</classname> you can create customer
-      timer tasks, similar to Quartz jobs:</para>
+      <para><classname>TimerTask</classname>를 사용해서 Quartz 작업과 유사한
+      커스텀 타이머 태스크를 생성할 수 있다.</para>
 
       <programlisting language="java">public class CheckEmailAddresses extends TimerTask {
 
   private List emailAddresses;
-  
+
   public void setEmailAddresses(List emailAddresses) {
     this.emailAddresses = emailAddresses;
   }
-  
+
   public void run() {
-    <lineannotation>// iterate over all email addresses and archive them</lineannotation>
+    <lineannotation>// 모든 이메일 주소를 반복하면서 저장한다</lineannotation>
   }
 }</programlisting>
 
-      <para>Wiring it up is simple:</para>
+      <para>간단히 연결할 수 있다.</para>
 
       <programlisting language="xml">&lt;bean id="checkEmail" class="examples.CheckEmailAddress"&gt;
     &lt;property name="emailAddresses"&gt;
@@ -865,65 +748,60 @@ public class ExampleJob extends QuartzJobBean {
 &lt;/bean&gt;
 
 &lt;bean id="scheduledTask" class="org.springframework.scheduling.timer.ScheduledTimerTask"&gt;
-    <lineannotation>&lt;!-- wait 10 seconds before starting repeated execution --&gt;</lineannotation>
+    <lineannotation>&lt;!-- 반복실행을 시작하기 전에 10초를 대기한다 --&gt;</lineannotation>
     &lt;property name="delay" value="10000" /&gt;
-    <lineannotation>&lt;!-- run every 50 seconds --&gt;</lineannotation>
+    <lineannotation>&lt;!-- 50초마다 실행한다 --&gt;</lineannotation>
     &lt;property name="period" value="50000" /&gt;
     &lt;property name="timerTask" ref="checkEmail" /&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para><emphasis> Note that letting the task only run once can be done by
-      changing the <literal>period</literal> property to 0 (or a negative
-      value). </emphasis></para>
+      <para><emphasis> <literal>period</literal> 프로퍼티를 0으로(혹은 음수로) 바꾸면
+      태스크를 딱 한 번만 실행하도록 할 수 있다.</emphasis></para>
     </section>
 
     <section id="scheduling-jdk-timer-method-invoking-task">
-      <title>Using the
-      <classname>MethodInvokingTimerTaskFactoryBean</classname></title>
+      <title>
+      <classname>MethodInvokingTimerTaskFactoryBean</classname>의 사용</title>
 
-      <para>Similar to the Quartz support, the <classname>Timer</classname>
-      support also features a component that allows you to periodically invoke
-      a method:</para>
+      <para>Quartz 지원처럼 <classname>Timer</classname>지원에도 메서드를 주기적으로
+      호출할 수 있는 컴포넌트가 있다.</para>
 
       <programlisting language="xml">&lt;bean id="doIt" class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean"&gt;
     &lt;property name="targetObject" ref="exampleBusinessObject" /&gt;
     &lt;property name="targetMethod" value="doIt" /&gt;
 &lt;/bean&gt;</programlisting>
 
-      <para>The above example will result in the <literal>doIt</literal>
-      method being called on the <literal>exampleBusinessObject</literal> (see
-      below):</para>
+      <para>위의 예제에서는 <literal>exampleBusinessObject</literal>의
+      <literal>doIt</literal>메서드가 호출된다.(다음 예제 참고)</para>
 
       <programlisting language="java">public class BusinessObject {
-  
-  <lineannotation>// properties and collaborators</lineannotation>
-  
+
+  <lineannotation>// properties와 collaborators</lineannotation>
+
   public void doIt() {
-    <lineannotation>// do the actual work</lineannotation>
+    <lineannotation>// 여기서 실제 작업을 한다</lineannotation>
   }
 }</programlisting>
 
-      <para>Changing the <literal>timerTask</literal> reference of the
-      <classname>ScheduledTimerTask</classname> example to the bean
-      <literal>doIt</literal> will result in the <literal>doIt</literal>
-      method being executed on a fixed schedule.</para>
+      <para><classname>ScheduledTimerTask</classname>예제에서
+      <literal>timerTask</literal>의 참조를 <literal>doIt</literal> 빈으로 바꾸면
+      정해진 스케줄로 <literal>doIt</literal> 메서드를 실행할 것이다.</para>
     </section>
 
     <section id="scheduling-jdk-timer-factory-bean">
-      <title>Wrapping up: setting up the tasks using the
-      <classname>TimerFactoryBean</classname></title>
+      <title>요약: <classname>TimerFactoryBean</classname>을
+      사용해서 태스크 설정하기</title>
 
-      <para>The <classname>TimerFactoryBean</classname> is similar to the
-      Quartz <classname>SchedulerFactoryBean</classname> in that it serves the
-      same purpose: setting up the actual scheduling. The
-      <classname>TimerFactoryBean</classname> sets up an actual
-      <classname>Timer</classname> and schedules the tasks it has references
-      to. You can specify whether or not daemon threads should be used.</para>
+      <para><classname>TimerFactoryBean</classname>는 Quartz
+      <classname>SchedulerFactoryBean</classname>와 비슷하게 실제 스케줄링을 구성할 수
+      있다. <classname>TimerFactoryBean</classname>는
+      <classname>Timer</classname>를 구성하고 참조한 태스크를 스케줄링할 수 있다.
+      데몬 스레드를 사용할지를 지정할 수 있다.</para>
 
       <programlisting language="xml">&lt;bean id="timerFactory" class="org.springframework.scheduling.timer.TimerFactoryBean"&gt;
     &lt;property name="scheduledTimerTasks"&gt;
         &lt;list&gt;
-            <lineannotation>&lt;!-- see the example above --&gt;</lineannotation>
+            <lineannotation>&lt;!-- 앞의 예제 참고 --&gt;</lineannotation>
             &lt;ref bean="scheduledTask" /&gt;
         &lt;/list&gt;
     &lt;/property&gt;
