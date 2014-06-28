@@ -1,34 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?>
+  <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <chapter id="dynamic-language">
-  <title>Dynamic language support</title>
+  <title>동적 언어 지원</title>
 
   <section id="dynamic-language-introduction">
-    <title>Introduction</title>
+    <title>소개</title>
     <sidebar>
-      <title>Why only these languages?</title>
+      <title>왜 일부 언어만 지원하는가?</title>
       <para>
-        The supported languages were chosen because a) the languages
-        have a lot of traction in the Java enterprise community, b) no requests were made
-        for other languages within the Spring 2.0 development timeframe, and
-        c) the Spring developers were most familiar with them.
+        지원하는 언어는 a) 자바 엔터프라이즈 커뮤니티에서 많은 인기를 가진 언어이면서 b) 스프링
+        2.0 개발 기간 동안 다른 언어에 대한 요청도 없었고 c) 스프링 개발자가 가장 익숙한 언어이기
+        때문에 선택했다.
       </para>
       <para>
-        There is nothing stopping the inclusion of further languages though. If you want
-        to see support for &lt;<emphasis>insert your favourite dynamic language here</emphasis>&gt;,
-        you can always raise an issue on Spring's
-        <ulink url="http://opensource.atlassian.com/projects/spring/secure/Dashboard.jspa">JIRA</ulink>
-        page (or implement such support yourself).
+        그래도 언어는 계속 추가할 예정이다.
+        &lt;<emphasis>자신이 좋아하는 동적 언어를 추가하고 싶다면</emphasis>&gt;
+        언제든 스프링의
+        <ulink url="http://opensource.atlassian.com/projects/spring/secure/Dashboard.jspa">JIRA</ulink>에
+        이슈를 올릴 수 있다.(또는 직접 구현하거나)
       </para>
     </sidebar>
-    <para>Spring 2.0 introduces comprehensive support for using classes and objects that have
-    been defined using a dynamic language (such as JRuby) with Spring.
-    This support allows you to write any number of classes in a supported dynamic language,
-    and have the Spring container transparently instantiate, configure and dependency inject the
-    resulting objects.</para>
-    <para>The dynamic languages currently supported are:</para>
+    <para>스프링 2.0부터 스프링에서 동적 언어(JRuby 등)를 사용해서 클래스와 객체를 정의할 수 있도록
+    지원하고 있다. 그래서 지원하는 동적 언어로 클래스 다수를 작성해서 투명하게 스프링 컨테이너를
+    인스턴스화하고 객체를 의존성 주입하도록 구성할 수 있다.</para>
+    <para>현재 지원하는 동적 언어</para>
     <itemizedlist>
       <listitem>
         <para>JRuby 0.9 / 1.0</para>
@@ -41,32 +38,27 @@
       </listitem>
     </itemizedlist>
     <para>
-      Fully working examples of where this dynamic language support can be immediately useful
-      are described in <xref linkend="dynamic-language-scenarios"/>.
+      바로 사용할 수 있는 동적 언어의 완전한 예제는
+      <xref linkend="dynamic-language-scenarios"/>에 나와 있다.
     </para>
     <para>
-      <emphasis>Note:</emphasis> Only the specific versions as listed above are supported
-      in Spring 2.5. In particular, JRuby 1.1 (which introduced many incompatible API
-      changes) is <emphasis>not</emphasis> supported at this point of time.
+      <emphasis>Note:</emphasis> 스프링 2.5에서는 위에 명시한 버전만 지원한다. 특히
+      JRuby 1.1(상당히 많은 API 변경이 있었다)은 현재 지원하지 <emphasis>않는다</emphasis>.
     </para>
   </section>
 
   <section id="dynamic-language-a-first-example">
-    <title>A first example</title>
+    <title>첫 예제</title>
     <para>
-      This bulk of this chapter is concerned with describing the dynamic language support
-      in detail. Before diving into all of the ins and outs of the dynamic language support,
-      let's look at a quick example of a bean defined in a dynamic language.
-      The dynamic language for this first bean is Groovy (the basis of this example
-      was taken from the Spring test suite, so if you want to see equivalent examples
-      in any of the other supported languages, take a look at the source code).
+      이번 장에서 동적 언어 지원을 자세히 설명하는데 자세히 살펴보기 전에 동적 언어로 정의한 빈의 예제를
+      가볍게 살펴보자. 처음 작성할 빈의 동적 언어는 Grooby이다.(이 예제는 스프링 테스트 슈트에서
+      가져왔으므로 다른 지원 언어의 예제를 보고 싶다면 소스코드를 참고해라.)
     </para>
     <para>
-      Find below the <interfacename>Messenger</interfacename> interface that the
-      Groovy bean is going to be implementing, and note that this interface is defined
-      in plain Java. Dependent objects that are injected with a reference to the
-      <interfacename>Messenger</interfacename> won't know that the underlying
-      implementation is a Groovy script.
+      아래 예제에서 Grooby 빈으로 구현할 <interfacename>Messenger</interfacename>
+      인터페이스를 보자. 이 인터페이스는 일반적인 자바로 정의되어 있다.
+      <interfacename>Messenger</interfacename>에 참조로 주입할 의존 객체는 Groovy
+      스크립트로 구현되었다는 것을 알지 못한다.
     </para>
     <programlisting source="java"><![CDATA[package org.springframework.scripting;
 
@@ -75,8 +67,8 @@ public interface Messenger {
     String getMessage();
 }]]></programlisting>
     <para>
-      Here is the definition of a class that has a dependency on the
-      <interfacename>Messenger</interfacename> interface.
+      <interfacename>Messenger</interfacename> 인터페이스에 의존성을 가진 클래스
+      정의가 다음에 나와 있다.
     </para>
     <programlisting source="java"><![CDATA[package org.springframework.scripting;
 
@@ -89,38 +81,35 @@ public class DefaultBookingService implements BookingService {
     }
 
     public void processBooking() {
-        // use the injected Messenger object...
+        // 주입된 Messenger 객체를 사용한다...
     }
 }]]></programlisting>
-    <para>Here is an implementation of the <interfacename>Messenger</interfacename> interface
-    in Groovy.</para>
+    <para>다음은 Groovy로 작성한 <interfacename>Messenger</interfacename> 인터페이스의 구현체이다.</para>
     <programlisting source="java"><![CDATA[// from the file 'Messenger.groovy'
 package org.springframework.scripting.groovy;
 
-// import the Messenger interface (written in Java) that is to be implemented
+// 구현할 Messenger 인터페이스(Java로 작성된)를 임포트한다
 import org.springframework.scripting.Messenger
 
-// define the implementation in Groovy
+// Groovy로 구현을 정의한다
 class GroovyMessenger implements Messenger {
 
     String message
 }]]></programlisting>
     <para>
-      Finally, here are the bean definitions that will effect the injection of the
-      Groovy-defined <interfacename>Messenger</interfacename> implementation into
-      an instance of the <classname>DefaultBookingService</classname> class.
+      마지막으로 <classname>DefaultBookingService</classname> 클래스의 인스턴스에 Groovy로
+      정의된 <interfacename>Messenger</interfacename> 구현체를 주입할 때 영향을 주는
+      빈 정의가 다음에 나와 있다.
     </para>
     <note>
       <para>
-        To use the custom dynamic language tags to define dynamic-language-backed beans,
-        you need to have the XML Schema preamble at the top of your Spring XML
-        configuration file. You also need to be using a Spring
-        <interfacename>ApplicationContext</interfacename> implementation as your
-        IoC container. Using the dynamic-language-backed beans with a plain
-        <interfacename>BeanFactory</interfacename> implementation is supported,
-        but you have to manage the plumbing of the Spring internals to do so.
+        동적 언어로 작성한(dynamic-language-backed) 빈을 정의하는 커스텀 동적 언어 태그를 사용하려면
+        스프링 XML 설정파일 상단에 XML 스키마를 선언해야 하고 IoC 컨테이너로 스프링
+        <interfacename>ApplicationContext</interfacename> 구현체를 사용하도록 해야 한다.
+        동적 언어로 작성한 빈을 일반적인 <interfacename>BeanFactory</interfacename> 구현체와
+        사용하는 것도 지원하지만, 이 동작을 하는 스프링 내부의 시스템을 관리해야 한다.
       </para>
-      <para>For more information on schema-based configuration, see <xref linkend="xsd-config"/>.</para>
+      <para>스키마에 기반을 둔 구성에 대한 자세한 내용은 <xref linkend="xsd-config"/>를 참고해라.</para>
     </note>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -129,109 +118,93 @@ class GroovyMessenger implements Messenger {
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd">
 
-    ]]><lineannotation>&lt;!-- this is the bean definition for the Groovy-backed <interfacename>Messenger</interfacename> implementation --&gt;</lineannotation><![CDATA[
+    ]]><lineannotation>&lt;!-- Groovy로 작성한 <interfacename>Messenger</interfacename> 구현체의 bean 정의 --&gt;</lineannotation><![CDATA[
     <lang:groovy id="messenger" script-source="classpath:Messenger.groovy">
         <lang:property name="message" value="I Can Do The Frug" />
     </lang:groovy>
 
-    ]]><lineannotation>&lt;!-- an otherwise normal bean that will be injected by the Groovy-backed <interfacename>Messenger</interfacename> --&gt;</lineannotation><![CDATA[
+    ]]><lineannotation>&lt;!-- Groovy로 작성한 <interfacename>Messenger</interfacename>이 주입된 또 다른 일반적인 bean --&gt;</lineannotation><![CDATA[
     <bean id="bookingService" class="x.y.DefaultBookingService">
         <property name="messenger" ref="messenger" />
     </bean>
 
 </beans>]]></programlisting>
     <para>
-      The <literal>bookingService</literal> bean (a
-      <classname>DefaultBookingService</classname>) can now use its private
-      <literal>messenger</literal> member variable as normal because the
-      <interfacename>Messenger</interfacename> instance that was injected
-      into it <emphasis>is</emphasis> a <interfacename>Messenger</interfacename>
-      instance. There is nothing special going on here, just plain Java and
-      plain Groovy.
+      주입된 <interfacename>Messenger</interfacename> 인스턴스가
+      <interfacename>Messenger</interfacename> 인스턴스이므로
+      <literal>bookingService</literal>
+      빈(<classname>DefaultBookingService</classname>)은 private
+      <literal>messenger</literal> 멤버 변수를 평소처럼 사용할 수 있다. 딱히 특별할 것도
+      없이 그냥 일반적인 Java와 Groovy다.
     </para>
     <para>
-      Hopefully the above XML snippet is self-explanatory, but don't worry
-      unduly if it isn't. Keep reading for the in-depth detail on the whys
-      and wherefores of the above configuration.
+      이상적으로는 위의 XML 스니펫만으로 이해할 수 있어야 하지만 이해하지 못하더라도 크게 걱정할
+      필요는 없다. 왜 위와 같은 설정을 사용했는지에 대한 자세한 내용은 이어서 나올 것이다.
     </para>
   </section>
 
   <section id="dynamic-language-beans">
-    <title>Defining beans that are backed by dynamic languages</title>
+    <title>동적 언어로 작성된 빈 정의</title>
     <para>
-      This section describes exactly how you define Spring managed beans in
-      any of the supported dynamic languages.
+      이번 장에서 스프링이 관리하는 빈을 지원하는 동적언어로 정의하는 방법을 설명한다.
     </para>
     <para>
-      Please note that this chapter does not attempt to explain the syntax and
-      idioms of the supported dynamic languages. For example, if you want to
-      use Groovy to write certain of the classes in your application, then the
-      assumption is that you already know Groovy. If you need further details
-      about the dynamic languages themselves, please consult
-      <xref linkend="dynamic-language-resources" /> at the end of this chapter.
+      이번 장에서 동적 언어의 문법을 설명하지는 않는다. 예를 들어 애플리케이션에서 특정 클래스를
+      Groovy로 작성하려고 하면 이미 Groovy를 알고 있다고 전제한다. 동적 언어에 대해서 자세히
+      알고 싶다면 이번 장 마지막의 <xref linkend="dynamic-language-resources" />를
+      참고해라.
     </para>
 
     <section id="dynamic-language-beans-concepts">
-      <title>Common concepts</title>
-      <para>The steps involved in using dynamic-language-backed beans are as follows:</para>
+      <title>공통 개념</title>
+      <para>동적 언어에 기반을 둔 빈을 사용하는 과정은 다음과 같다.</para>
       <orderedlist numeration="arabic">
         <listitem>
-          <para>Write the test for the dynamic language source code (naturally)</para>
+          <para>동적 언어 소스코드의 테스트를 작성한다.(당연히)</para>
         </listitem>
         <listitem>
-          <para><emphasis>Then</emphasis> write the dynamic language source code itself :)</para>
+          <para><emphasis>그 다음</emphasis> 동적 언어 소스 코드 자체를 작성한다 :)</para>
         </listitem>
         <listitem>
           <para>
-            Define your dynamic-language-backed beans using the appropriate
-            <literal>&lt;lang:language/&gt;</literal> element in the XML
-            configuration (you can of course define such beans programmatically
-            using the Spring API - although you will have to consult the source
-            code for directions on how to do this as this type of advanced
-            configuration is not covered in this chapter). Note this is an iterative
-            step. You will need at least one bean definition per dynamic
-            language source file (although the same dynamic language source
-            file can of course be referenced by multiple bean definitions).
+            XML 설정에 적절한 <literal>&lt;lang:language/&gt;</literal> 요소를 사용해서
+            동적 언어에 기반을 둔 빈을 정의한다. (물론 스프링 API를 사용해서 프로그래밍적으로 이러한
+            빈을 정의할 수도 있다. - 이번 장에서는 이러한 방식의 고급 설정을 다루지 않으므로 어떻게
+            정의하는지 알고 싶다면 소스 코드를 참고해야 하지만) 이는 반복되는 과정이다. 동적 언어 소스
+            파일마다 최소 하나의 빈 정의가 필요할 것이다.(물론 여러 빈 정의가 같은 동적 언어 소스
+            파일을 참조할 수 있지만)
           </para>
         </listitem>
       </orderedlist>
       <para>
-        The first two steps (testing and writing your dynamic language source files)
-        are beyond the scope of this chapter. Refer to the language specification
-        and / or reference manual for your chosen dynamic language and crack on with
-        developing your dynamic language source files. You <emphasis>will</emphasis>
-        first want to read the rest of this chapter though, as Spring's dynamic language
-        support does make some (small) assumptions about the contents of your dynamic
-        language source files.
+        처음 두 과정(동적 언어 소스파일을 테스트하고 작성)은 이 장의 범위를 넘어간다. 사용하는 동적
+        언어의 명세와 레퍼런스 문서를 참고해서 동적 언어 소스를 작성해라. 스프링의 동적 언어 지원은
+        동적 언어 소스파일의 내용을 이해한다는 (약간의) 가정을 하고 있으므로 이번 장을 계속 읽으려면
+        동적 언어의 문서를 먼저 보아야 <emphasis>할 것이다</emphasis>.
       </para>
 
       <section id="dynamic-language-beans-concepts-xml-language-element">
-        <title>The <literal>&lt;lang:language/&gt;</literal> element</title>
+        <title><literal>&lt;lang:language/&gt;</literal> 요소</title>
         <sidebar>
-          <title>XML Schema</title>
+          <title>XML 스키마</title>
           <para>
-            All of the configuration examples in this chapter make use of the
-            new XML Schema support that was added in Spring 2.0.
+            이번 장의 모든 설정 예제는 스프링 2.0에서 새로 추가된 XML 스키마를 사용한다.
           </para>
-          <para>It is possible to forego the use of XML Schema and stick with the old-style
-          DTD based validation of your Spring XML files, but then you lose out
-          on the convenience offered by the <literal>&lt;lang:language/&gt;</literal>
-          element. See the Spring test suite for examples of the older style
-          configuration that doesn't require XML Schema-based validation
-          (it is quite verbose and doesn't hide any of the underlying Spring
-          implementation from you).</para>
+          <para>XML 스키마의 사용하기 전에 예전 방식으로 스프링 XML 파일을 DTD 기반으로
+          유효성 검사하는 것이 가능하지만 이렇게 하면
+          <literal>&lt;lang:language/&gt;</literal> 요소의 편리함을 얻지 못할 것이다.
+          XML 스키마 기반의 밸리데이션이 필요없는 예전 방식의 설정 예제는 스프링 테스트 슈트를
+          참고해라.(꽤 복잡하고 사용하는 스프링 구현이 모두 나와 있다.)</para>
         </sidebar>
         <para>
-          The final step involves defining dynamic-language-backed bean definitions,
-          one for each bean that you want to configure (this is no different from
-          normal JavaBean configuration). However, instead of specifying the
-          fully qualified classname of the class that is to be instantiated and
-          configured by the container, you use the <literal>&lt;lang:language/&gt;</literal>
-          element to define the dynamic language-backed bean.
+          마지막 단계는 동적 언어에 기반을 둬서 사용할 빈 정의를 정의하는 것이다.(일반적인 JavaBean
+          설정과 다르지 않다.) 하지만 컨테이너가 인스턴스화하고 구성할 클래스의 정규화된 클래스 명을
+          지정하는 대신 동적 언어에 기반을 둔 빈을 정의할 때는
+          <literal>&lt;lang:language/&gt;</literal> 요소를 사용한다.
         </para>
         <para>
-          Each of the supported languages has a corresponding
-          <literal>&lt;lang:language/&gt;</literal> element:
+          지원하는 각 언어는 각각 <literal>&lt;lang:language/&gt;</literal> 요소를
+          가진다.
         </para>
         <itemizedlist>
           <listitem>
@@ -245,57 +218,46 @@ http://www.springframework.org/schema/lang http://www.springframework.org/schema
           </listitem>
         </itemizedlist>
         <para>
-          The exact attributes and child elements that are available for
-          configuration depends on exactly which language the bean has been
-          defined in (the language-specific sections below provide the full
-          lowdown on this).
+          설정에 사용할 수 있는 속성과 자식 요소는 빈을 정의한 언어에 따라 다르다.
+          (언어에 특화된 부분은 아래에 나와있다.)
         </para>
       </section>
 
       <section id="dynamic-language-refreshable-beans">
-        <title>Refreshable beans</title>
+        <title>갱신 가능한(Refreshable) 빈</title>
         <para>
-          One of the (if not <emphasis>the</emphasis>) most compelling value adds
-          of the dynamic language support in Spring is the
-          <firstterm>'refreshable bean'</firstterm> feature.
+          스프링의 동적 언어 지원에서 가장 강력한 장점(<emphasis>유일한</emphasis> 장점은
+          아니다.) 중 하나는 <firstterm>'갱신 가능한 빈'</firstterm> 기능이다.
         </para>
         <para>
-          A refreshable bean is a dynamic-language-backed bean that with a small
-          amount of configuration, a dynamic-language-backed bean can monitor
-          changes in its underlying source file resource, and then reload itself
-          when the dynamic language source file is changed (for example when a
-          developer edits and saves changes to the file on the filesystem).
+          갱신 가능한 빈은 동적 언어로 작성한 빈에 약간의 설정을 추가한 것이다. 동적 언어로 작성한 빈은
+          사용하는 소스파일 리소스의 변경사항을 감시할 수 있어서 소스파일이 변경되었을 때 재로드할
+          수 있다.(예를 들어 개발자가 파일시스템에서 파일을 수정하고 저장했을 때)
         </para>
         <para>
-          This allows a developer to deploy any number of dynamic language source
-          files as part of an application, configure the Spring container to create
-          beans backed by dynamic language source files (using the mechanisms
-          described in this chapter), and then later, as requirements change or
-          some other external factor comes into play, simply edit a dynamic language
-          source file and have any change they make reflected in the bean that is
-          backed by the changed dynamic language source file. There is no need to
-          shut down a running application (or redeploy in the case of a web application).
-          The dynamic-language-backed bean so amended will pick up the new state
-          and logic from the changed dynamic language source file.
+          이를 통해 개발자는 애플리케이션에 다수의 동적 언어 소스파일을 포함해서 배포하고 스프링 컨테이너가
+          동적 언어 소스파일로 빈을 생성하도록 구성하고(사용하는 메커니즘은 이번 장에서 설명한다.) 나중에
+          요구사항 변경이 있거나 다른 외부요소가 영향을 주거나 동적 언어 소스파일을 변경했을 때 변경사항을
+          빈에 적용할 수 있다. 운영하는 애플리케이션을 종료할 필요가 없다.(웹 애플리케이션인 경우에는
+          재배포할 필요가 없다) 이렇게 수정된 동적 언어로 작성된 빈은 변경된 동적 언어 소스파일에서
+          새로운 상태와 로직을 가져와서 적용할 것이다.
         </para>
         <note>
-          <para>Please note that this feature is <emphasis>off</emphasis> by default.</para>
+          <para>이 기능은 기본적으로는 <emphasis>비활성화</emphasis>되어 있다.</para>
         </note>
         <para>
-          Let's take a look at an example to see just how easy it is to start using
-          refreshable beans. To <emphasis>turn on</emphasis> the refreshable beans
-          feature, you simply have to specify exactly <emphasis>one</emphasis>
-          additional attribute on the <literal>&lt;lang:language/&gt;</literal> element
-          of your bean definition. So if we stick with
-          <link linkend="dynamic-language-a-first-example">the example</link> from earlier
-          in this chapter, here's what we would change in the Spring XML configuration
-          to effect refreshable beans:
+          갱신 가능한 빈을 사용하기가 얼마나 쉬운지 예제를 살펴보자. 갱신 가능한 빈 기능을
+          <emphasis>활성화</emphasis>하려면 빈 정의에서
+          <literal>&lt;lang:language/&gt;</literal> 요소에 <emphasis>딱 하나</emphasis>의
+          속성을 추가하면 된다. 이번 장 앞부분의
+          <link linkend="dynamic-language-a-first-example">예제</link>를 다시 사용해서
+          갱신 가능한 빈을 사용하는 스프링 XML 구성이 다음에 나와 있다.
         </para>
         <programlisting language="xml"><![CDATA[<beans>
 
-    ]]><lineannotation>&lt;!-- this bean is now 'refreshable' due to the presence of the 'refresh-check-delay' attribute --&gt;</lineannotation><![CDATA[
+    ]]><lineannotation>&lt;!-- 'refresh-check-delay' 속성이 있으므로 이 빈은 이제 '갱신 가능하다'  --&gt;</lineannotation><![CDATA[
     <lang:groovy id="messenger"
-          refresh-check-delay="5000" ]]><lineannotation>&lt;!-- switches refreshing on with 5 seconds between checks --&gt;</lineannotation><![CDATA[
+          refresh-check-delay="5000" ]]><lineannotation>&lt;!-- 5초마다 갱신을 확인하도록 설정한다 --&gt;</lineannotation><![CDATA[
           script-source="classpath:Messenger.groovy">
         <lang:property name="message" value="I Can Do The Frug" />
     </lang:groovy>
@@ -306,22 +268,17 @@ http://www.springframework.org/schema/lang http://www.springframework.org/schema
 
 </beans>]]></programlisting>
         <para>
-          That really is all you have to do. The <literal>'refresh-check-delay'</literal>
-          attribute defined on the <literal>'messenger'</literal> bean definition
-          is the number of milliseconds after which the bean will be refreshed with
-          any changes made to the underlying dynamic language source file.
-          You can turn off the refresh behavior by assigning a negative value
-          to the <literal>'refresh-check-delay'</literal> attribute.
-          Remember that, by default, the refresh behavior is disabled. If you don't
-          want the refresh behavior, then simply don't define the attribute.
+          개발자가 해야 하는 것은 이것이 전부다. <literal>'messenger'</literal> 빈 정의의
+          <literal>'refresh-check-delay'</literal> 속성은 사용하는 동적 언어 소스파일의
+          변경사항으로 빈을 갱신할 밀리 초를 정의한다. <literal>'refresh-check-delay'</literal>
+          속성에 음수를 할당하면 갱신 동작을 끌 수 있다. 기본적으로 갱신 기능은 비활성화되어 있다는 점을
+          유념해라. 갱신기능이 필요 없다면 속성을 정의하지 않으면 된다.
         </para>
         <para>
-          If we then run the following application we can exercise the refreshable feature;
-          please do excuse the <emphasis>'jumping-through-hoops-to-pause-the-execution'</emphasis>
-          shenanigans in this next slice of code. The <literal>System.in.read()</literal>
-          call is only there so that the execution of the program pauses while I (the author)
-          go off and edit the underlying dynamic language source file so that the refresh will
-          trigger on the dynamic-language-backed bean when the program resumes execution.</para>
+          다음 애플리케이션을 실행하면 갱신 가능한(refreshable) 빈 기능을 사용할 수 있다. 다음 코드에서
+          <emphasis>'실행을 멈추도록 하는'</emphasis> 불필요한 부분은 크게 신경 쓰지 마라. 다음 코드에서
+          개발자가 동적 언어 소스파일을 열어서 수정하는 동안 프로그램의 실행이 멈춰서 프로그램이 다시 실행될 때
+          동적 언어를 사용한 빈이 갱신되도록 <literal>System.in.read()</literal> 호출이 이곳에만 존재한다.</para>
         <programlisting source="java"><![CDATA[import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scripting.Messenger;
@@ -333,19 +290,16 @@ public final class Boot {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml");
         Messenger messenger = (Messenger) ctx.getBean("messenger");
         System.out.println(messenger.getMessage());
-        // pause execution while I go off and make changes to the source file...
+        // 소스파일을 열어서 수정하는 동안 실행을 멈춘다...
         System.in.read();
         System.out.println(messenger.getMessage());
     }
 }]]></programlisting>
         <para>
-          Let's assume then, for the purposes of this example, that all
-          calls to the <literal>getMessage()</literal> method of
-          <interfacename>Messenger</interfacename> implementations have to be
-          changed such that the message is surrounded by quotes.
-          Below are the changes that I (the author) make to the
-          <filename>Messenger.groovy</filename> source file when the execution of
-          the program is paused.
+          이 예제의 목적에 따라 <interfacename>Messenger</interfacename> 구현체의
+          <literal>getMessage()</literal> 메서드에 대한 모든 호출은 메시지를 따옴표로
+          감싸야 한다고 가정해 보자. 프로그램의 실행이 멈춰있을 때
+          <filename>Messenger.groovy</filename> 소스파일을 아래와 같이 수정했다.
         </para>
         <programlisting source="java"><![CDATA[package org.springframework.scripting
 
@@ -354,7 +308,7 @@ class GroovyMessenger implements Messenger {
     private String message = "Bingo"
 
     public String getMessage() {
-        // change the implementation to surround the message in quotes
+        // 메시지를 따옴표로 감싸도록 구현체를 변경한다
         return "'" + this.message + "'"
     }
 
@@ -363,48 +317,38 @@ class GroovyMessenger implements Messenger {
     }
 }]]></programlisting>
         <para>
-          When the program executes, the output before the input pause will be
-          <computeroutput>I Can Do The Frug</computeroutput>. After the change
-          to the source file is made and saved, and the program resumes execution,
-          the result of calling the <literal>getMessage()</literal> method on the
-          dynamic-language-backed <interfacename>Messenger</interfacename> implementation
-          will be <computeroutput>'I Can Do The Frug'</computeroutput> (notice
-          the inclusion of the additional quotes).
+          프로그램 실행했을 때 입력을 멈추기 전에 출력은
+          <computeroutput>I Can Do The Frug</computeroutput>가 될 것이다. 소스파일을
+          변경하고 저장한 후에는 프로그램이 다시 실행되고 동적 언어로 작성한
+          <interfacename>Messenger</interfacename> 구현체에서
+          <literal>getMessage()</literal> 메서드를 호출하면
+          <computeroutput>'I Can Do The Frug'</computeroutput>가 될 것이다.
+          (따옴표가 추가되었다.)
         </para>
         <para>
-          It is important to understand that changes to a script will
-          <emphasis>not</emphasis> trigger a refresh if the changes occur
-          within the window of the <literal>'refresh-check-delay'</literal> value.
-          It is equally important to understand that changes to the script are
-          <emphasis>not</emphasis> actually 'picked up' until a method is called
-          on the dynamic-language-backed bean. It is only when a method is called on a
-          dynamic-language-backed bean that it checks to see if its underlying script
-          source has changed. Any exceptions relating to refreshing the script
-          (such as encountering a compilation error, or finding that the script
-          file has been deleted) will result in a <emphasis>fatal</emphasis>
-          exception being propagated to the calling code.
+          <literal>'refresh-check-delay'</literal> 값의 범위내에서 변경이 되더라도 스크립트의
+          변경이 리프레시를 발생시키는 것이 <emphasis>아니라는</emphasis> 점을 이해하는 것이 중요하다.
+          동적 언어로 작성한 빈의 메서드를 호출할 때까지 스크립트의 변경이 실제 '적용되지'
+          <emphasis>않는다는</emphasis> 점을 이해하는 것도 마찬가지로 중요하다. 동적 언어로 작성한
+          빈에서 메서드 호출이 일어났을 때만 사용하는 스크립트 소스가 변경되었는지 확인한다. 스크립트 갱신과
+          관련한 모든 예외는 호출코드로 전파하는 <emphasis>fatal</emphasis> 예외가 된다.
         </para>
         <para>
-          The refreshable bean behavior described above does
-          <emphasis>not</emphasis> apply to dynamic language source files
-          defined using the <literal>&lt;lang:inline-script/&gt;</literal> element
-          notation (see <xref linkend="dynamic-language-beans-inline" />).
-          Additionally, it <emphasis>only</emphasis> applies to beans where
-          changes to the underlying source file can actually be detected;
-          for example, by code that checks the last modified date of a
-          dynamic language source file that exists on the filesystem.
+          앞에서 설명한 갱신 가능한 빈의 동작은 <literal>&lt;lang:inline-script/&gt;</literal>
+          요소 표기로 정의한 동적언어 소스 파일에는 적용되지 <emphasis>않는다</emphasis>.
+          (<xref linkend="dynamic-language-beans-inline" /> 참고) 또한 변경이 일어난
+          소스파일을 실제로 탐지할 수 있는 <emphasis>경우에만</emphasis> 빈에 적용된다. 예를 들면
+          파일시스템에서 동적언어 소스파일의 최종 수정일을 확인하는 코드를 사용하는 등이다.
         </para>
       </section>
 
       <section id="dynamic-language-beans-inline">
-        <title>Inline dynamic language source files</title>
+        <title>인라인 동적 언어 소스 파일</title>
         <para>
-          The dynamic language support can also cater for dynamic language
-          source files that are embedded directly in Spring bean definitions.
-          More specifically, the <literal>&lt;lang:inline-script/&gt;</literal>
-          element allows you to define dynamic language source immediately
-          inside a Spring configuration file. An example will perhaps make the
-          inline script feature crystal clear:
+          동적 언어 지원은 스프링 빈 정의에 직접 삽입한 동적 언어 소스파일 기능도 제공한다. 더 자세히
+          얘기하면 <literal>&lt;lang:inline-script/&gt;</literal> 요소로 스프링
+          설정파일에서 바로 동적 언어 소스를 정의할 수 있다. 예제를 보면 인라인 스크립트 기능을
+          확실히 알 수 있을 것이다.
         </para>
         <programlisting language="xml"><![CDATA[<lang:groovy id="messenger">
     <lang:inline-script>
@@ -420,21 +364,18 @@ class GroovyMessenger implements Messenger {
     <lang:property name="message" value="I Can Do The Frug" />
 </lang:groovy>]]></programlisting>
         <para>
-          If we put to one side the issues surrounding whether it is good practice
-          to define dynamic language source inside a Spring configuration file, the
-          <literal>&lt;lang:inline-script/&gt;</literal> element can be useful in
-          some scenarios. For instance, we might want to quickly add a Spring
-          <interfacename>Validator</interfacename> implementation to a Spring MVC
-          <interfacename>Controller</interfacename>. This is but a moment's work
-          using inline source. (See <xref linkend="dynamic-language-scenarios-validators" />
-          for such an example.)
+          스프링 설정파일에 동적 언어 소스를 정의하는 좋은 방법인가에 대한 부분은 제쳐놓고
+          <literal>&lt;lang:inline-script/&gt;</literal> 요소는 일부 시나리오에서
+          유용할 수 있다. 예를 들어 스프링 MVC <interfacename>Controller</interfacename>에
+          스프링 <interfacename>Validator</interfacename> 구현체를 빠르게 추가하고자 할 때
+          인라인 소스가 유용한 경우이다. (예시는
+          <xref linkend="dynamic-language-scenarios-validators" />를 참고해라.)
         </para>
         <para>
-          Find below an example of defining the source for a JRuby-based bean
-          directly in a Spring XML configuration file using the
-          <literal>inline:</literal> notation. (Notice the use of the <![CDATA[&lt;]]>
-          characters to denote a <literal>'&lt;'</literal> character. In such a case
-          surrounding the inline source in a <literal>&lt;![CDATA[]]&gt;</literal> region might be better.)
+          <literal>inline:</literal> 문법으로 스프링 XML 설정파일에서 JRuby로 작성한 빈
+          소스를 바로 정의하는 예제가 다음에 나와 있다. (<literal>'&lt;'</literal> 문자를
+          표시하려고 <![CDATA[&lt;]]>를 사용했다. 이러면
+          <literal>&lt;![CDATA[]]&gt;</literal>로 인라인 소스를 감싸는 것이 더 좋다.)
         </para>
         <programlisting language="xml"><![CDATA[<lang:jruby id="messenger" script-interfaces="org.springframework.scripting.Messenger">
     <lang:inline-script>
@@ -451,7 +392,7 @@ class RubyMessenger &lt; Messenger
  def getMessage
   @@message
  end
- 
+
 end
     </lang:inline-script>
     <lang:property name="message" value="Hello World!" />
@@ -459,15 +400,12 @@ end
       </section>
 
       <section id="dynamic-language-beans-ctor-injection">
-        <title>Understanding Constructor Injection in the context of dynamic-language-backed beans</title>
+        <title>동적 언어로 작성한 빈의 컨텍스트의 생성자 주입 이해하기</title>
         <para>
-          There is one <emphasis>very</emphasis> important thing to be aware of
-          with regard to Spring's dynamic language support. Namely, it is not (currently)
-          possible to supply constructor arguments to dynamic-language-backed beans (and hence
-          constructor-injection is not available for dynamic-language-backed beans).
-          In the interests of making this special handling of constructors and
-          properties 100% clear, the following mixture of code and configuration
-          will <emphasis>not</emphasis> work.
+          스프링 동적 언어 지원과 관련해서 알아야 할 <emphasis>아주</emphasis> 중요한 내용이
+          있다. 즉, (현재는) 동적 언어로 작성한 빈에 생성자 인자를 제공할 수 없다.(그래서 동적 언어
+          빈에는 생성자 주입을 사용할 수 없다.) 생성자와 프로퍼티에 관련한 이 특수한 처리를 100%
+          이해하기 위해 동작하지 <emphasis>않는</emphasis> 다음 코드와 설정을 보자.
         </para>
         <programlisting source="java"><![CDATA[// from the file 'Messenger.groovy'
 package org.springframework.scripting.groovy;
@@ -478,7 +416,7 @@ class GroovyMessenger implements Messenger {
 
     GroovyMessenger() {}
 
-    // this constructor is not available for Constructor Injection
+    // 이 생성자는 생성자 주입을 사용할 수 없다
     GroovyMessenger(String message) {
         this.message = message;
     }
@@ -490,34 +428,30 @@ class GroovyMessenger implements Messenger {
         <programlisting language="xml"><![CDATA[<lang:groovy id="badMessenger"
     script-source="classpath:Messenger.groovy">
 ]]>
-    <lineannotation>&lt;!-- this next constructor argument will *not* be injected into the <classname>GroovyMessenger</classname> --&gt;</lineannotation>
-    <lineannotation>&lt;!--     in fact, this isn't even allowed according to the schema --&gt;</lineannotation><![CDATA[
-    <constructor-arg value="]]><lineannotation><emphasis role="bold">This will *not* work</emphasis></lineannotation><![CDATA[" />]]>
-    
-    <lineannotation>&lt;!-- <emphasis role="bold">only</emphasis> property values are injected into the dynamic-language-backed object --&gt;</lineannotation><![CDATA[
+    <lineannotation>&lt;!-- 이다음의 생성자 인자는 <classname>GroovyMessenger</classname>에 주입되지 *않는다* --&gt;</lineannotation>
+    <lineannotation>&lt;!--     사실 이는 스키마를 따르도록 하지도 않는다 --&gt;</lineannotation><![CDATA[
+    <constructor-arg value="]]><lineannotation><emphasis role="bold">이는 동작하지 *않을 것이다*</emphasis></lineannotation><![CDATA[" />]]>
+
+    <lineannotation>&lt;!-- <emphasis role="bold">only</emphasis> 프로퍼티 값은 동적 언어로 작성한 객체에 주입된다 --&gt;</lineannotation><![CDATA[
     <lang:property name="anotherMessage" value="Passed straight through to the dynamic-language-backed object" />
 
 </lang>]]></programlisting>
         <para>
-          In practice this limitation is not as significant as it first appears since
-          setter injection is the injection style favored by the overwhelming majority
-          of developers anyway (let's leave the discussion as to whether that is a good
-          thing to another day).
+          개발자들은 대부분 setter 주입을 선호하므로 실제로 이 제약사항이 처음 느낌만큼 크게
+          문제 되지는 않는다.(이에 대한 논의는 나중을 위해 남겨두자.)
         </para>
       </section>
     </section>
 
     <section id="dynamic-language-beans-jruby">
-      <title>JRuby beans</title>
+      <title>JRuby 빈</title>
 
       <sidebar>
-        <title>The JRuby library dependencies</title>
+        <title>JRuby 라이브러리 의존성</title>
         <para>
-          The JRuby scripting support in Spring requires the following
-          libraries to be on the classpath of your application.
-          (The  versions listed just happen to be the versions that the
-          Spring team used in the development of the JRuby scripting support;
-          you may well be able to use another version of a specific library.)
+          스프링의 JRuby 스크립트 지원을 사용하려면 애플리케이션 클래스패스에 다음 라이브러리가
+          필요하다.(명시된 버전은 JRuby 스크립트 지원 개발 시에 스프링 팀이 사용한 버전일 뿐이다.
+          해당 라이브러리의 다른 버전도 아마 잘 동작할 것이다.)
         </para>
         <itemizedlist>
           <listitem>
@@ -528,33 +462,27 @@ class GroovyMessenger implements Messenger {
           </listitem>
         </itemizedlist>
       </sidebar>
-      <para>From the JRuby homepage...</para>
+      <para>JRuby 홈페이지에서...</para>
       <quote>
-        <emphasis>JRuby is an 100% pure-Java implementation of the Ruby programming language.</emphasis>
+        <emphasis>JRuby는 Ruby 프로그래밍 언어를 100% 순수히 자바로만 구현한 구현체이다.</emphasis>
       </quote>
       <para>
-        In keeping with the Spring philosophy of offering choice, Spring's
-        dynamic language support also supports beans defined in the JRuby
-        language. The JRuby language is based on the quite intuitive
-        Ruby language, and has support for inline regular expressions, blocks
-        (closures), and a whole host of other features that do make solutions
-        for some domain problems a whole lot easier to develop.
+        선택권을 제공하는 스프링의 철학에 따라 스프링의 동적 언어도 JRuby 언어로 정의한 빈을
+        지원한다. JRuby 언어는 아주 직관적인 Ruby 언어에 기반을 두고 있어서 인라인 정규표현식,
+        블락(클로저)과 특정 도메인 문제를 훨씬 쉽게 개발할 수 있는 다른 기능들을 모두 지원한다.
       </para>
       <para>
-        The implementation of the JRuby dynamic language support in Spring is
-        interesting in that what happens is this: Spring creates a JDK dynamic
-        proxy implementing all of the interfaces that are specified in the
-        <literal>'script-interfaces'</literal> attribute value of the
-        <literal>&lt;lang:ruby&gt;</literal> element (this is why
-        you <emphasis>must</emphasis> supply at least one interface in the value
-        of the attribute, and (accordingly) program to interfaces when using
-        JRuby-backed beans).
+        스프링의 JRuby 동적 언어 지원 구현체는 무슨 일이 이뤄지는지에 관심을 둔다.
+        <literal>&lt;lang:ruby&gt;</literal> 요소의
+        <literal>'script-interfaces'</literal> 속성값에 지정한 모든 인터페이스를 구현하는
+        JDK 동적 프락시를 스프링이 생성한다. (그래서 <literal>'script-interfaces'</literal>
+        속성값에 최소 하나의 인터페이스를 <emphasis>반드시</emphasis> 해야 한다. 이를 통해
+        JRuby기반의 빈을 사용할 때 프로그램이 연결한다.)
       </para>
       <para>
-        Let us look at a fully working example of using a JRuby-based bean. Here is
-        the JRuby implementation of the <interfacename>Messenger</interfacename>
-        interface that was defined earlier in this chapter (for your convenience it
-        is repeated below).
+        JRuby로 작성한 빈을 사용한 완전한 예제를 보자. 이번 장 앞부분에서 정의한
+        <interfacename>Messenger</interfacename> 인터페이스의 JRuby 구현체가
+        다음에 나와 있다.(보기 쉽게 아래 다시 작성했다.)
       </para>
       <programlisting source="ruby"><![CDATA[package org.springframework.scripting;
 
@@ -576,71 +504,55 @@ class RubyMessenger
     end
 end
 
-# this last line is not essential (but see below)
+# 이 마지막 라인은 핵심은 아니다(하지만 아래를 참고해라)
 RubyMessenger.new]]></programlisting>
       <para>
-        And here is the Spring XML that defines an instance of the
-        <classname>RubyMessenger</classname> JRuby bean.
+        다음은 <classname>RubyMessenger</classname> JRuby 빈의 인스턴스를 정의하는
+        스프링 XML이다.
       </para>
       <programlisting language="xml"><![CDATA[<lang:jruby id="messageService"
             script-interfaces="org.springframework.scripting.Messenger"
             script-source="classpath:RubyMessenger.rb">
-    
+
     <lang:property name="message" value="Hello World!" />
 
 </lang:jruby>]]></programlisting>
       <para>
-        Take note of the last line of that JRuby source (<literal>'RubyMessenger.new'</literal>).
-        When using JRuby in the context of Spring's dynamic language support, you are encouraged
-        to instantiate and return a new instance of the JRuby class that you want to use as a
-        dynamic-language-backed bean as the result of the execution of your JRuby source. You
-        can achieve this by simply instantiating a new instance of your JRuby class on the last
-        line of the source file like so:
+        JRuby 소스의 마지막 라인을 봐라 (<literal>'RubyMessenger.new'</literal>) 스프링의 동적 언어
+        지원에서 JRuby를 사용하는 경우 JRuby 소스의 실행 결과인 동적 언어로 작성한 빈으로 사용하려는 JRuby 클래스를
+        인스턴스화하고 새로운 인스턴스를 반환하는 것이 좋다. 이는 다음과 같이 소스파일의 마지막 라인으로 JRuby 클래스의
+        새로운 인스턴스를 인스턴스화해서 할 수 있다.
       </para>
       <programlisting source="ruby"><![CDATA[require 'java'
 
 include_class 'org.springframework.scripting.Messenger'
 
-# class definition same as above...
+# 클래스 정의는 앞과 같다...
 
-# instantiate and return a new instance of the RubyMessenger class
+# RubyMessenger 클래스의 새로운 인스턴스를 인스턴스화하고 반환한다.
 RubyMessenger.new]]></programlisting>
       <para>
-        If you forget to do this, it is not the end of the world; this will however result in
-        Spring having to trawl (reflectively) through the type representation of your JRuby class
-        looking for a class to instantiate. In the grand scheme of things this will be so fast
-        that you'll never notice it, but it is something that can be avoided by simply
-        having a line such as the one above as the last line of your JRuby script. If you don't
-        supply such a line, or if Spring cannot find a JRuby class in your script to instantiate
-        then an opaque <classname>ScriptCompilationException</classname>
-        will be thrown immediately after the source is executed by the JRuby
-        interpreter. The key text that identifies this as the root cause of an
-        exception can be found immediately below (so if your Spring container
-        throws the following exception when creating your dynamic-language-backed bean
-        and the following text is there in the corresponding stacktrace, this will hopefully
-        allow you to identify and then easily rectify the issue):
+        이 부분을 빠뜨린다고 큰 문제가 생기는 것은 아니지만, 스프링이 인스턴스화할 클래스를 찾으려고 JRuby 클래스의 타입 표현으로 세밀하게(리플렉션하게) 조사하게 된다. 크게 보면 이는 너무 빨라서 느끼지 못할 정도이지만 위 JRuby 스크립트의 마지막 한 라인을 둠으로써 쉽게 피할 수 있는 부분이다. 해당 라인을 적지 않거나 스프링이 스크립트에서 인스턴스화할 JRuby 클래스를 찾을 수 없다면 JRuby 인터프리터가 소스를 실행하자마자 불투명한 <classname>ScriptCompilationException</classname>가 바로 던져질 것이다. 이를 식별하는 핵심 문구로 예외를 발생시킨 이유를 즉시 찾을 수 있다. (그래서 스프링 컨테이너가 동적 언어로 작성한 빈을 생성할 때 예외를 던지고 해당 스택트레이스에 다음 문구가 있다면 이슈를 발견하고 쉽게 수정할 수 있을 것이다.)
       </para>
       <computeroutput><![CDATA[org.springframework.scripting.ScriptCompilationException: Compilation of JRuby script returned '']]></computeroutput>
       <para>
-        To rectify this, simply instantiate a new instance of whichever class
-        you want to expose as a JRuby-dynamic-language-backed bean (as shown above). Please
-        also note that you can actually define as many classes and objects
-        as you want in your JRuby script; what is important is that the
-        source file as a whole must return an object (for Spring to configure).
+        이를 수정하려면 JRruby 동적 언어로 작성한 빈으로 노출할 클래스의 새로운 인스턴스를 인스턴스화
+        하면 된다(위에서 이미 봤다.) JRuby 스크립트에서 원하는 만큼 많은 클래스와 객체를 정의할
+        수도 있다. 중요한 것은 전체적으로 하나의 객체(스프링이 설정할)를 반드시 반환해야 한다는 것이다.
       </para>
       <para>
-        See <xref linkend="dynamic-language-scenarios" /> for some
-        scenarios where you might want to use JRuby-based beans.
+        JRuby로 작성한 빈을 사용하는 예시들을 보려면
+        <xref linkend="dynamic-language-scenarios" />를 참고해라.
       </para>
     </section>
 
     <section id="dynamic-language-beans-groovy">
-      <title>Groovy beans</title>
+      <title>Groovy 빈</title>
       <sidebar>
-        <title>The Groovy library dependencies</title>
+        <title>Groovy 라이브러리 의존성</title>
         <para>
-          The Groovy scripting support in Spring requires the following
-          libraries to be on the classpath of your application.
+          스프링의 Groovy 스크립트 지원을 사용하려면 애플리케이션 클래스패스에 다음 라이브러리가
+          있어야 한다.
         </para>
         <itemizedlist>
           <listitem>
@@ -654,18 +566,16 @@ RubyMessenger.new]]></programlisting>
           </listitem>
         </itemizedlist>
       </sidebar>
-      <para>From the Groovy homepage...</para>
+      <para>Groovy 홈페이지에서...</para>
       <quote>
-        <emphasis>Groovy is an agile dynamic language for the Java 2 Platform that has
-        many of the  features that people like so much in languages like Python, Ruby
-        and Smalltalk, making them available to Java developers using a Java-like syntax.
+        <emphasis>Groovy는 Java 2 플랫폼에서 동작하는 애자일한 동적 언어로 Python, Ruby,
+        Smalltalk같은 언어에서 사람들이 무척 좋아하던 많은 기능을 자바 개발자들이 자바 문법으로 사용하도록 한다.
         </emphasis>
       </quote>
       <para>
-        If you have read this chapter straight from the top, you will already have
-        <link linkend="dynamic-language-a-first-example">seen an example</link> of a
-        Groovy-dynamic-language-backed bean. Let's look at another example (again
-        using an example from the Spring test suite).
+        이번 장을 처음부터 읽었다면 Groovy 동적 언어로 작성한 빈의
+        <link linkend="dynamic-language-a-first-example">예제</link>를 이미 보았을
+        것이다. 여기서는 다른 예제를 보자.(스프링 테스트 슈트의 예제를 다시 사용한다.)
       </para>
       <programlisting source="java"><![CDATA[package org.springframework.scripting;
 
@@ -674,10 +584,10 @@ public interface Calculator {
     int add(int x, int y);
 }]]></programlisting>
       <para>
-        Here is an implementation of the <interfacename>Calculator</interfacename>
-        interface in Groovy.
+        Groovy에서 <interfacename>Calculator</interfacename> 인터페이스의 구현체가
+        다음에 나와 있다.
       </para>
-      <programlisting source="java"><lineannotation>// from the file 'calculator.groovy'</lineannotation><![CDATA[
+      <programlisting source="java"><lineannotation>// 'calculator.groovy' 파일</lineannotation><![CDATA[
 package org.springframework.scripting.groovy
 
 class GroovyCalculator implements Calculator {
@@ -686,12 +596,12 @@ class GroovyCalculator implements Calculator {
         x + y
     }
 }]]></programlisting>
-      <programlisting language="xml"><lineannotation>&lt;-- from the file 'beans.xml' --&gt;</lineannotation><![CDATA[
+      <programlisting language="xml"><lineannotation>&lt;-- 'beans.xml' 파일 --&gt;</lineannotation><![CDATA[
 <beans>
     <lang:groovy id="calculator" script-source="classpath:calculator.groovy"/>
 </beans>]]></programlisting>
       <para>
-        Lastly, here is a small application to exercise the above configuration.
+        마지막으로 위의 설정을 실행해볼 작은 애플리케이션이다.
       </para>
       <programlisting source="java"><![CDATA[package org.springframework.scripting;
 
@@ -707,44 +617,36 @@ public class Main {
     }
 }]]></programlisting>
       <para>
-        The resulting output from running the above program will be
-        (unsurprisingly) <computeroutput>10</computeroutput>.
-        (Exciting example, huh? Remember that the intent is to illustrate the
-        concept. Please consult the dynamic language showcase project for a
-        more complex example, or indeed <xref linkend="dynamic-language-scenarios" />
-        later in this chapter).
+        위 프로그램을 실행하면 (놀랍지는 않지만) <computeroutput>10</computeroutput>이
+        나온다. (예제가 흥미로운가? 이 예제의 의도는 개념을 설명하려는 것이다. 더 복잡한 예제의
+        동적 언어 쇼케이스 프로젝트를 참고하고 이 장 뒷부분에서
+        <xref linkend="dynamic-language-scenarios" />를 살펴본다.)
       </para>
       <para>
-        It is important that you <emphasis>do not</emphasis> define more than one
-        class per Groovy source file. While this is perfectly legal in Groovy, it
-        is (arguably) a bad practice: in the interests of a consistent approach,
-        you should (in the opinion of this author) respect the standard Java
-        conventions of one (public) class per source file.
+        Groovy 소스파일마다 하나 이상의 클래스를 정의하지 <emphasis>않는 것이</emphasis>
+        중요하다. 이는 Groovy에서 완전히 유효하지만 (분명히)좋지 않은 방법이다. 일관성을 위해서
+        소스파일마다 하나의 (public) 클래스를 작성하는 표준 자바 관례를 따라야 한다.(저자의 의견)
       </para>
 
       <section id="dynamic-language-beans-groovy-customizer">
-        <title>Customising Groovy objects via a callback</title>
+        <title>콜백으로 Groovy 객체 커스터마이징하기</title>
         <para>
-          The <interfacename>GroovyObjectCustomizer</interfacename>
-          interface is a callback that allows you to hook additional
-          creation logic into the process of creating a Groovy-backed bean.
-          For example, implementations of this interface could invoke
-          any required initialization method(s), or set some default property
-          values, or specify a custom <classname>MetaClass</classname>.
+          <interfacename>GroovyObjectCustomizer</interfacename> 인터페이스는
+          Groovy로 작성한 빈을 생성하는 과정에 로틱을 추가할 수 있는 훅(hook)을 제공하는 콜백이다.
+          예를 들어 이 인터페이스의 구현체로 필요한 초기화 메서드를 호출하거나 프로퍼티의 기본값을
+          설정하거나 커스텀 <classname>MetaClass</classname>를 지정할 수 있다.
         </para>
         <programlisting source="java"><![CDATA[public interface GroovyObjectCustomizer {
 
    void customize(GroovyObject goo);
 }]]></programlisting>
         <para>
-          The Spring Framework will instantiate an instance of your Groovy-backed
-          bean, and will then pass the created <interfacename>GroovyObject</interfacename>
-          to the specified <interfacename>GroovyObjectCustomizer</interfacename>
-          if one has been defined. You can do whatever you like with the supplied
-          <interfacename>GroovyObject</interfacename> reference: it is expected
-          that the setting of a custom <classname>MetaClass</classname> is what most
-          folks will want to do with this callback, and you can see an example
-          of doing that below.
+          스프링 프레임워크는 Groovy로 작성한 빈의 인스턴스를 인스턴스화한 뒤 빈이 정의되었다면 지정한
+          <interfacename>GroovyObjectCustomizer</interfacename>에 생성한
+          <interfacename>GroovyObject</interfacename>를 전달할 것이다. 제공받은
+          <interfacename>GroovyObject</interfacename> 참조로 무엇이든 할 수 있다.
+          대부분의 사람들이 이 콜백으로 커스텀 <classname>MetaClass</classname>를
+          설정할 것이고 이에 대한 예제가 아래 나와 있다.
         </para>
         <programlisting source="java"><![CDATA[public final class SimpleMethodTracingCustomizer implements GroovyObjectCustomizer {
 
@@ -761,27 +663,26 @@ public class Main {
    }
 }]]></programlisting>
         <para>
-          A full discussion of meta-programming in Groovy is beyond the scope of the
-          Spring reference manual. Consult the relevant section of the Groovy
-          reference manual, or do a search online: there are plenty of articles
-          concerning this topic.
-          Actually making use of a <interfacename>GroovyObjectCustomizer</interfacename>
-          is easy if you are using the Spring 2.0 namespace support.
+          Groovy의 메타프로그래밍에 대한 논의는 스프링 레퍼런스 매뉴얼의 범위를 벗어난다. Groovy
+          레퍼런스 메뉴얼의 관련 부분을 참고하거나 온라인에서 검색해 봐라. 메타 프로그래밍에 대한
+          많은 글을 볼 수 있을 것이다.
+          사실 스프링 2.0 네임스페이스 지원을 사용하고 있다면
+          <interfacename>GroovyObjectCustomizer</interfacename>를 사용하기는 쉽다.
         </para>
-        <programlisting language="xml"><lineannotation>&lt;!-- define the <interfacename>GroovyObjectCustomizer</interfacename> just like any other bean --&gt;</lineannotation>
+        <programlisting language="xml"><lineannotation>&lt;!-- 다른 빈과 마찬가지로 <interfacename>GroovyObjectCustomizer</interfacename>를 정의한다 --&gt;</lineannotation>
 <![CDATA[<bean id="tracingCustomizer" class="example.SimpleMethodTracingCustomizer" />
 
-   ]]><lineannotation>&lt;!-- ... and plug it into the desired Groovy bean via the '<literal>customizer-ref</literal>' attribute --&gt;</lineannotation><![CDATA[
+   ]]><lineannotation>&lt;!-- ... 그리고 '<literal>customizer-ref</literal>' 속성으로 원하는 Groovy 빈에 연결한다 --&gt;</lineannotation><![CDATA[
    <lang:groovy id="calculator"
       script-source="classpath:org/springframework/scripting/groovy/Calculator.groovy"
       customizer-ref="tracingCustomizer" />]]></programlisting>
         <para>
-          If you are not using the Spring 2.0 namespace support, you can still
-          use the <interfacename>GroovyObjectCustomizer</interfacename> functionality.
+          스프링 2.0 네임스페이스 지원을 사용하고 있지 않더라도
+          <interfacename>GroovyObjectCustomizer</interfacename> 기능을 사용할 수 있다.
         </para>
         <programlisting language="xml"><![CDATA[<bean id="calculator" class="org.springframework.scripting.groovy.GroovyScriptFactory">
       <constructor-arg value="classpath:org/springframework/scripting/groovy/Calculator.groovy"/>
-      ]]><lineannotation>&lt;!-- define the <interfacename>GroovyObjectCustomizer</interfacename> (as an inner bean) --&gt;</lineannotation><![CDATA[
+      ]]><lineannotation>&lt;!-- <interfacename>GroovyObjectCustomizer</interfacename>를 정의한다 (내부 빈으로) --&gt;</lineannotation><![CDATA[
       <constructor-arg>
          <bean id="tracingCustomizer" class="example.SimpleMethodTracingCustomizer" />
       </constructor-arg>
@@ -792,12 +693,12 @@ public class Main {
     </section>
 
     <section id="dynamic-language-beans-bsh">
-      <title>BeanShell beans</title>
+      <title>BeanShell 빈</title>
       <sidebar>
-        <title>The BeanShell library dependencies</title>
+        <title>BeanShell 라이브러리 의존성</title>
         <para>
-          The BeanShell scripting support in Spring requires the following
-          libraries to be on the classpath of your application.
+          스프링의 BeanShell 스크립트 지원을 사용하려면 애플리케이션 클래스 패스에
+          다음 라이브러리가 있어야 한다.
         </para>
         <itemizedlist>
           <listitem>
@@ -808,31 +709,26 @@ public class Main {
           </listitem>
         </itemizedlist>
       </sidebar>
-      <para>From the BeanShell homepage...</para>
+      <para>BeanShell 홈페이지에서...</para>
       <quote>
-        <emphasis>BeanShell is a small, free, embeddable Java source interpreter
-        with dynamic language features, written in Java. BeanShell dynamically
-        executes standard Java syntax and extends it with common scripting
-        conveniences such as loose types, commands, and method closures like those
-        in Perl and JavaScript.</emphasis>
+        <emphasis>BeanShell은 자바로 작성된 동적 언어 기능을 가진 자바소스 인터프리터로 작고
+        무료고 내장할 수 있다. BeanShell은 동적으로 표준 자바 문법을 실행하고 Perl이나
+        JavaScript처럼 느슨한 타입, 커맨드, 메서드 클로저같은 일반적으로 편리한 스크립트
+        기능으로 자바 문법을 확장한다.</emphasis>
       </quote>
       <para>
-        In contrast to Groovy, BeanShell-backed bean definitions require some (small)
-        additional configuration. The implementation of the BeanShell dynamic language
-        support in Spring is interesting in that what happens is this: Spring creates
-        a JDK dynamic proxy implementing all of the interfaces that are specified in the
-        <literal>'script-interfaces'</literal> attribute value of the
-        <literal>&lt;lang:bsh&gt;</literal> element (this is why
-        you <emphasis>must</emphasis> supply at least one interface in the value
-        of the attribute, and (accordingly) program to interfaces when using
-        BeanShell-backed beans). This means that every method call on a BeanShell-backed
-        object is going through the JDK dynamic proxy invocation mechanism.
+        Groovy와는 달리 BeanShell로 작성한 빈 정의를 사용하려면 (약간의) 추가적인 설정이 필요하다.
+        스프링의 BeanShell 동적 언어 지원 구현체에는 흥미로운 동작이 일어난다.
+        <literal>&lt;lang:bsh&gt;</literal> 요소의 <literal>'script-interfaces'</literal>
+        속성값으로 지정한 인터페이스를 구현하는 JDK 동적 프락시를 스프링이 생성한다.(그래서
+        <literal>'script-interfaces'</literal> 속성에 최소한 하나 이상의 인터페이스를
+        <emphasis>반드시</emphasis> 제공해야 하고 BeanShell로 작성한 빈을 사용할 때 인터페이스를
+        (적절히) 프로그래밍해야 한다.) 즉 BeanShell로 작성한 객체의 모든 메서드 호출은 JDK 동적
+        프락시 호출 메커니즘을 사용한다.
       </para>
       <para>
-        Let's look at a fully working example of using a BeanShell-based bean
-        that implements the <interfacename>Messenger</interfacename> interface
-        that was defined earlier in this chapter (repeated below for your
-        convenience).
+        이번 장 초반에서 정의한 <interfacename>Messenger</interfacename> 인터페이스(편의상
+        아래 다시 적어놨다.)를 구현한 BeanShell로 작성한 빈을 사용하는 전체 예제를 보자.
       </para>
       <programlisting source="java"><![CDATA[package org.springframework.scripting;
 
@@ -840,8 +736,8 @@ public interface Messenger {
 
     String getMessage();
 }]]></programlisting>
-      <para>Here is the BeanShell 'implementation' (the term is used loosely here) of the
-          <interfacename>Messenger</interfacename> interface.</para>
+      <para>다음은 <interfacename>Messenger</interfacename> 인터페이스의 BeanShell '구현체'이다.
+          (이 용어는 여기서는 약간 막연하다)</para>
       <programlisting source="java"><![CDATA[String message;
 
 String getMessage() {
@@ -852,65 +748,54 @@ void setMessage(String aMessage) {
     message = aMessage;
 }]]></programlisting>
       <para>
-        And here is the Spring XML that defines an 'instance' of the above 'class'
-        (again, the term is used very loosely here).
+        다음은 위 '클래스'의 '인스턴스'를 정의한 스프링 XML이다.(여기서도 아주 막연한 용어이다.)
       </para>
       <programlisting language="xml"><![CDATA[<lang:bsh id="messageService" script-source="classpath:BshMessenger.bsh"
     script-interfaces="org.springframework.scripting.Messenger">
 
     <lang:property name="message" value="Hello World!" />
 </lang:bsh>]]></programlisting>
-      <para>See <xref linkend="dynamic-language-scenarios" /> for some
-      scenarios where you might want to use BeanShell-based beans.</para>
+      <para>BeanShell로 작성한 빈을 사용하는 다른 시나리오를 보려면
+      <xref linkend="dynamic-language-scenarios" />를 참고해라.</para>
     </section>
   </section>
 
   <section id="dynamic-language-scenarios">
-    <title>Scenarios</title>
+    <title>시나리오</title>
     <para>
-      The possible scenarios where defining Spring managed beans in a scripting
-      language would be beneficial are, of course, many and varied. This section
-      describes two possible use cases for the dynamic language support in Spring.
+      스크립트 언어로 스프링이 관리하는 빈을 작성하는 것이 유용한 시나리오는 물론 많고 다양하다. 이번
+      부분에서는 스프링에서 동적 언어 지원으로 가능한 두 가지 유즈케이스를 설명한다.
     </para>
 
     <section id="dynamic-language-scenarios-controllers">
-      <title>Scripted Spring MVC Controllers</title>
+      <title>스크립트로 작성한 스프링 MVC 컨트롤러</title>
       <para>
-        One group of classes that may benefit from using dynamic-language-backed
-        beans is that of Spring MVC controllers. In pure Spring MVC applications,
-        the  navigational flow through a web application is to a large extent
-        determined by code encapsulated within your Spring MVC controllers.
-        As the navigational flow and other presentation layer logic of a web
-        application needs to be updated to respond to support issues or changing
-        business requirements, it may well be easier to effect any such required
-        changes  by editing one or more dynamic language source files and seeing
-        those changes being immediately reflected in the state of a running
-        application.
+        동적 언어로 작성한 빈을 사용해서 이득이 되는 클래스 중 하나가 스프링 MVC 컨트롤러다. 순수한
+        스프링 MVC 애플리케이션에서 웹 애플리케이션의 탐색 가능한 흐름은 아주 큰 범위이고 스프링 MVC
+        컨트롤러에서 은닉화된 코드로 결정된다. 웹 애플리케이션의 탐색 가능한 흐름과 다른 표현 계층의
+        로직은 이슈를 처리하거나 사업적 요구사항의 변경에 따라 갱신되어야 한다. 하나 이상의 동적
+        언어 소스 파일을 수정하고 실행 중인 애플리케이션의 상태에 바로 적용되는 변경사항을 보면
+        필요한 변경사항을 적용하기가 훨씬 쉬울 것이다.
       </para>
       <para>
-        Remember that in the lightweight architectural model espoused by projects
-        such as Spring, you are typically aiming to have a really
-        <emphasis>thin</emphasis> presentation layer, with all the meaty business
-        logic of an application being contained in the domain and service layer
-        classes. Developing Spring MVC controllers as dynamic-language-backed beans
-        allows you to change presentation layer logic by simply editing and saving
-        text files; any changes to such dynamic language source files will (depending
-        on the configuration) automatically be reflected in the beans that are backed
-              by dynamic language source files.
+        스프링 같은 프로젝트가 지지하는 경량 아키텍처 모델을 생각해 보자. 보통은 정말
+        <emphasis>얇은</emphasis> 표현 계층을 가지면서 애플리케이션의 많은 비즈니스 로직을 도메인
+        계층과 서비스 계층 클래스에 담으려고 할 것이다. 동적 언어로 작성한 빈으로 스프링 MVC 컨트롤러를
+        작성하면 텍스트 파일을 수정하고 저장하기만 하면 표현 계층의 로직을 변경할 수 있을 것이다.
+        이러한 동적 언어 소스파일의 변경사항은 해당 파일로 작성한 빈에 자동으로 반영될 것이다.
+        (설정에 따라 다를 수 있다.)
       </para>
       <note>
         <para>
-          In order to effect this automatic 'pickup' of any changes
-          to dynamic-language-backed beans, you will have had to enable the
-          'refreshable beans' functionality. See
-           <xref linkend="dynamic-language-refreshable-beans"/> for a full treatment
-           of this feature.
+          동적 언어로 작성한 빈의 변경사항을 자동으로 '선택'해서 적용하려면 '갱신 가능한 빈'기능을
+          활성화해야 한다. 이 기능에 대한 전체 내용은
+          <xref linkend="dynamic-language-refreshable-beans"/>를 참고해라.
         </para>
       </note>
       <para>
-        Find below an example of an
-        <interfacename>org.springframework.web.servlet.mvc.Controller</interfacename>
-        implemented using the Groovy dynamic language.
+        Groovy 동적 언어로 구현한
+        <interfacename>org.springframework.web.servlet.mvc.Controller</interfacename>의
+        예제가 아래 나와 있다.
       </para>
       <programlisting source="java"><![CDATA[// from the file '/WEB-INF/groovy/FortuneController.groovy'
 package org.springframework.showcase.fortune.web
@@ -942,35 +827,29 @@ class FortuneController implements Controller {
     </section>
 
     <section id="dynamic-language-scenarios-validators">
-      <title>Scripted Validators</title>
+      <title>스크립트로 작성한 밸리데이터(Validator)</title>
       <para>
-        Another area of application development with Spring that may benefit
-        from the flexibility afforded by dynamic-language-backed beans is that of
-        validation. It <emphasis>may</emphasis> be easier to express complex validation
-        logic using a loosely typed dynamic language (that may also have support
-        for inline regular expressions) as opposed to regular Java.
+        동적 언어로 작성한 빈의 유연성을 통해 스프링 애플리케이션 개발에서 이점을 취할 수 있는 또 하나의
+        부분이 유효성 검사(validation)다. 자바와 비교해서 타입이 느슨한 동적 언어(인라인 정규표현식도
+        지원한다)를 사용해서 복잡한 유효성 검사 로직을 표현하기가 더 쉬울 <emphasis>것이다</emphasis>.
       </para>
       <para>
-        Again, developing validators as dynamic-language-backed beans allows you to change
-        validation logic by simply editing and saving a simple text file; any such
-        changes will (depending on the configuration) automatically be reflected
-        in the execution of a running application and would not require the restart
-        of an application.
+        다시 말하지만 동적 언어로 작성한 빈으로 밸리데이터를 개발하면 텍스트파일을 수정하고 저장하는
+        것만으로 유효성 검사 로직을 변경할 수 있다. 모든 변경사항이 (설정에 따라 다르지만) 자동으로
+        운영 중인 애플리케이션에 반영될 것이고 애플리케이션을 재시작할 필요가 없다.
       </para>
       <note>
         <para>
-          Please note that in order to effect the automatic 'pickup' of any changes
-          to dynamic-language-backed beans, you will have had to enable the
-          'refreshable beans' feature. See 
-          <xref linkend="dynamic-language-refreshable-beans"/> for a full and
-          detailed treatment of this feature.
+          동적 언어로 작성한 빈의 변경사항을 자동으로 '적용'하려면 `갱신 가능한 빈` 기능을 활성화해야
+          할 것이다. 이 기능에 대한 자세한 내용은
+          <xref linkend="dynamic-language-refreshable-beans"/>를 참고해라.
         </para>
       </note>
       <para>
-        Find below an example of a Spring
-        <interfacename>org.springframework.validation.Validator</interfacename>
-        implemented using the Groovy dynamic language. (See <xref linkend="validator"/>
-        for a discussion of the <interfacename>Validator</interfacename> interface.)
+        Groovy 동적 언어로 구현한 스프링
+        <interfacename>org.springframework.validation.Validator</interfacename>의
+        예제가 다음에 나와 있다. (<interfacename>Validator</interfacename> 인터페이스에 대한
+        내용은 <xref linkend="validator"/>를 참고해라.)
       </para>
       <programlisting source="java"><![CDATA[import org.springframework.validation.Validator
 import org.springframework.validation.Errors
@@ -981,7 +860,7 @@ class TestBeanValidator implements Validator {
     boolean supports(Class clazz) {
         return TestBean.class.isAssignableFrom(clazz)
     }
-    
+
     void validate(Object bean, Errors errors) {
         if(bean.name?.trim()?.size() > 0) {
             return
@@ -993,46 +872,41 @@ class TestBeanValidator implements Validator {
   </section>
 
   <section id="dynamic-language-final-notes">
-    <title>Bits and bobs</title>
+    <title>그 밖의 내용</title>
     <para>
-      This last section contains some bits and bobs related to the dynamic language
-      support.
+      이 마지막 장에서는 동적 언어 지원에 대한 잡다한 내용을 다룬다.
     </para>
 
     <section id="dynamic-language-final-notes-aop">
-      <title>AOP - advising scripted beans</title>
+      <title>AOP - 스크립트로 작성한 빈의 어드바이스</title>
       <para>
-        It is possible to use the Spring AOP framework to advise scripted beans.
-        The Spring AOP framework actually is unaware that a bean that is being
-        advised might be a scripted bean, so all of the AOP use cases and functionality
-        that you may be using or aim to use will work with scripted beans. There is
-        just one (small) thing that you need to be aware of when advising scripted
-        beans... you cannot use class-based proxies, you must use
-        <link linkend="aop-proxying">interface-based proxies</link>.
+        스크립트로 작성한 빈을 어드바이스하도록 스프링 AOP 프레임워크를 사용할 수 있다. 사실 스프링
+        AOP 프레임워크는 어드바이스하는 빈이 스크립트로 작성한 빈이라는 것을 알지 못하므로 사용할 모든
+        AOP 사용 사례와 기능은 스크립트로 작성한 빈과도 잘 동작할 것이다. 스크립트로 작성한 빈을
+        어드바이스할 때 알아두어야 할 (소소한)내용이 딱 하나 있는데 클래스 기반의 프락시는 사용할 수
+        없고 <link linkend="aop-proxying">인터페이스 기반의 프록시</link>를 반드시 사용해야
+        한다는 것이다.
       </para>
       <para>
-        You are of course not just limited to advising scripted beans... you can
-        also write aspects themselves in a supported dynamic language and use such
-        beans to advise other Spring beans. This really would be an advanced use of
-        the dynamic language support though.
+        물론 스크립트로 작성한 빈을 어드바이스만 할 수 있는 것은 아니고 지원되는 동적 언어로 관점 자체를
+        작성하고 다른 스프링 빈을 어드바이스할 때 스크립트로 작성한 빈도 사용할 수 있다. 이는 동적 언어
+        지원에서 정말로 진보된 사용방법이다.
       </para>
     </section>
 
     <section id="dynamic-language-final-notes-scopes">
-      <title>Scoping</title>
+      <title>범위 제어</title>
       <para>
-        In case it is not immediately obvious, scripted beans can of course be scoped
-        just like any other bean. The <literal>scope</literal> attribute on the
-        various <literal>&lt;lang:language/&gt;</literal> elements allows you to
-        control the scope of the underlying scripted bean, just as it does with a
-        regular bean. (The default scope is
-        <link linkend="beans-factory-scopes-singleton">singleton</link>, just as it
-        is with 'regular' beans.)
+        아주 명확하게 보이지는 않더라도 스크립트로 작성한 빈도 다른 빈처럼 범위를 줄 수 있다. 여러
+        <literal>&lt;lang:language/&gt;</literal> 요소의 <literal>scope</literal>
+        속성으로 다른 일반적인 빈처럼 해당 스크립트성 빈의 범위를 제어할 수 있다. (기본 범위는 다른
+        '일반적인' 빈과 마찬가지로
+        <link linkend="beans-factory-scopes-singleton">singleton</link>이다. )
       </para>
       <para>
-        Find below an example of using the <literal>scope</literal> attribute
-        to define a Groovy bean scoped as a
-        <link linkend="beans-factory-scopes-prototype">prototype</link>.
+        Grooby 빈을 정의할 때 <literal>scope</literal> 속성을 사용해서
+        <link linkend="beans-factory-scopes-prototype">prototype</link> 범위로
+        정의한 예제가 다음에 나와 있다.
       </para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -1051,36 +925,33 @@ http://www.springframework.org/schema/lang http://www.springframework.org/schema
 
 </beans>]]></programlisting>
       <para>
-        See <xref linkend="beans-factory-scopes"/> in <xref linkend="beans"/>
-        for a fuller discussion of the scoping support in the Spring Framework.
+        스프링 프레임워크의 범위에 대한 내용은 <xref linkend="beans"/>의
+        <xref linkend="beans-factory-scopes"/>를 참고해라.
       </para>
     </section>
   </section>
 
   <section id="dynamic-language-resources">
-    <title>Further Resources</title>
+    <title>추가 자료</title>
     <para>
-      Find below links to further resources about the various dynamic languages described
-      in this chapter.
+      이번 장에서 설명한 여러 동적 언어에 대한 추가 자료를 아래 링크에서 볼 수 있다.
     </para>
     <itemizedlist>
       <listitem>
-        <para>The <ulink url="http://jruby.codehaus.org/">JRuby</ulink> homepage</para>
+        <para><ulink url="http://jruby.codehaus.org/">JRuby</ulink> 홈페이지</para>
       </listitem>
       <listitem>
-        <para>The <ulink url="http://groovy.codehaus.org/">Groovy</ulink> homepage</para>
+        <para><ulink url="http://groovy.codehaus.org/">Groovy</ulink> 홈페이지</para>
       </listitem>
       <listitem>
-        <para>The <ulink url="http://www.beanshell.org/">BeanShell</ulink> homepage</para>
+        <para><ulink url="http://www.beanshell.org/">BeanShell</ulink> 홈페이지</para>
       </listitem>
     </itemizedlist>
     <para>
-      Some of the more active members of the Spring community have also added support for
-      a number of additional dynamic languages above and beyond the ones covered in this
-      chapter. While it is possible that such third party contributions may be added to the
-      list of languages supported by the main Spring distribution, your best bet for seeing
-      if your favourite scripting language is supported is the
-      <ulink url="https://springmodules.dev.java.net/">Spring Modules project</ulink>.
+      스프링 커뮤니티에서 적극적인 일부 회원들이 이번 장에서 다룬 것 외의 추가적인 동적언어를 다수 추가했다.
+      스프링 배포판에서 지원하는 언어 목록에 언어를 추가하는 공헌을 할 수 있지만
+      <ulink url="https://springmodules.dev.java.net/">Spring Modules project</ulink>에서
+      선호하는 스크립트를 찾을 수 있기를 바란다.
     </para>
   </section>
 
