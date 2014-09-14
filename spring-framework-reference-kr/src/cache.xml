@@ -3,216 +3,232 @@
  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <chapter id="cache">
-	<title>Cache Abstraction</title>
+	<title>캐시 추상화</title>
 
 	<section id="cache-introduction">
-		<title>Introduction</title>
+		<title>소개</title>
 
-		<para>Since version 3.1, Spring Framework provides support for transparently
-		adding caching into an existing Spring application. Similar to the <link linkend="transaction">transaction</link>
-		support, the caching abstraction allows consistent use of various caching
-		solutions with minimal impact on the code.</para>
+		<para>3.1 버전부터 스프링 프레임워크는 기존 스프링 애플리케이션에 캐시를 투명하게 추가하도록
+		지원한다. <link linkend="transaction">트랜잭션</link> 지원과 비슷하게 캐시 추상화도
+		코드에 주는 영향을 최소화하면서 다양한 캐시 솔루션을 일관성 있게 사용할 수 있게 한다.</para>
 	</section>
 
 	<section id="cache-strategies">
-	<title>Understanding the cache abstraction</title>
+	<title>캐시 추상화 이해하기</title>
 
 	<sidebar>
-	<title>Cache vs Buffer</title>
-	<para>The terms "buffer" and "cache" tend to be used interchangeably; note however they represent different things.
-	A buffer is used traditionally as an intermediate temporary store for data between a fast and a slow entity. As one
-	party would have to <emphasis>wait</emphasis> for the other affecting performance, the buffer alleviates this by
-	allowing entire blocks of data to move at once rather then in small chunks. The data is written and read only once from
-	the buffer. Furthermore, the buffers are <emphasis>visible</emphasis> to at least one party which is aware of it.</para>
-	<para>A cache on the other hand by definition is hidden and neither party is aware that caching occurs.It as well improves
-	performance but does that by allowing the same data to be read multiple times in a fast fashion.</para>
+	<title>캐시 vs 버퍼</title>
+	<para>"버퍼"와 "캐시"라는 용어는 서로 바꿔가며 쓸 수 있다. 하지만 둘은 의미가 다르다. 버퍼는 빠른
+	엔티티와 느린 엔티티 중간에 데이터를 임시로 저장하는데 보통 사용된다. 어떤 부분이
+	<emphasis> 대기</emphasis> 해야 해서 다른 성능에 영향을 준다면 작은 청크가 아니라 데이터의 전체
+	블록을 한 번에 옮기게 해서 이 성능 저하를 완화한다. 데이터는 버퍼에서만 읽고 쓰인다. 게다가 버퍼는
+	버퍼를 알고 있는 최소 한 부분에서는 <emphasis>가시적</emphasis>이다.</para>
+	<para>반면에 캐시는 숨겨져 있고 관련된 부분이 캐싱 된다는 것을 알지도 못한다. 같은 데이터를 빠르게
+	여러 번 읽음으로써 성능을 높인다.</para>
 
-	<para>A further explanation of the differences between two can be found
-	<ulink url="http://en.wikipedia.org/wiki/Cache#The_difference_between_buffer_and_cache">here</ulink>.</para>
+	<para>캐시와 버퍼의 차이점에 대한 자세한 설명은
+	<ulink url="http://en.wikipedia.org/wiki/Cache#The_difference_between_buffer_and_cache">여기</ulink>에
+	나와 있다.</para>
 	</sidebar>
 
-	<para>At its core, the abstraction applies caching to Java methods, reducing thus the number of executions based on the
-	information available in the cache. That is, each time a <emphasis>targeted</emphasis> method is invoked, the abstraction
-	will apply a caching behaviour checking whether the method has been already executed for the given arguments. If it has,
-	then the cached result is returned without having to execute the actual method; if it has not, then method is executed, the
-	result cached and returned to the user so that, the next time the method is invoked, the cached result is returned.
-	This way, expensive methods (whether CPU or IO bound) can be executed only once for a given set of parameters and the result
-	reused without having to actually execute the method again. The caching logic is applied transparently without any interference
-	to the invoker.</para>
+	<para>핵심 부분에서 추상화는 Java 메서드에 캐싱을 적용함으로써 캐시에 보관된 정보로 메서드의 실행 횟수를 줄여준다. 즉,
+	<emphasis>대상</emphasis> 메서드가 실행될 때마다 추상화가 해당 메서드가 같은 인자로 이미 실행되었는지
+	확인하는 캐싱 동작을 적용한다. 해당 데이터가 존재한다면 실제 메서드를 실행하지 않고 결과를 반환하고 존재하지
+	않는다면 메서드를 실행하고 그 결과를 캐싱한 뒤에 사용자에게 반환해서 다음번 호출 시에 사용할 수 있게 한다.
+	이 방법을 통해 비용이 큰 메서드(CPU든 IO든) 해당 파라미터로는 딱 한 번만 실행할 수 있고 다시 메서드를 실행하지
+	않고도 결과를 재사용할 수 있다. 호출자가 어떤 방해도 받지 않고 캐싱 로직은 투명하게 적용된다.</para>
 
-	<important>Obviously this approach works only for methods that are guaranteed to return the same output (result) for a given input
-	(or arguments) no matter how many times it is being executed.</important>
+	<important>물론 이 접근방법은 얼마나 많이 호출하든지 간에 입력(혹은 인자)이 같으면 출력(결과)도 같다는
+	것을 보장하는 메서드에서만 동작한다.</important>
 
-	<para>To use the cache abstraction, the developer needs to take care of two aspects:
+	<para>캐시 추상화를 사용하려면 개발자가 두 가지 관점을 신경을 써야 한다.
 	<itemizedlist>
-		<listitem>caching declaration - identify the methods that need to be cached and their policy</listitem>
-		<listitem>cache configuration - the backing cache where the data is stored and read from</listitem>
+		<listitem>캐싱 선언 - 캐시되어야 하는 메서드와 정책을 정한다</listitem>
+		<listitem>캐시 구성 - 데이터를 저장하고 읽을 기반 캐시</listitem>
 	</itemizedlist>
 	</para>
 
-	<para>Note that just like other services in Spring Framework, the caching service is an abstraction (not a cache implementation) and requires
-	the use of an actual storage to store the cache data - that is, the abstraction frees the developer from having to write the caching
-	logic but does not provide the actual stores. There are two integrations available out of the box, for JDK <literal>java.util.concurrent.ConcurrentMap</literal>
-	and <ulink url="http://ehcache.org/">Ehcache</ulink> - see <xref linkend="cache-plug"/> for more information on plugging in other cache stores/providers.</para>
+	<para>스프링 프레임워크의 다른 서비스와 마찬가지로 캐싱 서비스는 추상화되어 있고(캐시 구현체가 아니다)
+	캐시 데이터를 저장하는 실제 스토리지를 사용해야 한다. 즉, 캐시 추상화로 개발자가 캐시 로직은 작성하지
+	않아도 되지만 실제 스토어를 제공하는 것은 아니다. 통합할 수 있는 두 가지 캐시는 JDK
+	<literal>java.util.concurrent.ConcurrentMap</literal>와
+	<ulink url="http://ehcache.org/">Ehcache</ulink>이다. 다른 캐시 스토어나 제공자를 연결하려면
+	<xref linkend="cache-plug"/>를 참고해라.</para>
 	</section>
 
 	<section id="cache-annotations">
-	<title>Declarative annotation-based caching</title>
+	<title>선언적인 어노테이션 기반의 캐싱</title>
 
-	<para>For caching declaration, the abstraction provides two Java annotations: <literal>@Cacheable</literal> and <literal>@CacheEvict</literal> which allow methods
-	to trigger cache population or cache eviction. Let us take a closer look at each annotation:</para>
+	<para>캐싱 선언으로 추상화가 두가지 Java 어노테이션을 제공한다. <literal>@Cacheable</literal>와
+	<literal>@CacheEvict</literal>로 캐시군(cache population)과 캐시 만료(cache eviction)를
+	실행하는 메서드를 제공한다. 각 어노테이션을 자세히 살펴보자.</para>
 
 	<section id="cache-annotations-cacheable">
-		<title><literal>@Cacheable</literal> annotation</title>
+		<title><literal>@Cacheable</literal> 어노테이션</title>
 
-		<para>As the name implies, <literal>@Cacheable</literal> is used to demarcate methods that are cacheable - that is, methods for whom the result is stored into the cache
-		so on subsequent invocations (with the same arguments), the value in the cache is returned without having to actually execute the method. In its simplest form,
-		the annotation declaration requires the name of the cache associated with the annotated method:</para>
+		<para>이름이 암시하듯이 <literal>@Cacheable</literal>는 캐시할 수 있는 메서드를 지정하는데
+		사용한다. 즉, 이 어노테이션을 사용한 메서드는 결과를 캐시에 저장하므로 뒤이은 호출(같은 인자일 때)에는
+		실제로 메서드를 실행하지 않고 캐시에 저장된 값을 반환한다. 가장 간단한 형식으로는 어노테이션이 붙은
+		메서드와 연관된 캐시의 이름만 있으면 어노테이션을 선언할 수 있다.</para>
 
 		<programlisting language="java"><![CDATA[@Cacheable("books")
 public Book findBook(ISBN isbn) {...}]]></programlisting>
 
-		<para>In the snippet above, the method <literal>findBook</literal> is associated with the cache named <literal>books</literal>. Each time the method is called, the cache
-		is checked to see whether the invocation has been already executed and does not have to be repeated. While in most cases, only one cache is declared, the annotation allows multiple
-		names to be specified so that more then one cache are being used. In this case, each of the caches will be checked before executing the method - if at least one cache is hit,
-		then the associated value will be returned:</para>
-		<note>All the other caches that do not contain the method will be updated as well even though the cached method was not actually
-		executed.</note>
+		<para>앞의 코드에서 <literal>findBook</literal> 메서드는 <literal>books</literal>라는
+		캐시와 연결된다. <literal>findBook</literal> 메서드를 호출할 때마다 해당 호출이 이전에 실행된
+		적이 있는지 캐시가 확인하고 반복해서 실행하지 않는다. 하나의 캐시만 선언하는 대부분의 경우 어노테이션은
+		여러 이름을 지정해서 한 캐시를 여러 번 사용할 수 있다. 이 경우 메서드를 실행하기 전에 각 캐시를 확인할
+		것이고 최소 하나의 캐시에 저장되어 있다면 해당 값을 반환할 것이다.</para>
+		<note>이 메서드가 없는 다른 모든 캐시는 캐시된 메서드가 실제로 실행되지 않더라도 갱신될 것이다.</note>
 
 		<programlisting language="java"><![CDATA[@Cacheable({ "books", "isbns" })
 public Book findBook(ISBN isbn) {...}]]></programlisting>
 
 		<section id="cache-annotations-cacheable-default-key">
-			<title>Default Key Generation</title>
+			<title>기본 키 생성</title>
 
-			<para>Since caches are essentially key-value stores, each invocation of a cached method needs to be translated into a suitable key for cache access.
-			Out of the box, the caching abstraction uses a simple <interfacename>KeyGenerator</interfacename> based on the following algorithm:</para>
+			<para>캐시는 본질적으로 키-밸류 저장소이므로 캐시된 메서드를 호출할 때마다 해당 키로 변환되어야
+			한다. 캐시 추상화는 다음 알고리즘에 기반을 둔
+			<interfacename>KeyGenerator</interfacename>를 사용한다.</para>
 			<itemizedlist>
-				<listitem>If no params are given, return 0.</listitem>
-				<listitem>If only one param is given, return that instance.</listitem>
-				<listitem>If more the one param is given, return a key computed from the hashes of all parameters.</listitem>
+				<listitem>파라미터가 없으면 0을 반환한다.</listitem>
+				<listitem>파라미터가 하나만 있으면 해당 인스턴스를 반환한다.</listitem>
+				<listitem>파라미터가 둘 이상이면 모든 파라미터의 해시를 계산한 키를 반환한다.</listitem>
 			</itemizedlist>
 			<para>
-			This approach works well for objects with <emphasis>natural keys</emphasis> as long as the <literal>hashCode()</literal> reflects that. If that is not the case then
-			for distributed or persistent environments, the strategy needs to be changed as the objects hashCode is not preserved.
-			In fact, depending on the JVM implementation or running conditions, the same hashCode can be reused for different objects, in the same VM instance.</para>
+			이 접근은 객체를 리플랙션하는 <literal>hashCode()</literal>처럼
+			<emphasis>일반적인 키</emphasis>를 가진 객체와 잘 동작한다. 이러한 경우가 아니고 분산 혹은
+			유지(persistent)되는 환경이라면 객체가 hashCode를 보관하지 않도록 전략을 변경해야 한다.
+			사실 JVM 구현체나 운영하는 환경에 따라 같은 VM 인스턴스에서 hashCode를 다른 객체에서
+			재사용할 수 있다.</para>
 
-			<para>To provide a different <emphasis>default</emphasis> key generator, one needs to implement the <interfacename>org.springframework.cache.KeyGenerator</interfacename> interface.
-			Once configured, the generator will be used for each declaration that doesn not specify its own key generation strategy (see below).
+			<para>다른 <emphasis>기본</emphasis> 키 생성자를 제공하려면
+			<interfacename>org.springframework.cache.KeyGenerator</interfacename> 인터페이스를
+			구현해야 한다. 이를 구성하고 나면 전용 키 생성 전략(아래 참고)를 지정하지 않은 모든 선언에서
+			이 생성자를 사용할 것이다.
 			</para>
 		</section>
 
 		<section id="cache-annotations-cacheable-key">
-			<title>Custom Key Generation Declaration</title>
+			<title>커스텀 키 생성 선언</title>
 
-			<para>Since caching is generic, it is quite likely the target methods have various signatures that cannot be simply mapped on top of the cache structure. This tends to become
-			obvious when the target method has multiple arguments out of which only some are suitable for caching (while the rest are used only by the method logic). For example:</para>
+			<para>캐싱은 일반적이므로 대상 메서드는 캐싱 구조에 간단하게 매핑할 수 없는 다양한 시그니처를 가질 가능성이
+			높다. 이는 여러 인자중 일부만 캐싱하기에 적합한(나머지 인자는 메서드 로직에만 사용된다) 대상 메서드가 있는
+			경우에 명확해 지려는 의도이다. 예를 들면 다음과 같다.</para>
 
 			<programlisting language="java"><![CDATA[@Cacheable("books")
 public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed]]></programlisting>
 
-			<para>At first glance, while the two <literal>boolean</literal> arguments influence the way the book is found, they are no use for the cache. Further more what if only one of the two
-			is important while the other is not?</para>
+			<para>간단히 말하면 두 <literal>boolean</literal> 인자는 책을 찾는데 영향을 주고 캐시에는
+			사용하지 않는다. 게다가 둘 줄 하나만 중요하고 다른 인자는 중요하지 않다면?</para>
 
-			<para>For such cases, the <literal>@Cacheable</literal> annotation allows the user to specify how the key is generated through its <literal>key</literal> attribute.
-			The developer can use <link linkend="expressions">SpEL</link> to pick the arguments of interest (or their nested properties), perform operations or even invoke arbitrary methods without
-			having to write any code or implement any interface. This is the recommended approach over the <link linkend="cache-annotations-cacheable-default-key">default</link> generator since
-			methods tend to be quite different in signatures as the code base grows; while the default strategy might work for some methods, it rarely does for all methods.</para>
+			<para>이러한 경우 <literal>@Cacheable</literal> 어노테이션으로 사용자가
+			<literal>key</literal> 속성으로 키를 생성하는 방법을 지정할 수 있다. 개발자는 사용할
+			인자(또는 중첩된 속성)를 선택하거나 작업 실행이나 어떤 코드도 작성하지 않고 인터페이스도 구현하지
+			않고 임의의 메서드를 호출하려고 <link linkend="expressions">SpEL</link>를 사용할 수 있다.
+			메서드는 코드가 달라짐에 따라 시그니처도 달라질 것이므로
+			<link linkend="cache-annotations-cacheable-default-key">기본</link> 생성자 외의
+			접근을 추천한다. 기본 전략은 일부 메서드에서 동작할 것이지만 모든 메서드에서 동작할 가능성은 별로 없다.</para>
 
 			<para>
-			Below are some examples of various SpEL declarations - if you are not familiar with it, do yourself a favour and read <xref linkend="expressions"/>:
+			아래 여러 가지 SpEL 선언의 예시가 있다. SpEL에 익숙하지 않다면 익숙한 것을 사용하거나 <xref linkend="expressions"/>를 읽어봐라.
 			</para>
 
-			<programlisting language="java"><!-- select 'isbn' argument -->
+			<programlisting language="java"><!-- 'isbn' 인자를 선택한다 -->
 @Cacheable(value="books", <emphasis role="bold">key="#isbn"</emphasis>
 public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)
 
-<!-- select nested property of a certain argument -->
+<!-- 특정 인자의 중첩 프로퍼티를 선택한다 -->
 @Cacheable(value="books", <emphasis role="bold">key="#isbn.rawNumber"</emphasis>)
 public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)
 
-<!-- invoke arbitrary method using certain arguments -->
+<!-- 특정 인사로 임의의 메서드를 호출한다 -->
 @Cacheable(value="books", <emphasis role="bold">key="T(someType).hash(#isbn)"</emphasis>)
 public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)</programlisting>
 
-			<para>The snippets above, show how easy it is to select a certain argument, one of its properties or even an arbitrary (static) method.</para>
+			<para>위의 코드는 특정 인자나 그 속성이나 임의의 (stsatic) 메서드를 선택하기가 얼마나 쉬운지 보여준다.</para>
 		</section>
 
 		<section id="cache-annotations-cacheable-condition">
-			<title>Conditional caching</title>
+			<title>조건부 캐싱</title>
 
-			<para>Sometimes, a method might not be suitable for caching all the time (for example, it might depend on the given arguments). The cache annotations support such functionality
-			through the <literal>conditional</literal> parameter which takes a <literal>SpEL</literal> expression that is evaluated to either <literal>true</literal> or <literal>false</literal>.
-			If <literal>true</literal>, the method is cached - if not, it behaves as if the method is not cached, that is executed every since time no matter what values are in the cache or what
-			arguments are used. A quick example - the following method will be cached, only if the argument <literal>name</literal> has a length shorter then 32:</para>
+			<para>때로는 메서드를 항상 캐싱하는 것이 적합하지 않을 수 있다.(예를 들어 인자에 따라 다를 수 있다.)
+			캐시 어노테이션은 <literal>true</literal>나 <literal>false</literal>가 되는
+			<literal>SpEL</literal> 표현식을 받는 <literal>conditional</literal> 파라미터로 이러한
+			기능을 지원한다. 이 표현식이 <literal>true</literal>이면 메서드를 캐시하고
+			<literal>false</literal>이면 메서드가 캐시 되지 않은 것처럼 동작해서 해당 값이 캐시가 되었든
+			인자가 무엇이든 간에 매번 실행된다. 다음은 <literal>name</literal>인 32자보다 적은 경우에만
+			캐시 되는 간단한 예시이다.</para>
 
 			<programlisting language="java"><![CDATA[@Cacheable(value="book", condition="#name.length < 32")
 public Book findBook(String name)]]></programlisting>
 		</section>
 
 		<section id="cache-spel-context">
-			<title>Available caching <literal>SpEL</literal> evaluation context</title>
+			<title>사용 가능한 캐싱 <literal>SpEL</literal> 평가 컨텍스트(evaluation context) </title>
 
-			<para>Each <literal>SpEL</literal> expression evaluates again a dedicated <literal><link linkend="expressions-language-ref">context</link></literal>. In addition
-			to the build in parameters, the framework provides dedicated caching related metadata such as the argument names. The next table lists the items made available to the context
-			so one can use them for key and conditional(see next section) computations:</para>
+			<para>각 <literal>SpEL</literal> 표현식은 전용
+			<literal><link linkend="expressions-language-ref">context</link></literal>를
+			다시 평가한다. 파라미터를 구성하는 것에 추가로 프레임워크는 인자 이름 같은 메타데이터와 관련된
+			전용 캐시를 제공한다. 다음 표는 컨텍스트에서 사용 가능한 요소가 나와 있어서 키와 조건부(다음 섹션 참고)
+			계산에 사용할 수 있다.</para>
 
 			<table id="cache-spel-context-tbl" pgwide="1">
-					<title>Cache SpEL available metadata</title>
+					<title>Cache SpEL에서 사용 가능한 메타데이터</title>
 					<tgroup cols="4">
 					<colspec align="center" />
 					<thead>
 						<row>
-						<entry>Name</entry>
-						<entry>Location</entry>
-						<entry>Description</entry>
-						<entry>Example</entry>
+						<entry>이름</entry>
+						<entry>위치</entry>
+						<entry>설명</entry>
+						<entry>예시</entry>
 						</row>
 					</thead>
 					<tbody>
 						<row>
 							<entry>methodName</entry>
 							<entry>root object</entry>
-							<entry>The name of the method being invoked</entry>
+							<entry>호출되는 메서드의 이름</entry>
 							<entry><screen>#root.methodName</screen></entry>
 						</row>
 						<row>
 							<entry>method</entry>
 							<entry>root object</entry>
-							<entry>The method being invoked</entry>
+							<entry>호출되는 메서드</entry>
 							<entry><screen>#root.method.name</screen></entry>
 						</row>
 						<row>
 							<entry>target</entry>
 							<entry>root object</entry>
-							<entry>The target object being invoked</entry>
+							<entry>호출되는 대상 객체</entry>
 							<entry><screen>#root.target</screen></entry>
 						</row>
 						<row>
 							<entry>targetClass</entry>
 							<entry>root object</entry>
-							<entry>The class of the target being invoked</entry>
+							<entry>호출되는 대상 클래스</entry>
 							<entry><screen>#root.targetClass</screen></entry>
 						</row>
 						<row>
 							<entry>args</entry>
 							<entry>root object</entry>
-							<entry>The arguments (as array) used for invoking the target</entry>
+							<entry>대상을 호출하는데 사용한 인자(배열)</entry>
 							<entry><screen>#root.args[0]</screen></entry>
 						</row>
 						<row>
 							<entry>caches</entry>
 							<entry>root object</entry>
-							<entry>Collection of caches against which the current method is executed</entry>
+							<entry>현재 실행된 메서드 캐시의 컬렉션</entry>
 							<entry><screen>#root.caches[0].name</screen></entry>
 						</row>
 						<row>
 							<entry><emphasis>argument name</emphasis></entry>
 							<entry>evaluation context</entry>
-							<entry>Name of any of the method argument. If for some reason the names are not available (ex: no debug information),
-							the argument names are also available under the <literal><![CDATA[a<#arg>]]></literal> where
-							<emphasis><![CDATA[#arg]]></emphasis> stands for the argument index (starting from 0).</entry>
-							<entry><screen>iban</screen> or <screen>a0</screen> (one can also use <screen>p0</screen> or <literal><![CDATA[p<#arg>]]></literal> notation as an alias).</entry>
+							<entry>메서드 인자의 이름. 어떤 이유로든 이름을 사용할 수 없다면(예: 디버깅 정보가 없는 경우)
+							<literal><![CDATA[a<#arg>]]></literal>에서 인자 이름을 사용할 수도 있고
+							<emphasis><![CDATA[#arg]]></emphasis>은 (0부터 시작하는) 인자의 인덱스를 의미한다.</entry>
+							<entry><screen>iban</screen>나 <screen>a0</screen> (<screen>p0</screen>를 사용하거나 별칭으로 <literal><![CDATA[p<#arg>]]></literal> 형식을 사용할 수 있다.).</entry>
 						</row>
 					</tbody>
 				 </tgroup>
@@ -221,48 +237,56 @@ public Book findBook(String name)]]></programlisting>
 	</section>
 
 	<section id="cache-annotations-put">
-		<title><literal>@CachePut</literal> annotation</title>
+		<title><literal>@CachePut</literal> 어노테이션</title>
 
-		<para>For cases where the cache needs to be updated without interferring with the method execution, one can use the <literal>@CachePut</literal> annotation. That is, the method will always
-		be executed and its result placed into the cache (according to the <literal>@CachePut</literal> options). It supports the same options as <literal>@Cacheable</literal> and should be used
-		for cache population rather then method flow optimization.</para>
+		<para>메서드 실행에 영향을 주지 않고 캐시를 갱신해야 하는 경우 <literal>@CachePut</literal>
+		어노테이션을 사용할 수 있다. 즉, 메서드를 항상 실행하고 그 결과를 (<literal>@CachePut</literal>
+		옵션에 따라) 캐시에 보관한다. <literal>@CachePut</literal>은 <literal>@Cacheable</literal>와
+		같은 옵션을 지원하고 메서드 흐름 최적화보다는 캐시 생성(population)에 사용해야 한다.</para>
 
-		<para>Note that using <literal>@CachePut</literal> and <literal>@Cacheable</literal> annotations on the same method is generaly discouraged because they have different behaviours. While the latter
-		causes the method execution to be skipped by using the cache, the former forces the execution in order to execute a cache update. This leads to unexpected behaviour and with the exception of specific
-		corner-cases (such as annotations having conditions that exclude them from each other), such declarations should be avoided.</para>
+		<para>같은 메서드에 <literal>@CachePut</literal>와 <literal>@Cacheable</literal> 어노테이션을
+		사용하는 것은 둘이 다른 동작을 가지므로 보통 권장하지 않는다. <literal>@Cacheable</literal>는 캐시를
+		사용해서 메서드 실행을 건너뛰고 <literal>@CachePut</literal>는 캐시 갱신을 하려고 실행을 강제한다.
+		이는 특정한 코너케이스가 아니라면(두 어노테이션이 서로 조건이 겹치지 않는 경우) 의도치 않은 동작이 발생할 수
+		있어서 이러한 선언은 하지 말아야 한다.</para>
 	</section>
 
 	<section id="cache-annotations-evict">
-		<title><literal>@CacheEvict</literal> annotation</title>
+		<title><literal>@CacheEvict</literal> 어노테이션</title>
 
-		<para>The cache abstraction allows not just population of a cache store but also eviction. This process is useful for removing stale or unused data from the cache. Opposed to
-		<literal>@Cacheable</literal>, annotation <literal>@CacheEvict</literal> demarcates methods that perform cache <emphasis>eviction</emphasis>, that is methods that act as triggers
-		for removing data from the cache. Just like its sibling, <literal>@CacheEvict</literal> requires one to specify one (or multiple) caches that are affected by the action, allows a
-		key or a condition to be specified but in addition, features an extra parameter <literal>allEntries</literal> which indicates whether a cache-wide eviction needs to be performed
-		rather then just an entry one (based on the key):</para>
+		<para>캐시 추상화로 캐시 스토어의 생성 뿐만 아니라 제거도 할 수 있다. 이 과정은 캐시에서 오래되거나 사용하지 않는 데이터를 제거하는데
+		유용하다. <literal>@Cacheable</literal>와는 달리 <literal>@CacheEvict</literal> 어노테이션은 캐시를
+		<emphasis>제거(eviction)</emphasis>하는 메서드를 구분하는데 즉, 캐시에서 데이터를 제거하는 트리거로 동작하는 메서드다.
+		다른 캐시 어노테이션과 마찬가지로 <literal>@CacheEvict</literal>는 동작할 때 영향을 끼치는 하나 이상의 캐시를 지정해야 한다.
+		<literal>@CacheEvict</literal>에서 키나 조건을 지정해야 할 수 있지만 딱 하나의 엔트리(키에 기반을 둔)가 아니라 제거를 할 캐시의
+		범위를 나타내는 <literal>allEntries</literal> 파라미터를 추가로 사용할 수 있다.</para>
 
 		<programlisting language="java"><![CDATA[@CacheEvict(value = "books", allEntries=true)
 public void loadBooks(InputStream batch)]]></programlisting>
 
-		<para>This option comes in handy when an entire cache region needs to be cleared out - rather then evicting each entry (which would take a long time since it is inefficient),
-		all the entires are removed in one operation as shown above. Note that the framework will ignore any key specified in this scenario as it does not apply (the entire cache is evicted not just
-		one entry).</para>
+		<para>한 지역의 전체 캐시를 모두 지워야 할 때 이 옵션을 편리하게 사용할 수 있다. 각 엔트리를 하나씩 지우는 것이
+		아니라(비효율적이라 시간이 오래 걸린다) 위 예제처럼 한 번에 모든 엔트리를 제거한다. 이 시나리오에서 지정한 키에 적용되지
+		않는 것은 프레임워크가 무시할 것이다.(한 엔트리가 아니라 전체 캐시가 제거된다)</para>
 
-		<para>One can also indicate whether the eviction should occur after (the default) or before the method executes through the <literal>beforeInvocation</literal> attribute.
-		The former provides the same semantics as the rest of the annotations - once the method completes successfully, an action (in this case eviction) on the cache is executed. If the method does not
-		execute (as it might be cached) or an exception is thrown, the eviction does not occur. The latter (<literal>beforeInvocation=true</literal>) causes the eviction to occur always, before the method
-		is invoked - this is useful in cases where the eviction does not need to be tied to the method outcome.</para>
+		<para><literal>beforeInvocation</literal> 속성으로 메서드 실행 이후(기본값)나 이전에 제거를 해야 하는 지를 지정할 수도 있다.
+		메서드 실행 이후에 실행되는 경우는 다른 어노테이션과 같은 의미를 가져서 메서드가 성공적으로 완료되면 캐시에서 동작(여기서는 제거)이
+		실행된다. 메서드가 실행되지 않거나(캐시 되어서) 예외가 던져지면 제거가 실행되지 않는다. 메서드 실행 이전에 실행되는
+		경우(<literal>beforeInvocation=true</literal>)에는 메서드가 호출되기 전에 항상 제거가 발생해서 제거가
+		메서드 결과에 의존하지 않는 경우에 유용하다.</para>
 
-		<para>It is important to note that void methods can be used with <literal>@CacheEvict</literal> - as the methods act as triggers, the return values are ignored (as they don't interact with
-		the cache) - this is not the case with <literal>@Cacheable</literal> which adds/update data into the cache and thus requires a result.</para>
+		<para><literal>@CacheEvict</literal>를 void 메서드에 사용할 수 있다는 것은 중요한 부분이다. 메서드가 트리거로 동작하므로
+		반환값은 무시한다.(캐시와 상호작용하지 않으므로) 이는 캐시에 데이터를 넣거나 갱신해서 그 결과가 필요한
+		<literal>@Cacheable</literal>와는 다른 점이다.</para>
 	</section>
 
 	<section id="cache-annotations-caching">
-		<title><literal>@Caching</literal> annotation</title>
+		<title><literal>@Caching</literal> 어노테이션</title>
 
-		<para>There are cases when multiple annotations of the same type, such as <literal>@CacheEvict</literal> or <literal>@CachePut</literal> need to be specified, for example because the condition or the key
-		expression is different between different caches. Unfortunately Java does not support such declarations however there is a workaround - using a <emphasis>enclosing</emphasis> annotation, in this case,
-		<literal>@Caching</literal>. <literal>@Caching</literal> allows multiple nested <literal>@Cacheable</literal>, <literal>@CachePut</literal> and <literal>@CacheEvict</literal> to be used on the same method:</para>
+		<para><literal>@CacheEvict</literal>나 <literal>@CachePut</literal>처럼 같은 계열의 어노테이션을 여러 개
+		지정해야 하는 경우가 있는데 예를 들어 조건이나 키 표현식이 캐시에 따라 다른 경우이다. 안타깝게도 자바는 이러한 선언을 지원하지 않지만
+		<emphasis>감싸진(enclosing)</emphasis> 어노테이션을 사용해서(이 경우에는 <literal>@Caching</literal>) 우회할 수 있다.
+		<literal>@Caching</literal>에서 중첩된 <literal>@Cacheable</literal>, <literal>@CachePut</literal>,
+		<literal>@CacheEvict</literal>를 같은 메서드에 다수 사용할 수 있다.</para>
 
 		<programlisting language="java"><![CDATA[@Caching(evict = { @CacheEvict("primary"), @CacheEvict(value = "secondary", key = "#p0") })
 public Book importBooks(String deposit, Date date)]]></programlisting>
@@ -270,11 +294,11 @@ public Book importBooks(String deposit, Date date)]]></programlisting>
 	</section>
 
 	<section id="cache-annotation-enable">
-		<title>Enable caching annotations</title>
+		<title>캐시 어노테이션 활성화하기</title>
 
-		<para>It is important to note that even though declaring the cache annotations does not automatically triggers their actions - like many things in Spring, the feature has to be declaratively
-		enabled (which means if you ever suspect caching is to blame, you can disable it by removing only one configuration line rather then all the annotations in your code). In practice, this
-		translates to one line that informs Spring that it should process the cache annotations, namely:</para>
+		<para>캐시 어노테이션을 선언하는 것만으로 자동으로 동작이 실행되지 않는다는 점은 중요하다. 스프링의 다른 기능처럼 선언적으로
+		기능을 활성화해야 한다.(이는 캐시에 문제가 있다고 의심된다면 코드의 모든 어노테이션을 지우는 대신 설정에서 딱 한 줄만 지워서
+		캐시를 비활성화할 수 있다는 의미이다.) 실제로는 이 선언으로 스프링이 캐시 어노테이션을 처리하도록 한다.</para>
 
 		<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"]]>
 	<emphasis role="bold">xmlns:cache="http://www.springframework.org/schema/cache"</emphasis><![CDATA[
@@ -283,22 +307,21 @@ public Book importBooks(String deposit, Date date)]]></programlisting>
 	<emphasis role="bold"><![CDATA[<cache:annotation-driven />]]></emphasis>
 <![CDATA[</beans>]]></programlisting>
 
-		<para>The namespace allows various options to be specified that influence the way the caching behaviour is added to the application through AOP. The configuration is similar (on purpose)
-		with that of <literal><ulink url="tx-annotation-driven-settings">tx:annotation-driven</ulink></literal>:
+		<para>애플리케이션에 추가된 캐시의 동작 방식을 AOP로 변경할 다양한 옵션을 네임스페이스로 지정할 수 있다. 설정은
+		<literal><ulink url="tx-annotation-driven-settings">tx:annotation-driven</ulink></literal>의 설정과 (의도적으로) 비슷하다.
 		</para>
 
 		<para><table id="cache-annotation-driven-settings">
-			<title><literal>&lt;cache:annotation-driven/&gt;</literal>
-			settings</title>
+			<title><literal>&lt;cache:annotation-driven/&gt;</literal> 설정</title>
 
 			<tgroup cols="3">
 			<thead>
 				<row>
-				<entry>Attribute</entry>
+				<entry>속성</entry>
 
-				<entry>Default</entry>
+				<entry>기본값</entry>
 
-				<entry>Description</entry>
+				<entry>설명</entry>
 				</row>
 			</thead>
 
@@ -308,10 +331,8 @@ public Book importBooks(String deposit, Date date)]]></programlisting>
 
 				<entry>cacheManager</entry>
 
-				<entry><para>Name of cache manager to use. Only required
-				if the name of the cache manager is not
-				<literal>cacheManager</literal>, as in the example
-				above.</para></entry>
+				<entry><para>사용할 캐시 관리자의 이름. 위 예제처럼 캐시 관리자의 이름이
+				<literal>cacheManager</literal>가 아닐 때만 지정한다.</para></entry>
 				</row>
 
 				<row>
@@ -319,17 +340,13 @@ public Book importBooks(String deposit, Date date)]]></programlisting>
 
 				<entry>proxy</entry>
 
-				<entry><para>The default mode "proxy" processes annotated
-				beans to be proxied using Spring's AOP framework (following
-				proxy semantics, as discussed above, applying to method calls
-				coming in through the proxy only). The alternative mode
-				"aspectj" instead weaves the affected classes with Spring's
-				AspectJ caching aspect, modifying the target class byte
-				code to apply to any kind of method call. AspectJ weaving
-				requires spring-aspects.jar in the classpath as well as
-				load-time weaving (or compile-time weaving) enabled. (See
-				<xref linkend="aop-aj-ltw-spring" /> for details on how to set
-				up load-time weaving.)</para></entry>
+				<entry><para>기본값인 "proxy" 모드는 스프링의 AOP 프레임워크로 어노테이션이
+				붙은 빈을 프락시한다.(프락시의 개념에 맞게 프락시를 통해서 오늘 메서드 호출에만
+				적용한다.) 다른 모드인 "aspectj"는 영향받은 클래스를 스프링의 AspectJ 캐싱 관점으로
+				위빙한다. (대상 클래스의 바이트코드를 메서드 호출에 적용되도록 수정한다.) AspectJ
+				위빙을 사용하려면 로딩 타임 위빙(또는 컴파일 타임 위빙) 활성화와 마찬가지로 클래스패스에
+				spring-aspects.jar가 있어야 한다.(로드 타임 위빙을 설정하는 방법은
+				<xref linkend="aop-aj-ltw-spring" />를 참고해라.)</para></entry>
 				</row>
 
 				<row>
@@ -337,16 +354,14 @@ public Book importBooks(String deposit, Date date)]]></programlisting>
 
 				<entry>false</entry>
 
-				<entry><para>Applies to proxy mode only. Controls what type of
-				caching proxies are created for classes annotated with
-				the <interfacename>@Cacheable</interfacename> or <interfacename>@CacheEvict</interfacename> annotations.
-				If the <literal>proxy-target-class</literal> attribute is set
-				to <literal>true</literal>, then class-based proxies are
-				created. If <literal>proxy-target-class</literal> is
-				<literal>false</literal> or if the attribute is omitted, then
-				standard JDK interface-based proxies are created. (See <xref
-				linkend="aop-proxying" /> for a detailed examination of the
-				different proxy types.)</para></entry>
+				<entry><para>proxy 모드에만 적용된다. <interfacename>@Cacheable</interfacename>나
+				<interfacename>@CacheEvict</interfacename> 어노테이션이 붙은 클래스에 어떤
+				종류의 캐싱 프락시를 생성할지를 제어한다. <literal>proxy-target-class</literal>
+				속성을 <literal>true</literal>로 설정하면 클래스에 기반을 둔 프락시를 생성한다.
+				<literal>proxy-target-class</literal>가 <literal>false</literal>이거나
+				<literal>proxy-target-class</literal> 속성을 생략하면 표준 JDK 인터페이스에
+				기반을 둔 프락시를 생성한다. (다양한 프락시 타입에 대한 자세한 내용은
+				<xref linkend="aop-proxying" />를 참고해라.)</para></entry>
 				</row>
 
 				<row>
@@ -354,80 +369,69 @@ public Book importBooks(String deposit, Date date)]]></programlisting>
 
 				<entry>Ordered.LOWEST_PRECEDENCE</entry>
 
-				<entry><para>Defines the order of the cache advice that
-				is applied to beans annotated with
-				<interfacename>@Cacheable</interfacename> or <interfacename>@CacheEvict</interfacename>.
-				(For more
-				information about the rules related to ordering of AOP advice,
-				see <xref linkend="aop-ataspectj-advice-ordering" />.) No
-				specified ordering means that the AOP subsystem determines the
-				order of the advice.</para></entry>
+				<entry><para><interfacename>@Cacheable</interfacename>나
+				<interfacename>@CacheEvict</interfacename> 어노테이션이 붙은 빈에 적용된
+				캐시 어드바이스의 순서를 정의한다.(AOP 어드바이스 순서에 관한 규칙은
+				<xref linkend="aop-ataspectj-advice-ordering" />를 참고해라.)
+				순서를 지정하지 않으면 AOP 하위시스템이 어드바이스의 순서를 결정한다.</para></entry>
 				</row>
 			</tbody>
 			</tgroup>
 		</table></para>
 
 		<note>
-		<para><literal>&lt;cache:annotation-driven/&gt;</literal> only looks for
-		<interfacename>@Cacheable/@CacheEvict</interfacename> on beans in the same
-		application context it is defined in. This means that, if you put
-		<literal>&lt;cache:annotation-driven/&gt;</literal> in a
-		<interfacename>WebApplicationContext</interfacename> for a
-		<classname>DispatcherServlet</classname>, it only checks for
-		<interfacename>@Cacheable/@CacheEvict</interfacename> beans in your
-		controllers, and not your services. See <xref
-		linkend="mvc-servlet" /> for more information.</para>
+		<para><literal>&lt;cache:annotation-driven/&gt;</literal>는 선언된 애플리케이션
+		컨텍스트에서 빈에 붙은 <interfacename>@Cacheable/@CacheEvict</interfacename>만
+		찾는다. 즉, <classname>DispatcherServlet</classname>의
+		<interfacename>WebApplicationContext</interfacename>에
+		<literal>&lt;cache:annotation-driven/&gt;</literal>를 선언하면 서비스는 빼고
+		컨트롤러에서만 <interfacename>@Cacheable/@CacheEvict</interfacename> 빈을 확인한다.
+		자세한 내용은 <xref linkend="mvc-servlet" />를 참고해라.</para>
 		</note>
 
 		<sidebar>
-		<title>Method visibility and
+		<title>메서드 가시성(visibility)과
 		<interfacename>@Cacheable/@CachePut/@CacheEvict</interfacename></title>
 
-		<para>When using proxies, you should apply the
-		<interfacename>@Cache*</interfacename> annotations only to
-		methods with <emphasis>public</emphasis> visibility. If you do
-		annotate protected, private or package-visible methods with these annotations,
-		no error is raised, but the annotated method does not exhibit the configured
-		caching settings. Consider the use of AspectJ (see below) if you
-		need to annotate non-public methods as it changes the bytecode itself.</para>
+		<para>프락시를 사용할 때 <emphasis>public</emphasis> 가시성을 가진 메서드에만
+		<interfacename>@Cache*</interfacename> 어노테이션을 적용해야 한다. protected,
+		private, package-visible 메서드에 이러한 어노테이션을 붙이면 에러는 발생하지 않지만
+		어노테이션이 붙은 메서드에는 구성한 캐시 설정이 보이지 않는다. public이 아닌 메서드에
+		어노테이션을 사용해야 한다면 AspectJ(아래 참고)를 고려해 봐라.(AspectJ는 바이트코드
+		자체를 바꾼다.)</para>
 		</sidebar>
 
 		<para><tip>
-			<para>Spring recommends that you only annotate concrete classes (and
-			methods of concrete classes) with the
-			<interfacename>@Cache*</interfacename> annotation, as opposed
-			to annotating interfaces. You certainly can place the
-			<interfacename>@Cache*</interfacename> annotation on an
-			interface (or an interface method), but this works only as you would
-			expect it to if you are using interface-based proxies. The fact that
-			Java annotations are <emphasis>not inherited from interfaces</emphasis>
-			means that if you are using class-based proxies
-			(<literal>proxy-target-class="true"</literal>) or the weaving-based
-			aspect (<literal>mode="aspectj"</literal>), then the caching
-			settings are not recognized by the proxying and weaving
-			infrastructure, and the object will not be wrapped in a
-			caching proxy, which would be decidedly
-			<emphasis>bad</emphasis>.</para>
+			<para>스프링은 인터페이스에 어노테이션을 붙이는 것과는 반대로 구현(concrete)
+			클래스에만(구현 클래스의 메서드) <interfacename>@Cache*</interfacename> 어노테이션을
+			붙이기를 권장한다. 물론 인터페이스에(혹은 인터페이스 메서드)
+			<interfacename>@Cache*</interfacename> 어노테이션을 붙일 수 있지만, 인터페이스에
+			기반을 둔 프락시를 사용할 때만 원하는 대로 동작한다. Java 어노테이션이
+			<emphasis>인터페이스를 상속받지 않는다는</emphasis> 점은 클래스나 위빙에 기반을 둔
+			프락시(<literal>proxy-target-class="true"</literal>나
+			<literal>mode="aspectj"</literal>)를 사용한다면 프락시나 위빙 인프라가 캐시
+			설정을 인식하지 못한다는 것을 의미힌다. 그리고 해당 객체는 캐시 프락시로 감싸지지 않을 것이므로
+			이는 확실히 <emphasis>좋지 않다</emphasis>.</para>
 		</tip></para>
 
 		<note>
-		<para>In proxy mode (which is the default), only external method calls
-		coming in through the proxy are intercepted. This means that
-		self-invocation, in effect, a method within the target object calling
-		another method of the target object, will not lead to an actual
-		caching at runtime even if the invoked method is marked with
-		<interfacename>@Cacheable</interfacename> - considering using the aspectj mode in this case.</para>
+		<para>프락시 모드(기본값이다)에서는 프락시로 호출되는 외부 메서드만 가로챌 수 있다.
+		즉, 대상 객체 내의 메서드가 대상 객체의 다른 메서드를 호출하는 자기호출(self-invocation)은
+		해당 메서드에 <interfacename>@Cacheable</interfacename> 어노테이션이 붙어있더라도
+		런타임에서 실제 캐싱 되지 않을 것이다.(이러면 aspectj의 사용을 고려해 봐라.)</para>
 		</note>
 	</section>
 
 	<section id="cache-annotation-stereotype">
-		<title>Using custom annotations</title>
+		<title>커스텀 어노테이션의 사용</title>
 
-		<para>The caching abstraction allows one to use her own annotations to identify what method trigger cache population or eviction. This is quite handy as a template mechanism as it eliminates
-		the need to duplicate cache annotation declarations (especially useful if the key or condition are specified) or if the foreign imports (<literal>org.springframework</literal>) are not allowed
-		in your code base. Similar to the rest of the <link linkend="beans-stereotype-annotations">stereotype</link> annotations, both <literal>@Cacheable</literal> and <literal>@CacheEvict</literal>
-		can be used as meta-annotations, that is annotations that can annotate other annotations. To wit, let us replace a common <literal>@Cacheable</literal> declaration with our own, custom
-		annotation:
+		<para>캐싱 추상화로 어떤 메서드가 캐시 생성과 제거를 실행하는지 확인하기 위한 자신만의 어노테이션을 사용할 수 있다.
+		이는 캐시 어노테이션을 중복으로 설정할 필요가 없어져서(특히 키나 조건을 지정할 때 유용하다) 템플릿 메커니즘처럼
+		아주 편리하고 외부 임포트(<literal>org.springframework</literal>)가 코드에서 사용할 수 없는 경우에 유용하다.
+		<link linkend="beans-stereotype-annotations">stereotype</link> 어노테이션과 유사하게
+		<literal>@Cacheable</literal>와 <literal>@CacheEvict</literal> 어노테이션 모두 다른 어노테이션에
+		어노테이션을 붙일 수 있는 메타 어노테이션으로 사용할 수 있다. 즉, <literal>@Cacheable</literal> 선언을
+		커스텀 어노테이션을 대체할 수 있다.
 		</para>
 
 		<programlisting language="java"><![CDATA[@Retention(RetentionPolicy.RUNTIME)
@@ -436,32 +440,33 @@ public Book importBooks(String deposit, Date date)]]></programlisting>
 public @interface SlowService {
 }]]></programlisting>
 
-		<para>Above, we have defined our own <literal>SlowService</literal> annotation which itself is annotated with <literal>@Cacheable</literal> - now we can replace the following code:</para>
+		<para>앞의 코드에서 <literal>@Cacheable</literal> 어노테이션이 붙어있는 <literal>SlowService</literal> 커스텀 어노테이션을 정의했다. 이제 다음 코드를 바꿀 수 있다.</para>
 
 		<programlisting language="java"><![CDATA[@Cacheable(value="books", key="#isbn")
 public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)]]></programlisting>
 
-		<para>with:</para>
+		<para>이 코드를 다음과 같이 바꿀 수 있다.</para>
 
 		<programlisting language="java"><![CDATA[@SlowService
 public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)]]></programlisting>
 
-		<para>Even though <literal>@SlowService</literal> is not a Spring annotation, the container automatically picks up its declaration at runtime and understands its meaning. Note that as
-		mentined <link linkend="cache-annotation-enable">above</link>, the annotation-driven behaviour needs to be enabled.</para>
+		<para><literal>@SlowService</literal>가 스프링 어노테이션이 아님에도 컨테이너가 런타임시에 자동으로 어노테이션 선언을 찾아서
+		그 의미를 이해할 수 있다. <link linkend="cache-annotation-enable">앞에서</link> 얘기한 대로 어노테이션 주도 동작을 활성화해야 한다.</para>
 	</section>
 	</section>
 
 	<section id="cache-declarative-xml">
-		<title>Declarative XML-based caching</title>
+		<title>선언적 XML에 기반을 둔 캐싱</title>
 
-		<para>If annotations are not an option (no access to the sources or no external code), one can use XML for declarative caching. So instead of annotating the methods for caching, one specifies
-		the target method and the caching directives externally (similar to the declarative transaction management <link linkend="transaction-declarative-first-example">advice</link>). The previous example
-		can be translated into:</para>
+		<para>어노테이션이 선택사항이 아니고(소스에 접근권한이 없거나 외부 코드가 없는 경우) 선언적인 캐싱에 XML을 사용할 수 있다.
+		그래서 캐싱하려고 메서드에 어노테이션을 붙이는 대신 대상 메서드와 캐싱 지시어를 외부에서 지정한다.(선언적인 트랜잭션 관리
+		<link linkend="transaction-declarative-first-example">advice</link>와 유사하다) 앞의 예제를 다음과
+		같이 바꿀 수 있다.</para>
 
 		<programlisting language="xml"><![CDATA[<!-- the service we want to make cacheable -->
 <bean id="bookService" class="x.y.service.DefaultBookService"/>
 
-<!-- cache definitions -->
+<!-- 캐시 정의 -->
 <cache:advice id="cacheAdvice" cache-manager="cacheManager">
 	<cache:caching cache="books">
 		<cache:cacheable method="findBook" key="#isbn"/>
@@ -469,42 +474,50 @@ public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)]]><
 	</cache:caching>
 </cache:advice>
 
-<!-- apply the cacheable behaviour to all BookService interfaces -->
+<!-- 모든 BookService 인터페이스에 cacheable 동작을 적용한다 -->
 <aop:config>
 	<aop:advisor advice-ref="cacheAdvice" pointcut="execution(* x.y.BookService.*(..))"/>
 </aop:config>
 ...
-// cache manager definition omitted
+// 캐시 관리자 정의는 생략한다
 ]]>
 		</programlisting>
 
-		<para>In the configuration above, the <literal>bookService</literal> is made cacheable. The caching semantics to apply are encapsulated in the <literal>cache:advice</literal> definition which
-		instructs method <literal>findBooks</literal> to be used for putting data into the cache while method <literal>loadBooks</literal> for evicting data. Both definitions are working against the
-		<literal>books</literal> cache.</para>
+		<para>앞의 설정에서 <literal>bookService</literal>는 캐싱이 가능하다. 여기서 적용되는 캐시 동작은
+		<literal>cache:advice</literal> 정의에 은닉화되어 있어서 <literal>loadBooks</literal> 메서드가
+		데이터를 제거하는 동안 캐시에 데이터를 보관하는데 <literal>findBooks</literal> 메서드를 사용하도록 한다.
+		두 정의 모두 <literal>books</literal> 캐시에 동작한다.</para>
 
-		<para>The <literal>aop:config</literal> definition applies the cache advice to the appropriate points in the program by using the AspectJ pointcut expression (more information is available
-		in <xref linkend="aop" />). In the example above, all methods from the <interfacename>BookService</interfacename> are considered and the cache advice applied to them.</para>
+		<para><literal>aop:config</literal> 정의는 AspectJ 포인트컷 표현식(자세한 내용은
+		<xref linkend="aop" />에 있다.)을 사용해서 프로그램의 적절한 시점에 캐시 어드바이스를 적용한다. 앞의 예제에서
+		<interfacename>BookService</interfacename>의 모든 메서드를 검토해서 캐시 어드바이스를 적용한다.</para>
 
-		<para>The declarative XML caching supports all of the annotation-based model so moving between the two should be fairly easy - further more both can be used inside the same application.
-		The XML based approach does not touch the target code however it is inherently more verbose; when dealing with classes with overloaded methods that are targeted for caching, identifying the
-		proper methods does take an extra effort since the <literal>method</literal> argument is not a good discriminator - in these cases, the AspectJ pointcut can be used to cherry pick the target
-		methods and apply the appropriate caching functionality. Howeve through XML, it is easier to apply a package/group/interface-wide caching (again due to the AspectJ poincut) and to create
-		template-like definitions (as we did in the example above by defining the target cache through the <literal>cache:definitions </literal><literal>cache</literal> attribute).
+		<para>선언적인 XML 캐싱이 어노테이션에 기반을 둔 모든 모델을 지원하므로 어노테이션과 XML 간의 변경은 아주 쉽다.
+		게다가 한 애플리케이션 내에서 둘을 함께 사용할 수도 있다. XML에 기반을 둔 접근방법은 대상 코드를 건드리지 않지만, XML의
+		특성상 약간 더 장황하다. 캐싱 대상이 되는 클래스의 오버 로딩된 메서드를 다루는 경우 <literal>method</literal> 인자가
+		적절한 식별자가 아니므로 적합한 메서드를 구별하려면 추가적인 노력이 필요하다. 이러면 AspectJ 포인트컷으로 대상 메서드를
+		골라내서 적절한 캐싱 기능을 적용할 수 있다. 하지만 XML을 사용하면 패키지/그룹/인터페이스 범위의 캐싱을 적용하고(AspectJ
+		포인트컷 때문에) 템플릿같은 정의를 생성하기가(앞의 예제에서
+		<literal>cache:definitions </literal><literal>cache</literal> 속성으로 대상 캐시를 정의한 것처럼) 더 쉽다.
 		</para>
 	</section>
 
 	<section id="cache-store-configuration">
-	<title>Configuring the cache storage</title>
+	<title>캐시 스토리지 구성</title>
 
-	<para>Out of the box, the cache abstraction provides integration with two storages - one on top of the JDK <interfacename>ConcurrentMap</interfacename> and one
-	for <ulink url="ehcache.org">ehcache</ulink> library. To use them, one needs to simply declare an appropriate <interfacename>CacheManager</interfacename> - an entity that controls and manages
-	<interfacename>Cache</interfacename>s and can be used to retrieve these for storage.</para>
+	<para>캐시 추상화는 JDK <interfacename>ConcurrentMap</interfacename>에 기반을 둔 스토리지와
+	<ulink url="ehcache.org">ehcache</ulink> 라이브러리의 스토리지와 통합할 수 있다. 이 스토리지를 사용하려면
+	<interfacename>CacheManager</interfacename>를 적절히 선언하면 된다.
+	<interfacename>CacheManager</interfacename>로 <interfacename>Cache</interfacename>를 제어하고
+	관리하고 스토리지에서 <interfacename>Cache</interfacename>를 가져와서 사용할 수 있다.</para>
 
 	<section id="cache-store-configuration-jdk">
-		<title>JDK <interfacename>ConcurrentMap</interfacename>-based <interfacename>Cache</interfacename></title>
+		<title>JDK <interfacename>ConcurrentMap</interfacename>에 기반을 둔 <interfacename>Cache</interfacename></title>
 
-		<para>The JDK-based <interfacename>Cache</interfacename> implementation resides under <literal>org.springframework.cache.concurrent</literal> package. It allows one to use <classname>
-		ConcurrentHashMap</classname> as a backing <interfacename>Cache</interfacename> store.</para>
+		<para>JDK에 기반을 둔 <interfacename>Cache</interfacename> 구현체는
+		<literal>org.springframework.cache.concurrent</literal> 패키지 아래 존재한다. 이 구현체로
+		<interfacename>Cache</interfacename> 스토어에 기반을 둔 <classname>ConcurrentHashMap</classname>를
+		사용할 수 있다.</para>
 
 	<programlisting language="xml"><![CDATA[<!-- generic cache manager -->
 <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
@@ -516,35 +529,40 @@ public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)]]><
 	</property>
 </bean>]]></programlisting>
 
-		<para>The snippet above uses the <classname>SimpleCacheManager</classname> to create a <interfacename>CacheManager</interfacename> for the two, nested <interfacename>Concurrent</interfacename>
-		<interfacename>Cache</interfacename> implementations named <emphasis>default</emphasis> and <emphasis>books</emphasis>.
-		Note that the names are configured directly for each cache.</para>
+		<para>앞의 코드는 <emphasis>default</emphasis>와 <emphasis>books</emphasis>라는 이름의 중첩된
+		<interfacename>Concurrent</interfacename> <interfacename>Cache</interfacename> 구현체를 위한
+		<interfacename>CacheManager</interfacename>를 생성하는데
+		<classname>SimpleCacheManager</classname>를 사용한다.
+		이름은 각 캐시에 직접 설정했다.</para>
 
-		<para>As the cache is created by the application, it is bound to its lifecycle, making it suitable for basic use cases, tests or simple applications. The cache scales well and is very fast
-		but it does not provide any management or persistence capabilities nor eviction contracts.</para>
+		<para>애플리케이션이 캐시를 생성하므로 캐시는 애플리케이션의 생명주기를 따른다. 이는 테스트나 간단한 애플리케이션 같은
+		기본적인 사용 사례에 적합하다. 이 캐시는 잘 확장되고 아주 빠르지만 어떤 관리도 제공하지 않고 보관 기능이나
+		제거 계약이 존재하지 않는다.</para>
 	</section>
 
 	<section id="cache-store-configuration-ehcache">
-		<title>Ehcache-based <interfacename>Cache</interfacename></title>
+		<title>Ehcache에 기반을 둔 <interfacename>Cache</interfacename></title>
 
-		<para>The Ehcache implementation is located under <literal>org.springframework.cache.ehcache</literal> package. Again, to use it, one simply needs to declare the appropriate
-		<interfacename>CacheManager</interfacename>:</para>
+		<para>Ehcache 구현체는 <literal>org.springframework.cache.ehcache</literal> 패키지 아래 있다. 마찬가지로
+		Ehcache 구현체를 사용하려면 <interfacename>CacheManager</interfacename>를 적절히 선언하면 된다.</para>
 
 		<programlisting language="xml"><![CDATA[<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/>
 
-<!-- Ehcache library setup -->
+<!-- Ehcache 라이브러리 설정 -->
 <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="ehcache.xml"/>]]></programlisting>
 
-		<para>This setup bootstraps ehcache library inside Spring IoC (through bean <literal>ehcache</literal>) which is then wired into the dedicated <interfacename>CacheManager</interfacename>
-		implementation. Note the entire ehcache-specific configuration is read from the resource <literal>ehcache.xml</literal>.</para>
+		<para>이 설정은 스프링 IoC 내에서 ehcache를 구동하고(<literal>ehcache</literal> 빈을 통해서) 전용
+		<interfacename>CacheManager</interfacename> 구현체에 연결한다. ehcache에 특화된 전체 설정은
+		<literal>ehcache.xml</literal> 리소스에서 읽는다.</para>
 	</section>
 
 	<section id="cache-store-configuration-noop">
-		<title>Dealing with caches without a backing store</title>
+		<title>기반 스토어없이 캐시 다루기</title>
 
-		<para>Sometimes when switching environments or doing testing, one might have cache declarations without an actual backing cache configured. As this is an invalid configuration, at runtime an
-		exception will be through since the caching infrastructure is unable to find a suitable store. In situations like this, rather then removing the cache declarations (which can prove tedious),
-		one can wire in a simple, dummy cache that performs no caching - that is, forces the cached methods to be executed every time:</para>
+		<para>때로는 환경을 바꾸거나 테스트를 할 때 실제 기반 캐시를 구성하지 않고 캐시를 설정해야 하는 경우가 있다.
+		이는 유효하지 않은 구성이므로 런타임시에 캐시 인프라가 적절한 스토어를 찾을 수 없어서 예외가 던져질 것이다. 이러한
+		경우 캐시 선언을 제거하는 대신(지루한 작업이다) 캐싱을 수행하지 않는 간단한 더비 캐시를 연결할 수 있다. 즉 캐시된
+		메서드가 매번 실행되도록 강제한다.</para>
 
 		<programlisting language="xml"><![CDATA[<bean id="cacheManager" class="org.springframework.cache.support.CompositeCacheManager">
 	<property name="cacheManagers"><list>
@@ -554,30 +572,36 @@ public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)]]><
 	<property name="addNoOpCache" value="true"/>
 </bean>]]></programlisting>
 
-		<para>The <literal>CompositeCacheManager</literal> above chains multiple <literal>CacheManager</literal>s and aditionally, through the <literal>addNoOpManager</literal> flag, adds a
-		<emphasis>no op</emphasis> cache that for all the definitions not handled by the configured cache managers. That is, every cache definition not found in either <literal>jdkCache</literal>
-		or <literal>gemfireCache</literal> (configured above) will be handled by the no op cache, which will not store any information causing the target method to be executed every time.
+		<para>앞의 <literal>CompositeCacheManager</literal>는 여러 <literal>CacheManager</literal>를
+		체이닝하고 있고 설정한 캐시 관리자가 다루지 않는 모든 정의에 <emphasis>no op</emphasis> 캐시를 추가한다.
+		(<literal>addNoOpManager</literal> 플래그로) 즉 (앞에서 설정한) <literal>jdkCache</literal>나
+		<literal>gemfireCache</literal>에서 찾지 못한 모든 캐시 정의는 no op 캐시로 다뤄서 아무런 정보를 저장하지
+		않아서 대상 메서드가 매번 실행되도록 한다.
 		</para>
 	</section>
 	</section>
 
 	<section id="cache-plug">
-	<title>Plugging-in different back-end caches</title>
+	<title>다른 백엔드 캐시에 연결하기(plugging-in)</title>
 
-	<para>Clearly there are plenty of caching products out there that can be used as a backing store. To plug them in, one needs to provide a <interfacename>CacheManager</interfacename> and
-	<interfacename>Cache</interfacename> implementation since unfortunately there is no available standard that we can use instead. This may sound harder then it is since in practice,
-	the classes tend to be simple <ulink url="http://en.wikipedia.org/wiki/Adapter_pattern">adapter</ulink>s that map the caching abstraction framework on top of the storage API as the <literal>ehcache</literal> classes can show.
-	Most <interfacename>CacheManager</interfacename> classes can use the classes in <literal>org.springframework.cache.support</literal> package, such as <classname>AbstractCacheManager</classname>
-	which takes care of the boiler-plate code leaving only the actual <emphasis>mapping</emphasis> to be completed. We hope that in time, the libraries that provide integration with Spring
-	can fill in this small configuration gap.</para>
+	<para>기반 저장소로 사용할 수 있는 많은 캐시 제품이 분명히 존재한다. 이를 연결하려면
+	<interfacename>CacheManager</interfacename>와 <interfacename>Cache</interfacename> 구현체를
+	제공해야 하지만 안타깝게도 사용할 수 있는 표준은 존재하지 않는다. 이는 <literal>ehcache</literal> 클래스가 보여주었듯
+	스토리지 API 상위의 캐시 추상화 프레임워크에 매핑되는 간단한
+	<ulink url="http://en.wikipedia.org/wiki/Adapter_pattern">adapter</ulink>가 되는 클래스여야 하므로
+	꽤 어려운 얘기로 들린다. <interfacename>CacheManager</interfacename> 클래스 대부분은 작성해야 할 실제
+	<emphasis>매핑</emphasis>만 남겨둔 보일러 플레이트 코드를 다루는 <classname>AbstractCacheManager</classname>와
+	같은 <literal>org.springframework.cache.support</literal> 패키지의 클래스를 사용할 수 있다. 스프링과의 통합을
+	제공하는 라이브러리가 이 약간의 설정 차이를 조만간 메꿔주기를 기대하고 있다.</para>
 	</section>
 
 	<section id="cache-specific-config">
-		<title>How can I set the TTL/TTI/Eviction policy/XXX feature?</title>
+		<title>TTL/TTI/Eviction policy/XXX 기능을 어떻게 설정하는가?</title>
 
-		<para>Directly through your cache provider. The cache abstraction is... well, an abstraction not a cache implementation. The solution you are using might support various data policies and different
-		topologies which other solutions do not (take for example the JDK <literal>ConcurrentHashMap</literal>) - exposing that in the cache abstraction would be useless simply because there would
-		no backing support. Such functionality should be controlled directly through the backing cache, when configuring it or through its native API.
+		<para>캐시 프로바이더로 직접 설정한다. 케시 추상화는 캐시 구현체가 아니다. 사용하는 제품은 아마 다른 제품이 지원하지
+		않는(JDK <literal>ConcurrentHashMap</literal> 예제를 봐라) 다양한 데이터 정책과 여러가지
+		토폴로지(topologies)를 지원할 것이다. 캐시 추상화에서 이를 노출하는 것은 의존하는 지원체가 없어서 쓸모없을
+		것이다. 이러한 기능은 캐시를 설정할 때나 캐시의 네이티브 API로 기반 캐시에서 직접 제어해야 한다.
 	</para>
 	</section>
 
