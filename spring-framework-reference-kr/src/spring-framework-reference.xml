@@ -468,7 +468,7 @@
   <!-- back matter -->
 
   <part id="spring-appendices">
-    <title>Appendices</title>
+    <title>부록</title>
 
     <xi:include href="classic-spring.xml"
                 xmlns:xi="http://www.w3.org/2001/XInclude" />

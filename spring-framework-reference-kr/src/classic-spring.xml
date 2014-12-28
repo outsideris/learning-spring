@@ -2,42 +2,36 @@
 <!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <appendix id="classic-spring">
-  <title>Classic Spring Usage</title>
+  <title>고전적인 스프링 사용방법</title>
 
-  <para>This appendix discusses some classic Spring usage patterns as a
-  reference for developers maintaining legacy Spring applications. These usage
-  patterns no longer reflect the recommended way of using these features and
-  the current recommended usage is covered in the respective sections of the
-  reference manual.</para>
+  <para>이 부록에서는 레거시 스프링 애플리케이션을 유지 보수하는 개발자들이 참고할 수 있도록 고전적인
+  스프링의 몇 가지 사용 패턴을 설명한다. 이러한 사용패턴은 더는 스프링의 기능을 사용하는데 권장하는
+  방법이 아니고 현재 권장하는 방법은 참조 매뉴얼의 각 부분에서 다루었다.</para>
 
   <section id="classic-spring-orm">
-    <title>Classic ORM usage</title>
+    <title>고전적인 ORM 사용방법</title>
 
-    <para>This section documents the classic usage patterns that you might
-    encounter in a legacy Spring application. For the currently recommended
-    usage patterns, please refer to the <xref linkend="orm" /> chapter.</para>
+    <para>이 부분에서는 레거시 스프링 애플리케이션에서 직면할 수 있는 고전적인 사용 패턴을
+    설명한다. 현재 권장하는 사용패턴은 <xref linkend="orm" /> 장을 참고하기 바란다.</para>
 
     <section id="classic-spring-hibernate">
-      <title>Hibernate</title>
+      <title>하이버네이트(Hibernate)</title>
 
-      <para>For the currently recommended usage patterns for Hibernate see
-      <xref linkend="orm-hibernate" /></para>
+      <para>현재 권장하는 하이버네이트 사용패턴은 <xref linkend="orm-hibernate" />를
+      참고해라.</para>
 
       <section id="orm-hibernate-template">
-        <title>The <classname>HibernateTemplate</classname></title>
+        <title><classname>HibernateTemplate</classname></title>
 
-        <para>The basic programming model for templating looks as follows, for
-        methods that can be part of any custom data access object or business
-        service. There are no restrictions on the implementation of the
-        surrounding object at all, it just needs to provide a Hibernate
-        <interfacename>SessionFactory</interfacename>. It can get the latter
-        from anywhere, but preferably as bean reference from a Spring IoC
-        container - via a simple
-        <methodname>setSessionFactory(..)</methodname> bean property setter.
-        The following snippets show a DAO definition in a Spring container,
-        referencing the above defined
-        <interfacename>SessionFactory</interfacename>, and an example for a
-        DAO method implementation.</para>
+        <para>객체나 비즈니스 서비스에 접근하는 커스텀 데이터 일부가 될 수 있는 메서드에 대한
+        템플릿의 기본적인 프로그래밍 모델은 다음과 같다. 객체와 관련한 구현체에는 어떠한 제약도 없고
+        하이버네이트 <interfacename>SessionFactory</interfacename>만 제공하면 된다.
+        <interfacename>SessionFactory</interfacename>는 어디서든 나중에 가져올 수
+        있지만, 스프링 IoC 컨테이너에서 빈(bean) 참조로 가져오는 걸 선호한다.
+        (<methodname>setSessionFactory(..)</methodname> 빈 프로퍼티 세터로) 다음
+        코드에 스프링 컨테이너의 DAO 정의가 나와 있다. 이 정의는 앞에서 정의한
+        <interfacename>SessionFactory</interfacename>를 참조하고 있고 DAO 메서드
+        구현체의 예시이다.</para>
 
         <programlisting language="xml">&lt;beans&gt;
 
@@ -60,13 +54,12 @@
     }
 }</programlisting>
 
-        <para>The <classname>HibernateTemplate</classname> class provides many
-        methods that mirror the methods exposed on the Hibernate
-        <interfacename>Session</interfacename> interface, in addition to a
-        number of convenience methods such as the one shown above. If you need
-        access to the <interfacename>Session</interfacename> to invoke methods
-        that are not exposed on the <classname>HibernateTemplate</classname>,
-        you can always drop down to a callback-based approach like so.</para>
+        <para><classname>HibernateTemplate</classname> 클래스는 하이버네이트
+        <interfacename>Session</interfacename> 인터페이스가 노출하는 메서드와 같은 많은
+        메서드를 제공하고 추가로 앞에서 본 것처럼 다수의 편의 메서드를 제공한다.
+        <classname>HibernateTemplate</classname>가 제공하지 않는 메서드를 호출하려고
+        <interfacename>Session</interfacename>에 접근해야 한다면 다음과 같이
+        콜백방식을 사용할 수 있다.</para>
 
         <programlisting language="java">public class ProductDaoImpl implements ProductDao {
 
@@ -89,23 +82,20 @@
     }
 }</programlisting>
 
-        <para>A callback implementation effectively can be used for any
-        Hibernate data access. <classname>HibernateTemplate</classname> will
-        ensure that <interfacename>Session</interfacename> instances are
-        properly opened and closed, and automatically participate in
-        transactions. The template instances are thread-safe and reusable,
-        they can thus be kept as instance variables of the surrounding class.
-        For simple single step actions like a single find, load, saveOrUpdate,
-        or delete call, <classname>HibernateTemplate</classname> offers
-        alternative convenience methods that can replace such one line
-        callback implementations. Furthermore, Spring provides a convenient
-        <classname>HibernateDaoSupport</classname> base class that provides a
-        <methodname>setSessionFactory(..)</methodname> method for receiving a
-        <interfacename>SessionFactory</interfacename>, and
-        <methodname>getSessionFactory()</methodname> and
-        <methodname>getHibernateTemplate()</methodname>for use by subclasses.
-        In combination, this allows for very simple DAO implementations for
-        typical requirements:</para>
+        <para>하이버네이트 데이터 접근에 콜백 구현체를 효과적으로 사용할 수 있다.
+        <classname>HibernateTemplate</classname>는
+        <interfacename>Session</interfacename> 인스턴스를 적절하게 여닫는 것을
+        보장하고 자동으로 트랜잭션에 참여하게 한다. 템플릿 인스턴스는 스레드 세이프하고 재사용성이
+        있어서 감싸는 클래스의 인스턴스 변수로 담고 있을 수 있다. 단일 find, load,
+        saveOrUpdate, delete 호출처럼 간단한 하나의 작업을 위해
+        <classname>HibernateTemplate</classname>는 한 줄짜리 콜백 구현체를 대체할 수 있는
+        편의 메서드를 제공하고 있다. 게다가 스프링은
+        <interfacename>SessionFactory</interfacename>를 받는
+        <methodname>setSessionFactory(..)</methodname> 메서드를 제공하는 간편한
+        <classname>HibernateDaoSupport</classname> 기반 클래스를 제공하고 하위클래스가
+        사용할 수 있도록 <methodname>getSessionFactory()</methodname>와
+        <methodname>getHibernateTemplate()</methodname>를 제공한다.
+        이를 사용해서 전형적인 요구사항에 맞는 아주 간단한 DAO 구현체를 작성할 수 있다.</para>
 
         <programlisting language="java">public class ProductDaoImpl extends HibernateDaoSupport implements ProductDao {
 
@@ -117,25 +107,20 @@
       </section>
 
       <section id="orm-hibernate-daos">
-        <title>Implementing Spring-based DAOs without callbacks</title>
+        <title>콜백없이 스프링에 기반을 둔 DAO 구현하기</title>
 
-        <para>As alternative to using Spring's
-        <classname>HibernateTemplate</classname> to implement DAOs, data
-        access code can also be written in a more traditional fashion, without
-        wrapping the Hibernate access code in a callback, while still
-        respecting and participating in Spring's generic
-        <classname>DataAccessException</classname> hierarchy. The
-        <classname>HibernateDaoSupport</classname> base class offers methods
-        to access the current transactional
-        <interfacename>Session</interfacename> and to convert exceptions in
-        such a scenario; similar methods are also available as static helpers
-        on the <classname>SessionFactoryUtils</classname> class. Note that
-        such code will usually pass '<literal>false</literal>' as the value of
-        the <methodname>getSession(..)</methodname> methods
-        '<literal>allowCreate</literal>' argument, to enforce running within a
-        transaction (which avoids the need to close the returned
-        <interfacename>Session</interfacename>, as its lifecycle is managed by
-        the transaction).</para>
+        <para>DAO를 구현하는데 스프링의 <classname>HibernateTemplate</classname>를
+        사용하는 대신 콜백에 하이버네이트 접근 코드를 랩핑하지 않고 더 전통적인 방식으로 데이터 접근
+        코드를 작성할 수도 있고 이러면서도 여전히 스프링의 일반적인
+        <classname>DataAccessException</classname> 계층을 따르고 참여할 수 있다.
+        <classname>HibernateDaoSupport</classname> 기반 클래스는 현재 트랜잭션이 적용된
+        <interfacename>Session</interfacename>에 접근할 수 있는 메서드를 제공하고 이러한
+        시나리오에서 예외를 변환하는 메서드를 제공한다. 비슷한 메서드를
+        <classname>SessionFactoryUtils</classname>의 정적 헬퍼로 사용할 수도 있다.
+        이러한 코드는 <methodname>getSession(..)</methodname> 메서드의
+        '<literal>allowCreate</literal>' 인자 값으로 '<literal>false</literal>'를
+        보통 전달해서 트랜잭션 내에서 실행되도록 강제한다.(트랜잭션이 관리하는 생명주기를 관리하므로
+        반환된 <interfacename>Session</interfacename>을 닫을 필요가 없도록)</para>
 
         <programlisting language="java">public class HibernateProductDao extends HibernateDaoSupport implements ProductDao {
 
@@ -156,47 +141,43 @@
     }
 }</programlisting>
 
-        <para>The advantage of such direct Hibernate access code is that it
-        allows <emphasis>any</emphasis> checked application exception to be
-        thrown within the data access code; contrast this to the
-        <classname>HibernateTemplate</classname> class which is restricted to
-        throwing only unchecked exceptions within the callback. Note that you
-        can often defer the corresponding checks and the throwing of
-        application exceptions to after the callback, which still allows
-        working with <classname>HibernateTemplate</classname>. In general, the
-        <classname>HibernateTemplate</classname> class' convenience methods
-        are simpler and more convenient for many scenarios.</para>
+        <para>이렇게 하이버네이트에 직접 접근하는 코드의 장법은 데이터 접근 코드 내에서 어떤 체크드
+        애플리케이션 익셉션이라도 던질 수 있다는 것이다. 이는
+        <classname>HibernateTemplate</classname> 클래스가 콜백내에서 언체크드 익셉션만
+        던질 수 있다는 제약과는 다른 부분이다. 때로는
+        <classname>HibernateTemplate</classname>에서 콜백실행 후에 던져진 애플리케이션
+        익셉션을 대응되는 체크드 입셉션으로 지연시킬 수도 있다. 일반적으로
+        <classname>HibernateTemplate</classname> 클래스의 편의 메서드는 많은 경우에
+        더 간단하고 훨씬 편리하다.</para>
       </section>
     </section>
 
     <section id="classic-spring-jdo">
       <title>JDO</title>
 
-      <para>For the currently recommended usage patterns for JDO see <xref
-      linkend="orm-jdo" /></para>
+      <para>현재 권장하는 JDO 사용패턴은 <xref linkend="orm-jdo" />를 참고해라.</para>
 
       <section id="orm-jdo-template">
-        <title><classname>JdoTemplate</classname> and
+        <title><classname>JdoTemplate</classname>와
         <classname>JdoDaoSupport</classname></title>
 
-        <para>Each JDO-based DAO will then receive the
-        <interfacename>PersistenceManagerFactory</interfacename> through
-        dependency injection. Such a DAO could be coded against plain JDO API,
-        working with the given
-        <interfacename>PersistenceManagerFactory</interfacename>, but will
-        usually rather be used with the Spring Framework's
-        <classname>JdoTemplate</classname>:</para>
+        <para>JDO에 기반을 둔 각 DAO는 의존성 주입으로
+        <interfacename>PersistenceManagerFactory</interfacename>를 받는다. 이러한
+        DAO는 평범한 JDO API로 작성할 수 있고 주어진
+        <interfacename>PersistenceManagerFactory</interfacename>와 동작할 수
+        있지만, 보통은 스프링 프레임워크의 <classname>JdoTemplate</classname>을
+        사용할 것이다.</para>
 
         <programlisting language="xml">&lt;beans&gt;
-  
+
   &lt;bean id="myProductDao" class="product.ProductDaoImpl"&gt;
     &lt;property name="persistenceManagerFactory" ref="myPmf"/&gt;
   &lt;/bean&gt;
-  
+
 &lt;/beans&gt;</programlisting>
 
         <programlisting language="java">public class ProductDaoImpl implements ProductDao {
-  
+
     private JdoTemplate jdoTemplate;
 
     public void setPersistenceManagerFactory(PersistenceManagerFactory pmf) {
@@ -207,70 +188,63 @@
         return (Collection) this.jdoTemplate.execute(new JdoCallback() {
             public Object doInJdo(PersistenceManager pm) throws JDOException {
                 Query query = pm.newQuery(Product.class, "category = pCategory");
-                query.declareParameters("String pCategory"); 
+                query.declareParameters("String pCategory");
                 List result = query.execute(category);
-                <lineannotation>// do some further stuff with the result list</lineannotation>
+                <lineannotation>// 결과 리스트로 추가 작업을 한다</lineannotation>
                 return result;
             }
         });
     }
 }</programlisting>
 
-        <para>A callback implementation can effectively be used for any JDO
-        data access. <classname>JdoTemplate</classname> will ensure that
-        <classname>PersistenceManager</classname>s are properly opened and
-        closed, and automatically participate in transactions. The template
-        instances are thread-safe and reusable, they can thus be kept as
-        instance variables of the surrounding class. For simple single-step
-        actions such as a single <literal>find</literal>,
-        <literal>load</literal>, <literal>makePersistent</literal>, or
-        <literal>delete</literal> call, <classname>JdoTemplate</classname>
-        offers alternative convenience methods that can replace such one line
-        callback implementations. Furthermore, Spring provides a convenient
-        <classname>JdoDaoSupport</classname> base class that provides a
-        <literal>setPersistenceManagerFactory(..)</literal> method for
-        receiving a <classname>PersistenceManagerFactory</classname>, and
-        <methodname>getPersistenceManagerFactory()</methodname> and
-        <methodname>getJdoTemplate()</methodname> for use by subclasses. In
-        combination, this allows for very simple DAO implementations for
-        typical requirements:</para>
+        <para>콜백 구현체는 어떤 JDO 데이터 접근에도 효과적으로 사용할 수 있다.
+        <classname>JdoTemplate</classname>는
+        <classname>PersistenceManager</classname>를 제대로 여닫았다는 것을 보장하고
+        자동으로 트랜잭션에 참여한다. 템플릿 인스턴스는 스레드 세이프하고 재사용성이 있어서 감싸는
+        클래스의 인스턴스 변수로 보관할 수 있다. 하나의 <literal>find</literal>,
+        <literal>load</literal>, <literal>makePersistent</literal>,
+        <literal>delete</literal> 호출 같은 간단한 단일 동작에 대해
+        <classname>JdoTemplate</classname>가 한 줄짜리 콜백 구현체로 교체할 수 있는 편의
+        메서드를 제공한다. 게다가 <classname>PersistenceManagerFactory</classname>를
+        받는 <literal>setPersistenceManagerFactory(..)</literal> 메서드와 하위
+        클래스가 사용하는 <methodname>getPersistenceManagerFactory()</methodname>와
+        <methodname>getJdoTemplate()</methodname>를 제공하는 편리한
+        <classname>JdoDaoSupport</classname> 기반 클래스를 스프링이 제공한다. 이를 함께
+        사용하면 일반적인 요구사항에 대해 아주 간단한 DAO 구현체를 작성할 수 있다.</para>
 
         <programlisting language="java">public class ProductDaoImpl extends JdoDaoSupport implements ProductDao {
-  
+
     public Collection loadProductsByCategory(String category) throws DataAccessException {
         return getJdoTemplate().find(
             Product.class, "category = pCategory", "String category", new Object[] {category});
     }
 }</programlisting>
 
-        <para>As alternative to working with Spring's
-        <classname>JdoTemplate</classname>, you can also code Spring-based
-        DAOs at the JDO API level, explicitly opening and closing a
-        <interfacename>PersistenceManager</interfacename>. As elaborated in
-        the corresponding Hibernate section, the main advantage of this
-        approach is that your data access code is able to throw checked
-        exceptions. <classname>JdoDaoSupport</classname> offers a variety of
-        support methods for this scenario, for fetching and releasing a
-        transactional <interfacename>PersistenceManager</interfacename> as
-        well as for converting exceptions.</para>
+        <para>스프링의 <classname>JdoTemplate</classname>와 동작하도록 작성하는 대신
+        JDO API 수준에서 스프링에 기반을 둔 DAO를 작성할 수 있어서 명시적으로
+        <interfacename>PersistenceManager</interfacename>를 여닫을 수 있다.
+        하이버네이트 부분에서 자세히 설명한 대로 이러한 접근의 가장 큰 장점은 데이터 접근 코드에서
+        체크드 익셉션을 던질 수 있다는 것이다. <classname>JdoDaoSupport</classname>는
+        익센션을 잘 변환하면서 트랜잭션이 적용된
+        <interfacename>PersistenceManager</interfacename>를 가져오고 해지하면서
+        이러한 시나리오를 지원하는 여러 메서드를 제공한다.</para>
       </section>
     </section>
 
     <section id="classic-spring-jpa">
       <title>JPA</title>
 
-      <para>For the currently recommended usage patterns for JPA see <xref
-      linkend="orm-jpa" /></para>
+      <para>현재 권장하는 JPA 사용패턴은 <xref linkend="orm-jpa" />를 참고해라.</para>
 
       <section id="orm-jpa-template">
-        <title><classname>JpaTemplate</classname> and
+        <title><classname>JpaTemplate</classname>와
         <classname>JpaDaoSupport</classname></title>
 
-        <para>Each JPA-based DAO will then receive a
-        <interfacename>EntityManagerFactory</interfacename> via dependency
-        injection. Such a DAO can be coded against plain JPA and work with the
-        given <interfacename>EntityManagerFactory</interfacename> or through
-        Spring's <classname>JpaTemplate</classname>:</para>
+        <para>JPA에 기반을 둔 각 DAO는 의존성 주입으로
+        <interfacename>EntityManagerFactory</interfacename>를 받을 것이다. 이러한
+        DAO는 평범한 JPA로 작성할 수 있고 주어진
+        <interfacename>EntityManagerFactory</interfacename>나 스프링의
+        <classname>JpaTemplate</classname>와 동작한다.</para>
 
         <programlisting language="xml">&lt;beans&gt;
 
@@ -281,7 +255,7 @@
 &lt;/beans&gt;</programlisting>
 
         <programlisting language="java">public class JpaProductDao implements ProductDao {
-  
+
     private JpaTemplate jpaTemplate;
 
     public void setEntityManagerFactory(EntityManagerFactory emf) {
@@ -293,35 +267,30 @@
             public Object doInJpa(EntityManager em) throws PersistenceException {
                 Query query = em.createQuery("from Product as p where p.category = :category");
                 query.setParameter("category", category);
-                List result = query.getResultList(); 
-                <lineannotation>// do some further processing with the result list</lineannotation>
+                List result = query.getResultList();
+                <lineannotation>// 결과 리스트로 추가 작업을 한다</lineannotation>
                 return result;
             }
         });
     }
 }</programlisting>
 
-        <para>The <interfacename>JpaCallback</interfacename> implementation
-        allows any type of JPA data access. The
-        <classname>JpaTemplate</classname> will ensure that
-        <interfacename>EntityManager</interfacename>s are properly opened and
-        closed and automatically participate in transactions. Moreover, the
-        <classname>JpaTemplate</classname> properly handles exceptions, making
-        sure resources are cleaned up and the appropriate transactions rolled
-        back. The template instances are thread-safe and reusable and they can
-        be kept as instance variable of the enclosing class. Note that
-        <classname>JpaTemplate</classname> offers single-step actions such as
-        find, load, merge, etc along with alternative convenience methods that
-        can replace one line callback implementations.</para>
+        <para><interfacename>JpaCallback</interfacename> 구현체는 어떤 타입의 JPA
+        데이터 접근이라고 가능하다. <classname>JpaTemplate</classname>는
+        <interfacename>EntityManager</interfacename>가 적절하게 열리고 닫히는 것을
+        보장하고 트랜잭션에 자동으로 참여하게 한다. 게다가 <classname>JpaTemplate</classname>는
+        예외를 제대로 다뤄서 리소스가 제대로 정리되고 트랜잭션이 제대로 롤백되었다는 것을 보장한다.
+        템플릿 인스턴스는 스레드 세이프하고 재사용성이 있어서 감싸진 클래스의 인스턴스 변수로 보관할
+        수 있다. <classname>JpaTemplate</classname>는 find, load, merge 등의 단일
+        동작을 한 줄짜리 콜백 구현체로 교체할 수 있는 편의 메서드를 제공한다.</para>
 
-        <para>Furthermore, Spring provides a convenient
-        <classname>JpaDaoSupport</classname> base class that provides the
-        <literal>get/setEntityManagerFactory</literal> and
-        <methodname>getJpaTemplate()</methodname> to be used by
-        subclasses:</para>
+        <para>게다가 스프링은 <literal>get/setEntityManagerFactory</literal>를
+        제공하고 하위 클래스가 사용하는 <methodname>getJpaTemplate()</methodname>를
+        제공하는 편리한 <classname>JpaDaoSupport</classname> 기반 클래스를
+        제공한다.</para>
 
         <programlisting language="java">public class ProductDaoImpl extends JpaDaoSupport implements ProductDao {
-  
+
     public Collection loadProductsByCategory(String category) throws DataAccessException {
         Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();
         params.put("category", category);
@@ -329,125 +298,106 @@
     }
 }</programlisting>
 
-        <para>Besides working with Spring's
-        <classname>JpaTemplate</classname>, one can also code Spring-based
-        DAOs against the JPA, doing one's own explicit
-        <interfacename>EntityManager</interfacename> handling. As also
-        elaborated in the corresponding Hibernate section, the main advantage
-        of this approach is that your data access code is able to throw
-        checked exceptions. <classname>JpaDaoSupport</classname> offers a
-        variety of support methods for this scenario, for retrieving and
-        releasing a transaction <interfacename>EntityManager</interfacename>,
-        as well as for converting exceptions.</para>
+        <para>스프링의 <classname>JpaTemplate</classname>로 작업할 때와 달리 JPA로
+        스프링에 기반을 둔 DAO를 작성할 수도 있다. 이때는 명시적으로
+        <interfacename>EntityManager</interfacename>를 다루어야 한다. 하이버네이트
+        부분에서 자세히 설명했듯이 이 방법의 주요 장점은 데이터 접근 코드가 체크드 익셉션을 던질
+        수 있다는 것이다. <classname>JpaDaoSupport</classname>는 이러한 시나리오를
+        지원하는 다양한 메서드를 제공해서 예외를 잘 변환하면서 트랜잭션이 적용된
+        <interfacename>EntityManager</interfacename>를 받고 해제한다.</para>
 
-        <para><emphasis>JpaTemplate mainly exists as a sibling of JdoTemplate
-        and HibernateTemplate, offering the same style for people used to
-        it.</emphasis></para>
+        <para><emphasis>JpaTemplate은 주로 JdoTemplate와 HibernateTemplate의
+        형제 관계로 존재해서 이에 익숙한 사람들에게 같은 방식을 제공한다.</emphasis></para>
       </section>
     </section>
   </section>
 
   <section id="clasic-spring-mvc">
-    <title>Classic Spring MVC</title>
+    <title>고전적인 Spring MVC</title>
 
     <para>...</para>
   </section>
 
   <section>
-    <title>JMS Usage</title>
+    <title>JMS 사용방법</title>
 
-    <para>One of the benefits of Spring's JMS support is to shield the user
-    from differences between the JMS 1.0.2 and 1.1 APIs. (For a description of
-    the differences between the two APIs see sidebar on Domain Unification).
-    Since it is now common to encounter only the JMS 1.1 API the use of
-    classes that are based on the JMS 1.0.2 API has been deprecated in Spring
-    3.0. This section describes Spring JMS support for the JMS 1.0.2
-    deprecated classes. </para>
+    <para>스프링 JMS 지원의 장점 중 하나는 JMS 1.0.2와 1.1 API 간의 차이점을 사용자가 느끼지
+    못하게 한다는 점이다.(두 API의 차이점에 대한 내용을 보려면 도메인 단일화의 사이드바를
+    봐라.) JMS 1.1 API만 사용하는 것이 이제는 일반적이지만 JMS 1.0.2 API에 기반을 둔 클래스를
+    사용하는 것은 스프링 3.0에서는 폐기(deprecated)되었다. 이번 장에서는 JMS 1.0.2의 폐기된
+    클래스에 대한 스프링 JMS 지원을 설명한다.</para>
 
     <sidebar>
-      <title>Domain Unification</title>
+      <title>도메인 단일화(Domain Unification)</title>
 
-      <para>There are two major releases of the JMS specification, 1.0.2 and
-      1.1.</para>
+      <para>JMS 명세에는 두 가지 메이저 릴리즈가 있다.(1.0.2와 1.1)</para>
 
-      <para>JMS 1.0.2 defined two types of messaging domains, point-to-point
-      (Queues) and publish/subscribe (Topics). The 1.0.2 API reflected these
-      two messaging domains by providing a parallel class hierarchy for each
-      domain. As a result, a client application became domain specific in its
-      use of the JMS API. JMS 1.1 introduced the concept of domain unification
-      that minimized both the functional differences and client API
-      differences between the two domains. As an example of a functional
-      difference that was removed, if you use a JMS 1.1 provider you can
-      transactionally consume a message from one domain and produce a message
-      on the other using the same
-      <interfacename>Session</interfacename>.</para>
+      <para>JMS 1.0.2는 두 가지 종류의 메시지 도메인인 point-to-point (Queues)와
+      publish/subscribe (Topics)를 정의한다. 1.0.2 API는 도메인마다 병렬 클래스 계층을
+      제공해서 이 두 가지 메시징 도메인을 반영한다. 그 결과 클라이언트 애플리케이션은 JMS API를
+      사용할 때 도메인에 특화되게 되었다. JMS 1.1에서는 두 도메인사이에 함수적인 차이점과 클라이언트
+      API의 차이점을 모두 최소화하는 도메인 단일화라는 개념이 도입되었다. 제거된 함수의 차이점에
+      대한 예시로 JMS 1.1 프로바이더를 사용할 때 한 도메인에서 트랜잭션을 걸어서 메시지를 소비하고
+      같은 <interfacename>Session</interfacename>으로 다른 도메인에 메시지를 생성할 수
+      있다.</para>
 
       <note>
-        <para>The JMS 1.1 specification was released in April 2002 and
-        incorporated as part of J2EE 1.4 in November 2003. As a result, common
-        J2EE 1.3 application servers which are still in widespread use (such
-        as BEA WebLogic 8.1 and IBM WebSphere 5.1) are based on JMS
-        1.0.2.</para>
+        <para>JMS 1.1 명세는 2002년 4월에 공개되었고 2003년 11월 J2EE 1.4의 일부분이
+        되었다. 그래서 아직도 널리 쓰이는 일반적인 J2EE 1.3 애플리케이션 서버(BEA WebLogic
+        8.1이나 IBM WebSphere 5.1 같은)는 JMS 1.0.2에 기반을 두고 있다.</para>
       </note>
     </sidebar>
 
     <section>
       <title>JmsTemplate</title>
 
-      <para>Located in the package
-      <literal>org.springframework.jms.core</literal> the class
-      <classname>JmsTemplate102</classname> provides all of the features of
-      the <classname>JmsTemplate</classname> described the JMS chapter, but is
-      based on the JMS 1.0.2 API instead of the JMS 1.1 API. As a consequence,
-      if you are using JmsTemplate102 you need to set the boolean property
-      <property>pubSubDomain</property> to configure the
-      <classname>JmsTemplate</classname> with knowledge of what JMS domain is
-      being used. By default the value of this property is false, indicating
-      that the point-to-point domain, Queues, will be used.</para>
+      <para><literal>org.springframework.jms.core</literal> 패키지에 있는
+      <classname>JmsTemplate102</classname> 클래스는 JMS 장에서 설명한
+      <classname>JmsTemplate</classname>의 모든 기능을 제공하지만, JMS 1.1 API 대신
+      JMS 1.0.2 API에 기반을 두고 있다. 그래서 JmsTemplate102를 사용한다면 어떤 JMS 도메인을
+      사용하는가에 대한 정보로 <classname>JmsTemplate</classname>를 구성하기 위해
+      <property>pubSubDomain</property> 불리언 프로퍼티를 설정해야 한다. 기본적으로
+      이 프로퍼티의 값은 false이고 point-to-point 도메인(Queues)를 사용한다는 것을
+      의미한다.</para>
     </section>
 
     <section>
-      <title>Asynchronous Message Reception </title>
+      <title>비동기 메시지 수신 </title>
 
-      <para><link
-      linkend="jms-receiving-async-message-listener-adapter">MessageListenerAdapter's</link>
-      are used in conjunction with Spring's <link linkend="jms-mdp">message
-      listener containers</link> to support asynchronous message reception by
-      exposing almost any class as a Message-driven POJO. If you are using the
-      JMS 1.0.2 API, you will want to use the 1.0.2 specific classes such as
+      <para>거의 모든 클래스를 메시지 주도 POJO로 노출해서 비동기 메시지 수신을 지원하려고
+      <link linkend="jms-receiving-async-message-listener-adapter">MessageListenerAdapter</link>는
+      스프링의 <link linkend="jms-mdp">메시지 리스너 컨테이너(message listener
+      containers)</link>와 함께 사용한다. JMS 1.0.2 API를 사용한다면
       <classname>MessageListenerAdapter102</classname>,
-      <classname>SimpleMessageListenerContainer102</classname>, and
-      <classname>DefaultMessageListenerContainer102</classname>. These classes
-      provide the same functionality as the JMS 1.1 based counterparts but
-      rely only on the JMS 1.0.2 API. </para>
+      <classname>SimpleMessageListenerContainer102</classname>,
+      <classname>DefaultMessageListenerContainer102</classname>같은 1.0.2에 특화된
+      클래스를 사용하고자 할 것이다. 이러한 클래스는 JSM 1.1에 기반을 둔 부분과 같은 기능을 제공하지만
+      JMS 1.0.2 API에만 의존한다는 것만 다르다.</para>
     </section>
 
     <section>
-      <title>Connections</title>
+      <title>연결</title>
 
-      <para>The <classname>ConnectionFactory</classname> interface is part of
-      the JMS specification and serves as the entry point for working with
-      JMS. Spring provides an implementation of the
-      <classname>ConnectionFactory</classname> interface,
-      <classname>SingleConnectionFactory102</classname>, based on the JMS
-      1.0.2 API that will return the same <classname>Connection</classname> on
-      all <methodname>createConnection()</methodname> calls and ignore calls to
-      <methodname>close()</methodname>. You will need to set the boolean
-      property <property>pubSubDomain</property> to indicate which messaging
-      domain is used as <classname>SingleConnectionFactory102</classname> will
-      always explicitly differentiate between a
-      <classname>javax.jms.QueueConnection</classname> and a
-      <classname>javax.jmsTopicConnection</classname>.</para>
+      <para><classname>ConnectionFactory</classname> 인터페이스는 JMS 명세의 일부분이고
+      JMS와 함께 동작하는 진입점으로 제공된다. 스프링은
+      <classname>ConnectionFactory</classname> 인터페이스의 구현체인
+      <classname>SingleConnectionFactory102</classname>를 제공한다. 이는 JMS 1.0.2에
+      기반을 두고 있어서 모든 <methodname>createConnection()</methodname> 호출에 같은
+      <classname>Connection</classname>을 반환하고 <methodname>close()</methodname>
+      호출은 무시할 것이다. <classname>SingleConnectionFactory102</classname>이 항상
+      <classname>javax.jms.QueueConnection</classname>와
+      <classname>javax.jmsTopicConnection</classname>를 명시적으로 구분할 것이므로 어떤
+      메시징 도메인을 사용하는지 나타내기 위해 <property>pubSubDomain</property> 블리언
+      프로퍼티를 설정해야 할 것이다.</para>
     </section>
 
     <section>
-      <title>Transaction Management</title>
+      <title>트랜잭션 관리</title>
 
-      <para>In a JMS 1.0.2 environment the class
-      <classname>JmsTransactionManager102</classname> provides support for
-      managing JMS transactions for a single Connection Factory. Please refer
-      to the reference documentation on <link linkend="jms-tx">JMS Transaction
-      Management</link> for more information on this functionality.</para>
+      <para>JMS 1.0.2 환경에서 <classname>JmsTransactionManager102</classname>
+      클래스는 하나의 Connection Factory에 대한 JMS 트랜잭션 관리를 지원한다. 이 기능에 대한
+      자세한 내용은 <link linkend="jms-tx">JMS 트랜잭션 관리</link>의 참고문서를
+      봐라.</para>
     </section>
   </section>
 </appendix>
