@@ -3,55 +3,42 @@
  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <appendix id="xsd-config">
-    <title>XML Schema-based configuration</title>
+    <title>XML 스키마에 기반을 둔 구성</title>
     <section id="xsd-config-introduction">
-        <title>Introduction</title>
-        <para>This appendix details the XML Schema-based configuration introduced in Spring 2.0 and enhanced and extended in Spring 2.5 and 3.0.</para>
+        <title>소개</title>
+        <para>이번 부록에서는 스프링 2.0에서 도입되고 스프링 2.5와 3.0에서 강화되고 확장된 XML 스키마에 기반을 둔 구성을 살펴본다.</para>
         <sidebar>
-            <title>DTD support?</title>
-            <para>Authoring Spring configuration files using the older DTD style
-            is still fully supported.</para>
-            <para>Nothing will break if you forego the use of the new XML Schema-based
-            approach to authoring Spring XML configuration files. All that you lose
-            out on is the opportunity to have more succinct and clearer configuration.
-            Regardless of whether the XML configuration is DTD- or Schema-based, in the end
-            it all boils down to the same object model in the container (namely one or
-            more <interfacename>BeanDefinition</interfacename> instances).</para>
+            <title>DTD 지원?</title>
+            <para>지금도 예전의 DTD 방식을 사용하는 스프링 구성 파일을 완전히 지원한다.</para>
+            <para>스프링 XML 구성파일을 작성할 때 새로운 XML 스키마 방식의 접근을 사용하더라도
+            문제는 전혀 없고 더 간결하고 깔끔한 구성을 사용할 기회를 놓칠 뿐이다. XML 구성이 DTD
+            기반이냐 스키마 기반이냐에 상관없이 결국은 컨테이너에서 같은 객체 모델이 된다.(보통 하나
+            이상의 <interfacename>BeanDefinition</interfacename> 인스턴스)</para>
         </sidebar>
-        <para>The central motivation for moving to XML Schema based configuration files was
-        to make Spring XML configuration easier. The <emphasis>'classic'</emphasis>
-        <literal>&lt;bean/&gt;</literal>-based approach is good, but its generic-nature comes
-        with a price in terms of configuration overhead.</para>
-        <para>From the Spring IoC containers point-of-view, <emphasis>everything</emphasis>
-        is a bean. That's great news for the Spring IoC container, because if everything is
-        a bean then everything can be treated in the exact same fashion. The same, however,
-        is not true from a developer's point-of-view. The objects defined in a Spring
-        XML configuration file are not all generic, vanilla beans. Usually, each bean requires
-        some degree of specific configuration.</para>
-        <para>Spring 2.0's new XML Schema-based configuration addresses this issue.
-        The <literal>&lt;bean/&gt;</literal> element is still present, and if you
-        wanted to, you could continue to write the <emphasis>exact same</emphasis>
-        style of Spring XML configuration using only <literal>&lt;bean/&gt;</literal>
-        elements. The new XML Schema-based configuration does, however, make
-        Spring XML configuration files substantially clearer to read. In addition, it allows
-        you to express the intent of a bean definition.</para>
-        <para>The key thing to remember is that the new custom tags work best for infrastructure
-        or integration beans: for example, AOP, collections, transactions, integration with
-        3rd-party frameworks such as Mule, etc., while the existing bean tags are best suited to
-        application-specific beans, such as DAOs, service layer objects, validators, etc.</para>
-        <para>The examples included below will hopefully convince you that the inclusion
-        of XML Schema support in Spring 2.0 was a good idea. The reception in the community
-        has been encouraging; also, please note the fact that this new configuration mechanism
-        is totally customisable and extensible. This means you can write your own domain-specific
-        configuration tags that would better represent your application's domain; the process
-        involved in doing so is covered in the appendix entitled <xref linkend="extensible-xml"/>.</para>
+        <para>XML 스키마에 기반을 둔 구성파일로 바꾸는 주요 이유는 스프링 XML 구성을 더 쉽게 작성하는
+        것이다. <emphasis>'고전적인'</emphasis> <literal>&lt;bean/&gt;</literal>기반의 접근이 좋지만, 그
+        특성에 따라 구성에 오버헤드가 발생한다.</para>
+        <para>스프링 IoC 컨테이너의 관점에서는 <emphasis>모든 것이</emphasis> 빈이다. 모든 것이 빈이라면 같은
+        방식으로 이를 모두 다룰 수 있으므로 스프링 IoC 컨테이너의 입장에서는 좋은 점이지만 개발자 입장서는 그다지 좋지
+        않다. 스프링 XML 구성파일에서 정의한 객체는 모두 일반적이고 평범한(generic, vanilla) 빈이 아니다. 보통
+        각 빈은 어느 정도의 특별한 구성이 필요하다.</para>
+        <para>스프링 2.0에서 스키마에 기반을 둔 새로운 구성은 이 문제를 해결한다.
+        <literal>&lt;bean/&gt;</literal> 요소는 계속 사용할 수 있고 원한다면 <literal>&lt;bean/&gt;</literal>
+        요소만 사용하면서 <emphasis>완전히 같은</emphasis> 방식의 스프링 XML 구성을 작성할 수 있다. 하지만 새로운
+        XML 스키마 기반의 구성은 스프링 XML 구성파일을 상당히 읽기 쉽게 만들 수 있고 빈 정의의 의도를 표현할 수 있다.</para>
+        <para>기존에 존재하는 빈(bean) 태그가 DAO, 서비스계층 객체, 밸리데이터 등의 애플리케이션에 특화된 빈에 적합하다면
+        새로운 커스텀 태그는 인프라스트럭처나 통합 빈(예를 들어 AOP, 컬렉션, 트랜잭션이나 Mule 등의 서드파티 프레임워크와의
+        통합)에 사용하기에 최적이라는 점은 꼭 기억해 두어야 한다.</para>
+        <para>다음의 예시로 스프링 2.0의 XML 스키마 지원이 추가된 것은 좋은 생각이었다는 점을 알 수 있기를 바란다. 개발자들이
+        이를 도입하기를 권장하고 이 새로운 구성 메커니즘이 완전히 커스터마이징할 수 있고 확장 가능하다는 점을 명심해라.
+        즉, 애플리케이션의 도메인을 더 잘 나타낼 수 있도록 자신의 도메인에 특화된 구성 태그를 작성할 수 있다. 자신만의 구성태그를
+        작성하는 방법은 부록 <xref linkend="extensible-xml"/>에서 다룬다.</para>
     </section>
     <section id="xsd-config-body">
-        <title>XML Schema-based configuration</title>
+        <title>XML 스키마에 기반을 둔 구성</title>
         <section id="xsd-config-body-referencing">
-            <title>Referencing the schemas</title>
-            <para>To switch over from the DTD-style to the new XML Schema-style, you need
-            to make the following change.</para>
+            <title>스키마 참조</title>
+            <para>기존의 DTD 방식에서 새로운 XML 스키마 방식으로 변경하려면 다음과 같이 바꾸어야 한다.</para>
             <programlisting language="xml">
 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
@@ -59,10 +46,10 @@
 
 <beans>
 
-]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> definitions here --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> 정의는 여기에 작성한다 --&gt;</lineannotation><![CDATA[
 
 </beans>]]></programlisting>
-            <para>The equivalent file in the XML Schema-style would be...</para>
+            <para>XML 스키마 방식에서 같은 파일은 다음과 같이 작성한다.</para>
             <programlisting language="xml">
 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -70,37 +57,31 @@
        xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> definitions here --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> 정의는 여기에 작성한다 --&gt;</lineannotation><![CDATA[
 
 </beans>]]></programlisting>
             <note>
-                <para>The <literal>'xsi:schemaLocation'</literal> fragment is not actually required,
-                but can be included to reference a local copy of a schema (which can be useful
-                during development).</para>
+                <para><literal>'xsi:schemaLocation'</literal> 부분은 실제로는 필요 없지만 스키마의 로컬 복사본을
+                참조하려고(개발단계에서 유용할 수 있다.) 포함할 수 있다.</para>
             </note>
-            <para>The above Spring XML configuration fragment is boilerplate that you can copy and paste
-            (!) and then plug <literal>&lt;bean/&gt;</literal> definitions into like you have always
-            done. However, the entire point of switching over is to
-            take advantage of the new Spring 2.0 XML tags since they make configuration easier. The
-            section entitled <xref linkend="xsd-config-body-schemas-util"/> demonstrates how you can
-            start immediately by using some of the more common utility tags.</para>
+            <para>위의 스프링 XML 구성의 일부분은 복사 후 붙여넣기를 해서 사용할 수 있는 상용구문으로 항상 하듯이
+            <literal>&lt;bean/&gt;</literal>를 추가해서 사용할 수 있다. 하지만 XML 스키마 방식으로 바꾸는 것은 구성을
+            더 쉽게 만드는 새로운 스프링 2.0 XML 태그의 장점을 얻으려는 것이다.
+            <xref linkend="xsd-config-body-schemas-util"/> 섹션에서 일반적인 유틸리티 태그를 사용해서 바로 시작하는
+            방법을 설명한다.</para>
         </section>
-        <para>The rest of this chapter is devoted to showing examples of the new Spring XML Schema
-        based configuration, with at least one example for every new tag. The format follows
-        a before and after style, with a <emphasis>before</emphasis> snippet of XML showing
-        the old (but still 100% legal and supported) style, followed immediately
-        by an <emphasis>after</emphasis> example showing the equivalent in the new XML Schema-based
-        style.</para>
+        <para>이번 장의 나머지 부분에서는 새로운 스프링 XML 스키마에 기반을 둔 구성의 예제를 보여준다. (새로운 태그마다
+        최소한 하나의 예시를 제공한다.) 형식은 before, after 형식을 사용해서 <emphasis>before</emphasis>
+        부분에서는 이전 방식의 XML을 보여주고(하지만 지금도 완전히 사용 가능한) 바로 이어서 나오는
+        <emphasis>after</emphasis> 부분에서는 같은 설정을 XML 스키마 방식을 보여준다.</para>
         <section id="xsd-config-body-schemas-util">
-            <title>The <literal>util</literal> schema</title>
-            <para>First up is coverage of the <literal>util</literal> tags. As the name
-            implies, the <literal>util</literal> tags deal with common, <emphasis>utility</emphasis>
-            configuration issues, such as configuring collections, referencing constants,
-            and suchlike.</para>
-            <para>To use the tags in the <literal>util</literal> schema, you need to have
-            the following preamble at the top of your Spring XML configuration file;
-            the text in the snippet below references the correct schema so that
-            the tags in the <literal>util</literal> namespace are available to you.</para>
+            <title><literal>util</literal> 스키마</title>
+            <para>처음 다룰 부분은 <literal>util</literal> 태그의 범위인데 이름에서 알 수 있듯이
+            <literal>util</literal> 태그는 컬렉션을 구성하거나 상수를 참조하는 등의 일반적인
+            <emphasis>유틸리티</emphasis>성 구성 이슈를 다룬다.</para>
+            <para><literal>util</literal> 스키마의 태그를 사용하려면 스프링 XML 구성파일 상단에 다음
+            코드를 넣어야 한다. <literal>util</literal> 네임스페이스로 태그를 사용할 수 있도록 다음 예시의
+            텍스트는 올바른 스키마를 참조하고 있다.</para>
             <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -109,7 +90,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 ]]><emphasis role="bold">http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"</emphasis><![CDATA[>
 
-]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> definitions here --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- 여기에 <literal>&lt;bean/&gt;</literal> 정의를 작성한다 --&gt;</lineannotation><![CDATA[
 
 </beans>]]></programlisting>
             <section id="xsd-config-body-schemas-util-constant">
@@ -121,16 +102,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
   </property>
 </bean>]]></programlisting>
-                <para>The above configuration uses a Spring <interfacename>FactoryBean</interfacename>
-                implementation, the <classname>FieldRetrievingFactoryBean</classname>, to
-                set the value of the <literal>'isolation'</literal> property on a bean
-                to the value of the <literal>'java.sql.Connection.TRANSACTION_SERIALIZABLE'</literal>
-                constant. This is all well and good, but it is a tad verbose and (unneccessarily)
-                exposes Spring's internal plumbing to the end user.
+                <para>위 구성은 빈의 <literal>'isolation'</literal> 프로퍼티 값을
+                <literal>'java.sql.Connection.TRANSACTION_SERIALIZABLE'</literal> 상수 값으로 설정하려고
+                스프링의 <interfacename>FactoryBean</interfacename> 구현체인
+                <classname>FieldRetrievingFactoryBean</classname>를 사용한다. 이 구성은 문제없이 잘 동작하지만
+                약간 장황하고 (불필요하게) 스프링의 내부 구조를 최종 사용자에게 노출한다.
                 </para>
-                <para>The following XML Schema-based version is more concise
-                and clearly expresses the developer's intent (<emphasis>'inject this constant
-                value'</emphasis>), and it just reads better.
+                <para>다음 XML 스키마 방식은 더 간단하면서도 개발자의 의도(<emphasis>'이 상수값을
+                주입해라'</emphasis>)를 명확하게 드러내서 더 읽기가 좋다.
                 </para>
                 <programlisting language="xml"><![CDATA[<bean id="..." class="...">
   <property name="isolation">
@@ -138,34 +117,29 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
   </property>
 </bean>]]></programlisting>
                 <section id="xsd-config-body-schemas-util-frfb">
-                    <title>Setting a bean property or constructor arg from a field value</title>
+                    <title>필드 값으로 빈(bean) 프로퍼티나 생성자 인자 설정하기</title>
                     <para>
                         <ulink url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/config/FieldRetrievingFactoryBean.html"><classname>FieldRetrievingFactoryBean</classname></ulink>
-                        is a <interfacename>FactoryBean</interfacename> which retrieves a
-                        <literal>static</literal> or non-static field value. It is typically
-                        used for retrieving <literal>public</literal> <literal>static</literal>
-                        <literal>final</literal> constants, which may then be used to set a
-                        property value or constructor arg for another bean.
+                        은 <literal>static</literal> 필드 값이나 정적이 아닌 필드 값을 가져오는
+                        <interfacename>FactoryBean</interfacename>이다. 이는 보통
+                        <literal>public</literal> <literal>static</literal> <literal>final</literal>
+                        상수를 가져오는 데 사용한다.(가져와서 또 다른 빈에 프로퍼티 값이나 생성자 인자를 설정하는 데 사용할 수 있다.)
                     </para>
                     <para>
-                        Find below an example which shows how a <literal>static</literal> field is exposed, by
-                        using the <ulink url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/config/FieldRetrievingFactoryBean.html#setStaticField(java.lang.String)"><literal>staticField</literal></ulink>
-                        property:
+                        <ulink url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/config/FieldRetrievingFactoryBean.html#setStaticField(java.lang.String)"><literal>staticField</literal></ulink>를 사용해서
+                        <literal>static</literal> 필드를 노출하는 방법을 다음 예제에서 보여준다.
                     </para>
                     <programlisting language="xml"><![CDATA[<bean id="myField"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
   <property name="staticField" value="java.sql.Connection.TRANSACTION_SERIALIZABLE"/>
 </bean>]]></programlisting>
-                    <para>There is also a convenience usage form where the <literal>static</literal>
-                    field is specified as the bean name:</para>
+                    <para>빈 이름으로 <literal>static</literal> 필드를 지정하는 것도 편리한 사용방식이다.</para>
                     <programlisting language="xml"><![CDATA[<bean id="java.sql.Connection.TRANSACTION_SERIALIZABLE"
     class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>]]></programlisting>
                     <para>
-                        This does mean that there is no longer any choice in what the bean id is (so
-                        any other bean that refers to it will also have to use this longer name),
-                        but this form is very concise to define, and very convenient to use as an
-                        inner bean since the id doesn't have to be specified for the bean
-                        reference:
+                        이는 빈 id에 대한 선택권이 없다는 것을 의미하지만(그래서 이를 참조하는 다른 모든 빈도 이 긴 이름을
+                        사용해야 한다) 이 형식은 매우 간단하게 정의할 수 있고 빈 참조에 id를 지정하지 않아도 되므로 이너 빈으로
+                        사용할 때 아주 편리하다.
                     </para>
                     <programlisting language="xml"><![CDATA[<bean id="..." class="...">
   <property name="isolation">
@@ -174,17 +148,15 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
   </property>
 </bean>]]></programlisting>
                     <para>
-                        It is also possible to access a non-static (instance) field of another bean,
-                        as described in the API documentation for the
-                        <ulink url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/config/FieldRetrievingFactoryBean.html"><classname>FieldRetrievingFactoryBean</classname></ulink>
+                        <ulink url="http://static.springframework.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/config/FieldRetrievingFactoryBean.html"><classname>FieldRetrievingFactoryBean</classname></ulink> 클래스의 API 문서에 나와 있듯이
+                        다른 빈의 비정적(인스턴스) 필드에 접근하는 것도 가능하다.
                         class.
                     </para>
                     <para>
-                        Injecting enum values into beans as either property or constructor arguments is very
-                        easy to do in Spring, in that you don't actually have to <emphasis>do</emphasis>
-                        anything or know anything about the Spring internals (or even about classes such
-                        as the <classname>FieldRetrievingFactoryBean</classname>). Let's look at an example
-                        to see how easy injecting an enum value is; consider this JDK 5 enum:
+                        스프링에서 빈에 프로프니나 생성사 인자로 enum 값을 주입하기는 아주 쉬워서 실제로 아무것도
+                        <emphasis>안해도</emphasis> 되고 스프링 내부에 대해(
+                        <classname>FieldRetrievingFactoryBean</classname>같은 클래스) 알아야 하는 것도 없다.
+                        enum 값을 주입하기가 얼마나 쉬운지 예제를 통해서 보자. 다음과 같은 JDK 6 enum을 생각해 보자.
                     </para>
                     <programlisting language="java"><![CDATA[package javax.persistence;
 
@@ -194,7 +166,7 @@ public enum PersistenceContextType {
     EXTENDED
 
 }]]></programlisting>
-                    <para>Now consider a setter of type <classname>PersistenceContextType</classname>:</para>
+                    <para><classname>PersistenceContextType</classname>타입의 setter를 보자.</para>
                     <programlisting language="java"><![CDATA[package example;
 
 public class Client {
@@ -205,21 +177,20 @@ public class Client {
         this.persistenceContextType = type;
     }
 }]]></programlisting>
-                    <para>.. and the corresponding bean definition:</para>
+                    <para>이에 대한 빈 정의는 다음과 같다.</para>
                     <programlisting language="xml"><![CDATA[<bean class="example.Client">
     <property name="persistenceContextType" value="TRANSACTION" />
 </bean>]]></programlisting>
                     <para>
-                        This works for classic type-safe emulated enums (on JDK 1.4 and JDK 1.3) as well;
-                        Spring will automatically attempt to match the string property value to a constant
-                        on the enum class.
+                        이는 (JDK 1.4와 JDK 1.3의) 전통적이면서 타입 세이프 하게 만들어진 enum에서도 잘 동작한다.
+                        스프링은 enum 클래스의 상수와 일치하는 문자열 프로퍼티 값을 자동으로 찾을 것이다.
                     </para>
                 </section>
             </section>
             <section id="xsd-config-body-schemas-util-property-path">
                 <title><literal>&lt;util:property-path/&gt;</literal></title>
                 <para>Before...</para>
-                <programlisting language="xml"><lineannotation>&lt;!-- target bean to be referenced by name --&gt;</lineannotation><![CDATA[
+                <programlisting language="xml"><lineannotation>&lt;!-- 대상 빈은 name으로 참조한다 --&gt;</lineannotation><![CDATA[
 <bean id="testBean" class="org.springframework.beans.TestBean" scope="prototype">
   <property name="age" value="10"/>
   <property name="spouse">
@@ -229,16 +200,15 @@ public class Client {
   </property>
 </bean>
 
-]]><lineannotation>&lt;!-- will result in 10, which is the value of property 'age' of bean 'testBean' --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- 이는 'testBean' 빈의 'age' 프로퍼티의 값인 10이 된다 --&gt;</lineannotation><![CDATA[
 <bean id="testBean.age" class="org.springframework.beans.factory.config.PropertyPathFactoryBean"/>]]></programlisting>
-                <para>The above configuration uses a Spring <interfacename>FactoryBean</interfacename>
-                implementation, the <classname>PropertyPathFactoryBean</classname>, to
-                create a bean (of type <classname>int</classname>) called
-                <literal>'testBean.age'</literal> that has a value equal to the <literal>'age'</literal>
-                property of the <literal>'testBean'</literal> bean.
+                <para>위 구성은 스프링의 <interfacename>FactoryBean</interfacename> 구현체 <classname>
+                PropertyPathFactoryBean</classname>을 사용해서 <literal>'testBean'</literal> 빈의
+                <literal>'age'</literal> 프로퍼티와 같은 값을 가진 (<classname>int</classname> 타입의)
+                <literal>'testBean.age'</literal>라는 빈을 생성한다.
                 </para>
                 <para>After...</para>
-                <programlisting language="xml"><lineannotation>&lt;!-- target bean to be referenced by name --&gt;</lineannotation><![CDATA[
+                <programlisting language="xml"><lineannotation>&lt;!-- 대상 빈은 name으로 참조한다 --&gt;</lineannotation><![CDATA[
 <bean id="testBean" class="org.springframework.beans.TestBean" scope="prototype">
   <property name="age" value="10"/>
   <property name="spouse">
@@ -248,19 +218,18 @@ public class Client {
   </property>
 </bean>
 
-]]><lineannotation>&lt;!-- will result in 10, which is the value of property 'age' of bean 'testBean' --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- 이는 'testBean' 빈의 'age' 프로퍼티의 값인 10이 된다 --&gt;</lineannotation><![CDATA[
 <util:property-path id="name" path="testBean.age"/>]]></programlisting>
-                <para>The value of the <literal>'path'</literal> attribute of the
-                <literal>&lt;property-path/&gt;</literal> tag follows the form <literal>'beanName.beanProperty'</literal>.</para>
+                <para><literal>&lt;property-path/&gt;</literal> 태그의 <literal>'path'</literal> 속성의 값은
+                <literal>'beanName.beanProperty'</literal> 형식을 따른다.</para>
                 <section id="xsd-config-body-schemas-util-property-path-dependency">
-                    <title>Using <literal>&lt;util:property-path/&gt;</literal> to set a bean property or constructor-argument</title>
-                    <para><classname>PropertyPathFactoryBean</classname> is a
-                    <interfacename>FactoryBean</interfacename> that evaluates a property path on a given
-                    target object. The target object can be specified directly or via a bean
-                    name. This value may then be used in another bean definition as a property
-                    value or constructor argument.</para>
-                    <para>Here's an example where a path is used against another bean, by name:</para>
-                    <programlisting language="xml"><![CDATA[// target bean to be referenced by name
+                    <title>빈 프로퍼티나 생성자 인자를 설정할 때 <literal>&lt;util:property-path/&gt;</literal> 사용하기</title>
+                    <para><classname>PropertyPathFactoryBean</classname>는
+                    <interfacename>FactoryBean</interfacename>이고 주어진 대상 객체의 프로퍼티 경로를 평가한다.
+                    대상 객체는 직접 지정할 수도 있고 빈 이름으로 지정할 수도 있다. 지정한 값은 다른 빈 정의에서 프로퍼티 값이나
+                    생성자 인자로 사용할 수 있다.</para>
+                    <para>다음은 name으로 다른 빈을 기준으로 path를 사용하는 예제이다.</para>
+                    <programlisting language="xml"><![CDATA[// 대상 빈은 name으로 참조된다
 <bean id="person" class="org.springframework.beans.TestBean" scope="prototype">
   <property name="age" value="10"/>
   <property name="spouse">
@@ -270,14 +239,14 @@ public class Client {
   </property>
 </bean>
 
-]]><lineannotation>// will result in 11, which is the value of property 'spouse.age' of bean 'person'</lineannotation><![CDATA[
+]]><lineannotation>// 이는 'person' 빈의 'spouse.age' 프로퍼티의 값인 11이 된다</lineannotation><![CDATA[
 <bean id="theAge"
     class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
   <property name="targetBeanName" value="person"/>
   <property name="propertyPath" value="spouse.age"/>
 </bean>]]></programlisting>
-                    <para>In this example, a path is evaluated against an inner bean:</para>
-                    <programlisting language="xml"><lineannotation>&lt;!-- will result in 12, which is the value of property 'age' of the inner bean --&gt;</lineannotation><![CDATA[
+                    <para>이 예제에서 path는 내부 빈을 기준으로 평가된다.</para>
+                    <programlisting language="xml"><lineannotation>&lt;!-- 이는 내부 빈의 'age' 프로퍼티의 값인 12가 된다 --&gt;</lineannotation><![CDATA[
 <bean id="theAge"
     class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
   <property name="targetObject">
@@ -287,45 +256,39 @@ public class Client {
   </property>
   <property name="propertyPath" value="age"/>
 </bean>]]></programlisting>
-                    <para>There is also a shortcut form, where the bean name is the property path.</para>
-                    <programlisting language="xml"><lineannotation>&lt;!-- will result in 10, which is the value of property 'age' of bean 'person' --&gt;</lineannotation><![CDATA[
+                    <para>빈 네임이 프로퍼티 경로인 단축형태도 존재한다.</para>
+                    <programlisting language="xml"><lineannotation>&lt;!-- 이는 'person' 빈의 'age' 프로퍼티의 값인 10이 된다 --&gt;</lineannotation><![CDATA[
 <bean id="person.age"
     class="org.springframework.beans.factory.config.PropertyPathFactoryBean"/>]]></programlisting>
-                <para>This form does mean that there is no choice in the name of the bean.
-                    Any reference to it will also have to use the same id, which is the path.
-                    Of course, if used as an inner bean, there is no need to refer to it at
-                    all:</para>
+                <para>이 형식에서는 빈 이름을 선택할 수 없어서 이에 대한 모든 참조도 같은 id(경로)를 사용해야 한다.
+                    물론 내부 빈으로 사용한다면 참조할 필요조차 없다.</para>
                     <programlisting language="xml"><![CDATA[<bean id="..." class="...">
   <property name="age">
     <bean id="person.age"
         class="org.springframework.beans.factory.config.PropertyPathFactoryBean"/>
   </property>
 </bean>]]></programlisting>
-                    <para>The result type may be specifically set in the actual definition.
-                    This is not necessary for most use cases, but can be of use for some.
-                    Please see the Javadocs for more info on this feature.</para>
+                    <para>실제 정의에서 결과 타입을 구체적으로 지정할 수도 있다. 대부분 경우 이는 필요 없지만
+                    일부의 경우에는 사용할 수 있다. 이 기능에 대한 자세한 내용은 Javadoc을 참조해라.</para>
                 </section>
             </section>
             <section id="xsd-config-body-schemas-util-properties">
                 <title><literal>&lt;util:properties/&gt;</literal></title>
                 <para>Before...</para>
-                <programlisting language="xml"><lineannotation>&lt;!-- creates a <classname>java.util.Properties</classname> instance with values loaded from the supplied location --&gt;</lineannotation><![CDATA[
+                <programlisting language="xml"><lineannotation>&lt;!-- 제공한 위치에서 로드한 값으로 <classname>java.util.Properties</classname> 인스턴스를 생성한다 --&gt;</lineannotation><![CDATA[
 <bean id="jdbcConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
   <property name="location" value="classpath:com/foo/jdbc-production.properties"/>
 </bean>]]></programlisting>
-                <para>The above configuration uses a Spring <interfacename>FactoryBean</interfacename>
-                implementation, the <classname>PropertiesFactoryBean</classname>, to
-                instantiate a <classname>java.util.Properties</classname> instance with values loaded from
-                the supplied <link linkend="resources"><interfacename>Resource</interfacename></link> location).
+                <para>위 구성은 스프링의 <interfacename>FactoryBean</interfacename> 구현체인 <classname>PropertiesFactoryBean</classname>를 사용해서 제공된 <link linkend="resources"><interfacename>Resource</interfacename></link> 위치에서 로드한 값으로 <classname>java.util.Properties</classname> 인스턴스를 인스턴스화 한다.
                 </para>
                 <para>After...</para>
-                <programlisting language="xml"><lineannotation>&lt;!-- creates a <classname>java.util.Properties</classname> instance with values loaded from the supplied location --&gt;</lineannotation><![CDATA[
+                <programlisting language="xml"><lineannotation>&lt;!-- 제공한 위치에서 로드한 값으로 <classname>java.util.Properties</classname> 인스턴스를 생성한다 --&gt;</lineannotation><![CDATA[
 <util:properties id="jdbcConfiguration" location="classpath:com/foo/jdbc-production.properties"/>]]></programlisting>
             </section>
             <section id="xsd-config-body-schemas-util-list">
                 <title><literal>&lt;util:list/&gt;</literal></title>
                 <para>Before...</para>
-                <programlisting language="xml"><lineannotation>&lt;!-- creates a <classname>java.util.List</classname> instance with values loaded from the supplied <literal>'sourceList'</literal> --&gt;</lineannotation><![CDATA[
+                <programlisting language="xml"><lineannotation>&lt;!-- 제공한 <literal>'sourceList'</literal>에서 로드한 값으로 <classname>java.util.List</classname> 인스턴스를 생성한다 --&gt;</lineannotation><![CDATA[
 <bean id="emails" class="org.springframework.beans.factory.config.ListFactoryBean">
   <property name="sourceList">
       <list>
@@ -336,32 +299,31 @@ public class Client {
       </list>
   </property>
 </bean>]]></programlisting>
-                <para>The above configuration uses a Spring <interfacename>FactoryBean</interfacename>
-                implementation, the <classname>ListFactoryBean</classname>, to
-                create a <classname>java.util.List</classname> instance initialized
-                with values taken from the supplied <literal>'sourceList'</literal>.
+                <para>위 구성은 스프링의 <interfacename>FactoryBean</interfacename> 구현체
+                <classname>ListFactoryBean</classname>을 사용해서 제공한
+                <literal>'sourceList'</literal>에서 가져온 값으로 초기화한
+                <classname>java.util.List</classname> 인스턴스를 생성한다.
                 </para>
                 <para>After...</para>
-                <programlisting language="xml"><lineannotation>&lt;!-- creates a <classname>java.util.List</classname> instance with the supplied values --&gt;</lineannotation><![CDATA[
+                <programlisting language="xml"><lineannotation>&lt;!-- 제공한 값으로 <classname>java.util.List</classname> 인스턴스를 생성한다 --&gt;</lineannotation><![CDATA[
 <util:list id="emails">
     <value>pechorin@hero.org</value>
     <value>raskolnikov@slums.org</value>
     <value>stavrogin@gov.org</value>
     <value>porfiry@gov.org</value>
 </util:list>]]></programlisting>
-                <para>You can also explicitly control the exact type of <interfacename>List</interfacename>
-                that will be instantiated and populated via the use of the <literal>'list-class'</literal>
-                attribute on the <literal>&lt;util:list/&gt;</literal> element. For example, if we
-                really need a <classname>java.util.LinkedList</classname> to be instantiated, we could
-                use the following configuration:</para>
+                <para>명시적으로 정확히 <interfacename>List</interfacename> 타입을 제어할 수도 있는데 이는
+                <literal>&lt;util:list/&gt;</literal> 요소의 <literal>'list-class'</literal> 속성을
+                사용해서 인스턴스화한다. 예를 들어 <classname>java.util.LinkedList</classname>를 인스턴스화
+                하기를 원한다면 다음의 구성을 사용할 수 있다.</para>
                 <programlisting language="xml"><![CDATA[<util:list id="emails" list-class="java.util.LinkedList">
     <value>jackshaftoe@vagabond.org</value>
     <value>eliza@thinkingmanscrumpet.org</value>
     <value>vanhoek@pirate.org</value>
     <value>d'Arcachon@nemesis.org</value>
 </util:list>]]></programlisting>
-                <para>If no <literal>'list-class'</literal> attribute is supplied, a
-                <interfacename>List</interfacename> implementation will be chosen by the container.</para>
+                <para><literal>'list-class'</literal> 속성을 지정하지 않으면 컨테이너가
+                <interfacename>List</interfacename> 구현체를 선택할 것이다.</para>
                 <!-- Commented out until SPR-6523 is resolved.
                 <para>Finally, you can also control the merging behavior using the
                 <literal>'merge'</literal> attribute of the <literal>&lt;util:list/&gt;</literal>
@@ -372,7 +334,7 @@ public class Client {
             <section id="xsd-config-body-schemas-util-map">
                 <title><literal>&lt;util:map/&gt;</literal></title>
                 <para>Before...</para>
-                <programlisting language="xml"><lineannotation>&lt;!-- creates a <classname>java.util.Map</classname> instance with values loaded from the supplied <literal>'sourceMap'</literal> --&gt;</lineannotation><![CDATA[
+                <programlisting language="xml"><lineannotation>&lt;!-- 제공한 <literal>'sourceMap'</literal>에서 로드한 값으로 <classname>java.util.Map</classname> 인스턴스를 생성한다 --&gt;</lineannotation><![CDATA[
 <bean id="emails" class="org.springframework.beans.factory.config.MapFactoryBean">
   <property name="sourceMap">
       <map>
@@ -383,32 +345,30 @@ public class Client {
       </map>
   </property>
 </bean>]]></programlisting>
-                <para>The above configuration uses a Spring <interfacename>FactoryBean</interfacename>
-                implementation, the <classname>MapFactoryBean</classname>, to
-                create a <classname>java.util.Map</classname> instance initialized
-                with key-value pairs taken from the supplied <literal>'sourceMap'</literal>.
+                <para>위 구성은 스프링의 <interfacename>FactoryBean</interfacename> 구현체
+                <classname>MapFactoryBean</classname>를 사용해서 제공한 <literal>'sourceMap'</literal>에서
+                가져온 키-값 쌍으로 초기화한 <classname>java.util.Map</classname> 인스턴스를 생성한다.
                 </para>
                 <para>After...</para>
-                <programlisting language="xml"><lineannotation>&lt;!-- creates a <classname>java.util.Map</classname> instance with the supplied key-value pairs --&gt;</lineannotation><![CDATA[
+                <programlisting language="xml"><lineannotation>&lt;!-- 제공한 키-값 쌍으로 <classname>java.util.Map</classname> 인스턴스를 생성한다 --&gt;</lineannotation><![CDATA[
 <util:map id="emails">
     <entry key="pechorin" value="pechorin@hero.org"/>
     <entry key="raskolnikov" value="raskolnikov@slums.org"/>
     <entry key="stavrogin" value="stavrogin@gov.org"/>
     <entry key="porfiry" value="porfiry@gov.org"/>
 </util:map>]]></programlisting>
-                <para>You can also explicitly control the exact type of <interfacename>Map</interfacename>
-                that will be instantiated and populated via the use of the <literal>'map-class'</literal>
-                attribute on the <literal>&lt;util:map/&gt;</literal> element. For example, if we
-                really need a <classname>java.util.TreeMap</classname> to be instantiated, we could
-                use the following configuration:</para>
+                <para>명시적으로 정확히 <interfacename>Map</interfacename> 타입을 제어할 수도 있는데 이는
+                <literal>&lt;util:map/&gt;</literal> 요소의 <literal>'map-class'</literal> 속성을 사용해서
+                인스턴스화 한다. 예를 들어 <classname>java.util.TreeMap</classname>를 인스턴스화 하기를 원한다면
+                다음 구성을 사용할 수 있다.</para>
                 <programlisting language="xml"><![CDATA[<util:map id="emails" map-class="java.util.TreeMap">
     <entry key="pechorin" value="pechorin@hero.org"/>
     <entry key="raskolnikov" value="raskolnikov@slums.org"/>
     <entry key="stavrogin" value="stavrogin@gov.org"/>
     <entry key="porfiry" value="porfiry@gov.org"/>
 </util:map>]]></programlisting>
-                <para>If no <literal>'map-class'</literal> attribute is supplied, a
-                <interfacename>Map</interfacename> implementation will be chosen by the container.</para>
+                <para><literal>'map-class'</literal> 속성을 지정하지 않는다면 컨테이너가
+                <interfacename>Map</interfacename> 구현체를 선택할 것이다.</para>
                 <!-- Commented out until SPR-6523 is resolved.
                 <para>Finally, you can also control the merging behavior using the
                 <literal>'merge'</literal> attribute of the <literal>&lt;util:map/&gt;</literal>
@@ -419,7 +379,7 @@ public class Client {
             <section id="xsd-config-body-schemas-util-set">
                 <title><literal>&lt;util:set/&gt;</literal></title>
                 <para>Before...</para>
-                <programlisting language="xml"><lineannotation>&lt;!-- creates a <classname>java.util.Set</classname> instance with values loaded from the supplied <literal>'sourceSet'</literal> --&gt;</lineannotation><![CDATA[
+                <programlisting language="xml"><lineannotation>&lt;!-- 제공한 <literal>'sourceSet'</literal>에서 로드한 값으로 <classname>java.util.Set</classname> 인스턴스를 생성한다 --&gt;</lineannotation><![CDATA[
 <bean id="emails" class="org.springframework.beans.factory.config.SetFactoryBean">
   <property name="sourceSet">
       <set>
@@ -430,32 +390,30 @@ public class Client {
       </set>
   </property>
 </bean>]]></programlisting>
-                <para>The above configuration uses a Spring <interfacename>FactoryBean</interfacename>
-                implementation, the <classname>SetFactoryBean</classname>, to
-                create a <classname>java.util.Set</classname> instance initialized
-                with values taken from the supplied <literal>'sourceSet'</literal>.
+                <para>위 구성은 스프링의 <interfacename>FactoryBean</interfacename> 구현체
+                <classname>SetFactoryBean</classname>를 사용해서 제공된 <literal>'sourceSet'</literal>에서
+                가져온 값으로 초기화한 <classname>java.util.Set</classname> 인스턴스를 생성한다.
                 </para>
                 <para>After...</para>
-                <programlisting language="xml"><lineannotation>&lt;!-- creates a <classname>java.util.Set</classname> instance with the supplied values --&gt;</lineannotation><![CDATA[
+                <programlisting language="xml"><lineannotation>&lt;!-- 제공한 값으로 <classname>java.util.Set</classname> 인스턴스를 생성한다 --&gt;</lineannotation><![CDATA[
 <util:set id="emails">
     <value>pechorin@hero.org</value>
     <value>raskolnikov@slums.org</value>
     <value>stavrogin@gov.org</value>
     <value>porfiry@gov.org</value>
 </util:set>]]></programlisting>
-                <para>You can also explicitly control the exact type of <interfacename>Set</interfacename>
-                that will be instantiated and populated via the use of the <literal>'set-class'</literal>
-                attribute on the <literal>&lt;util:set/&gt;</literal> element. For example, if we
-                really need a <classname>java.util.TreeSet</classname> to be instantiated, we could
-                use the following configuration:</para>
+                <para>명시적으로 정확히 <interfacename>Set</interfacename> 타입을 제어할 수도 있는데 이는
+                <literal>&lt;util:set/&gt;</literal> 요소의 <literal>'set-class'</literal> 속성을 사용해서
+                인스턴스화한다. 예를 들어 <classname>java.util.TreeSet</classname>를 인스턴스화 하기 원한다면
+                다음 구성을 사용할 수 있다.</para>
                 <programlisting language="xml"><![CDATA[<util:set id="emails" set-class="java.util.TreeSet">
     <value>pechorin@hero.org</value>
     <value>raskolnikov@slums.org</value>
     <value>stavrogin@gov.org</value>
     <value>porfiry@gov.org</value>
 </util:set>]]></programlisting>
-                <para>If no <literal>'set-class'</literal> attribute is supplied, a
-                <interfacename>Set</interfacename> implementation will be chosen by the container.</para>
+                <para><literal>'set-class'</literal> 속성을 지정하지 않으면 컨테이너가
+                <interfacename>Set</interfacename> 구현체를 선택할 것이다.</para>
                 <!-- Commented out until SPR-6523 is resolved.
                 <para>Finally, you can also control the merging behavior using the
                 <literal>'merge'</literal> attribute of the <literal>&lt;util:set/&gt;</literal>
@@ -465,13 +423,12 @@ public class Client {
             </section>
         </section>
         <section id="xsd-config-body-schemas-jee">
-            <title>The <literal>jee</literal> schema</title>
-            <para>The <literal>jee</literal> tags deal with Java EE (Java Enterprise Edition)-related
-            configuration issues, such as looking up a JNDI object and defining EJB references.</para>
-            <para>To use the tags in the <literal>jee</literal> schema, you need to have
-            the following preamble at the top of your Spring XML configuration file;
-            the text in the following snippet references the correct schema so that
-            the tags in the <literal>jee</literal> namespace are available to you.</para>
+            <title><literal>jee</literal> 스키마</title>
+            <para><literal>jee</literal> 태그는 JNDI 객체를 찾고 EJB 참조를 정의하는 등의 Java EE
+            (Java Enterprise Edition)와 관련된 구성 이슈를 다룬다.</para>
+            <para><literal>jee</literal> 스키마의 태그를 사용하려면 스프링 XML 구성 파일 상단에 다음
+            부분을 추가해야 한다. 다음 예시의 내용은 올바른 스키마를 참조해서 <literal>jee</literal>
+            네임스페이스의 태그를 사용할 수 있다.</para>
             <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -480,30 +437,30 @@ public class Client {
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 ]]><emphasis role="bold">http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd"</emphasis><![CDATA[>
 
-]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> definitions here --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- 여기에 <literal>&lt;bean/&gt;</literal> 정의를 작성한다 --&gt;</lineannotation><![CDATA[
 
 </beans>]]></programlisting>
             <section id="xsd-config-body-schemas-jee-jndi-lookup">
-                <title><literal>&lt;jee:jndi-lookup/&gt;</literal> (simple)</title>
+                <title><literal>&lt;jee:jndi-lookup/&gt;</literal> (간단버전)</title>
                 <para>Before...</para>
                 <programlisting language="xml"><![CDATA[<bean id="]]><emphasis role="bold"><![CDATA[dataSource]]></emphasis><![CDATA[" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="jdbc/MyDataSource"/>
 </bean>
 
 <bean id="userDao" class="com.foo.JdbcUserDao">
-    ]]><lineannotation>&lt;!-- Spring will do the cast automatically (as usual) --&gt;</lineannotation><![CDATA[
+    ]]><lineannotation>&lt;!-- 스프링이 자동으로 캐스팅할 것이다. (평소처럼) --&gt;</lineannotation><![CDATA[
     <property name="dataSource" ref="]]><emphasis role="bold">dataSource</emphasis>"/><![CDATA[
 </bean>]]></programlisting>
                 <para>After...</para>
                 <programlisting language="xml"><![CDATA[<jee:jndi-lookup id="]]><emphasis role="bold"><![CDATA[dataSource]]></emphasis><![CDATA[" jndi-name="jdbc/MyDataSource"/>
 
 <bean id="userDao" class="com.foo.JdbcUserDao">
-    ]]><lineannotation>&lt;!-- Spring will do the cast automatically (as usual) --&gt;</lineannotation><![CDATA[
+    ]]><lineannotation>&lt;!-- 스프링이 자동으로 캐스팅할 것이다. (평소처럼) --&gt;</lineannotation><![CDATA[
     <property name="dataSource" ref="]]><emphasis role="bold">dataSource</emphasis>"/><![CDATA[
 </bean>]]></programlisting>
             </section>
             <section id="xsd-config-body-schemas-jee-jndi-lookup-environment-single">
-                <title><literal>&lt;jee:jndi-lookup/&gt;</literal> (with single JNDI environment setting)</title>
+                <title><literal>&lt;jee:jndi-lookup/&gt;</literal> (단일 JNDI 환경설정을 이용)</title>
                 <para>Before...</para>
                 <programlisting language="xml"><![CDATA[<bean id="simple" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="jdbc/MyDataSource"/>
@@ -519,7 +476,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 </jee:jndi-lookup>]]></programlisting>
             </section>
             <section id="xsd-config-body-schemas-jee-jndi-lookup-evironment-multiple">
-                <title><literal>&lt;jee:jndi-lookup/&gt;</literal> (with multiple JNDI environment settings)</title>
+                <title><literal>&lt;jee:jndi-lookup/&gt;</literal> (다중 JNDI 환경 설정을 이용)</title>
                 <para>Before...</para>
                 <programlisting language="xml"><![CDATA[<bean id="simple" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="jdbc/MyDataSource"/>
@@ -532,7 +489,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 </bean>]]></programlisting>
                 <para>After...</para>
                 <programlisting language="xml"><![CDATA[<jee:jndi-lookup id="simple" jndi-name="jdbc/MyDataSource">
-    ]]><lineannotation>&lt;!-- newline-separated, key-value pairs for the environment (standard <classname>Properties</classname> format) --&gt;</lineannotation><![CDATA[
+    ]]><lineannotation>&lt;!-- 라인별로 구분되는 환경의 키-값 쌍 (표준 <classname>Properties</classname> 형식) --&gt;</lineannotation><![CDATA[
     <jee:environment>
         foo=bar
         ping=pong
@@ -540,7 +497,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 </jee:jndi-lookup>]]></programlisting>
             </section>
             <section id="xsd-config-body-schemas-jee-jndi-lookup-complex">
-                <title><literal>&lt;jee:jndi-lookup/&gt;</literal> (complex)</title>
+                <title><literal>&lt;jee:jndi-lookup/&gt;</literal> (복합 버전)</title>
                 <para>Before...</para>
                 <programlisting language="xml"><![CDATA[<bean id="simple" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="jdbc/MyDataSource"/>
@@ -560,9 +517,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
              proxy-interface="com.myapp.Foo"/>]]></programlisting>
             </section>
             <section id="xsd-config-body-schemas-jee-local-slsb">
-                <title><literal>&lt;jee:local-slsb/&gt;</literal> (simple)</title>
-                <para>The <literal>&lt;jee:local-slsb/&gt;</literal> tag configures a
-                reference to an EJB Stateless SessionBean.</para>
+                <title><literal>&lt;jee:local-slsb/&gt;</literal> (간단 버전)</title>
+                <para><literal>&lt;jee:local-slsb/&gt;</literal> 태그는 EJB Stateless
+                SessionBean애 대한 참조를 구성한다.</para>
                 <para>Before...</para>
                 <programlisting language="xml"><![CDATA[<bean id="simple"
       class="org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean">
@@ -574,7 +531,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     business-interface="com.foo.service.RentalService"/>]]></programlisting>
             </section>
             <section id="xsd-config-body-schemas-jee-local-slsb-complex">
-                <title><literal>&lt;jee:local-slsb/&gt;</literal> (complex)</title>
+                <title><literal>&lt;jee:local-slsb/&gt;</literal> (복합 버전)</title>
                 <programlisting language="xml"><![CDATA[<bean id="complexLocalEjb"
       class="org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean">
   <property name="jndiName" value="ejb/RentalServiceBean"/>
@@ -593,8 +550,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             </section>
             <section id="xsd-config-body-schemas-jee-remote-slsb">
                 <title><literal>&lt;jee:remote-slsb/&gt;</literal></title>
-                <para>The <literal>&lt;jee:remote-slsb/&gt;</literal> tag configures a
-                reference to a <literal>remote</literal> EJB Stateless SessionBean.</para>
+                <para><literal>&lt;jee:remote-slsb/&gt;</literal> 태그는 <literal>remote</literal>
+                EJB Stateless SessionBean에 대한 참조를 구성한다.</para>
                 <para>Before...</para>
                 <programlisting language="xml"><![CDATA[<bean id="complexRemoteEjb"
       class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
@@ -618,19 +575,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             </section>
         </section>
         <section id="xsd-config-body-schemas-lang">
-            <title>The <literal>lang</literal> schema</title>
-            <para>The <literal>lang</literal> tags deal with exposing objects that have been
-            written in a dynamic language such as JRuby or Groovy as beans in the Spring
-            container.</para>
-            <para>These tags (and the dynamic language support) are comprehensively covered
-            in the chapter entitled <xref linkend="dynamic-language"/>. Please do consult that
-            chapter for full details on this support and the <literal>lang</literal> tags
-            themselves.</para>
-            <para>In the interest of completeness, to use the tags in the <literal>lang</literal>
-            schema, you need to have the following preamble at the top of your Spring XML
-            configuration file; the text in the following snippet references the
-            correct schema so that the tags in the <literal>lang</literal> namespace are
-            available to you.</para>
+            <title><literal>lang</literal> 스키마</title>
+            <para><literal>lang</literal> 태그는 스프링 컨테이너의 빈을 JRuby나 Groovy 같은 동적 언어로
+            작성한 경우 노출 객체를 다룬다.</para>
+            <para>이러한 태그(와 동적 언어 지원)은 <xref linkend="dynamic-language"/> 챕터에서 자세하게
+            다루었다. 동적 언어 지원과 <literal>lang</literal> 태그에 대한 자세한 내용은 이 챕터를 참고해라.</para>
+            <para><literal>lang</literal> 스키마의 태그를 사용하려면 스프링 XML 구성파일의 상단에 다음 코드를
+            넣어야 한다. 다음 예시의 코드는 올바른 스키마를 참조해서 <literal>lang</literal> 네임스페이스의
+            태그를 사용할 수 있게 한다.</para>
             <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -639,23 +591,20 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 ]]><emphasis role="bold">http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd"</emphasis><![CDATA[>
 
-]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> definitions here --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- 여기에 <literal>&lt;bean/&gt;</literal> 정의를 작성한다 --&gt;</lineannotation><![CDATA[
 
 </beans>]]></programlisting>
         </section>
         <section id="xsd-config-body-schemas-jms">
-            <title>The <literal>jms</literal> schema</title>
-            <para>The <literal>jms</literal> tags deal with configuring JMS-related
-            beans such as Spring's <link linkend="jms-mdp">MessageListenerContainers</link>.
-            These tags are detailed in the section of the <link linkend="jms">JMS chapter</link>
-            entitled <xref linkend="jms-namespace"/>. Please do consult that
-            chapter for full details on this support and the <literal>jms</literal> tags
-            themselves.</para>
-            <para>In the interest of completeness, to use the tags in the <literal>jms</literal>
-            schema, you need to have the following preamble at the top of your Spring XML
-            configuration file; the text in the following snippet references the
-            correct schema so that the tags in the <literal>jms</literal> namespace are
-            available to you.</para>
+            <title><literal>jms</literal> 스키마</title>
+            <para><literal>jms</literal> 태그는 스프링의
+            <link linkend="jms-mdp">MessageListenerContainers</link>처럼 JMS와 관련된 빈의 구성을
+            다룬다. 이러한 태그는 <xref linkend="jms-namespace"/>라는 제목의
+            <link linkend="jms">JMS 챕터</link>에서 자세히 설명했다. JMS 지원과 <literal>jms</literal>
+            태그에 대한 자세한 내용은 해당 챕터를 참고하기 바란다.</para>
+            <para><literal>jms</literal> 스키마의 태그를 사용하려면 스프링 XML 구성파일 상단에 다음 코드를 넣어야
+            한다. 다음 예시의 코드는 올바른 스키마를 참조해서 <literal>jms</literal> 네임스페이스의 태그를
+            사용할 수 있게 한다.</para>
             <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -664,30 +613,24 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 ]]><emphasis role="bold">http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd"</emphasis><![CDATA[>
 
-]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> definitions here --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- 여기에 <literal>&lt;bean/&gt;</literal> 정의를 작성한다 --&gt;</lineannotation><![CDATA[
 
 </beans>]]></programlisting>
         </section>
         <section id="xsd-config-body-schemas-tx">
-            <title>The <literal>tx</literal> (transaction) schema</title>
-            <para>The <literal>tx</literal> tags deal with configuring all of those
-            beans in Spring's comprehensive support for transactions. These tags are
-            covered in the chapter entitled <xref linkend="transaction"/>.</para>
+            <title><literal>tx</literal> (트랜잭션) 스키마</title>
+            <para><literal>tx</literal> 태그는 스프링의 광범위한 트랜잭션 지원의 모든 빈의 구성을
+            다룬다. 이 태그는 <xref linkend="transaction"/> 장에서 다루었다.</para>
             <tip>
-                <para>You are strongly encouraged to look at the
-                <filename>'spring-tx-3.0.xsd'</filename> file that ships with the Spring
-                distribution. This file is (of course), the XML Schema for Spring's
-                transaction configuration, and covers all of the various tags in the
-                <literal>tx</literal> namespace, including attribute defaults and
-                suchlike. This file is documented inline, and thus the information is
-                not repeated here in the interests of adhering to the DRY (Don't Repeat
-                Yourself) principle.</para>
+                <para>스프링 배포판에 포함된 <filename>'spring-tx-3.0.xsd'</filename> 파일을
+                보기를 권장한다. (물론) 이 파일은 스프링 트랜잭션 구성의 XML 스키마로 기본 속성 등을 포함해서
+                <literal>tx</literal> 네임스페이스의 다양한 태그를 모두 다룬다. 이 파일은 문서에 포함되어
+                있으므로 DRY (Don't Repeat Yourself) 원리를 지키기 위해 여기서 다시 얘기하지는
+                않는다.</para>
             </tip>
-            <para>In the interest of completeness, to use the tags in the <literal>tx</literal>
-            schema, you need to have the following preamble at the top of your Spring XML
-            configuration file; the text in the following snippet references the
-            correct schema so that the tags in the <literal>tx</literal> namespace are
-            available to you.</para>
+            <para><literal>tx</literal> 스키마의 태그를 사용하려면 스프링 XML 구성파일 상단에 다른 코드를
+            넣어야 한다. <literal>tx</literal> 네임스페이스를 사용할 수 있도록 다음 예시의 텍스트는 올바른
+            스키마를 참조하고 있다.</para>
             <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -698,27 +641,23 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 ]]><emphasis role="bold">http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd</emphasis><![CDATA[
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> definitions here --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- 여기서 <literal>&lt;bean/&gt;</literal> 정의를 한다 --&gt;</lineannotation><![CDATA[
 
 </beans>]]></programlisting>
             <note>
-                <para>Often when using the tags in the <literal>tx</literal> namespace you will also be using
-                the tags from the <literal>aop</literal> namespace (since the declarative transaction support in Spring is implemented using
-                AOP). The above XML snippet contains the relevant lines needed to reference the <literal>aop</literal> schema
-                so that the tags in the <literal>aop</literal> namespace are available to you.</para>
+                <para><literal>tx</literal> 네임스페이스로 태그를 사용하는 경우 <literal>aop</literal> 네임스페이스의
+                태그도 사용할 수 있다. (스프링의 선언적인 트랜잭션 지원이 AOP로 구현되었으므로) 위 XML에 <literal>aop</literal>
+                스키마를 참조하기에 필요한 코드가 포함되어 있으므로 <literal>aop</literal> 네임스페이스의 태그를 사용할 수 있다.</para>
             </note>
         </section>
         <section id="xsd-config-body-schemas-aop">
-            <title>The <literal>aop</literal> schema</title>
-            <para>The <literal>aop</literal> tags deal with configuring all things
-            AOP in Spring: this includes Spring's own proxy-based AOP framework and Spring's
-            integration with the AspectJ AOP framework. These tags are
-            comprehensively covered in the chapter entitled <xref linkend="aop"/>.</para>
-            <para>In the interest of completeness, to use the tags in the <literal>aop</literal>
-            schema, you need to have the following preamble at the top of your Spring XML
-            configuration file; the text in the following snippet references the
-            correct schema so that the tags in the <literal>aop</literal> namespace are
-            available to you.</para>
+            <title><literal>aop</literal> 스키마</title>
+            <para><literal>aop</literal> 태그는 스프링의 AOP와 관련된 모든 것을 다룬다. 이 태그는
+            스프링의 프락시 기반 AOP 프레임워크와 AspectJ AOP 프레임워크와의 스프링 통합을 포함한다. 이
+            태그는 <xref linkend="aop"/> 장에서 자세히 다루었다.</para>
+            <para><literal>aop</literal> 스키마의 태그를 사용하려면 스프링 XML 구성 파일 상단에 다음
+            코드를 넣어야 한다. 다음 코드에서 올바른 스키마를 참조하고 있으므로 <literal>aop</literal>
+            네임스페이스의 태그를 사용할 수 있다.</para>
             <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -727,18 +666,17 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 ]]><emphasis role="bold">http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"</emphasis><![CDATA[>
 
-]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> definitions here --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- 여기서 <literal>&lt;bean/&gt;</literal> 정의를 한다 --&gt;</lineannotation><![CDATA[
 
 </beans>]]></programlisting>
         </section>
 
         <section id="xsd-config-body-schemas-context">
-            <title>The <literal>context</literal> schema</title>
-            <para>The <literal>context</literal> tags deal with <interfacename>ApplicationContext</interfacename>
-            configuration that relates to plumbing - that is, not usually beans that are important to an end-user
-            but rather beans that do a lot of grunt work in Spring, such as <interfacename>BeanfactoryPostProcessors</interfacename>.
-            The following snippet references the correct schema so that the tags in the <literal>context</literal>
-            namespace are available to you.</para>
+            <title><literal>context</literal> 스키마</title>
+            <para><literal>context</literal> 태그는 최종 사용자에게 중요한 빈이 아니라 일반적인 빈이 아니라
+            <interfacename>BeanfactoryPostProcessors</interfacename> 처럼 스프링에서 동작에 문제가 있는 빈과 관련된
+            plumbing과 관련된 <interfacename>ApplicationContext</interfacename> 구성을 다룬다. 다음 코드가 올바른
+            스키마를 참조하므로 <literal>context</literal> 네임스페이스의 태그를 사용할 수 있다.</para>
             <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -747,87 +685,83 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 ]]><emphasis role="bold">http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"</emphasis><![CDATA[>
 
-]]><lineannotation>&lt;!-- <literal>&lt;bean/&gt;</literal> definitions here --&gt;</lineannotation><![CDATA[
+]]><lineannotation>&lt;!-- 여기서 <literal>&lt;bean/&gt;</literal> 정의를 한다 --&gt;</lineannotation><![CDATA[
 
 </beans>]]></programlisting>
             <note>
-                <para>The <literal>context</literal> schema was only introduced in Spring 2.5.</para>
+                <para><literal>context</literal> 스키마는 스프링 2.5에서만 도입되었다.</para>
             </note>
             <section id="xsd-config-body-schemas-context-pphc">
                 <title><literal>&lt;property-placeholder/&gt;</literal></title>
-                <para>This element activates the replacement of <literal>${...}</literal> placeholders, resolved
-                against the specified properties file (as a <link linkend="resources">Spring resource location</link>).
-                This element is a convenience mechanism that sets up a
-                <link linkend="beans-factory-placeholderconfigurer"><classname>PropertyPlaceholderConfigurer</classname></link>
-                for you; if you need more control over the <classname>PropertyPlaceholderConfigurer</classname>, just
-                define one yourself explicitly.</para>
+                <para>이 요소는 <literal>${...}</literal> 플레이스홀더를 지정한 프로퍼티
+                파일(<link linkend="resources">Spring resource location</link>처럼)로 처리해서 교체하게
+                한다. 이 요소는
+                <link linkend="beans-factory-placeholderconfigurer"><classname>PropertyPlaceholderConfigurer</classname></link>를
+                설정하는 편리한 방법이다. <classname>PropertyPlaceholderConfigurer</classname>를 더
+                세세하게 제어해야 한다면 명시적으로 직접 정의해라.</para>
             </section>
             <section id="xsd-config-body-schemas-context-ac">
                 <title><literal>&lt;annotation-config/&gt;</literal></title>
-                <para>Activates the Spring infrastructure for various annotations to be detected in bean classes:
-                Spring's <link linkend="beans-required-annotation"><interfacename>@Required</interfacename></link>
-                and <link linkend="beans-annotation-config"><interfacename>@Autowired</interfacename></link>, as well as
-                JSR 250's <interfacename>@PostConstruct</interfacename>, <interfacename>@PreDestroy</interfacename> and
-                <interfacename>@Resource</interfacename> (if available), and JPA's
-                <interfacename>@PersistenceContext</interfacename> and <interfacename>@PersistenceUnit</interfacename>
-                (if available). Alternatively, you can choose to activate the individual
-                <interfacename>BeanPostProcessors</interfacename> for those annotations explictly.</para>
+                <para>(사용할 수 있는 경우) JSR 250의 <interfacename>@PostConstruct</interfacename>,
+                <interfacename>@PreDestroy</interfacename>, <interfacename>@Resource</interfacename>와
+                (사용할 수 있는 경우) JPA의  <interfacename>@PersistenceContext</interfacename>,
+                <interfacename>@PersistenceUnit</interfacename>와 마찬가지로 스프링의
+                <link linkend="beans-required-annotation"><interfacename>@Required</interfacename></link>와
+                <link linkend="beans-annotation-config"><interfacename>@Autowired</interfacename></link>같은
+                빈 클래스가 탐지한 다양한 어노테이션을 스프링 인프라가 활성화한다. 아니면 사용할 어노테이션에 대한 개별
+                <interfacename>BeanPostProcessors</interfacename>를 명시적으로 활성화할 수 있다.</para>
                 <note>
-                    <para>This element does <emphasis>not</emphasis> activate processing of Spring's
+                    <para>이 요소는 스프링의
                     <link linkend="transaction-declarative-annotations"><interfacename>@Transactional</interfacename></link>
-                    annotation. Use the
-                    <link linkend="tx-decl-explained"><literal>&lt;tx:annotation-driven/&gt;</literal></link> element
-                    for that purpose.</para>
+                    어노테이션을 활성화 하지 <emphasis>않는다</emphasis>.
+                    <link linkend="transaction-declarative-annotations"><interfacename>@Transactional</interfacename></link>
+                    어노테이션을 활성화하려면
+                    <link linkend="tx-decl-explained"><literal>&lt;tx:annotation-driven/&gt;</literal></link>
+                    요소를 사용해라.</para>
                 </note>
             </section>
             <section id="xsd-config-body-schemas-context-component-scan">
                 <title><literal>&lt;component-scan/&gt;</literal></title>
-                <para>This element is detailed in <xref linkend="beans-annotation-config"/>.</para>
+                <para>이 요소는 <xref linkend="beans-annotation-config"/>에 잘 나와 있다.</para>
             </section>
             <section id="xsd-config-body-schemas-context-ltw">
                 <title><literal>&lt;load-time-weaver/&gt;</literal></title>
-                <para>This element is detailed in <xref linkend="aop-aj-ltw"/>.</para>
+                <para>이 요소는 <xref linkend="aop-aj-ltw"/>에 잘 나와 있다.</para>
             </section>
             <section id="xsd-config-body-schemas-context-sc">
                 <title><literal>&lt;spring-configured/&gt;</literal></title>
-                <para>This element is detailed in <xref linkend="aop-atconfigurable"/>.</para>
+                <para>이 요소는 <xref linkend="aop-atconfigurable"/>에 잘 나와 있다.</para>
             </section>
             <section id="xsd-config-body-schemas-context-mbe">
                 <title><literal>&lt;mbean-export/&gt;</literal></title>
-                <para>This element is detailed in <xref linkend="jmx-context-mbeanexport"/>.</para>
+                <para>이 요소는 <xref linkend="jmx-context-mbeanexport"/>에 잘 나와 있다.</para>
             </section>
         </section>
 
         <section id="xsd-config-body-schemas-tool">
-            <title>The <literal>tool</literal> schema</title>
-            <para>The <literal>tool</literal> tags are for use when you want to add
-            tooling-specific metadata to your custom configuration elements. This metadata
-            can then be consumed by tools that are aware of this metadata, and the tools can
-            then do pretty much whatever they want with it (validation, etc.).</para>
-            <para>The <literal>tool</literal> tags are not documented in this release of
-            Spring as they are currently undergoing review. If you are a third party tool
-            vendor and you would like to contribute to this review process, then do mail
-            the Spring mailing list. The currently supported <literal>tool</literal>
-            tags can be found in the file <literal>'spring-tool-3.0.xsd'</literal> in the
-            <literal>'src/org/springframework/beans/factory/xml'</literal> directory of the
-            Spring source distribution.</para>
+            <title><literal>tool</literal> 스키마</title>
+            <para><literal>tool</literal> 태그는 커스텀 설정 요소에 대한 도구에 국한된 메타데이터를
+            추가하고자 할 때 사용한다. 그 후 이 메타데이터를 이해할 수 있는 도구가 이 데이터를 사용해서 원하는
+            무엇이든 할 수 있다.(유효성 검사 등)</para>
+            <para><literal>tool</literal> 태그는 현재 리뷰를 진행하고 있으므로 이번 스프링 릴리즈에는 문서로 만들어 져
+            있지 않다. 당신이 서드파티 벤더라서 이 리뷰 과정에 참여하고 싶다면 스프링 메일링 리스트에 메일을 보내라.
+            현재 지원하는 <literal>tool</literal> 태그는 스프링 소스 배포판의
+            <literal>'src/org/springframework/beans/factory/xml'</literal> 디렉토리에서
+            <literal>'spring-tool-3.0.xsd'</literal> 파일에 나와 있다.</para>
         </section>
         <section id="xsd-config-body-schemas-beans">
-            <title>The <literal>beans</literal> schema</title>
-            <para>Last but not least we have the tags in the <literal>beans</literal> schema.
-            These are the same tags that have been in Spring since the very dawn of the framework.
-            Examples of the various tags in the <literal>beans</literal> schema are not shown here
-            because they are quite comprehensively covered in <xref linkend="beans-factory-properties-detailed"/>
-            (and indeed in that entire <link linkend="beans">chapter</link>).</para>
-            <para>One thing that is new to the beans tags themselves in Spring 2.0 is the idea
-            of arbitrary bean metadata. In Spring 2.0 it is now possible to add zero or more
-            key / value pairs to <literal>&lt;bean/&gt;</literal> XML definitions. What, if
-            anything, is done with this extra metadata is totally up to your own custom logic (and
-            so is typically only of use if you are writing your own custom tags as described in
-            the appendix entitled <xref linkend="extensible-xml"/>).</para>
-            <para>Find below an example of the <literal>&lt;meta/&gt;</literal> tag in the context
-            of a surrounding <literal>&lt;bean/&gt;</literal> (please note that without any logic
-            to interpret it the metadata is effectively useless as-is).</para>
+            <title><literal>beans</literal> 스키마</title>
+            <para>마지막으로 얘기하지만 무시할 수 없는 태그가 <literal>beans</literal> 스키마의 태그이다.
+            스프링 프레임워크의 아주 초창기부터 같은 태그가 존재하고 있다. <literal>beans</literal> 스키마의 태그는
+            <xref linkend="beans-factory-properties-detailed"/>에서 아주 광범위하게 다루었으므로(전체
+            <link linkend="beans">장</link>에 걸쳐서 다루었다.) 여기서 <literal>beans</literal> 스키마의
+            다양한 태그의 예시를 보여주진 않는다.</para>
+            <para>스프링 2.0에서 beans 태그 자체에 새로 추가된 것 중 하나는 임의의 빈 메타데이터에 대한 아이디어이다.
+            스프링 2.0에서는 <literal>&lt;bean/&gt;</literal> XML 정의에 다수의 키/값 쌍을 추가하거나 추가하지
+            않을 수 있다. 이 여분의 메타데이터로 할 수 있는 일은 완전히 작성한 커스텀 로직에 달려 있다.(그리고
+            <xref linkend="extensible-xml"/> 부록에서 설명한 대로 보통 커스텀 태그를 작성한 경우에만 사용한다.</para>
+            <para>상위의 <literal>&lt;bean/&gt;</literal> 컨텍스트에서 <literal>&lt;meta/&gt;</literal>
+            태그를 사용한 예제가 아래 나와 있다.(메타데이터를 해석하는 로직 없이는 아무런 효과가 없다는 점을 명심해라.)</para>
             <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -840,9 +774,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </bean>
 
 </beans>]]></programlisting>
-            <para>In the case of the above example, you would assume that there is some
-            logic that will consume the bean definition and set up some caching infrastructure
-            using the supplied metadata.</para>
+            <para>위 예제에서 빈 정의를 사용하고 제공한 메타데이터로 캐시 인프라스트럭처를 구성할 어떤 로직이
+            있다고 가정할 수 있다.</para>
         </section>
     </section>
     <!-- Commented pending resolution of SPR-7521
