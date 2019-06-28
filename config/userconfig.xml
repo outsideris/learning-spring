@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration SYSTEM "config.dtd">
+<configuration>
+	<entry>
+		<key>fontBaseDir</key>
+		<value>${basedir}/../../../../config/font</value>
+	</entry>
+	<fonts>
+		<font
+			metrics-file="font.xml"
+			kerning="yes"
+			embed-file="font.ttf">
+			<font-triplet name="userfont" style="normal"
+				weight="normal" />
+			<font-triplet name="userfont" style="normal" weight="bold" />
+			<font-triplet name="userfont" style="italic"
+				weight="normal" />
+			<font-triplet name="userfont" style="italic" weight="bold" />
+		</font>
+	</fonts>
+</configuration>
+
+
+

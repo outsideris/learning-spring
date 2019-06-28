@@ -1,0 +1,1 @@
+java -cp fop.jar;xerces.jar;xalan.jar;w3c.jar org.apache.fop.fonts.apps.TTFReader font.ttf font.xml
